@@ -28,7 +28,7 @@ package SimProc is
                     signal din : out std_logic;
                     signal dclk : out std_logic);
 
- procedure loadValue(signal value : natural;
+ procedure loadValue(signal value : integer;
                      constant bits: in natural;
                      signal dsel : out std_logic;
                      signal din : out std_logic;
@@ -143,7 +143,7 @@ package body SimProc is
   shift <= '0';
  end procedure loadShift;
 
- procedure loadCtl(variable value : in natural;
+ procedure loadCtl(variable value : in integer;
                    constant bits : in natural;
                    signal shift : out std_logic;
                    signal din : out std_logic;
