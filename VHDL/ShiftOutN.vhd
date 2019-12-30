@@ -32,7 +32,8 @@ use IEEE.NUMERIC_STD.ALL;
 entity ShiftOutN is
  generic(opVal : unsigned;
          opBits : positive;
-         n : positive);
+         n : positive;
+         outBits : positive);
  port (
   clk : in std_logic;
   dshift : in std_logic;
@@ -45,20 +46,25 @@ end ShiftOutN;
 
 architecture Behavioral of ShiftOutN is
 
- signal shiftSel : std_logic;
+ signal shiftSel : std_logic := '0';
  signal shiftReg : unsigned(n-1 downto 0) := (n-1 downto 0 => '0');
- signal padding : integer range 0 to 32-n;
+ signal padding : integer range 0 to outBits-n;
 
 begin
 
- shiftSel <= '1' when op = opVal else '0';
+ -- shiftSel <= '1' when op = opVal else '0';
  dout <= shiftReg(n-1) when ((shiftSel = '1') and (padding = 0)) else
          '0';
 
  shiftout: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (load = '1') then
+   if (op = opVal) then
+    shiftSel <= '1';
+   else
+    shiftSel <= '0';
+   end if;
+   if ((shiftSel and load) = '1') then
     shiftReg <= data;
     padding <= 32-n;
    else 

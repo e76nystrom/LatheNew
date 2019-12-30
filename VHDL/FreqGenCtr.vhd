@@ -41,34 +41,31 @@ entity FreqGenCtr is
   din : in std_logic;
   dshift : in std_logic;
   load : in std_logic;
-  op : in unsigned(opBits-1 downto 0);
+  op : in unsigned (opBits-1 downto 0);
   pulseOut : out std_logic := '0'
   );
 end FreqGenCtr;
 
 architecture Behavioral of FreqGenCtr is
 
- component Shift is
-  generic(n : positive);
+ component ShiftOp is
+  generic(opVal : unsigned;
+         opBits : positive;
+         n : positive);
   port (
    clk : in std_logic;
    shift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
-   data : inout unsigned(n-1 downto 0));
+   data : inout unsigned (n-1 downto 0));
  end component;
 
  type fsm is (idle, run, updCount, chkCount);
  signal state : fsm := idle;
  
- signal freqSel : std_logic;
- signal freqShift : std_logic;
-
  signal freqVal : unsigned(freqBits-1 downto 0);
  signal freqCounter : unsigned(freqBits-1 downto 0) :=
   (freqBits-1 downto 0 => '0');
-
- signal countSel : std_logic;
- signal countShift : std_logic;
 
  signal countVal : unsigned(freqCountBits-1 downto 0);
  signal outputCounter : unsigned(freqCountBits-1 downto 0) :=
@@ -76,44 +73,44 @@ architecture Behavioral of FreqGenCtr is
 
 begin
 
- freqSel <= '1' when (op = opBase + F_Ld_Dbg_Freq) else '0';
- freqShift <= '1' when ((freqSel = '1') and (dshift = '1')) else '0';
-
- freqReg: Shift
-  generic map(freqBits)
+ freqReg: ShiftOp
+  generic map(opVal => opBase + F_Ld_Dbg_Freq,
+              opBits => opBits,
+              n => freqBits)
   port map (
    clk => clk,
-   shift => freqShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => freqVal);
 
- countSel <= '1' when (op = opBase + F_Ld_Dbg_Count) else '0';
- countShift <= '1' when ((countSel = '1') and (dshift = '1')) else '0';
- 
- countReg: Shift
-  generic map(freqCountBits)
+ countReg: ShiftOp
+  generic map(opVal => opBase + F_Ld_Dbg_Count,
+              opBits => opBits,
+              n => freqCountBits)
   port map (
    clk => clk,
-   shift => countShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => countVal);
 
  freqCtr: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   if (freqSel = '1') then              --if changing frequency
+   if (op = opBase + F_Ld_Dbg_Freq) then --if changing frequency
     state <= idle;                      --return to idle state
    else
     case state is
      when idle =>                        --idle
-      if ((countSel = '1') and (load = '1')) then
+      if ((op = opBase + F_Ld_Dbg_Count) and (load = '1')) then
        outputCounter <= countVal;
        freqCounter <= freqVal;
        state <= run;
       end if;
 
      when run =>                         --run
-      if (freqCounter = (freqBits-1 downto 0 => '0')) then --if counter zero
+      if (freqCounter = (freqBits-1 downto 0 => '0')) then --if  zero
        freqCounter <= freqVal;            --reload counter
        pulseOut <= '1';                   --activate frequency pulse
        state <= updCount;

@@ -48,24 +48,19 @@ end CtlReg;
 architecture Behavioral of CtlReg is
 
 signal sreg : unsigned (n-1 downto 0) := (n-1 downto 0 => '0');
-signal ctl_op : std_logic;
-signal ctl_shift : std_logic;
-signal ctl_load : std_logic;
 
 begin
-
- ctl_op <= '1' when (op = opVal) else '0';
- ctl_shift <= '1' when ((ctl_op = '1') and (shift = '1')) else '0';
- ctl_load <= '1' when ((ctl_op = '1') and (load = '1')) else '0';
 
 ctlreg1: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (ctl_load = '1') then          --if load set
-    data <= sreg;                    --copy from shift reg to data reg
-   else                              --if load not set
-    if (ctl_shift = '1') then        --if shift set
-     sreg <= sreg(n-2 downto 0) & din; --shift data in
+   if (op = opVal) then
+    if (load = '1') then             --if load set
+     data <= sreg;                   --copy from shift reg to data reg
+    else                             --if load not set
+     if (shift = '1') then           --if shift set
+      sreg <= sreg(n-2 downto 0) & din; --shift data in
+     end if;
     end if;
    end if;
   end if;

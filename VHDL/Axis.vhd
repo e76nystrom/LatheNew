@@ -11,7 +11,8 @@ entity Axis is
           posBits : positive;
           countBits : positive;
           distBits : positive := 32;
-          locBits : positive);
+          locBits : positive;
+          outBits : positive);
  port (
   clk : in std_logic;
   din : in std_logic;
@@ -77,7 +78,8 @@ architecture Behavioral of Axis is
  component DistCounter is
   generic (opBase : unsigned;
            opBits : positive;
-           distBits : positive);
+           distBits : positive;
+           outBits : positive);
   Port (
    clk : in  std_logic;
    din : in std_logic;
@@ -96,7 +98,8 @@ architecture Behavioral of Axis is
  component LocCounter is
   generic(opBase : unsigned;
           opBits : positive;
-          locBits : positive);
+          locBits : positive;
+          outBits : positive);
   Port (
    clk : in  std_logic;
    din : in std_logic;          --shift data in
@@ -236,7 +239,8 @@ begin
  AxisDistCounter: DistCounter
   generic map (opBase => opBase + F_Dist_Base,
                opBits => opBits,
-               distBits => distBits)
+               distBits => distBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,
@@ -254,7 +258,8 @@ begin
  AxisLocCounter: LocCounter
   generic map(opBase => opBase + F_Loc_Base,
               opBits => opBits,
-              locBits => locBits)
+              locBits => locBits,
+              outBits => outBits)
   port map (
    clk => clk,
    din => din,

@@ -16,8 +16,8 @@ architecture behavior OF LatheNewTest is
 
    -- led : out std_logic_vector(7 downto 0);
    -- dbg : out std_logic_vector(7 downto 0);
-   -- anode : out std_logic_vector(3 downto 0);
-   -- seg : out std_logic_vector(6 downto 0);
+   anode : out std_logic_vector(3 downto 0);
+   seg : out std_logic_vector(6 downto 0);
 
    dclk : in std_logic;
    dout : out std_logic;
@@ -47,8 +47,8 @@ architecture behavior OF LatheNewTest is
 -- signal sysClk : std_logic := '0';
 -- signal led : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
 -- signal dbg : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
--- signal anode : std_logic_vector(3 downto 0) := (3 downto 0 => '0');
--- signal seg : std_logic_vector(6 downto 0) := (6 downto 0 => '0');
+ signal anode : std_logic_vector(3 downto 0) := (3 downto 0 => '0');
+ signal seg : std_logic_vector(6 downto 0) := (6 downto 0 => '0');
  signal dclk : std_logic := '0';
  signal dout : std_logic := '0';
  signal din : std_logic := '0';
@@ -177,7 +177,6 @@ begin
    end loop;
    din <= '0';
    dclk <= '0';
-
    dsel <= '1';                          --end of load
    delay(10);
   end procedure loadValue;

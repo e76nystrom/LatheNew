@@ -40,13 +40,13 @@ ARCHITECTURE behavior OF SPITest IS
  -- Component Declaration for the Unit Under Test (UUT)
  
  component SPI
- generic (op_bits : positive := 8);
+ generic (opBits : positive := 8);
   PORT(
    clk : in std_logic;
    dclk : in std_logic;
    dsel : in std_logic;
    din : in std_logic;
-   op : out unsigned(op_bits-1 downto 0);
+   op : out unsigned(opBits-1 downto 0);
    copy : out std_logic;
    shift : out std_logic;
    load : out std_logic;
@@ -55,7 +55,7 @@ ARCHITECTURE behavior OF SPITest IS
    );
  end component;
 
- component ClockEnable1 is
+ component ClockEnableN is
  generic (n : positive);
   Port (
    clk : in  std_logic;
@@ -82,7 +82,7 @@ ARCHITECTURE behavior OF SPITest IS
  --  data : inout  unsigned (n-1 downto 0));
  --end component;
 
- constant op_bits : integer := 8;
+ constant opBits : integer := 8;
  
  --Inputs
  signal clk : std_logic := '0';
@@ -128,12 +128,12 @@ ARCHITECTURE behavior OF SPITest IS
  -- end loop;
  --end procedure send;
 
- signal tmp : unsigned(op_bits-1 downto 0) :=  (op_bits-1 downto 0 => '0');
+ signal tmp : unsigned(opBits-1 downto 0) :=  (opBits-1 downto 0 => '0');
  signal tmp1 : unsigned(31 downto 0) :=  (31 downto 0 => '0');
 
- constant test_bits : integer := 32;
- --signal test_reg : unsigned(test_bits-1 downto 0);
- signal test1_reg : unsigned(test_bits-1 downto 0);
+ constant testBits : integer := 32;
+ --signal test_reg : unsigned(testBits-1 downto 0);
+ signal test1_reg : unsigned(testBits-1 downto 0);
 
 BEGIN
  
@@ -151,7 +151,7 @@ BEGIN
   --info => info
   );
 
- clk_ena: ClockEnable1
+ clk_ena: ClockEnableN
   generic map(n => 3)
   port map (
    clk => clk,
@@ -159,7 +159,7 @@ BEGIN
    clkena =>clkena1);
  
  --testreg: Shift
- -- generic map(test_bits)
+ -- generic map(testBits)
  -- port map (
  --  clk => clk,
  --  shift => dshift,
@@ -167,7 +167,7 @@ BEGIN
  --  data => test_reg);
 
  --test1reg: CtlReg
- -- generic map(test_bits)
+ -- generic map(testBits)
  -- port map (
  --  clk => clk,
  --  din => din,

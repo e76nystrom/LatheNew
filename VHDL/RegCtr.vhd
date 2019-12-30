@@ -30,11 +30,14 @@ use IEEE.NUMERIC_STD.ALL;
 --use UNISIM.VComponents.all;
 
 entity RegCtr is
- generic(n : positive);
+ generic(opVal : unsigned;
+         opBits : positive;
+         n : positive);
  port (
   clk : in std_logic;
   din : in std_logic;
   dshift : in std_logic;
+  op : in unsigned (opBits-1 downto 0);
   ena : in std_logic;
   load : in std_logic;
   data : inout  unsigned (n-1 downto 0) := (n-1 downto 0 => '0');
@@ -43,25 +46,32 @@ end RegCtr;
 
 architecture Behavioral of RegCtr is
 
- component Shift is
-  generic (n : positive);
-  port (
+ component ShiftOp is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive);
+  port(
    clk : in std_logic;
    din : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    shift : in std_logic;
-   data : inout unsigned (n-1 downto 0));
- end component;
+   data : inout unsigned (n-1 downto 0)
+   );
+ end Component;
 
  signal distReg : unsigned(n-1 downto 0);
 
 begin
 
- dist_reg: Shift
-  generic map(n)
+ dist_reg: ShiftOp
+  generic map(opVal => opVal,
+              opBits => opBits,
+              n => n)
   port map (
    clk => clk,
    din => din,
    shift => dshift,
+   op => op,
    data => distReg);
 
  regctr: process (clk)

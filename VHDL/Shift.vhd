@@ -35,7 +35,7 @@ entity Shift is
   clk : in std_logic;
   din : in std_logic;
   shift : in std_logic;
-  data : inout unsigned (n-1 downto 0) := (n-1 downto 0 => '0')
+  data : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end Shift;
 

@@ -34,7 +34,8 @@ use work.regdef.all;
 entity DistCounter is
  generic (opBase : unsigned;
           opBits : positive := 8;
-          distBits : positive);
+          distBits : positive;
+          outBits : positive);
  Port (
   clk : in  std_logic;
   din : in std_logic;
@@ -70,10 +71,11 @@ architecture Behavioral of DistCounter is
    counter : inout  unsigned (n-1 downto 0));
  end component;
 
- component ShiftOut is
+ component ShiftOutN is
   generic(opVal : unsigned;
           opBits : positive;
-          n : positive);
+          n : positive;
+          outBits : positive);
   port (
    clk : in std_logic;
    dshift : in std_logic;
@@ -85,11 +87,14 @@ architecture Behavioral of DistCounter is
  end Component;
 
  component RegCtr is
-  generic (n : positive);
+  generic (opVal : unsigned;
+           opBits : positive;
+           n : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
    dshift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    ena : in std_logic;
    load : in std_logic;
    data : inout  unsigned (n-1 downto 0);
@@ -98,7 +103,6 @@ architecture Behavioral of DistCounter is
 
  signal accelStep : std_logic;
 
- signal distShift : std_logic;
  signal zero : std_logic;
 
  signal distCtr : unsigned(distBits-1 downto 0);
@@ -110,7 +114,8 @@ begin
 
  dout <= distDout;
 
- accelStep <= '1' when ((accelFlag = '1') and (step = '1') and (decel = '0'))
+ accelStep <= '1' when ((accelFlag = '1') and (step = '1') and
+                        (decel = '0'))
               else '0';
 
  DistAccelCtr: UpCounter
@@ -121,15 +126,17 @@ begin
    clr => init,
    counter => aclSteps);
 
- distShift <= '1' when ((op = opBase + F_Ld_Axis_Dist) and (dshift = '1')) else '0';
  distZero <= zero;
 
  DistRegCtr: RegCtr
-  generic map(n => distBits)
+  generic map(opVal => opBase + F_Ld_Axis_Dist,
+              opBits => opBits,
+              n => distBits)
   port map (
    clk => clk,
    din => din,
-   dshift => distShift,
+   dshift => dshift,
+   op => op,
    ena => step,
    load => init,
    data => distCtr,
@@ -143,10 +150,11 @@ begin
    cmp_ge => '0',
    cmp => decel);
 
- DistShiftOUt: ShiftOut
+ DistShiftOut: ShiftOutN
   generic map(opVal => opBase + F_Rd_Axis_Dist,
               opBits => opBits,
-              n => distBits)
+              n => distBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,

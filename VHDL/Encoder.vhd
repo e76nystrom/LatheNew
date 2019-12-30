@@ -36,7 +36,8 @@ entity Encoder is
          opBits : positive := 8;
          cycleLenBits : positive := 16;
          encClkBits : positive := 24;
-         cycleClkbits : positive := 32);
+         cycleClkbits : positive := 32;
+         outBits : positive := 32);
  port(
   clk : in std_logic;                   --system clock
   din : in std_logic;                   --spi data in
@@ -59,7 +60,8 @@ architecture Behavioral of Encoder is
            opBits : positive := 8;
            cycleLenBits : positive := 16;
            encClkBits : positive := 24;
-           cycleClkbits : positive := 32);
+           cycleClkbits : positive := 32;
+           outBits : positive := 32);
   port(
    clk : in std_logic;                   --system clock
    din : in std_logic;                   --spi data in
@@ -112,7 +114,8 @@ begin
                opBits => opBits,
                cycleLenBits => cycleLenBits,
                encClkBits => encClkBits,
-               cycleClkbits => cycleClkBits)
+               cycleClkbits => cycleClkBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,

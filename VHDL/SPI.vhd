@@ -36,11 +36,12 @@ entity SPI is
   dclk : in std_logic;                   --spi clk
   dsel : in std_logic;                   --spi select
   din : in std_logic;                    --spi data in
-  op : out unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');  --op code
+  op : out unsigned(opBits-1 downto 0) := (others => '0'); --op code
   copy : out std_logic := '0';          --copy data to be shifted out
   shift : out std_logic := '0';         --shift data
   load : out std_logic := '0';          --load data shifted in
-  header : inout std_logic := '0'       --receiving header
+  header : inout std_logic := '0';      --receiving header
+  spiActive : out std_logic := '0'
   --info : out std_logic_vector(2 downto 0) --state info
   );
 end SPI;
@@ -60,11 +61,11 @@ architecture Behavioral of SPI is
  signal state : spi_fsm := start;
 
  signal count : unsigned(3 downto 0) := "1000";
- signal opReg : unsigned(opbits-1 downto 0); --op code
+ signal opReg : unsigned(opbits-1 downto 0) := (others => '0');
 
  signal clkena : std_logic;
  constant n : positive := 4;
- signal dseldly : std_logic_vector(n-1 downto 0);
+ signal dseldly : std_logic_vector(n-1 downto 0) := (others => '1');
  signal dselEna : std_logic;
  signal dselDis : std_logic;
 
@@ -106,7 +107,6 @@ begin
     when start =>
      if (dsel = '1') then
       op <= (opBits-1 downto 0 => '0');
-      header <= '1';
       state <= idle;
      end if;
 
@@ -116,9 +116,12 @@ begin
      copy <= '0';
      if (dselEna = '1') then
       header <= '1';
+      spiActive <= '1';
       opReg <= (opBits-1 downto 0 => '0');
       count <= "1000";
       state <= read_hdr;
+     else
+      spiActive <= '0';
      end if;
 
     when read_hdr =>
@@ -148,6 +151,7 @@ begin
     when active =>
      copy <= '0';
      if (dselDis = '1') then
+      load <= '1';
       state <= load_reg;
      else
       if (clkena = '1') then
@@ -161,7 +165,7 @@ begin
      state <= active;
  
     when load_reg =>
-     load <= '1';
+     load <= '0';
      state <= idle;
 
    end case;

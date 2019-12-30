@@ -67,20 +67,21 @@ constant F_Noop             : unsigned(opb-1 downto 0) := x"00"; -- register 0
 constant F_Ld_Sync_Ctl      : unsigned(opb-1 downto 0) := x"01"; -- sync control register
 constant F_Ld_Cfg_Ctl       : unsigned(opb-1 downto 0) := x"02"; -- config control register
 constant F_Ld_Clk_Ctl       : unsigned(opb-1 downto 0) := x"03"; -- clock control register
+constant F_Ld_Dsp_Reg       : unsigned(opb-1 downto 0) := x"04"; -- display register
 
 -- frequency control
 
-constant F_Ld_Z_Freq        : unsigned(opb-1 downto 0) := x"04"; -- z frequency
-constant F_Ld_X_Freq        : unsigned(opb-1 downto 0) := x"05"; -- x frequency
-constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"06"; -- dbg frequency
+constant F_Ld_Z_Freq        : unsigned(opb-1 downto 0) := x"05"; -- z frequency
+constant F_Ld_X_Freq        : unsigned(opb-1 downto 0) := x"06"; -- x frequency
+constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"07"; -- dbg frequency
 
 -- base for modules
 
-constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"08"; -- encoder registers
-constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0b"; -- phase registers
-constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0d"; -- z axis registers
-constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"1c"; -- x axis registers
-constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"2b"; -- number of commands
+constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"09"; -- encoder registers
+constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0c"; -- phase registers
+constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0e"; -- z axis registers
+constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"1d"; -- x axis registers
+constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"2c"; -- number of commands
 
 end RegDef;
 

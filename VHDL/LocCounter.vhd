@@ -34,7 +34,8 @@ use work.regdef.all;
 entity LocCounter is
  generic(opBase : unsigned;
          opBits : positive := 8;
-         locBits : positive);
+         locBits : positive;
+         outBits : positive);
  Port (
   clk : in  std_logic;
   din : in std_logic;          --shift data in
@@ -52,13 +53,18 @@ end LocCounter;
 
 architecture Behavioral of LocCounter is
 
- component Shift is
-  generic(n : positive);
-  port ( clk : in std_logic;
-         din : in std_logic;
-         shift : in std_logic;
-         data : inout unsigned (n-1 downto 0));
- end component;
+ component ShiftOp is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive);
+  port(
+   clk : in std_logic;
+   din : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
+   shift : in std_logic;
+   data : inout unsigned (n-1 downto 0)
+   );
+ end Component;
 
  component UpDownCounter is
   generic(n : positive);
@@ -70,10 +76,11 @@ architecture Behavioral of LocCounter is
          counter : inout unsigned(n-1 downto 0));
  end component;
 
- component ShiftOut is
+ component ShiftOutN is
   generic(opVal : unsigned;
           opBits : positive;
-          n : positive);
+          n : positive;
+          outBits : positive);
   port (
    clk : in std_logic;
    dshift : in std_logic;
@@ -93,13 +100,15 @@ architecture Behavioral of LocCounter is
 begin
 
  dout <= locDout;
- locShift <= '1' when ((op = opBase + F_Ld_Axis_Loc) and (dshift = '1')) else '0';
  
- LocValReg: Shift
-  generic map(n => locBits)
+ LocValReg: ShiftOp
+  generic map(opVal => opBase + F_Ld_Axis_Loc,
+              opBits => opBits,
+              n => locBits)
   port map ( clk => clk,
              din => din,
-             shift => locShift,
+             op => op,
+             shift => dshift,
              data => locVal);
 
  updStep <= '1' when ((step = '1') and (updLoc = '1')) else '0';
@@ -113,10 +122,11 @@ begin
              ini_val => locVal,
              counter => loc);
 
- LocShiftOut : ShiftOut
+ LocShiftOut : ShiftOutN
   generic map(opVal => opBase + F_Rd_Axis_Loc,
               opBits => opBits,
-              n => locBits)
+              n => locBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,

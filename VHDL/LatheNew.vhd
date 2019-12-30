@@ -10,8 +10,8 @@ entity LatheNew is
   
   -- led : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
   -- dbg : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
-  -- anode : out std_logic_vector(3 downto 0) := (3 downto 0 => '1');
-  -- seg : out std_logic_vector(6 downto 0) := (6 downto 0 => '1');
+  anode : out std_logic_vector(3 downto 0) := (3 downto 0 => '1');
+  seg : out std_logic_vector(6 downto 0) := (6 downto 0 => '1');
 
   dclk : in std_logic;
   dout : out std_logic := '0';
@@ -61,7 +61,37 @@ end Component;
    op : out unsigned(opBits-1 downto 0);  --op code
    copy : out std_logic;                 --copy data to be shifted out
    load : out std_logic;                 --load data shifted in
-   header : inout std_logic
+   header : inout std_logic;
+   spiActive : out std_logic
+   );
+ end Component;
+
+ component Display is
+  port (
+   clk : in std_logic;
+   dspreg : in unsigned(15 downto 0);
+   digSel : in unsigned(1 downto 0);
+   anode : out std_logic_vector(3 downto 0);
+   seg : out std_logic_vector(6 downto 0)
+   );
+ end Component;
+
+ component DisplayCtl is
+  generic (opVal : unsigned;
+           opBits : positive;
+           displayBits : positive;
+           outBits : positive);
+  port (
+   clk : in std_logic;
+   dsel : in Std_logic;
+   din : in std_logic;
+   shift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
+   dout : in std_logic;
+   dspCopy : out std_logic;
+   dspShift : out std_logic;
+   dspOp : inout unsigned (opBits-1 downto 0);
+   dspreg : inout unsigned (displayBits-1 downto 0)
    );
  end Component;
 
@@ -123,7 +153,8 @@ end Component;
   generic (opBase : unsigned;
            opBits : positive;
            phaseBits : positive;
-           totalBits : positive);
+           totalBits : positive;
+           outBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -190,7 +221,8 @@ end Component;
            posBits : positive;
            countBits : positive;
            distBits : positive;
-           locBits : positive);
+           locBits : positive;
+           outBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -221,11 +253,19 @@ end Component;
          pulseOut : out std_logic);
  end Component;
 
+ -- clock divider
+
+ constant div_range : integer := 26;
+ signal div : unsigned (div_range downto 0);
+ alias digSel: unsigned(1 downto 0) is div(19 downto 18);
+
  constant synBits : positive := 32;
  constant posBits : positive := 18;
  constant countBits : positive := 18;
  constant distBits : positive := 18;
  constant locBits : positive := 18;
+
+ constant outBits : positive := 32;
 
  constant opBits : positive := 8;
  constant phaseBits : positive := 16;
@@ -280,13 +320,27 @@ end Component;
 
  -- spi interface
 
- constant out_bits : positive := 32;
+ signal spiCopy : std_logic := '0';
+ signal spiShift : std_logic := '0';
+ signal spiOp : unsigned (opBits-1 downto 0) := (others => '0');
+ signal spiActive : std_logic := '0';
+
+ signal internalDout : std_logic;
+
  signal copy : std_logic;               --copy to output register
  signal dshift : std_logic;             --shift data
  signal load : std_logic;               --load to register
  signal op : unsigned (opBits-1 downto 0); --operation code
- signal outReg : unsigned (out_bits-1 downto 0); --output register
  signal header : std_logic;
+
+ -- display
+
+ constant displayBits : positive := 16;
+ signal dspCopy : std_logic;
+ signal dspShift : std_logic;
+ signal dspOp : unsigned (opBits-1 downto 0);
+
+ signal dspData : unsigned (displayBits-1 downto 0);
 
  -- signal locked : std_logic;
 
@@ -331,13 +385,27 @@ begin
    clockOut => clk
    );
 
- -- sys_cpk n: SystemClk
- --  port map (
- --   areset  => '0',
- --   inclk0  => sysClk,
- --   c0      => clk,
- --   locked  => open
- --   );
+ -- clock divider
+
+ clk_div: process(clk)
+ begin
+  if (rising_edge(clk)) then
+   div <= div + 1;
+  end if;
+ end process;
+
+ -- led display
+
+ led_display : Display
+  port map (
+   clk => clk,
+   dspReg => dspData,
+   digSel => digSel,
+   anode => anode,
+   seg => seg
+   );
+
+ -- quadrature encoder
 
  quad_encoder : QuadEncoder
   port map (
@@ -384,7 +452,15 @@ begin
    y => direction
    );
 
- dout <= zDOut or xDOut or encDOut or phaseDOut;
+ internalDout <= zDOut or xDOut or encDOut or phaseDOut;
+ dout <= internalDout;
+
+ -- dshift <= spiShift when spiActive = '1' else dspShift;
+ -- op <= spiOp when spiActive = '1' else dspOp;
+ -- copy <= spiCopy when spiActive = '1' else dspCopy;
+ dshift <= spiShift;
+ op <= spiOp;
+ copy <= spiCopy;
 
  spi_int : SPI
   generic map (opBits => opBits)
@@ -393,11 +469,31 @@ begin
    dclk => dclk,
    dsel => dsel,
    din => din,
-   shift => dshift,
-   op => op,
-   copy => copy,
+   shift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
    load => load,
-   header => header
+   header => header,
+   spiActive => spiActive
+   );
+
+ dispalyCtlProc : DisplayCtl
+  generic map (opVal => F_Ld_Dsp_Reg,
+               opBits => opBits,
+               displayBits => displayBits,
+               outBits => outBits
+               )
+  port map (
+   clk => clk,
+   dsel => dsel,
+   din => din,
+   shift => spiShift,
+   op => spiOp,
+   dout => internalDout,
+   dspCopy => dspCopy,
+   dspShift => dspShift,
+   dspOp => dspOp,
+   dspreg => dspData
    );
 
  sync_reg: CtlReg
@@ -440,7 +536,8 @@ begin
   generic map (opBase => F_Phase_Base,
                opBits => opBits,
                phaseBits => phaseBits,
-               totalBits => totalBits)
+               totalBits => totalBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,
@@ -527,7 +624,8 @@ begin
                posBits => posBits,
                countBits => countBits,
                distBits => distBits,
-               locBits => locBits)
+               locBits => locBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,
@@ -581,7 +679,8 @@ begin
                posBits => posBits,
                countBits => countBits,
                distBits => distBits,
-               locBits => locBits)
+               locBits => locBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,

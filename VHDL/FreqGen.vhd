@@ -46,30 +46,31 @@ end FreqGen;
 
 architecture Behavioral of FreqGen is
 
- component Shift is
-  generic(n : positive);
+ component ShiftOp is
+  generic(opVal : unsigned;
+         opBits : positive;
+         n : positive);
   port (
    clk : in std_logic;
    shift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout  unsigned (freqBits-1 downto 0));
  end component;
 
- signal freqSel : std_logic;
- signal freqShift : std_logic;
  signal counter : unsigned(freqBits-1 downto 0) := (others =>'0');
  signal freqVal : unsigned(freqBits-1 downto 0);
 
 begin
 
- freqSel <= '1' when (op = opVal) else '0';
- freqShift <= '1' when ((freqSel = '1') and (dshift = '1')) else '0';
-
- freqreg: Shift
-  generic map(freqBits)
+ freqreg: ShiftOp
+  generic map(opVal => opVal,
+              opBits => opBits,
+              n => freqBits)
   port map (
    clk => clk,
-   shift => freqShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => freqVal);
 

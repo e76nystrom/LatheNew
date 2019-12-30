@@ -35,7 +35,8 @@ entity PhaseCounter is
  generic (opBase : unsigned;
           opBits : positive := 8;
           phaseBits : positive := 16;
-          totalBits : positive := 32);
+          totalBits : positive := 32;
+          outBits : positive);
  port (
   clk : in std_logic;
   din : in std_logic;
@@ -54,19 +55,23 @@ end PhaseCounter;
 
 architecture Behavioral of PhaseCounter is
 
- component Shift is
-  generic(n : positive);
+ component ShiftOp is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive);
   port (
    clk : in std_logic;
    shift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout unsigned (n-1 downto 0));
  end component;
 
- component ShiftOut is
+ component ShiftOutN is
   generic(opVal : unsigned;
           opBits : positive;
-          n : positive);
+          n : positive;
+          outBits : positive);
   port (
    clk : in std_logic;
    dshift : in std_logic;
@@ -98,29 +103,28 @@ architecture Behavioral of PhaseCounter is
   (others => '0'); --current phase
  signal phaseVal : unsigned(phaseBits-1 downto 0); --pulses in one rotation
 
- signal phaseSel : std_logic;
- signal phaseShift : std_logic;
  signal dOutPhaseSyn : std_logic;
 
 begin
 
  dout <= dOutPhaseSyn;
 
- phaseSel <= '1' when (op = opBase + F_Ld_Phase_len) else '0';
- phaseShift <= '1' when ((phaseSel = '1') and (dshift = '1')) else '0';
-
- phaseReg : Shift
-  generic map(phaseBits)
+ phaseReg : ShiftOp
+  generic map(opVal => opBase + F_Ld_Phase_len,
+              opBits => opBits,
+              n => phaseBits)
   port map (
    clk => clk,
    din => din,
-   shift => phaseShift,
+   op => op,
+   shift => dshift,
    data => phaseVal);
 
- phaseSynOut : ShiftOut
+ phaseSynOut : ShiftOutN
   generic map(opVal => opBase + F_Rd_Phase_Syn,
               opBits => opBits,
-              n => phaseBits)
+              n => phaseBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dShift,

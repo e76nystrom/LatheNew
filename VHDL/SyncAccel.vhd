@@ -36,7 +36,8 @@ entity SyncAccel is
           opBits : positive := 8;
           synBits : positive := 32;
           posBits : positive := 18;
-          countBits : positive := 18);
+          countBits : positive := 18;
+          outBits : positive := 32);
  port (
   clk : in std_logic;
   din : in std_logic;
@@ -57,11 +58,14 @@ end SyncAccel;
 
 architecture Behavioral of SyncAccel is
 
- component Shift is
-  generic(n : positive);
+ component ShiftOp is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive);
   port (
    clk : in std_logic;
    shift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout  unsigned (n-1 downto 0));
  end component;
@@ -123,10 +127,11 @@ architecture Behavioral of SyncAccel is
    );
  end component;
 
- component ShiftOut is
+ component ShiftOutN is
   generic(opVal : unsigned;
           opBits : positive;
-          n : positive);
+          n : positive;
+          outBits : positive);
   port (
    clk : in std_logic;
    dshift : in std_logic;
@@ -171,12 +176,6 @@ architecture Behavioral of SyncAccel is
  signal xinc    : std_logic := '0';
  signal yinc    : std_logic := '0';
  signal clr_pos : std_logic;
- 
- signal dValShift       : std_logic;
- signal incr1Shift      : std_logic;
- signal incr2Shift      : std_logic;
- signal accelShift      : std_logic;
- signal accelCountShift : std_logic;
 
  signal accelAdd : std_logic := '0';
  signal accelClr : std_logic := '0';
@@ -200,54 +199,58 @@ begin
 
  dout <= xPosDout or yPosDout or accelSumDout;
  
- dValShift <= '1' when ((op = (opBase + opD)) and (dshift = '1')) else '0';
-
- dreg: Shift
-  generic map(synBits)
+ dreg: ShiftOp
+  generic map(opVal => opBase + opD,
+              opBits => opBits,
+              n => synBits)
   port map (
    clk => clk,
-   shift => dValShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => d);
 
- incr1Shift <= '1' when ((op = (opBase + opIncr1)) and (dshift = '1')) else '0';
-
- incr1reg: Shift
-  generic map(synBits)
+ incr1reg: ShiftOp
+  generic map(opVal => opBase + opIncr1,
+              opBits => opBits,
+              n => synBits)
   port map (
    clk => clk,
-   shift => incr1Shift,
+   shift => dshift,
+   op => op,
    din => din,
    data => incr1);
 
- incr2Shift <= '1' when ((op = (opBase + opIncr2)) and (dshift = '1')) else '0';
-
- incr2reg: Shift
-  generic map(synBits)
+ incr2reg: ShiftOp
+  generic map(opVal => opBase + opIncr2,
+              opBits => opBits,
+              n => synBits)
   port map (
    clk => clk,
-   shift => incr2Shift,
+   shift => dshift,
+   op => op,
    din => din,
    data => incr2);
 
- accelShift <= '1' when ((op = (opBase + opAccel)) and (dshift = '1')) else '0';
-
- accelreg: Shift
-  generic map(synBits)
+ accelreg: ShiftOp
+  generic map(opVal => opBase + opAccel,
+              opBits => opBits,
+              n => synBits)
   port map (
    clk => clk,
-   shift => accelShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => accel);
 
- accelCountShift <= '1' when ((op = (opBase + opAccelCount)) and
-                            (dshift = '1')) else '0';
-
- accelCountReg: Shift
-  generic map(n => countBits)
+ accelCountReg: ShiftOp
+  generic map(opVal => opBase + opAccelCount,
+              opBits => opBits,
+              n => countBits)
   port map (
    clk => clk,
-   shift => accelCountShift,
+   shift => dshift,
+   op => op,
    din => din,
    data => accelCount);
 
@@ -285,10 +288,11 @@ begin
    zero => open
   );
  
- accelSum_Out: ShiftOut
+ accelSum_Out: ShiftOutN
   generic map(opVal => opBase + F_Rd_Accel_Sum,
               opBits => opBits,
-              n => synBits)
+              n => synBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,
@@ -317,10 +321,11 @@ begin
    clr => clr_pos,
    counter => xpos);
 
- xPos_Shift : ShiftOut
+ xPos_Shift : ShiftOutN
   generic map(opVal => opBase + F_Rd_XPos,
               opBits => opBits,
-              n => posBits)
+              n => posBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,
@@ -339,10 +344,11 @@ begin
    clr => clr_pos,
    counter => ypos);
 
- yPos_Shift : ShiftOut
+ yPos_Shift : ShiftOutN
   generic map(opVal => opBase + F_Rd_YPos,
               opBits => opBits,
-              n => posBits)
+              n => posBits,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,

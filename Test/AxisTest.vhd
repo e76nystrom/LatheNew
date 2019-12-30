@@ -17,7 +17,8 @@ architecture behavior OF AxisTest is
            posBits : positive;
            countBits : positive;
            distBits : positive;
-           locBits : positive);
+           locBits : positive;
+           outBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -48,6 +49,7 @@ architecture behavior OF AxisTest is
  constant countBits : positive := 18;
  constant distBits : positive := 18;
  constant locBits : positive := 18;
+ constant outBits : positive := 32;
  
  signal clk : std_logic := '0';
  signal din : std_logic := '0';
@@ -78,7 +80,8 @@ begin
                posBits => posBits,
                countBits => countBits,
                distBits => distBits,
-               locBits => locBits)
+               locBits => locBits,
+               outBits => outBits)
   port map (
    clk => clk,
    din => din,

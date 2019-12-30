@@ -4,7 +4,7 @@
 -- 
 -- Create Date:    17:02:29 01/24/2015 
 -- Design Name: 
--- Module Name:    ShiftOut - Behavioral 
+-- Module Name:    ShiftOp - Behavioral 
 -- Project Name: 
 -- Target Devices: 
 -- Tool versions: 
@@ -29,47 +29,33 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity ShiftOut is
+entity ShiftOp is
  generic(opVal : unsigned;
          opBits : positive;
          n : positive);
- port (
+ port(
   clk : in std_logic;
-  dshift : in std_logic;
+  din : in std_logic;
   op : in unsigned (opBits-1 downto 0);
-  load : in std_logic;
-  data : in unsigned(n-1 downto 0);
-  dout : out std_logic := '0'
+  shift : in std_logic;
+  data : inout unsigned (n-1 downto 0) := (others => '0')
   );
-end ShiftOut;
+end ShiftOp;
 
-architecture Behavioral of ShiftOut is
+architecture Behavioral of ShiftOp is
 
- signal shiftSel : std_logic := '0';
- signal shiftReg : unsigned(n-1 downto 0) := (others => '0');
+ signal dataShift : std_logic;
 
 begin
 
- -- shiftSel <= '1' when op = opVal else '0';
- dout <= shiftReg(n-1) when shiftSel = '1' else '0';
-
- shiftout: process (clk)
+shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (op = opVal) then
-    shiftSel <= '1';
-   else
-    shiftSel <= '0';
-   end if;
-   if ((shiftSel and load) = '1') then
-    shiftReg <= data;
-   else 
-    if ((shiftSel and dShift) = '1') then
-     shiftReg <= shiftReg(n-2 downto 0) & shiftReg(n-1);
-    end if;
+   if ((op = opVal) and (shift = '1')) then
+    data <= data(n-2 downto 0) & din;
    end if;
   end if;
- end process shiftout;
+ end process shift_reg;
 
 end Behavioral;
 
