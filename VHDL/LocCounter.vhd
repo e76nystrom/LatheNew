@@ -92,7 +92,6 @@ architecture Behavioral of LocCounter is
  end Component;
 
  signal updStep : std_logic;
- signal locShift : std_logic;
  signal locVal : unsigned(locBits-1 downto 0); --location input
 
  signal locDOut : std_logic;

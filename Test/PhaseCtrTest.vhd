@@ -43,9 +43,10 @@ ARCHITECTURE behavior OF PhaseCtrTest IS
  
  component PhaseCounter
   generic (opBase : unsigned;
-          opBits : positive := 8;
-          phaseBits : positive := 16;
-          totalBits : positive := 32);
+           opBits : positive := 8;
+           phaseBits : positive := 16;
+           totalBits : positive := 32;
+           outBits : positive := 32);
  port (
   clk : in std_logic;
   din : in std_logic;
@@ -64,8 +65,9 @@ ARCHITECTURE behavior OF PhaseCtrTest IS
  
  constant opBase : unsigned := x"01";
  constant opBits : positive := 8;
- constant phaseBits : integer := 16;
- constant totalBits : integer := 16;
+ constant phaseBits : positive := 16;
+ constant totalBits : positive := 16;
+ constant outBits : positive := 32;
 
  --Inputs
  signal din : std_logic := '0';
@@ -88,23 +90,25 @@ begin
  -- Instantiate the Unit Under Test (UUT)
  phase_counter: PhaseCounter
   generic map (opBase => opBase,
-          opBits => opBits,
-          phaseBits => phaseBits,
-          totalBits => totalBits)
- port map (
-  clk => clk,
-  din => din,
-  dshift => dshift,
-  op => op,
-  copy => copy,
-  load => load,
-  init => init,
-  genSync => genSync,
-  ch => ch,
-  sync => sync,
-  dir => dir,
-  dout => dout,
-  syncOut => syncOut);
+               opBits => opBits,
+               phaseBits => phaseBits,
+               totalBits => totalBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   load => load,
+   init => init,
+   genSync => genSync,
+   ch => ch,
+   sync => sync,
+   dir => dir,
+   dout => dout,
+   syncOut => syncOut
+   );
 
  -- Clock process definitions
  clk_process :process

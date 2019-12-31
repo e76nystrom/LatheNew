@@ -14,7 +14,7 @@ architecture behavior OF LatheNewTest is
   port(
    sysClk : in std_logic;
 
-   -- led : out std_logic_vector(7 downto 0);
+   led : out std_logic_vector(7 downto 0);
    -- dbg : out std_logic_vector(7 downto 0);
    anode : out std_logic_vector(3 downto 0);
    seg : out std_logic_vector(6 downto 0);
@@ -45,7 +45,7 @@ architecture behavior OF LatheNewTest is
  constant locBits : positive := 18;
 
 -- signal sysClk : std_logic := '0';
--- signal led : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
+ signal led : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
 -- signal dbg : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
  signal anode : std_logic_vector(3 downto 0) := (3 downto 0 => '0');
  signal seg : std_logic_vector(6 downto 0) := (6 downto 0 => '0');
@@ -70,10 +70,10 @@ begin
    -- sysClk => sysClk,
    sysClk => clk,
    
-   -- led => led,
+   led => led,
    -- dbg => dbg,
-   -- anode => anode,
-   -- seg => seg,
+   anode => anode,
+   seg => seg,
 
    dclk => dclk,
    dout => dout,

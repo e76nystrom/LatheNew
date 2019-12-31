@@ -44,8 +44,6 @@ end ShiftOp;
 
 architecture Behavioral of ShiftOp is
 
- signal dataShift : std_logic;
-
 begin
 
 shift_reg: process (clk)

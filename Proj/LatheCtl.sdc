@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition"
 
-## DATE    "Fri Dec 27 12:40:41 2019"
+## DATE    "Mon Dec 30 16:51:22 2019"
 
 ##
 ## DEVICE  "EP4CE22F17C6"
@@ -81,7 +81,34 @@ set_input_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component
 # Set Output Delay
 #**************************************************************
 
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {anode[0]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {anode[1]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {anode[2]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {anode[3]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[0]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[1]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[2]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[3]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[4]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[5]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[6]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dbg[7]}]
 set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {dout}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[0]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[1]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[2]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[3]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[4]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[5]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[6]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {led[7]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[0]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[1]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[2]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[3]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[4]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[5]}]
+set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {seg[6]}]
 set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {xDir}]
 set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {xDoneInt}]
 set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}]  2.000 [get_ports {xStep}]

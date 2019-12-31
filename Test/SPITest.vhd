@@ -50,7 +50,8 @@ ARCHITECTURE behavior OF SPITest IS
    copy : out std_logic;
    shift : out std_logic;
    load : out std_logic;
-   header : inout std_logic
+   header : inout std_logic;
+   spiActive : out std_logic
    --info : out std_logic_vector(2 downto 0) --state info
    );
  end component;
@@ -98,6 +99,7 @@ ARCHITECTURE behavior OF SPITest IS
  signal shift : std_logic;
  signal load : std_logic;
  signal header : std_logic;
+ signal spiActive : std_logic;
  --signal info : std_logic_vector(2 downto 0);
  signal clkena1 : std_logic;
 
@@ -147,7 +149,8 @@ BEGIN
   copy => copy,
   shift => shift,
   load => load,
-  header => header
+  header => header,
+  spiActive => spiActive
   --info => info
   );
 

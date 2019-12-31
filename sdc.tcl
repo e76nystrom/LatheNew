@@ -7,8 +7,8 @@ derive_pll_clocks -create_base_clocks
 update_timing_netlist
 derive_clock_uncertainty
 update_timing_netlist
-set_input_delay -clock { sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0] } 2 [all_inputs]
-set_output_delay -clock { sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0] } 2 [all_outputs]
+set_input_delay -add_delay -clock { sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0] } 2 [all_inputs]
+set_output_delay -add_delay -clock { sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0] } 2 [all_outputs]
 update_timing_netlist
 report_ucp -panel_name "Unconstrained Paths"
 write_sdc -expand "LatheCtl.sdc"

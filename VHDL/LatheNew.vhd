@@ -8,8 +8,8 @@ entity LatheNew is
  port(
   sysClk : in std_logic;
   
-  -- led : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
-  -- dbg : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
+  led : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
+  dbg : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
   anode : out std_logic_vector(3 downto 0) := (3 downto 0 => '1');
   seg : out std_logic_vector(6 downto 0) := (6 downto 0 => '1');
 
@@ -374,8 +374,48 @@ end Component;
 
  signal zDelayStep : std_logic;
  signal xDelayStep : std_logic;
+
+ signal test1 : std_logic;
+ signal test2 : std_logic;
  
 begin
+
+ led(7) <= div(div_range);
+ led(6) <= div(div_range-1);
+ led(5) <= div(div_range-2);
+ led(4) <= div(div_range-3);
+ led(3) <= op(3);
+ led(2) <= clkCtlReg(2);
+ led(1) <= clkCtlReg(1);
+ led(0) <= clkCtlReg(0);
+
+ testOut1 : PulseGen
+  generic map (pulseWidth => 25)
+  port map (
+   clk => clk,
+   pulseIn => ch,
+   PulseOut => test1
+   );
+
+-- test 2 output pulse
+
+ testOut2 : PulseGen
+  generic map (pulseWidth => 25)
+  port map (
+   clk => clk,
+   pulseIn => zCh,
+   pulseOut => test2
+   );
+
+ dbg(0) <= header;
+ dbg(1) <= test1;
+ dbg(2) <= test2;
+ dbg(3) <= div(div_range-3);
+
+ dbg(4) <= div(div_range-4);
+ dbg(5) <= div(div_range-5);
+ dbg(6) <= div(div_range-6);
+ dbg(7) <= div(div_range-7);
 
  -- system clock
 
@@ -455,12 +495,12 @@ begin
  internalDout <= zDOut or xDOut or encDOut or phaseDOut;
  dout <= internalDout;
 
- -- dshift <= spiShift when spiActive = '1' else dspShift;
- -- op <= spiOp when spiActive = '1' else dspOp;
- -- copy <= spiCopy when spiActive = '1' else dspCopy;
- dshift <= spiShift;
- op <= spiOp;
- copy <= spiCopy;
+ dshift <= spiShift when spiActive = '1' else dspShift;
+ op <= spiOp when spiActive = '1' else dspOp;
+ copy <= spiCopy when spiActive = '1' else dspCopy;
+ -- dshift <= spiShift;
+ -- op <= spiOp;
+ -- copy <= spiCopy;
 
  spi_int : SPI
   generic map (opBits => opBits)

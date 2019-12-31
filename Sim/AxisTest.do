@@ -23,7 +23,6 @@ add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/sum
 add wave -noupdate /axistest/ch
 add wave -noupdate /axistest/uut/step
 add wave -noupdate -radix decimal /axistest/uut/loc
-add wave -noupdate /axistest/uut/AxisLocCounter/locShift
 add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/axistest/uut/AxisLocCounter/locShift} /axistest/uut/AxisLocCounter/dshift
 add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/axistest/uut/AxisLocCounter/locShift} -radix hexadecimal /axistest/uut/AxisLocCounter/op
 TreeUpdate [SetDefaultTree]
@@ -43,4 +42,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {52500 ns}
+WaveRestoreZoom {0 ps} {84 us}

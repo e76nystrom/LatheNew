@@ -47,7 +47,8 @@ ARCHITECTURE behavior OF SyncAccelTest IS
            opBits : positive;
            synBits : positive;
            posBits : positive;
-           countBits : positive);
+           countBits : positive;
+           outBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -69,7 +70,8 @@ ARCHITECTURE behavior OF SyncAccelTest IS
  component DistCounter is
   generic (opBase : unsigned;
            opBits : positive;
-           distBits : positive);
+           distBits : positive;
+           outBits :  positive);
   Port (
    clk : in  std_logic;
    din : in std_logic;
@@ -85,28 +87,12 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    );
  end Component;
 
- -- component DistCounter
- --  generic (opBase : unsigned;
- --           opBits : positive;
- --           distBits : positive);
- --  port(
- --   clk : in std_logic;
- --   accelFlag : in std_logic;
- --   step : in std_logic;
- --   init : in std_logic;
- --   din : in std_logic;
- --   dshift : in std_logic;
- --   op : in unsigned(opBits-1 downto 0);
- --   decel : inout std_logic;
- --   distZero : out std_logic
- --   );
- -- end component;
-
  constant opBits : positive := 8;
  constant synBits : positive := 32;
  constant posBits : positive := 18;
  constant distBits : positive := 18;
  constant countBits : positive := 18;
+ constant outBits : positive := 32;
 
  --Inputs
  -- signal clk : std_logic := '0';
@@ -144,82 +130,48 @@ BEGIN
  syncEna <= ena and not distZero;
 
  -- Instantiate the Unit Under Test (UUT)
-  uut : SyncAccel
+ uut : SyncAccel
   generic map (opBase => F_ZAxis_Base,
-          opBits => opBits,
-          synBits => synBits,
-          posBits => posBits,
-          countBits => countBits)
+               opBits => opBits,
+               synBits => synBits,
+               posBits => posBits,
+               countBits => countBits,
+               outBits => outBits)
   port map (
-  clk => clk,
-  din => din,
-  dshift => dshift,
-  op => op,
-  copy => copy,
-  load => load,
-  init => init,
-  ena => syncEna,
-  decel => decel,
-  ch => ch,
-  dir => dir,
-  dout => dout,
-  synStep => synStp,
-  accelFlag => accelFlag
-  );
- -- uut: SyncAccel
- -- generic map(opBase => F_ZAxis_Base,
- --              opBits => opBits,
- --              synBits => synBits,
- --              posBits => posBits,
- --              countBits => countBits)
- --  port map (
- --   clk => clk,
- --   init => init,
- --   ena => syncEna,
- --   decel => decel,
- --   ch => ch,
- --   dir => dir,
- --   dir_ch => dir_ch,
- --   din => din,
- --   dshift => dshift,
- --   op => op,
- --   synstp => synstp,
- --   accelFlag => accelFlag
- --   );
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   load => load,
+   init => init,
+   ena => syncEna,
+   decel => decel,
+   ch => ch,
+   dir => dir,
+   dout => dout,
+   synStep => synStp,
+   accelFlag => accelFlag
+   );
 
  AxisDistCounter : DistCounter
   generic map (opBase => F_ZAxis_Base + F_Dist_Base,
-          opBits => opBits,
-          distBits => distBits)
+               opBits => opBits,
+               distBits => distBits,
+               outBits => outBits)
   port map (
-  clk => clk,
-  din => din,
-  dshift => dshift,
-  op => op,
-  copy => copy,
-  init => init,
-  step => synStp,
-  accelFlag => accelFlag,
-  dout => dout,
-  decel => decel,
-  distZero => distZero
-  );
-
- -- DistCounter
- --  generic map (opBase => F_ZAxis_Base + F_Ld_Axis_Dist,
- --               opBits => opBits,
- --               distBits => distBits)
- --  port map (
- --  clk => clk,
- --  accelFlag => accelFlag,
- --  step => synstp,
- --  init => init,
- --  din => din,
- --  dshift => dshift,
- --  op => op,
- --  decel => decel,
- --  distZero => distZero
- --  );
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   init => init,
+   step => synStp,
+   accelFlag => accelFlag,
+   dout => dout,
+   decel => decel,
+   distZero => distZero
+   );
 
  -- Clock process definitions
  clk_process :process
@@ -233,16 +185,16 @@ BEGIN
  -- Stimulus process
  stim_proc: process
 
- variable count : integer;
+  variable count : integer;
 
- variable dx : integer;
- variable dy : integer;
- variable d  : integer;
- variable incr1 : integer;
- variable incr2 : integer;
- variable accelVal : integer;
- variable accelCount : integer;
- variable dist : integer;
+  variable dx : integer;
+  variable dy : integer;
+  variable d  : integer;
+  variable incr1 : integer;
+  variable incr2 : integer;
+  variable accelVal : integer;
+  variable accelCount : integer;
+  variable dist : integer;
 
  begin		
   -- hold reset state for 100 ns.

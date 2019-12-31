@@ -13,7 +13,8 @@ architecture behavior OF ShiftOutNTest is
  component ShiftOutN is
   generic(opVal : unsigned;
           opBits : positive;
-          n : positive);
+          n : positive;
+          outBits : positive);
   port (
    clk : in std_logic;
    dshift : in std_logic;
@@ -27,6 +28,7 @@ architecture behavior OF ShiftOutNTest is
  constant opVal : unsigned := x"05";
  constant opBits : positive := 8;
  constant n : positive := 8;
+ constant outBits : positive := 32;
 
  signal clk : std_logic := '0';
  signal dshift : std_logic := '0';
@@ -42,7 +44,8 @@ begin
  uut : ShiftOutN
   generic map(opVal => opVal,
               opBits => opBits,
-              n => n)
+              n => n,
+              outBits => outBits)
   port map (
    clk => clk,
    dshift => dshift,
@@ -87,6 +90,7 @@ begin
   -- insert stimulus here
 
   data <= x"aa";
+  delay(1);
   op <= opVal;
   load <= '1';
   delay(1);
@@ -98,6 +102,8 @@ begin
    wait until (clk = '0');
   end loop;
   dshift <= '0';
+  delay(1);o
+  op <= x"00";
 
   wait;
  end process;
