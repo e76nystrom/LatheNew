@@ -34,15 +34,6 @@ end LatheNew;
 
 architecture Behavioral of LatheNew is
 
- -- component SystemClk is
- --  port(
- --   areset : in std_logic;
- --   inclk0 : in std_logic;
- --   c0 : out std_logic;
- --   locked : out std_logic
- --   );
- -- end component;
-
 component Clock is
  port(
   clockIn : in std_logic;
@@ -179,8 +170,8 @@ end Component;
    clk : in std_logic;
    din : in std_logic;
    dshift : in std_logic;
-   load : in std_logic;
    op : in unsigned(opBits-1 downto 0);
+   load : in std_logic;
    ena : in std_logic;
    pulseOut : out std_logic
    );
@@ -190,28 +181,32 @@ end Component;
   generic(opBase : unsigned;
           opBits : positive;
           freqBits : positive;
-          freqCountBits: positive);
+          countBits: positive);
   port (
    clk : in std_logic;
    din : in std_logic;
    dshift : in std_logic;
-   load : in std_logic;
    op : in unsigned(opBits-1 downto 0);
+   load : in std_logic;
+   ena : in std_logic;
    pulseOut : out std_logic
    );
  end Component;
 
- component DataSel8_1 is
-  port ( sel : in unsigned (2 downto 0);
-         d0 : in std_logic;
-         d1 : in std_logic;
-         d2 : in std_logic;
-         d3 : in std_logic;
-         d4 : in std_logic;
-         d5 : in std_logic;
-         d6 : in std_logic;
-         d7 : in std_logic;
-         dout : out std_logic);
+ component DataSelSyn8_1 is
+  port (
+   clk : in std_logic;
+   sel : in unsigned (2 downto 0);
+   d0 : in std_logic;
+   d1 : in std_logic;
+   d2 : in std_logic;
+   d3 : in std_logic;
+   d4 : in std_logic;
+   d5 : in std_logic;
+   d6 : in std_logic;
+   d7 : in std_logic;
+   dout : out std_logic
+   );
  end Component;
 
  component Axis is
@@ -222,7 +217,8 @@ end Component;
            countBits : positive;
            distBits : positive;
            locBits : positive;
-           outBits : positive);
+           outBits : positive;
+           dbgBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -236,6 +232,7 @@ end Component;
    ch : in std_logic;
    encDir : in std_logic;
    sync : in std_logic;
+   dbgOut : out unsigned(dbgBits-1 downto 0);
    initOut : out std_logic;
    enaOut : out std_logic;
    updLocOut : out std_logic;
@@ -255,8 +252,8 @@ end Component;
 
  -- clock divider
 
- constant div_range : integer := 26;
- signal div : unsigned (div_range downto 0);
+ constant divBits : integer := 26;
+ signal div : unsigned (divBits downto 0) := (others => '0');
  alias digSel: unsigned(1 downto 0) is div(19 downto 18);
 
  constant synBits : positive := 32;
@@ -264,6 +261,8 @@ end Component;
  constant countBits : positive := 18;
  constant distBits : positive := 18;
  constant locBits : positive := 18;
+
+ constant dbgBits : positive := 4;
 
  constant outBits : positive := 32;
 
@@ -293,10 +292,11 @@ end Component;
 
  -- clock control register
 
- constant clkCtlSize : integer := 6;
+ constant clkCtlSize : integer := 7;
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
  alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
+ alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
  -- sync control register
 
@@ -377,23 +377,33 @@ end Component;
 
  signal test1 : std_logic;
  signal test2 : std_logic;
- 
+
+ signal zDbg : unsigned(3 downto 0);
+ signal xDbg : unsigned(3 downto 0);
+
+ signal zFreqGenEna : std_logic;
+ signal xFreqGenEna : std_logic;
+
 begin
 
- led(7) <= div(div_range);
- led(6) <= div(div_range-1);
- led(5) <= div(div_range-2);
- led(4) <= div(div_range-3);
+ led(7) <= div(divBits);
+ led(6) <= div(divBits-1);
+ led(5) <= div(divBits-2);
+ led(4) <= div(divBits-3);
  led(3) <= op(3);
  led(2) <= clkCtlReg(2);
  led(1) <= clkCtlReg(1);
  led(0) <= clkCtlReg(0);
 
+ dspData(3 downto 0) <= zDbg;
+ dspData(7 downto 4) <= xDbg;
+ dspData(15 downto 8) <= op;
+
  testOut1 : PulseGen
   generic map (pulseWidth => 25)
   port map (
    clk => clk,
-   pulseIn => ch,
+   pulseIn => copy,
    PulseOut => test1
    );
 
@@ -407,15 +417,17 @@ begin
    pulseOut => test2
    );
 
- dbg(0) <= header;
+ dbg(0) <= spiActive;
  dbg(1) <= test1;
  dbg(2) <= test2;
- dbg(3) <= div(div_range-3);
+ dbg(3) <= div(divBits-3);
 
- dbg(4) <= div(div_range-4);
- dbg(5) <= div(div_range-5);
- dbg(6) <= div(div_range-6);
- dbg(7) <= div(div_range-7);
+ dbg(7 downto 4) <= std_logic_vector(zDbg);
+
+ -- dbg(4) <= div(divBits-4);
+ -- dbg(5) <= div(divBits-5);
+ -- dbg(6) <= div(divBits-6);
+ -- dbg(7) <= div(divBits-7);
 
  -- system clock
 
@@ -533,7 +545,8 @@ begin
    dspCopy => dspCopy,
    dspShift => dspShift,
    dspOp => dspOp,
-   dspreg => dspData
+   -- dspreg => dspData
+   dspReg => open
    );
 
  sync_reg: CtlReg
@@ -593,6 +606,8 @@ begin
    dout => phaseDOut,
    syncOut => sync);
 
+ zFreqGenEna <= '1' when ((zFreqSel = "001") and (zExtEna = '1')) else '0';
+
  zFreq_Gen : FreqGen
   generic map(opVal => F_Ld_Z_Freq,
               opBits => opBits,
@@ -601,11 +616,13 @@ begin
    clk => clk,
    din => din,
    dshift => dshift,
-   load => load,
    op => op,
-   ena => zExtEna,
+   load => load,
+   ena => zFreqGenEna,
    pulseOut => zFreqGen
    );
+
+ xFreqGenEna <= '1' when ((xFreqSel = "001") and (xExtEna = '1')) else '0';
 
  xFreq_Gen : FreqGen
   generic map(opVal => F_Ld_X_Freq,
@@ -615,9 +632,9 @@ begin
    clk => clk,
    din => din,
    dshift => dshift,
-   load => load,
    op => op,
-   ena => xExtEna,
+   load => load,
+   ena => xFreqGenEna,
    pulseOut => xFreqGen
    );
 
@@ -625,13 +642,14 @@ begin
   generic map(opBase => F_Dbg_Freq_Base,
               opBits => opBits,
               freqBits => freqBits,
-              freqCountBits=> freqCountBits)
+              countBits=> freqCountBits)
   port map (
    clk => clk,
    din => din,
    dshift => dshift,
-   load => load,
    op => op,
+   load => load,
+   ena => clkDbgFreqEna,
    pulseOut => dbgFreqGen
    );
 
@@ -643,29 +661,33 @@ begin
   end if;
  end process;
  
- zCh_Data : DataSel8_1
+ zCh_Data : DataSelSyn8_1
   port map (
+   clk => clk,
    sel => zFreqSel,
-   d0 => zFreqGen,
-   d1 => ch,
-   d2 => intClk,
-   d3 => xDelayStep,
-   d4 => xFreqGen,
-   d5 => '0',
+   d0 => '0',
+   d1 => zFreqGen,
+   d2 => ch,
+   d3 => intClk,
+   d4 => xDelayStep,
+   d5 => xFreqGen,
    d6 => '0',
    d7 => dbgFreqGen,
    dout => zCh
    );
 
  z_Axis : Axis
-  generic map (opBase => F_ZAxis_Base,
-               opBits => opBits,
-               synBits => synBits,
-               posBits => posBits,
-               countBits => countBits,
-               distBits => distBits,
-               locBits => locBits,
-               outBits => outBits)
+  generic map (
+   opBase => F_ZAxis_Base,
+   opBits => opBits,
+   synBits => synBits,
+   posBits => posBits,
+   countBits => countBits,
+   distBits => distBits,
+   locBits => locBits,
+   outBits => outBits,
+   dbgBits => dbgBits
+   )
   port map (
    clk => clk,
    din => din,
@@ -679,6 +701,7 @@ begin
    ch => zCh,
    encDir => direction,
    sync => sync,
+   dbgOut => zDbg,
    initOut => zExtInit,
    enaOut => zExtEna,
    updLocOut => zUpdLoc,
@@ -698,29 +721,32 @@ begin
 
  zDir <= zAxisDir xor cfgZDir;
  
- xCh_Data : DataSel8_1
+ xCh_Data : DataSelSyn8_1
   port map (
+   clk => clk,
    sel => xFreqSel,
-   d0 => xFreqGen,
-   d1 => ch,
-   d2 => intClk,
-   d3 => zDelayStep,
-   d4 => zFreqGen,
-   d5 => '0',
+   d0 => '0',
+   d1 => xFreqGen,
+   d2 => ch,
+   d3 => intClk,
+   d4 => zDelayStep,
+   d5 => zFreqGen,
    d6 => '0',
    d7 => dbgFreqGen,
-   dout => xCh)
-  ;
+   dout => xCh);
 
  x_Axis : Axis
-  generic map (opBase => F_XAxis_Base,
-               opBits => opBits,
-               synBits => synBits,
-               posBits => posBits,
-               countBits => countBits,
-               distBits => distBits,
-               locBits => locBits,
-               outBits => outBits)
+  generic map (
+   opBase => F_XAxis_Base,
+   opBits => opBits,
+   synBits => synBits,
+   posBits => posBits,
+   countBits => countBits,
+   distBits => distBits,
+   locBits => locBits,
+   outBits => outBits,
+   dbgBits => dbgBits
+   )
   port map (
    clk => clk,
    din => din,
@@ -734,6 +760,7 @@ begin
    ch => xCh,
    encDir => direction,
    sync => sync,
+   dbgOut => xDbg,
    initOut => xExtInit,
    enaOut => xExtEna,
    updLocOut => xUpdLoc,

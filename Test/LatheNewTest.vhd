@@ -44,6 +44,9 @@ architecture behavior OF LatheNewTest is
  constant distBits : positive := 18;
  constant locBits : positive := 18;
 
+ constant freqBits : positive := 16;
+ constant freqCountBits : positive := 16;
+
 -- signal sysClk : std_logic := '0';
  signal led : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
 -- signal dbg : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
@@ -210,6 +213,9 @@ begin
 
   variable ctl : integer;
 
+  variable freq : integer;
+  variable dbgCount : integer;
+
 --(++ axisCtl
 -- axis control register
 
@@ -238,10 +244,11 @@ begin
 
   -- clock control register
 
-  constant clkCtlSize : integer := 6;
+  constant clkCtlSize : integer := 7;
   variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
   alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
   alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
+ alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
   -- sync control register
 
@@ -312,12 +319,6 @@ begin
   loadParm(F_ZAxis_Base + F_Loc_Base + F_Ld_Axis_Loc);
   loadValue(loc, locBits);
 
-  clkCtlReg := (others => '0');
-  zFreqSel := to_unsigned(1, 3);
-  loadParm(F_Ld_Clk_Ctl);
-  ctl := to_integer(clkCtlReg);
-  loadValue(ctl, clkCtlSize);
-
   ctlInit := '1';
   ctlSetLoc := '1';
   loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
@@ -333,8 +334,47 @@ begin
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
 
-  delayQuad(1000);
+  freq := 10-1;
+  loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Freq);
+  loadValue(freq, freqBits);
 
+  dbgCount := 500;
+  loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Count);
+  loadValue(dbgCount ,freqCountBits);
+
+  clkCtlReg := (others => '0');
+  zFreqSel := to_unsigned(7, 3);
+  clkDbgFreqEna := '1';
+  
+  loadParm(F_Ld_Clk_Ctl);
+  ctl := to_integer(clkCtlReg);
+  loadValue(ctl, clkCtlSize);
+
+  --delayQuad(500);
+  delay(1000);
+
+  clkCtlReg := (others => '0');
+  zFreqSel := to_unsigned(7, 3);
+  loadParm(F_Ld_Clk_Ctl);
+  ctl := to_integer(clkCtlReg);
+  loadValue(ctl, clkCtlSize);
+
+  delay(10);
+
+  axisCtlReg := (others => '0');
+  ctlInit := '1';
+  ctlSetLoc := '1';
+  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  ctl := to_integer(axisCtlReg);
+  loadValue(ctl, axisCtlSize);
+
+  axisCtlReg := (others => '0');
+  ctlStart := '1';
+  ctlDir := '1';
+  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  ctl := to_integer(axisCtlReg);
+  loadValue(ctl, axisCtlSize);
+  
   wait;
  end process;
 

@@ -102,7 +102,7 @@ begin
    wait until (clk = '0');
   end loop;
   dshift <= '0';
-  delay(1);o
+  delay(1);
   op <= x"00";
 
   wait;

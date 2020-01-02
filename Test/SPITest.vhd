@@ -215,7 +215,9 @@ BEGIN
    delay(6);
   end loop;
 
-  delay(10);
+  dsel <= '1';
+  delay(20);
+  dsel <= '0';
 
   for i in 0 to 31 loop
    dclk <= '0';

@@ -5,14 +5,17 @@ USE ieee.numeric_std.ALL;
 use work.RegDef.ALL;
 
 entity Axis is
- generic (opBase : unsigned;
-          opBits : positive := 8;
-          synBits : positive;
-          posBits : positive;
-          countBits : positive;
-          distBits : positive := 32;
-          locBits : positive;
-          outBits : positive);
+ generic (
+  opBase : unsigned;
+  opBits : positive := 8;
+  synBits : positive;
+  posBits : positive;
+  countBits : positive;
+  distBits : positive := 32;
+  locBits : positive;
+  outBits : positive;
+  dbgBits : positive := 4
+  );
  port (
   clk : in std_logic;
   din : in std_logic;
@@ -26,6 +29,7 @@ entity Axis is
   ch : in std_logic;
   encDir : in std_logic;
   sync : in std_logic;
+  dbgOut : out unsigned (dbgBits-1 downto 0) := (others => '0');
   initOut : out std_logic := '0';
   enaOut : out std_logic := '0';
   updLocOut : out std_logic := '0';
@@ -201,6 +205,11 @@ type run_fsm is (idle, loadReg, synWait, run, done);
 
 begin
 
+ dbgOUt(0) <= runEna;
+ dbgOut(1) <= distDecel;
+ dbgOut(2) <= distZero;
+ dbgOut(3) <= syncAccelFlag;
+
  AxCtlReg : CtlReg
   generic map(opVal => opBase + F_Ld_Axis_Ctl,
               opb => opBits,
@@ -311,54 +320,55 @@ begin
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   if (ctlInit = '1') then                 --if time to set new locaton
+   if (ctlInit = '1') then              --if time to set new locaton
     runState <= idle;                  --clear state
     doneInt <= '0';                    --clear interrupt
     axisEna <= '0';                     --clear run flag
     axisUpdLoc <= '0';
    else                                 --if normal operation
-    case runState is                   --check state
+    case runState is                    --check state
      when idle =>                       --idle state
-      if (ctlStart = '1') then             --if start requested
-       runState <= loadReg;               --advance to load state
+      if (ctlStart = '1') then          --if start requested
+       runState <= loadReg;             --advance to load state
        axisInit <= '1';                --set flag to load accel and sync
       end if;
 
-     when loadReg =>                  --load state
-      axisInit <= '0';                 --clear load flag
-      if (ctlWaitSync = '1') then          --if wating for sync
-       runState <= synWait;            --advance to wait for sync state
+     when loadReg =>                    --load state
+      axisInit <= '0';                  --clear load flag
+      if (ctlWaitSync = '1') then       --if wating for sync
+       runState <= synWait;             --advance to wait for sync state
       else                              --if not synchronous move
-       runState <= run;                --advance to run state
+       runState <= run;                 --advance to run state
        axisEna <= '1';                  --set run flag
-       if (ctlBacklash = '0') then         --if not a backlash move
-        axisUpdLoc <= '1';                 --enable location update
+       if (ctlBacklash = '0') then      --if not a backlash move
+        axisUpdLoc <= '1';              --enable location update
        end if;
       end if;
 
      when synWait =>                    --sync wait state
-      if (ctlStart = '0') then             --if start flag cleared
-       runState <= idle;               --return to idle
+
+      if (ctlStart = '0') then          --if start flag cleared
+       runState <= idle;                --return to idle
       else                              --if start flag set
        if (sync = '1') then             --if time to sync
-        runState <= run;               --advance to run state
+        runState <= run;                --advance to run state
         axisEna <= '1';                 --set run flag
-        axisUpdLoc <= '1';                 --enable location update
+        axisUpdLoc <= '1';              --enable location update
        end if;
       end if;
       
      when run =>                        --run state
       if ((distZero = '1') or (ctlStart = '0')) then --if distance counter zero
-       runState <= done;              --advance to done state
-       doneInt <= '1';                --set done interrupt
-       axisUpdLoc <= '0';                 --stop location updates
-       axisEna <= '0';                 --clear run flag
+       runState <= done;                --advance to done state
+       doneInt <= '1';                  --set done interrupt
+       axisUpdLoc <= '0';               --stop location updates
+       axisEna <= '0';                  --clear run flag
       end if;
 
      when done =>                       --done state
-      if (ctlStart = '0') then             --wait for start flag to clear
-       doneInt <= '0';                 --clear done intterrupt
-       runState <= idle;               --to return to idle state
+      if (ctlStart = '0') then          --wait for start flag to clear
+       doneInt <= '0';                  --clear done intterrupt
+       runState <= idle;                --to return to idle state
       end if;
 
      when others => null;               --all other states

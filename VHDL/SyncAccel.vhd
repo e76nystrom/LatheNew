@@ -175,7 +175,7 @@ architecture Behavioral of SyncAccel is
 
  signal xinc    : std_logic := '0';
  signal yinc    : std_logic := '0';
- signal clr_pos : std_logic;
+ signal clr_pos : std_logic := '0';
 
  signal accelAdd : std_logic := '0';
  signal accelClr : std_logic := '0';
@@ -184,7 +184,7 @@ architecture Behavioral of SyncAccel is
  signal accelCountDec : std_logic := '0';
  signal accelCountPreset : std_logic := '0';
  signal accelCounter : unsigned(countBits-1 downto 0);
- signal accelCounterZero : std_logic ;
+ signal accelCtrZero : std_logic ;
 
  signal xpos : unsigned(posBits-1 downto 0);
  signal ypos : unsigned(posBits-1 downto 0);
@@ -193,11 +193,13 @@ architecture Behavioral of SyncAccel is
 
  signal xPosDout : std_logic;
  signal yPosDout : std_logic;
+ signal sumDout : std_logic;
  signal accelSumDout : std_logic;
+ signal accelCtrDout : std_logic;
 
 begin
 
- dout <= xPosDout or yPosDout or accelSumDout;
+ dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout;
  
  dreg: ShiftOp
   generic map(opVal => opBase + opD,
@@ -274,6 +276,20 @@ begin
    a => aval,
    sum => sum);
 
+ sum_out : ShiftOutN
+  generic map(opVal => opBase + F_Rd_Sum,
+              opBits => opBits,
+              n => synBits,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   load => copy,
+   data => sum,
+   dout => sumDout
+   );
+
  accelAdd <= not decelActive;
 
  accelAccum: Accumulator
@@ -310,7 +326,21 @@ begin
    load => accelCountPreset,
    preset => accelCount,
    counter => accelCounter,
-   zero => accelCounterZero);
+   zero => accelCtrZero);
+
+ accelCtr_out : ShiftOutN
+  generic map(opVal => opBase + F_Rd_Accel_Ctr,
+              opBits => opBits,
+              n => countBits,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   load => copy,
+   data => accelCounter,
+   dout => accelCtrDout
+   );
 
  xposreg: UpDownClrCtr
   generic map(n => posBits)
@@ -358,7 +388,7 @@ begin
    dout => yPosDout
    );
 
- accelFlag <= '1' when decelActive = '0' and accelCounterZero = '0' else '0';
+ accelFlag <= '1' when decelActive = '0' and accelCtrZero = '0' else '0';
 
  syn_process: process(clk)
  begin
@@ -453,7 +483,7 @@ begin
       xinc <= '0';
       yinc <= '0';
       mux_sel <= selAccel;
-      if (accelCounterZero = '0') then  --if accel active
+      if (accelCtrZero = '0') then      --if accel active
        accelUpdate <= '1';
        accelCountDec <= '1';
       end if;

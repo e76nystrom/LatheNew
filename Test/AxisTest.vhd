@@ -11,14 +11,16 @@ end AxisTest;
 architecture behavior OF AxisTest is
 
  component Axis is
-  generic (opBase : unsigned;
-           opBits : positive;
-           synBits : positive;
-           posBits : positive;
-           countBits : positive;
-           distBits : positive;
-           locBits : positive;
-           outBits : positive);
+  generic (
+   opBase : unsigned;
+   opBits : positive;
+   synBits : positive;
+   posBits : positive;
+   countBits : positive;
+   distBits : positive;
+   locBits : positive;
+   outBits : positive;
+   dbgBits : positive);
   port (
    clk : in std_logic;
    din : in std_logic;
@@ -32,6 +34,7 @@ architecture behavior OF AxisTest is
    ch : in std_logic;
    encDir : in std_logic;
    sync : in std_logic;
+   dbgOut : out unsigned (dbgBits-1 downto 0);
    initOut : out std_logic;
    enaOut : out std_logic;
    updLocOut : out std_logic;
@@ -50,6 +53,7 @@ architecture behavior OF AxisTest is
  constant distBits : positive := 18;
  constant locBits : positive := 18;
  constant outBits : positive := 32;
+ constant dbgBits : positive := 4;
  
  signal clk : std_logic := '0';
  signal din : std_logic := '0';
@@ -63,6 +67,7 @@ architecture behavior OF AxisTest is
  signal ch : std_logic := '0';
  signal encDir : std_logic := '1';
  signal sync : std_logic := '0';
+ signal dbgOut : unsigned (dbgBits-1 downto 0) := (others => '0');
  signal initOut : std_logic := '0';
  signal enaOut : std_logic := '0';
  signal updLocOut : std_logic := '0';
@@ -74,14 +79,17 @@ architecture behavior OF AxisTest is
 begin
 
  uut : Axis
-  generic map (opBase => opBase,
-               opBits => opBits,
-               synBits => synBits,
-               posBits => posBits,
-               countBits => countBits,
-               distBits => distBits,
-               locBits => locBits,
-               outBits => outBits)
+  generic map (
+   opBase => opBase,
+   opBits => opBits,
+   synBits => synBits,
+   posBits => posBits,
+   countBits => countBits,
+   distBits => distBits,
+   locBits => locBits,
+   outBits => outBits,
+   dbgBits => dbgBits
+   )
   port map (
    clk => clk,
    din => din,
@@ -95,6 +103,7 @@ begin
    ch => ch,
    encDir => encDir,
    sync => sync,
+   dbgOut => dbgOut,
    initOut => initOut,
    enaOut => enaOut,
    updLocOut => updLocOut,

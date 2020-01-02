@@ -56,7 +56,7 @@ architecture Behavioral of SPI is
    clkena : out std_logic);
  end component;
 
- type spi_fsm is (start, idle, read_hdr, chk_count, upd_count,
+ type spi_fsm is (start, idle, read_hdr, chk_count, upd_count, copy_data,
                   active, dclk_wait, load_reg);
  signal state : spi_fsm := start;
 
@@ -66,8 +66,9 @@ architecture Behavioral of SPI is
  signal clkena : std_logic;
  constant n : positive := 4;
  signal dseldly : std_logic_vector(n-1 downto 0) := (others => '1');
- signal dselEna : std_logic;
- signal dselDis : std_logic;
+ signal dselEna : std_logic := '0';
+ signal dselDis : std_logic := '0';
+ signal msgData : std_logic := '0';
 
  --function convert(a: spi_fsm) return std_logic_vector is
  --begin
@@ -105,7 +106,7 @@ begin
    dseldly <= dseldly(n-2 downto 0) & dsel;
    case state is
     when start =>
-     if (dsel = '1') then
+     if (dselDis = '1') then
       op <= (opBits-1 downto 0 => '0');
       state <= idle;
      end if;
@@ -117,6 +118,7 @@ begin
      if (dselEna = '1') then
       header <= '1';
       spiActive <= '1';
+      msgData <= '0';
       opReg <= (opBits-1 downto 0 => '0');
       count <= "1000";
       state <= read_hdr;
@@ -142,19 +144,26 @@ begin
      if (count = "0000") then
       op <= opReg;
       header <= '0';
-      copy <= '1';
-      state <= active;
+      state <= copy_data;
      else
       state <= read_hdr;
      end if;
 
+    when copy_data =>
+     copy <= '1';
+     state <= active;
+
     when active =>
      copy <= '0';
      if (dselDis = '1') then
-      load <= '1';
-      state <= load_reg;
+      if (msgdata = '1') then
+       msgData <= '0';
+       load <= '1';
+       state <= load_reg;
+      end if;
      else
       if (clkena = '1') then
+       msgData <= '1';
        shift <= '1';
        state <= dclk_wait;
       end if;
