@@ -34,12 +34,12 @@ end LatheNew;
 
 architecture Behavioral of LatheNew is
 
-component Clock is
- port(
-  clockIn : in std_logic;
-  clockOut : out std_logic
-  );
-end Component;
+ component Clock is
+  port(
+   clockIn : in std_logic;
+   clockOut : out std_logic
+   );
+ end Component;
 
  component SPI is
   generic (opBits : positive);
@@ -83,6 +83,21 @@ end Component;
    dspShift : out std_logic;
    dspOp : inout unsigned (opBits-1 downto 0);
    dspreg : inout unsigned (displayBits-1 downto 0)
+   );
+ end Component;
+
+ component ShiftOutN is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive;
+          outBits : positive);
+  port (
+   clk : in std_logic;
+   dshift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
+   load : in std_logic;
+   data : in unsigned(n-1 downto 0);
+   dout : out std_logic
    );
  end Component;
 
@@ -257,7 +272,7 @@ end Component;
  alias digSel: unsigned(1 downto 0) is div(19 downto 18);
 
  constant synBits : positive := 32;
- constant posBits : positive := 18;
+ constant posBits : positive := 24;
  constant countBits : positive := 18;
  constant distBits : positive := 18;
  constant locBits : positive := 18;
@@ -271,13 +286,20 @@ end Component;
  constant totalBits : positive := 32;
 
  constant freqBits : positive := 16;
- constant freqcountBits : positive := 16;
+ constant freqcountBits : positive := 32;
 
  constant cycleLenBits : positive := 16;
  constant encClkBits : positive := 24;
  constant cycleClkBits : positive := 32;
 
  constant stepWidth : positive :=  25;
+
+-- status register
+
+ constant statusSize : integer := 2;
+ signal statusReg : unsigned(statusSize-1 downto 0);
+ alias zAxisDone  : std_logic is statusreg(0); -- x01 z axis done
+ alias xAxisDone  : std_logic is statusreg(1); -- x02 x axis done
 
  -- configuration control register
 
@@ -344,10 +366,11 @@ end Component;
 
  -- signal locked : std_logic;
 
+ signal statusDout : std_logic;
+ signal phaseDOut : std_logic;
+ signal encDOut : std_logic;
  signal zDOut : std_logic;
  signal xDOut : std_logic;
- signal encDOut : std_logic;
- signal phaseDOut : std_logic;
  
  signal zFreqGen : std_logic;
  signal xFreqGen : std_logic;
@@ -384,7 +407,16 @@ end Component;
  signal zFreqGenEna : std_logic;
  signal xFreqGenEna : std_logic;
 
+ signal intZDoneInt : std_logic;
+ signal intXDoneInt : std_logic;
+
 begin
+
+ zDoneInt <= intZDoneInt;
+ xDoneInt <= intXDoneInt;
+
+ zAxisDone <= intZDoneInt;
+ xAxisDone <= intXDoneInt;
 
  led(7) <= div(divBits);
  led(6) <= div(divBits-1);
@@ -504,7 +536,7 @@ begin
    y => direction
    );
 
- internalDout <= zDOut or xDOut or encDOut or phaseDOut;
+ internalDout <= statusDout or phaseDout or EncDout or zDOut or xDOut;
  dout <= internalDout;
 
  dshift <= spiShift when spiActive = '1' else dspShift;
@@ -547,6 +579,20 @@ begin
    dspOp => dspOp,
    -- dspreg => dspData
    dspReg => open
+   );
+
+ status: ShiftOutN
+  generic map(opVal => F_Rd_Status,
+              opBits => opBits,
+              n => statusSize,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   load => copy,
+   data => statusReg,
+   dout => statusDout
    );
 
  sync_reg: CtlReg
@@ -708,7 +754,7 @@ begin
    dout => zDOut,
    stepOut => zAxisStep,
    dirOut => zAxisDir,
-   doneInt => zDoneInt
+   doneInt => intZDoneInt
    );
 
  zStep_Pulse: PulseGen
@@ -767,7 +813,7 @@ begin
    dout => xDOut,
    stepOut => xAxisStep,
    dirOut => xAxisDir,
-   doneInt => xDoneInt
+   doneInt => intxDoneInt
    );
 
  xStep_Pulse : PulseGen
@@ -781,4 +827,3 @@ begin
  xDir <= xAxisDir xor cfgxDir;
 
 end Behavioral;
-

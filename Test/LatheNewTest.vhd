@@ -47,6 +47,8 @@ architecture behavior OF LatheNewTest is
  constant freqBits : positive := 16;
  constant freqCountBits : positive := 16;
 
+ constant readBits : positive := 32;
+
 -- signal sysClk : std_logic := '0';
  signal led : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
 -- signal dbg : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
@@ -184,6 +186,24 @@ begin
    delay(10);
   end procedure loadValue;
 
+  procedure readValue(constant bits : in natural) is
+   variable tmp : unsigned (bits-1 downto 0);
+  begin
+   tmp := (others => '0');
+   din <= '0';
+   for i in 0 to bits-1 loop            --read value
+    dclk <= '0';
+    delay(6);
+    dclk <= '1';
+    tmp := tmp(31-1 downto 0) & dout;
+    delay(6);
+   end loop;
+   report "value " & integer'image(to_integer(tmp));
+   dclk <= '0';
+   dsel <= '1';                          --end of load
+   delay(10);
+  end procedure readValue;
+
   -- procedure loadShift(variable value : in integer;
   --                     constant bits : in natural) is
   --  variable tmp: std_logic_vector(32-1 downto 0);
@@ -286,37 +306,37 @@ begin
   accelVal := 8;
   accelCount := 99;
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_D);
+  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_D);
   loadValue(d, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Incr1);
+  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1);
   loadValue(incr1, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Incr2);
+  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr2);
   loadValue(incr2, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Accel_Val);
+  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Val);
   loadValue(accelVal, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Accel_Count);
+  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Count);
   loadValue(accelCount, countBits);
   
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Dist_Base + F_Ld_Axis_Dist);
+  loadParm(F_ZAxis_Base + F_Dist_Base + F_Ld_Dist);
   loadValue(dist, distBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Loc_Base + F_Ld_Axis_Loc);
+  loadParm(F_ZAxis_Base + F_Loc_Base + F_Ld_Loc);
   loadValue(loc, locBits);
 
   ctlInit := '1';
@@ -338,7 +358,7 @@ begin
   loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Freq);
   loadValue(freq, freqBits);
 
-  dbgCount := 500;
+  dbgCount := 2000;
   loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Count);
   loadValue(dbgCount ,freqCountBits);
 
@@ -351,7 +371,7 @@ begin
   loadValue(ctl, clkCtlSize);
 
   --delayQuad(500);
-  delay(1000);
+  delay(5000);
 
   clkCtlReg := (others => '0');
   zFreqSel := to_unsigned(7, 3);
@@ -360,6 +380,11 @@ begin
   loadValue(ctl, clkCtlSize);
 
   delay(10);
+
+  loadParm(F_Rd_Status);
+  readValue(readBits);
+
+  delay(20);
 
   axisCtlReg := (others => '0');
   ctlInit := '1';

@@ -62,8 +62,9 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    ch : in std_logic;
    dir : in std_logic;
    dout : out std_logic;
-   synStep : out std_logic;
-   accelFlag : out std_logic
+   accelActive : out std_logic;
+   accelFlag : out std_logic;
+   synStep : out std_logic
    );
  end Component;
 
@@ -114,8 +115,9 @@ ARCHITECTURE behavior OF SyncAccelTest IS
 
  --Outputs
  signal dout : std_logic;
- signal synstp : std_logic;
  signal accelFlag : std_logic;
+ signal accelActive : std_logic;
+ signal synstp : std_logic;
 
  signal distZero : std_logic;
  
@@ -150,8 +152,9 @@ BEGIN
    ch => ch,
    dir => dir,
    dout => dout,
-   synStep => synStp,
-   accelFlag => accelFlag
+   accelActive => accelActive,
+   accelFlag => accelFlag,
+   synStep => synStp
    );
 
  AxisDistCounter : DistCounter
@@ -219,32 +222,32 @@ BEGIN
   accelVal := 8;
   accelCount := 99;
 
-  op <= F_ZAxis_Base + F_Ld_Axis_D;
+  op <= F_ZAxis_Base + F_Ld_D;
   loadShift(d, synBits, dshift, din);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Ld_Axis_Incr1;
+  op <= F_ZAxis_Base + F_Ld_Incr1;
   loadShift(incr1, synBits, dshift, din);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Ld_Axis_Incr2;
+  op <= F_ZAxis_Base + F_Ld_Incr2;
   loadShift(incr2, synBits, dshift, din);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Ld_Axis_Accel_Val;
+  op <= F_ZAxis_Base + F_Ld_Accel_Val;
   loadShift(accelVal, synBits, dshift, din);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Ld_Axis_Accel_Count;
+  op <= F_ZAxis_Base + F_Ld_Accel_Count;
   loadShift(accelCount, countBits, dshift, din);
   
   delay(1);
 
-  op <= F_ZAxis_Base + F_Dist_Base + F_Ld_Axis_Dist;
+  op <= F_ZAxis_Base + F_Dist_Base + F_Ld_Dist;
   loadShift(dist, distBits, dshift, din);
 
   delay(5);

@@ -46,30 +46,25 @@ entity DistCounter is
   step : in std_logic;                  --all steps
   accelFlag : in std_logic;             --acceleration step
   dout : out std_logic := '0';          --data output
-  decel : inout std_logic;              --dist le acceleration steps
+  decel : inout std_logic := '0';       --dist le acceleration steps
   distZero : out std_logic              --distance zero
   );
 end DistCounter;
 
 architecture Behavioral of DistCounter is
 
- component Compare is
-  generic (n : positive);
-  port (
-   a : in  unsigned (n-1 downto 0);
-   b : in  unsigned (n-1 downto 0);
-   cmp_ge : in std_logic;
-   cmp : out std_logic);
- end component;
-
- component UpCounter is
-  generic (n : positive);
-  port (
+ component ShiftOp is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive);
+  port(
    clk : in std_logic;
-   ena : in std_logic;
-   clr : in std_logic;
-   counter : inout  unsigned (n-1 downto 0));
- end component;
+   din : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
+   shift : in std_logic;
+   data : inout unsigned (n-1 downto 0)
+   );
+ end Component;
 
  component ShiftOutN is
   generic(opVal : unsigned;
@@ -86,72 +81,69 @@ architecture Behavioral of DistCounter is
    );
  end Component;
 
- component RegCtr is
-  generic (opVal : unsigned;
-           opBits : positive;
-           n : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
-   ena : in std_logic;
-   load : in std_logic;
-   data : inout  unsigned (n-1 downto 0);
-   zero : inout std_logic);
- end component;
+ signal active : std_logic := '0';
+ signal zero : std_logic := '0';
 
- signal accelStep : std_logic;
-
- signal zero : std_logic;
-
- signal distCtr : unsigned(distBits-1 downto 0);
- signal aclSteps : unsigned(distBits-1 downto 0);
+ signal distVal : unsigned(distBits-1 downto 0);
+ signal distCtr : unsigned(distBits-1 downto 0) := (others => '0');
+ signal aclSteps : unsigned(distBits-1 downto 0) := (others => '0');
 
  signal distDout : std_logic;
+ signal aclStepsDout : std_logic;
  
 begin
 
- dout <= distDout;
+ dout <= distDout or aclStepsDout;
 
- accelStep <= '1' when ((accelFlag = '1') and (step = '1') and
-                        (decel = '0'))
-              else '0';
-
- DistAccelCtr: UpCounter
-  generic map(n => distBits)
-  port map (
+ distShiftOp : ShiftOp
+  generic map(opVal => opBase + F_Ld_Dist,
+              opBits => opBits,
+              n => distBits)
+  port map(
    clk => clk,
-   ena => accelStep,
-   clr => init,
-   counter => aclSteps);
+   din => din,
+   op => op,
+   shift => dshift,
+   data => distVal
+   );
 
  distZero <= zero;
 
- DistRegCtr: RegCtr
-  generic map(opVal => opBase + F_Ld_Axis_Dist,
-              opBits => opBits,
-              n => distBits)
-  port map (
-   clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   ena => step,
-   load => init,
-   data => distCtr,
-   zero => zero);
+ distanceProc : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   if (init = '1') then                 --if load
+    distCtr <= distVal;
+    aclSteps <= (others => '0');
+    zero <= '0';
+    decel <= '0';
+    active <= '1';
+   elsif (step = '1') then              --if time to step
+    if (zero = '0') then               --if distance non zero
+     distCtr <= distCtr - 1;           --decrement distance counter
+     if ((accelFlag = '1') and (decel = '0')) then --if accel ok
+      aclSteps <= aclSteps + 1;         --increment accel steps
+     end if;
+    end if;
+   elsif (active = '1') then            --if active
 
- DistAclCmp: Compare
-  generic map(n => distBits)
-  port map (
-   a => distCtr,
-   b => aclSteps,
-   cmp_ge => '0',
-   cmp => decel);
+    if distCtr = 0 then                 --if distance zero
+     zero <= '1';                       --set zero distance flag
+     active <= '0';                     --set to inactive
+    end if;
+    
+    if (decel = '0') then               --if decel not set yet
+     if (aclSteps >= distCtr) then      --if accel ge dist left
+      decel <= '1';                     --set decel flag
+     end if;
+    end if;
+
+   end if;
+  end if;
+ end process distanceProc;
 
  DistShiftOut: ShiftOutN
-  generic map(opVal => opBase + F_Rd_Axis_Dist,
+  generic map(opVal => opBase + F_Rd_Dist,
               opBits => opBits,
               n => distBits,
               outBits => outBits)
@@ -162,5 +154,18 @@ begin
    load => copy,
    data => distCtr,
    dout => distDout);
+
+ AclShiftOut: ShiftOutN
+  generic map(opVal => opBase + F_Rd_Acl_Steps,
+              opBits => opBits,
+              n => distBits,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   load => copy,
+   data => aclSteps,
+   dout => aclStepsDout);
 
 end Behavioral;

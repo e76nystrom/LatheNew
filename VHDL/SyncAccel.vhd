@@ -51,8 +51,9 @@ entity SyncAccel is
   ch : in std_logic;
   dir : in std_logic;
   dout : out std_logic := '0';
-  synStep : out std_logic := '0';
-  accelFlag : out std_logic := '0'
+  accelActive : out std_logic := '0';
+  accelFlag : out std_logic := '0';
+  synStep : out std_logic := '0'
   );
 end SyncAccel;
 
@@ -165,11 +166,11 @@ architecture Behavioral of SyncAccel is
  signal accelCount : unsigned(countBits-1 downto 0);
  --signal accelSum  : unsigned(synBits-1 downto 0);
 
- alias opD     : unsigned is F_Ld_Axis_D;
- alias opIncr1 : unsigned is F_Ld_Axis_Incr1;
- alias opIncr2 : unsigned is F_Ld_Axis_Incr2;
- alias opAccel : unsigned is F_Ld_Axis_Accel_Val;
- alias opAccelCount : unsigned is F_Ld_Axis_Accel_Count;
+ alias opD     : unsigned is F_Ld_D;
+ alias opIncr1 : unsigned is F_Ld_Incr1;
+ alias opIncr2 : unsigned is F_Ld_Incr2;
+ alias opAccel : unsigned is F_Ld_Accel_Val;
+ alias opAccelCount : unsigned is F_Ld_Accel_Count;
 
  signal lastDir : std_logic := '0';
 
@@ -198,6 +199,8 @@ architecture Behavioral of SyncAccel is
  signal accelCtrDout : std_logic;
 
 begin
+
+ accelActive <= '1' when accelCtrZero = '0' else '0';
 
  dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout;
  

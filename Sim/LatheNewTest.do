@@ -19,7 +19,6 @@ add wave -noupdate -radix decimal -childformat {{/lathenewtest/uut/z_Axis/AxisSy
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/xadder/sum(31)
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/accelSum
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/state
-add wave -noupdate -label {Contributors: state} -group {Contributors: sim:/lathenewtest/uut/z_Axis/AxisSyncAccel/state} /lathenewtest/uut/z_Axis/AxisSyncAccel/accelCounterZero
 add wave -noupdate -label {Contributors: state} -group {Contributors: sim:/lathenewtest/uut/z_Axis/AxisSyncAccel/state} /lathenewtest/uut/z_Axis/AxisSyncAccel/ch
 add wave -noupdate -label {Contributors: state} -group {Contributors: sim:/lathenewtest/uut/z_Axis/AxisSyncAccel/state} /lathenewtest/uut/z_Axis/AxisSyncAccel/clk
 add wave -noupdate -label {Contributors: state} -group {Contributors: sim:/lathenewtest/uut/z_Axis/AxisSyncAccel/state} /lathenewtest/uut/z_Axis/AxisSyncAccel/decel
@@ -36,7 +35,7 @@ add wave -noupdate /lathenewtest/uut/spiShift
 add wave -noupdate /lathenewtest/uut/dshift
 add wave -noupdate /lathenewtest/uut/clk_reg/data
 add wave -noupdate /lathenewtest/uut/clk_reg/load
-add wave -noupdate /lathenewtest/uut/clk_reg/op
+add wave -noupdate -radix hexadecimal /lathenewtest/uut/clk_reg/op
 add wave -noupdate /lathenewtest/uut/clk_reg/opVal
 add wave -noupdate /lathenewtest/uut/clk_reg/sreg
 add wave -noupdate /lathenewtest/uut/z_Axis/AxCtlReg/data
@@ -45,17 +44,13 @@ add wave -noupdate /lathenewtest/uut/z_Axis/AxCtlReg/op
 add wave -noupdate /lathenewtest/uut/z_Axis/AxCtlReg/shift
 add wave -noupdate /lathenewtest/uut/z_Axis/AxCtlReg/sreg
 add wave -noupdate /lathenewtest/uut/spiActive
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/data
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/dout
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/dshift
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/load
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/op
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/opBits
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/opVal
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/shiftReg
-add wave -noupdate /lathenewtest/uut/z_Axis/AxisLocCounter/LocShiftOut/shiftSel
+add wave -noupdate /lathenewtest/uut/zDoneInt
+add wave -noupdate /lathenewtest/uut/status/data
+add wave -noupdate /lathenewtest/uut/status/dout
+add wave -noupdate /lathenewtest/uut/xDoneInt
+add wave -noupdate /lathenewtest/uut/status/shiftReg
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {0 ps} 0}
+WaveRestoreCursors {{Cursor 1} {96774757 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100
@@ -71,4 +66,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {84 us}
+WaveRestoreZoom {94566250 ps} {98503750 ps}

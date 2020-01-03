@@ -74,8 +74,9 @@ architecture Behavioral of Axis is
    ch : in std_logic;
    dir : in std_logic;
    dout : out std_logic;
-   synStep : out std_logic;
-   accelFlag : out std_logic
+   accelActive : out std_logic;
+   accelFlag : out std_logic;
+   synStep : out std_logic
    );
  end Component;
 
@@ -179,6 +180,7 @@ architecture Behavioral of Axis is
  signal distDecel: std_logic;
  signal distZero : std_logic;
  signal syncAccelFlag : std_logic;
+ signal syncAccelActive : std_logic;
 
  signal synStepOut : std_logic;
  signal step : std_logic;
@@ -208,7 +210,7 @@ begin
  dbgOUt(0) <= runEna;
  dbgOut(1) <= distDecel;
  dbgOut(2) <= distZero;
- dbgOut(3) <= syncAccelFlag;
+ dbgOut(3) <= syncAccelActive;
 
  AxCtlReg : CtlReg
   generic map(opVal => opBase + F_Ld_Axis_Ctl,
@@ -241,8 +243,9 @@ begin
    ch => ch,
    dir => encDir,
    dout => doutSync,
-   synStep => synStepOut,
-   accelFlag => syncAccelFlag
+   accelActive => syncAccelActive,
+   accelFlag => syncAccelFlag,
+   synStep => synStepOut
    );
 
  AxisDistCounter: DistCounter

@@ -4,6 +4,13 @@ use ieee.numeric_std.all;
 
 package FpgaLatheBits is
 
+-- status register
+
+ constant statusSize : integer := 2;
+ signal statusReg : unsigned(statusSize-1 downto 0);
+ alias zAxisDone  : std_logic is statusreg(0); -- x01 z axis done
+ alias xAxisDone  : std_logic is statusreg(1); -- x02 x axis done
+
 -- axis control register
 
  constant axisCtlSize : integer := 8;

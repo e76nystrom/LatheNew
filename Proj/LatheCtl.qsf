@@ -714,8 +714,6 @@ set_global_assignment -name VHDL_FILE ../VHDL/Encoder.vhd
 set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/IntTmr.vhd
 set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmr.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/DataSel4.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/RegCtr.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Compare.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/UpCounter.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Shift.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Adder.vhd

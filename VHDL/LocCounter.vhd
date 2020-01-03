@@ -101,7 +101,7 @@ begin
  dout <= locDout;
  
  LocValReg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Axis_Loc,
+  generic map(opVal => opBase + F_Ld_Loc,
               opBits => opBits,
               n => locBits)
   port map ( clk => clk,
@@ -122,7 +122,7 @@ begin
              counter => loc);
 
  LocShiftOut : ShiftOutN
-  generic map(opVal => opBase + F_Rd_Axis_Loc,
+  generic map(opVal => opBase + F_Rd_Loc,
               opBits => opBits,
               n => locBits,
               outBits => outBits)

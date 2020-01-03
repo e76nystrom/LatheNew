@@ -50,17 +50,19 @@ begin
 
  dataSel8: process(clk)
  begin
-  case sel is
-   when "111" => dout <= d7;
-   when "110" => dout <= d6;
-   when "101" => dout <= d5;
-   when "100" => dout <= d4;
-   when "011" => dout <= d3;
-   when "010" => dout <= d2;
-   when "001" => dout <= d1;
-   when "000" => dout <= d0;
-   when others => dout <= '0';
-  end case;
+  if (rising_edge(clk)) then
+   case sel is
+    when "111" => dout <= d7;
+    when "110" => dout <= d6;
+    when "101" => dout <= d5;
+    when "100" => dout <= d4;
+    when "011" => dout <= d3;
+    when "010" => dout <= d2;
+    when "001" => dout <= d1;
+    when "000" => dout <= d0;
+    when others => dout <= '0';
+   end case;
+  end if;
  end process;
 
 end Behavioral;

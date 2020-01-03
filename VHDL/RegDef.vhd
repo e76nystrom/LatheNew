@@ -28,11 +28,11 @@ constant F_Dbg_Freq_Max     : unsigned(opb-1 downto 0) := x"02"; -- number of de
 
 -- sync accel
 
-constant F_Ld_Axis_D        : unsigned(opb-1 downto 0) := x"00"; -- axis d
-constant F_Ld_Axis_Incr1    : unsigned(opb-1 downto 0) := x"01"; -- axis incr1
-constant F_Ld_Axis_Incr2    : unsigned(opb-1 downto 0) := x"02"; -- axis incr2
-constant F_Ld_Axis_Accel_Val : unsigned(opb-1 downto 0) := x"03"; -- axis accel value
-constant F_Ld_Axis_Accel_Count : unsigned(opb-1 downto 0) := x"04"; -- axis accel count
+constant F_Ld_D             : unsigned(opb-1 downto 0) := x"00"; -- axis d
+constant F_Ld_Incr1         : unsigned(opb-1 downto 0) := x"01"; -- axis incr1
+constant F_Ld_Incr2         : unsigned(opb-1 downto 0) := x"02"; -- axis incr2
+constant F_Ld_Accel_Val     : unsigned(opb-1 downto 0) := x"03"; -- axis accel value
+constant F_Ld_Accel_Count   : unsigned(opb-1 downto 0) := x"04"; -- axis accel count
 constant F_Rd_XPos          : unsigned(opb-1 downto 0) := x"05"; -- axis x pos
 constant F_Rd_YPos          : unsigned(opb-1 downto 0) := x"06"; -- axis y pos
 constant F_Rd_Sum           : unsigned(opb-1 downto 0) := x"07"; -- axis sum
@@ -42,48 +42,53 @@ constant F_Sync_Max         : unsigned(opb-1 downto 0) := x"0a"; -- number of sy
 
 -- distance registers
 
-constant F_Ld_Axis_Dist     : unsigned(opb-1 downto 0) := x"00"; -- axis distance
-constant F_Rd_Axis_Dist     : unsigned(opb-1 downto 0) := x"01"; -- read axis distance
-constant F_Dist_Max         : unsigned(opb-1 downto 0) := x"02"; -- number of distance registers
+constant F_Ld_Dist          : unsigned(opb-1 downto 0) := x"00"; -- axis distance
+constant F_Rd_Dist          : unsigned(opb-1 downto 0) := x"01"; -- read axis distance
+constant F_Rd_Acl_Steps     : unsigned(opb-1 downto 0) := x"02"; -- read accel steps
+constant F_Dist_Max         : unsigned(opb-1 downto 0) := x"03"; -- number of distance registers
 
 -- location registers
 
-constant F_Ld_Axis_Loc      : unsigned(opb-1 downto 0) := x"02"; -- axis location
-constant F_Rd_Axis_Loc      : unsigned(opb-1 downto 0) := x"03"; -- read axis location
-constant F_Loc_Max          : unsigned(opb-1 downto 0) := x"04"; -- number of location registers
+constant F_Ld_Loc           : unsigned(opb-1 downto 0) := x"00"; -- axis location
+constant F_Rd_Loc           : unsigned(opb-1 downto 0) := x"01"; -- read axis location
+constant F_Loc_Max          : unsigned(opb-1 downto 0) := x"02"; -- number of location registers
 
 -- axis
 
 constant F_Ld_Axis_Ctl      : unsigned(opb-1 downto 0) := x"00"; -- axis control register
 constant F_Sync_Base        : unsigned(opb-1 downto 0) := x"01"; -- sync registers
 constant F_Dist_Base        : unsigned(opb-1 downto 0) := x"0b"; -- distance registers
-constant F_Loc_Base         : unsigned(opb-1 downto 0) := x"0d"; -- location registers
-constant F_Axis_Max         : unsigned(opb-1 downto 0) := x"11"; -- number of axis registers
+constant F_Loc_Base         : unsigned(opb-1 downto 0) := x"0e"; -- location registers
+constant F_Axis_Max         : unsigned(opb-1 downto 0) := x"10"; -- number of axis registers
 
 -- register definitions
 
 constant F_Noop             : unsigned(opb-1 downto 0) := x"00"; -- register 0
 
+-- status registers
+
+constant F_Rd_Status        : unsigned(opb-1 downto 0) := x"01"; -- status register
+
 -- control registers
 
-constant F_Ld_Sync_Ctl      : unsigned(opb-1 downto 0) := x"01"; -- sync control register
-constant F_Ld_Cfg_Ctl       : unsigned(opb-1 downto 0) := x"02"; -- config control register
-constant F_Ld_Clk_Ctl       : unsigned(opb-1 downto 0) := x"03"; -- clock control register
-constant F_Ld_Dsp_Reg       : unsigned(opb-1 downto 0) := x"04"; -- display register
+constant F_Ld_Sync_Ctl      : unsigned(opb-1 downto 0) := x"02"; -- sync control register
+constant F_Ld_Cfg_Ctl       : unsigned(opb-1 downto 0) := x"03"; -- config control register
+constant F_Ld_Clk_Ctl       : unsigned(opb-1 downto 0) := x"04"; -- clock control register
+constant F_Ld_Dsp_Reg       : unsigned(opb-1 downto 0) := x"05"; -- display register
 
 -- frequency control
 
-constant F_Ld_Z_Freq        : unsigned(opb-1 downto 0) := x"05"; -- z frequency
-constant F_Ld_X_Freq        : unsigned(opb-1 downto 0) := x"06"; -- x frequency
-constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"07"; -- dbg frequency
+constant F_Ld_Z_Freq        : unsigned(opb-1 downto 0) := x"06"; -- z frequency
+constant F_Ld_X_Freq        : unsigned(opb-1 downto 0) := x"07"; -- x frequency
+constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"08"; -- dbg frequency
 
 -- base for modules
 
-constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"09"; -- encoder registers
-constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0c"; -- phase registers
-constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0e"; -- z axis registers
+constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"0a"; -- encoder registers
+constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0d"; -- phase registers
+constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0f"; -- z axis registers
 constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"1f"; -- x axis registers
-constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"30"; -- number of commands
+constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"2f"; -- number of commands
 
 end RegDef;
 

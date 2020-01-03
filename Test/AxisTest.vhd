@@ -218,37 +218,37 @@ begin
   accelVal := 8;
   accelCount := 99;
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_D;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_D;
   loadShift(d, synBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Incr1;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1;
   loadShift(incr1, synBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Incr2;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Incr2;
   loadShift(incr2, synBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Accel_Val;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Val;
   loadShift(accelVal, synBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Axis_Accel_Count;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Count;
   loadShift(accelCount, countBits);
   
   delay(1);
 
-  op <= F_ZAxis_Base + F_Dist_Base + F_Ld_Axis_Dist;
+  op <= F_ZAxis_Base + F_Dist_Base + F_Ld_Dist;
   loadShift(dist, distBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Loc_Base + F_Ld_Axis_Loc;
+  op <= F_ZAxis_Base + F_Loc_Base + F_Ld_Loc;
   loadShift(loc, locBits);
 
   op <= F_ZAxis_Base + F_Ld_Axis_Ctl;
