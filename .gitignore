@@ -2,6 +2,7 @@
 *.bsf
 *.qws
 *~
+LatheCtl.qsf
 Proj/*.rpt
 Proj/*.txt
 Proj/db
