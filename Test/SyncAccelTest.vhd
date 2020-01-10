@@ -79,6 +79,7 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    dshift : in std_logic;
    op : in unsigned(opBits-1 downto 0);  --current reg address
    copy : in std_logic;
+   load : in std_logic;
    init : in std_logic;                  --reset
    step : in std_logic;                  --all steps
    accelFlag : in std_logic;             --acceleration step
@@ -97,6 +98,7 @@ ARCHITECTURE behavior OF SyncAccelTest IS
 
  --Inputs
  -- signal clk : std_logic := '0';
+ -- signal load : std_logic := '0';
  signal init : std_logic := '0';
  signal ena : std_logic := '0';
  signal decel : std_logic := '0';
@@ -168,6 +170,7 @@ BEGIN
    dshift => dshift,
    op => op,
    copy => copy,
+   load => load,
    init => init,
    step => synStp,
    accelFlag => accelFlag,

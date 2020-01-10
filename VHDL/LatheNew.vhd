@@ -296,10 +296,12 @@ architecture Behavioral of LatheNew is
 
 -- status register
 
- constant statusSize : integer := 2;
+ constant statusSize : integer := 4;
  signal statusReg : unsigned(statusSize-1 downto 0);
- alias zAxisDone  : std_logic is statusreg(0); -- x01 z axis done
- alias xAxisDone  : std_logic is statusreg(1); -- x02 x axis done
+ alias zAxisEna   : std_logic is statusreg(0); -- x01 z axis enable flag
+ alias zAxisDone  : std_logic is statusreg(1); -- x02 z axis done
+ alias xAxisEna   : std_logic is statusreg(2); -- x04 x axis enable flag
+ alias xAxisDone  : std_logic is statusreg(3); -- x02 x axis done
 
  -- configuration control register
 
@@ -412,7 +414,9 @@ architecture Behavioral of LatheNew is
 
 begin
 
+ zAxisEna <= zExtEna;
  zDoneInt <= intZDoneInt;
+ xAxisEna <= xExtEna;
  xDoneInt <= intXDoneInt;
 
  zAxisDone <= intZDoneInt;
@@ -435,7 +439,7 @@ begin
   generic map (pulseWidth => 25)
   port map (
    clk => clk,
-   pulseIn => copy,
+   pulseIn => xCh,
    PulseOut => test1
    );
 
@@ -449,10 +453,10 @@ begin
    pulseOut => test2
    );
 
- dbg(0) <= spiActive;
- dbg(1) <= test1;
- dbg(2) <= test2;
- dbg(3) <= div(divBits-3);
+ dbg(0) <= test1;
+ dbg(1) <= test2;
+ dbg(2) <= xDbg(0);
+ dbg(3) <= intXDoneInt;
 
  dbg(7 downto 4) <= std_logic_vector(zDbg);
 
@@ -655,7 +659,7 @@ begin
  zFreqGenEna <= '1' when ((zFreqSel = "001") and (zExtEna = '1')) else '0';
 
  zFreq_Gen : FreqGen
-  generic map(opVal => F_Ld_Z_Freq,
+  generic map(opVal => F_ZAxis_Base + F_Ld_Freq,
               opBits => opBits,
               freqBits => freqBits)
   port map (
@@ -671,7 +675,7 @@ begin
  xFreqGenEna <= '1' when ((xFreqSel = "001") and (xExtEna = '1')) else '0';
 
  xFreq_Gen : FreqGen
-  generic map(opVal => F_Ld_X_Freq,
+  generic map(opVal => F_XAxis_Base + F_Ld_Freq,
               opBits => opBits,
               freqBits => freqBits)
   port map (
@@ -813,7 +817,7 @@ begin
    dout => xDOut,
    stepOut => xAxisStep,
    dirOut => xAxisDir,
-   doneInt => intxDoneInt
+   doneInt => intXDoneInt
    );
 
  xStep_Pulse : PulseGen

@@ -42,6 +42,7 @@ entity DistCounter is
   dshift : in std_logic;
   op : in unsigned(opBits-1 downto 0);  --current reg address
   copy : in std_logic;
+  load : in std_logic;
   init : in std_logic;                  --reset
   step : in std_logic;                  --all steps
   accelFlag : in std_logic;             --acceleration step
@@ -83,6 +84,7 @@ architecture Behavioral of DistCounter is
 
  signal active : std_logic := '0';
  signal zero : std_logic := '0';
+ signal distUpdate : std_logic := '0';
 
  signal distVal : unsigned(distBits-1 downto 0);
  signal distCtr : unsigned(distBits-1 downto 0) := (others => '0');
@@ -117,27 +119,39 @@ begin
     aclSteps <= (others => '0');
     zero <= '0';
     decel <= '0';
+    distUpdate <= '0';
     active <= '1';
    elsif (step = '1') then              --if time to step
-    if (zero = '0') then               --if distance non zero
-     distCtr <= distCtr - 1;           --decrement distance counter
-     if ((accelFlag = '1') and (decel = '0')) then --if accel ok
-      aclSteps <= aclSteps + 1;         --increment accel steps
+    if (zero = '0') then                --if distance non zero
+     distCtr <= distCtr - 1;            --decrement distance counter
+     if (decel = '0') then              --if accelerating
+      if (accelFlag = '1') then         --if accel ok
+       aclSteps <= aclSteps + 1;        --increment accel steps
+      end if;
+     else                               --if decelerating
+      aclSteps <= aclSteps - 1;         --decrement accel steps
      end if;
     end if;
    elsif (active = '1') then            --if active
-
-    if distCtr = 0 then                 --if distance zero
-     zero <= '1';                       --set zero distance flag
-     active <= '0';                     --set to inactive
-    end if;
-    
-    if (decel = '0') then               --if decel not set yet
+    if (distUpdate = '1') then          --if update flag set
+     distUpdate <= '0';                 --clear update flag
+     distCtr <= distVal;                --load new distance
+    else
+     if distCtr = 0 then                --if distance zero
+      zero <= '1';                      --set zero distance flag
+      active <= '0';                    --set to inactive
+     end if;
+     
      if (aclSteps >= distCtr) then      --if accel ge dist left
       decel <= '1';                     --set decel flag
+     else
+      decel <= '0';
      end if;
     end if;
+   end if;
 
+   if ((op = opBase + F_Ld_Dist) and (load = '1')) then
+    distUpdate <= '1';                  --update distance
    end if;
   end if;
  end process distanceProc;

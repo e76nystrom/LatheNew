@@ -97,8 +97,8 @@ architecture Behavioral of SyncAccel is
   generic (n : positive);
   port (
    clk : in std_logic;
-   ena : in std_logic;
    clr : in std_logic;
+   ena : in std_logic;
    func : in std_logic;
    a : in unsigned (n-1 downto 0);
    sum : inout unsigned (n-1 downto 0);
@@ -116,15 +116,16 @@ architecture Behavioral of SyncAccel is
    );
  end component;
 
- component DownCounter is
+ component UpDownCounterRng is
   generic(n : positive);
   port (
    clk : in std_logic;
-   ena : in std_logic;
    load : in std_logic;
+   ena : in std_logic;
+   inc : in std_logic;
    preset : in unsigned(n-1 downto 0);
    counter : inout unsigned(n-1 downto 0);
-   zero : out std_logic
+   limit : out std_logic
    );
  end component;
 
@@ -144,7 +145,7 @@ architecture Behavioral of SyncAccel is
  end Component;
 
  type fsm is (idle, chk_dir, dir_upd1, dir_upd2,
-                  upd_sum, upd_accel, clr_ena);
+                  upd_sum, upd_accel, upd_delay, clr_ena);
  signal state : fsm := idle;
 
  signal mux_sel : std_logic_vector(1 downto 0);
@@ -160,8 +161,6 @@ architecture Behavioral of SyncAccel is
  signal incr2  : unsigned(synBits-1 downto 0);
  signal accel  : unsigned(synBits-1 downto 0);
  signal aval   : unsigned(synBits-1 downto 0);
-
- signal decelActive : std_logic := '0';
 
  signal accelCount : unsigned(countBits-1 downto 0);
  --signal accelSum  : unsigned(synBits-1 downto 0);
@@ -182,14 +181,15 @@ architecture Behavioral of SyncAccel is
  signal accelClr : std_logic := '0';
  signal accelUpdate : std_logic := '0';
 
- signal accelCountDec : std_logic := '0';
- signal accelCountPreset : std_logic := '0';
+ signal accelCountUpd : std_logic := '0';
+ signal accelCountInit : std_logic := '0';
  signal accelCounter : unsigned(countBits-1 downto 0);
  signal accelCtrZero : std_logic ;
 
  signal xpos : unsigned(posBits-1 downto 0);
  signal ypos : unsigned(posBits-1 downto 0);
  signal sum :  unsigned(synBits-1 downto 0);
+ alias sumNeg : std_logic is sum(synBits-1);
  signal accelSum : unsigned(synBits-1 downto 0);
 
  signal xPosDout : std_logic;
@@ -197,6 +197,8 @@ architecture Behavioral of SyncAccel is
  signal sumDout : std_logic;
  signal accelSumDout : std_logic;
  signal accelCtrDout : std_logic;
+
+ signal synStepTmp : std_logic := '0';
 
 begin
 
@@ -293,14 +295,14 @@ begin
    dout => sumDout
    );
 
- accelAdd <= not decelActive;
+ accelAdd <= not decel;
 
  accelAccum: Accumulator
   generic map(n => synBits)
   port map (
    clk => clk,
-   ena => accelUpdate,
    clr => accelClr,
+   ena => accelUpdate,
    func => accelAdd,
    a => accel,
    sum => accelSum,
@@ -321,15 +323,16 @@ begin
    dout => accelSumDout
    );
 
- accelCtr: DownCounter
+ accelCtr: UpDownCounterRng
   generic map(n => countBits)
   port map (
    clk => clk,
-   ena => accelCountDec,
-   load => accelCountPreset,
+   load => accelCountInit,
+   ena => accelCountUpd,
+   inc => decel,
    preset => accelCount,
    counter => accelCounter,
-   zero => accelCtrZero);
+   limit => accelCtrZero);
 
  accelCtr_out : ShiftOutN
   generic map(opVal => opBase + F_Rd_Accel_Ctr,
@@ -391,7 +394,7 @@ begin
    dout => yPosDout
    );
 
- accelFlag <= '1' when decelActive = '0' and accelCtrZero = '0' else '0';
+ accelFlag <= '1' when decel = '0' and accelCtrZero = '0' else '0';
 
  syn_process: process(clk)
  begin
@@ -402,18 +405,20 @@ begin
     xinc <= '0';                        --disable x inc
     yinc <= '0';                        --disable y inc
     clr_pos <= '1';                     --set to clear position
-    --sum mux
+    -- sum mux
     mux_sel <= SelD;                    --select d to load
     adder_load <= '1';                  --set to init adder
     mux_sel <= SelD;                    --select d to load
     adder_ena <= '1';                   --enable for loading
-    --acceleration registers
-    accelCountPreset <= '1';            --preset acceleration counter
-    accelUpdate <= '1';                 --flag to update it
+    -- acceleration counter control
+    accelCountInit <= '1';              --preset acceleration counter
+    accelCountUpd <= '0';               --cler update flag
+    -- acceleration accumulator control
     accelClr <= '1';                    --clear acceleration sum
-    decelActive <= '0';                 --clear deceleration flag
+    accelUpdate <= '0';                 --clear update flag
     --misc
-    synStep <= '0';                      --clear output step
+    synStep <= '0';                     --clear output step
+    synStepTmp <= '0';
     state <= idle;                      --set to idle state
    else
     case state is                       --select state
@@ -424,15 +429,10 @@ begin
       mux_sel <= selIncr1;              --select increment 1
       adder_load <= '0';                --end load
 
-      accelUpdate <= '0';               --end update
+      accelCountInit <= '0';            --end preset
       accelClr <= '0';                  --end clear operation
 
-      if (decel = '1') and (decelActive = '0') then --if starting decel
-       decelActive <= '1';              --start deceleration
-       accelCountPreset <= '1';         --start preset for decel countdown
-      else
-       accelCountPreset <= '0';         --stop preset
-      end if;
+      accelUpdate <= '0';               --end update
 
       synStep <= '0';
       if (ena = '1') then               --if enabled
@@ -442,7 +442,6 @@ begin
       end if;
 
      when chk_dir =>                    --check direction for dir change
-      accelCountPreset <= '0';          --end preset
       if (dir /= lastDir) then          --if direction change
        lastDir <= dir;                  --update last direction
        adder_ena <= '1';                --enable adder
@@ -463,39 +462,43 @@ begin
       adder_ena <= '1';                 --enable adder
       xinc <= '1';                      --enable x increment
       if (dir = '1') then               --if direction positive
-       if (sum(synBits-1) = '1') then   --if negative (sign bit set)
+       if (sumNeg = '1') then           --if negative (sign bit set)
         mux_sel <= selIncr1;
        else
         mux_sel <= selIncr2;
-        synStep <= '1';                  --enable step pulse
+        synStepTmp <= '1';              --enable step pulse
         yinc <= '1';                    --enable y increment
        end if;
       else                              --if direction negative
-       if (sum(synBits-1) = '1') then   --if negative (sign bit set)
+       if (sumNeg = '1') then           --if negative (sign bit set)
         mux_sel <= selIncr2;
        else
         mux_sel <= selIncr1;
-        synStep <= '1';                  --enable step pulse
+        synStepTmp <= '1';              --enable step pulse
         yinc <= '1';                    --enable y increment
        end if;
       end if;
       state <= upd_accel;
 
      when upd_accel =>                  --update acceleration
-      synStep <= '0';                    --clear step pulse
       xinc <= '0';
       yinc <= '0';
       mux_sel <= selAccel;
       if (accelCtrZero = '0') then      --if accel active
        accelUpdate <= '1';
-       accelCountDec <= '1';
+       accelCountUpd <= '1';
       end if;
+      state <= upd_delay;
+
+      when upd_delay =>
+      adder_ena <= '0';                 --disable adder
+      accelUpdate <= '0';
+      accelCountUpd <= '0';
       state <= clr_ena;
 
      when clr_ena =>                    --clr enable wait for ch inactive
-      adder_ena <= '0';                 --disable adder
-      accelUpdate <= '0';
-      accelCountDec <= '0';
+      synStep <= synStepTmp;            --output step
+      synStepTmp <= '0';                --clear tmp value
       if (ch = '0') then                --if change flag cleared
        state <= idle;                   --return to idle state
       end if;

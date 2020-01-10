@@ -16,12 +16,19 @@ spi.open(bus, device)
 spi.max_speed_hz = 500000
 spi.mode = 0
 
-base = r.F_ZAxis_Base
+Z_AXIS = False
+
+base = r.F_ZAxis_Base if Z_AXIS else r.F_XAxis_Base
 bSyn = base + r.F_Sync_Base
 bLoc = base + r.F_Loc_Base
 bDist = base + r.F_Dist_Base
     
-def ld(cmd, data, size):
+def fWrite(f, txt):
+    f.write(txt.encode())
+
+def ld(cmd, data, size, dbg=True):
+    if dbg:
+        print("ld %2d %10d %s" % (cmd, data, r.xRegTable[cmd]))
     data &= 0xffffffff
     val = list(data.to_bytes(size, byteorder='big'))
     msg = [cmd] + val
@@ -49,7 +56,7 @@ def readData(index=None, prt=True):
         else:
             print("%4d" % (index), end=" ")
             
-        print("xPos %6d yPos %6d zSum %12d" % (xPos, yPos, zSum), end=" ")
+        print("xPos %7d yPos %6d zSum %12d" % (xPos, yPos, zSum), end=" ")
         print("aclSum %8d aclCtr %8d" % (zAclSum, aclCtr), end=" ")
 
     curDist = rd(bDist + r.F_Rd_Dist, 4) # read z location
@@ -71,12 +78,12 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
         data.append(0)
 
     cFreq = 50000000            # clock frequency
-    mult = 64                   # freq gen multiplier
+    mult = 8                   # freq gen multiplier
     stepsRev = 1600             # steps per revolution
     pitch = .1                  # leadscrew pitch
     scale = 8                   # scale factor
 
-    minFeed = 10                # min feed ipm
+    minFeed = 0               # min feed ipm
     maxFeed = 40                # max feed ipm
     accelRate = 20              # acceleration rate in per sec^2
 
@@ -121,26 +128,13 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
         if (err == 0):
             break
 
-    # incr1 = 2 * dyMax
-    # incr2 = incr1 - 2 * dx
-    # d = incr1 - dx
-    # bits = int(floor(log(abs(incr2), 2))) + 1
-    # print(("incr1 %d incr2 %d d %d bits %d" %
-    #        (incr1,incr2, d, bits)))
-
-    print("")
-    clocks = 0
-    lastT = 0
-    lastC = 0
-    x = 0
-    y = 0
     incr1 = 2 * dyIni
     incr2 = incr1 - 2 * dx
     d = incr1 - dx
 
     bits = int(floor(log(abs(incr2), 2))) + 1
-    print(("dx %d dy %d incr1 %d incr2 %d d %d bits %d" %
-           (dx, dyIni, incr1, incr2, d, bits)))
+    print(("\ndx %d dy %d incr1 %d incr2 %d d %d bits %d scale %d" %
+           (dx, dyIni, incr1, incr2, d, bits, scale)))
 
     zSynAccel = 2 * intIncPerClock
     zSynAclCnt = accelClocks
@@ -152,23 +146,24 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
     print(("accelClocks %d totalSum %d totalInc %d accelSteps %d" % 
            (accelClocks, totalSum, totalInc, accelSteps)))
 
-    f = open('accel.txt', 'w')
+    f = open('accel.txt', 'wb')
+    clocks = 0
+    lastT = 0
+    lastC = 0
+    x = 0
+    y = 0
     sum = d
     inc = 2 * intIncPerClock
     incAccum = 0
     print(("\n%17s incr1 %8d incr2 %10d inc %4d" % \
            ("", incr1, incr2, intIncPerClock)))
     stdout.flush()
+    prt = False
     while (clocks < (accelClocks * 1.2)):
         x += 1
         if (sum < 0):
             sum += incr1
         else:
-            deltaC = clocks - lastC
-            f.write(("(%6d %5d) dC %5d sum %8d iAcum %8d " +
-                     "i1 %8d i2 %11d\n") % \
-                    (x, y, deltaC, sum, incAccum,
-                     incr1 + incAccum, incr2 + incAccum))
             y += 1
             sum += incr2
             curT = clocks / freqGenMax
@@ -178,10 +173,16 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
                     time.append(curT);
                     data.append(1.0 / deltaT)
             lastT = curT
-            lastC = clocks
         sum += incAccum
         if (clocks < accelClocks):
             incAccum += inc
+        if sum > 0:
+            deltaC = clocks - lastC
+            fWrite(f, ("(%6d %5d) dC %5d sum %8d iAcum %8d " \
+                       "i1 %8d i2 %11d\n") % \
+                   (x, y, deltaC, sum, incAccum,
+                    incr1 + incAccum, incr2 + incAccum))
+            lastC = clocks
         clocks += 1
     f.close()
 
@@ -210,7 +211,7 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
     ld(bSyn + r.F_Ld_Incr2, incr2, 4)	# load incr2 value
 
     ld(bSyn + r.F_Ld_Accel_Val, zSynAccel, 4)   # load z accel
-    ld(bSyn + r.F_Ld_Accel_Count, zSynAclCnt-1, 4) # load z accel count
+    ld(bSyn + r.F_Ld_Accel_Count, zSynAclCnt, 4) # load z accel count
 
     ld(bLoc + r.F_Ld_Loc, 5, 4)       # set z location
     ld(bDist + r.F_Ld_Dist, dist, 4)  # load z distance
@@ -226,13 +227,21 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
     axisCtl = b.ctlStart | b.ctlDir
     ld(base + r.F_Ld_Axis_Ctl, axisCtl, 1);
 
+    status = rd(r.F_Rd_Status, 4)
+    print("status {0:04b}".format(status))
+
     readData()
 
-    if runClocks != 0:
+    doneFlag = b.zAxisDone if Z_AXIS else b.xAxisDone
+    stepData = []
+    if stepClocks != 0:
+        if runClocks == 0:
+            runClocks = 1
+
         ld(r.F_Dbg_Freq_Base + r.F_Ld_Dbg_Freq, freqDivider, 2)
         ld(r.F_Dbg_Freq_Base + r.F_Ld_Dbg_Count, runClocks, 4)
 
-        clkReg = b.zClkDbgFreq
+        clkReg = b.zClkDbgFreq if Z_AXIS else b.xClkDbgFreq
         ld(r.F_Ld_Clk_Ctl, clkReg, 1);
         clkReg |= b.clkDbgFreqEna
         ld(r.F_Ld_Clk_Ctl, clkReg, 1);
@@ -244,38 +253,51 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
             #     print("\nresults %d clocks %d" % (runClocks, xPos))
 
         if stepClocks != 0:
-            stepData = []
             for i in range(stepClocks):
                 if i == 0:
                     print()
                 readData(i)
-                ld(r.F_Dbg_Freq_Base + r.F_Ld_Dbg_Count, 1, 4)
-                stepData.append((zSum, zAclSum))
+                stepData.append((xPos, zSum, zAclSum))
+                status = rd(r.F_Rd_Status, 4)
+                if (status & doneFlag) != 0:
+                    break
+                ld(r.F_Dbg_Freq_Base + r.F_Ld_Dbg_Count, 1, 4, False)
             print()
     else:
         sync = False
         if sync:
-            clkReg = b.zClkCh
+            clkReg = b.zClkCh if Z_AXIS else b.xClkCh
         else:
-            ld(r.F_Ld_Z_Freq, freqDivider, 2)
-            clkReg = b.zClkZFreq
+            ld(base + r.F_Ld_Freq, freqDivider, 2)
+            clkReg = b.zClkZFreq if Z_AXIS else b.xClkXFreq
         ld(r.F_Ld_Clk_Ctl, clkReg, 1);
         while True:
-            status = rd(r.F_Rd_Status, 4)
-            if (status & b.zAxisDone) != 0:
+            status = rd(r.F_Rd_Status, 4) 
+            if (status & doneFlag) != 0:
+                print("status {0:04b}".format(status))
                 break
             sleep(0.1)
         readData()
 
     status = rd(r.F_Rd_Status, 4)
-    print("status %d" % (status))
+    print("status {0:04b}".format(status))
 
     axisCtl = b.ctlInit
     ld(base + r.F_Ld_Axis_Ctl, axisCtl, 1);
+    axisCtl = 0
+    ld(base + r.F_Ld_Axis_Ctl, axisCtl, 1);
+
+    status = rd(r.F_Rd_Status, 4)
+    print("status {0:04b}".format(status))
 
     x = 0
     y = 0
     clocks = 0
+    stepClocks = len(stepData)
+    if stepClocks != 0:
+        tracePos = stepData[0][0]
+    else:
+        tracePos = xPos + 1
     synSum = d
     accelAccum = 0
     distCtr = dist
@@ -301,8 +323,6 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
             if aclStep >= distCtr:
                 aclCtr = accelClocks-1
                 decel = True
-            if (distCtr == 0):
-                break
         synSum += accelAccum
 
         if (not delayDecel) and (clocks <= accelClocks):
@@ -312,17 +332,19 @@ def test3(runClocks=100, stepClocks=0, dist=20, loc= 0, dbgprint=True, \
             if (accelAccum > 0):
                 accelAccum -= zSynAccel
 
-        # if True:
-        if clocks > (xPos-stepClocks):
+        if clocks >= tracePos:
             print("%4d" % (index), end=" ")
-            print("xPos %5d yPos %5d zSum %10d" % (x, y, synSum), end=" ")
+            print("xPos %7d yPos %5d zSum %10d" % (x, y, synSum), end=" ")
             print("aclSum %8d aclCtr %8d" % (accelAccum, aclCtr), end=" ")
             print("dist %5d aclStp %6d" % (distCtr, aclStep), end=" ")
-            (zSum, zAclSum) = stepData[index]
+            (pos, zSum, zAclSum) = stepData[index]
             print("sDiff %6d aDiff %6d" % \
                   (synSum - zSum, accelAccum - zAclSum))
-            # print()
             index += 1
+
+        if (distCtr == 0):
+            break
+
         delayDecel = decel
 
     print(("\nx %d y %d sum %d delta %d accelAccum %d delta %d" %

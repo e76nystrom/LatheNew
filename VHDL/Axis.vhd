@@ -91,6 +91,7 @@ architecture Behavioral of Axis is
    dshift : in std_logic;
    op : in unsigned(opBits-1 downto 0);  --current reg address
    copy : in std_logic;
+   load : in std_logic;
    init : in std_logic;                  --reset
    step : in std_logic;                  --all steps
    accelFlag : in std_logic;             --acceleration step
@@ -259,6 +260,7 @@ begin
    dshift => dshift,
    op => op,
    copy => copy,
+   load => load,
    init => runInit,
    step => step,
    accelFlag => syncAccelFlag,

@@ -56,10 +56,11 @@ constant F_Loc_Max          : unsigned(opb-1 downto 0) := x"02"; -- number of lo
 -- axis
 
 constant F_Ld_Axis_Ctl      : unsigned(opb-1 downto 0) := x"00"; -- axis control register
-constant F_Sync_Base        : unsigned(opb-1 downto 0) := x"01"; -- sync registers
-constant F_Dist_Base        : unsigned(opb-1 downto 0) := x"0b"; -- distance registers
-constant F_Loc_Base         : unsigned(opb-1 downto 0) := x"0e"; -- location registers
-constant F_Axis_Max         : unsigned(opb-1 downto 0) := x"10"; -- number of axis registers
+constant F_Ld_Freq          : unsigned(opb-1 downto 0) := x"01"; -- frequency
+constant F_Sync_Base        : unsigned(opb-1 downto 0) := x"02"; -- sync registers
+constant F_Dist_Base        : unsigned(opb-1 downto 0) := x"0c"; -- distance registers
+constant F_Loc_Base         : unsigned(opb-1 downto 0) := x"0f"; -- location registers
+constant F_Axis_Max         : unsigned(opb-1 downto 0) := x"11"; -- number of axis registers
 
 -- register definitions
 
@@ -76,18 +77,16 @@ constant F_Ld_Cfg_Ctl       : unsigned(opb-1 downto 0) := x"03"; -- config contr
 constant F_Ld_Clk_Ctl       : unsigned(opb-1 downto 0) := x"04"; -- clock control register
 constant F_Ld_Dsp_Reg       : unsigned(opb-1 downto 0) := x"05"; -- display register
 
--- frequency control
+-- debug frequency control
 
-constant F_Ld_Z_Freq        : unsigned(opb-1 downto 0) := x"06"; -- z frequency
-constant F_Ld_X_Freq        : unsigned(opb-1 downto 0) := x"07"; -- x frequency
-constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"08"; -- dbg frequency
+constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"06"; -- dbg frequency
 
 -- base for modules
 
-constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"0a"; -- encoder registers
-constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0d"; -- phase registers
-constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0f"; -- z axis registers
-constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"1f"; -- x axis registers
+constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"08"; -- encoder registers
+constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"0b"; -- phase registers
+constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"0d"; -- z axis registers
+constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"1e"; -- x axis registers
 constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"2f"; -- number of commands
 
 end RegDef;

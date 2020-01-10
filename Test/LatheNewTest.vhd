@@ -270,6 +270,15 @@ begin
   alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
+ constant clkNone    : unsigned (2 downto 0) := "000";
+ constant clkFreq    : unsigned (2 downto 0) := "001";
+ constant clkCh      : unsigned (2 downto 0) := "010";
+ constant clkIntClk  : unsigned (2 downto 0) := "011";
+ constant clkSlvStep : unsigned (2 downto 0) := "100";
+ constant clkslvFreq : unsigned (2 downto 0) := "101";
+ constant clkSpare   : unsigned (2 downto 0) := "110";
+ constant clkDbgFreq : unsigned (2 downto 0) := "111";
+
   -- sync control register
 
   constant synCtlSize : integer := 3;
@@ -279,6 +288,10 @@ begin
   alias synEncEna  : std_logic is synCtlreg(2); -- x04 enable encoder
 
 --++)
+
+  alias base : unsigned is F_XAxis_Base;
+  -- alias freqSel : unsigned is clkCtlreg(2 downto 0);
+  alias freqSel : unsigned is clkCtlreg(5 downto 3);
 
  begin
 
@@ -304,44 +317,44 @@ begin
   d := incr1 - dx;
 
   accelVal := 8;
-  accelCount := 99;
+  accelCount := 100;
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_D);
+  loadParm(base + F_Sync_Base + F_Ld_D);
   loadValue(d, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1);
+  loadParm(base + F_Sync_Base + F_Ld_Incr1);
   loadValue(incr1, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr2);
+  loadParm(base + F_Sync_Base + F_Ld_Incr2);
   loadValue(incr2, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Val);
+  loadParm(base + F_Sync_Base + F_Ld_Accel_Val);
   loadValue(accelVal, synBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Sync_Base + F_Ld_Accel_Count);
+  loadParm(base + F_Sync_Base + F_Ld_Accel_Count);
   loadValue(accelCount, countBits);
   
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Dist_Base + F_Ld_Dist);
+  loadParm(base + F_Dist_Base + F_Ld_Dist);
   loadValue(dist, distBits);
 
   delay(1);
 
-  loadParm(F_ZAxis_Base + F_Loc_Base + F_Ld_Loc);
+  loadParm(base + F_Loc_Base + F_Ld_Loc);
   loadValue(loc, locBits);
 
   ctlInit := '1';
   ctlSetLoc := '1';
-  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
 
@@ -350,7 +363,7 @@ begin
   ctlStart := '1';
   ctlDir := '1';
   --ctlChDirect := '1';
-  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
 
@@ -358,12 +371,12 @@ begin
   loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Freq);
   loadValue(freq, freqBits);
 
-  dbgCount := 2000;
+  dbgCount := 3000;
   loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Count);
   loadValue(dbgCount ,freqCountBits);
 
   clkCtlReg := (others => '0');
-  zFreqSel := to_unsigned(7, 3);
+  freqSel := clkDbgFreq;                --to_unsigned(7, 3);
   clkDbgFreqEna := '1';
   
   loadParm(F_Ld_Clk_Ctl);
@@ -371,10 +384,13 @@ begin
   loadValue(ctl, clkCtlSize);
 
   --delayQuad(500);
+  delay(3600);
+  loadParm(base + F_Dist_Base + F_Ld_Dist);
+  loadValue(dist, distBits);
   delay(5000);
 
   clkCtlReg := (others => '0');
-  zFreqSel := to_unsigned(7, 3);
+  freqSel := clkDbgFreq;                --to_unsigned(7, 3);
   loadParm(F_Ld_Clk_Ctl);
   ctl := to_integer(clkCtlReg);
   loadValue(ctl, clkCtlSize);
@@ -389,14 +405,14 @@ begin
   axisCtlReg := (others => '0');
   ctlInit := '1';
   ctlSetLoc := '1';
-  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
 
   axisCtlReg := (others => '0');
   ctlStart := '1';
   ctlDir := '1';
-  loadParm(F_ZAxis_Base + F_Ld_Axis_Ctl);
+  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
   
@@ -404,4 +420,3 @@ begin
  end process;
 
 end;
-
