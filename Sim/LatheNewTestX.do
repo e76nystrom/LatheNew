@@ -60,9 +60,15 @@ add wave -noupdate /lathenewtest/uut/statusReg
 add wave -noupdate /lathenewtest/uut/x_Axis/ctlStart
 add wave -noupdate /lathenewtest/uut/x_Axis/ctlInit
 add wave -noupdate /lathenewtest/uut/x_Axis/runState
+add wave -noupdate -radix unsigned /lathenewtest/uut/index_clocks/chCounter
+add wave -noupdate -radix unsigned /lathenewtest/uut/index_clocks/clockCounter
+add wave -noupdate /lathenewtest/uut/index_clocks/index
+add wave -noupdate /lathenewtest/uut/syncIn
+add wave -noupdate -radix unsigned /lathenewtest/uut/index_clocks/clockReg
+add wave -noupdate /lathenewtest/uut/index_clocks/active
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {49217985 ps} 0} {{Cursor 2} {49193975 ps} 0}
-quietly wave cursor active 1
+WaveRestoreCursors {{Cursor 1} {295245000 ps} 0} {{Cursor 2} {76535000 ps} 0}
+quietly wave cursor active 2
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -77,4 +83,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {47544167 ps} {52466151 ps}
+WaveRestoreZoom {0 ps} {315 us}

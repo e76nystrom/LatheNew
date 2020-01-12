@@ -76,7 +76,7 @@ architecture Behavioral of LocCounter is
          counter : inout unsigned(n-1 downto 0));
  end component;
 
- component ShiftOutN is
+ component ShiftOutNS is
   generic(opVal : unsigned;
           opBits : positive;
           n : positive;
@@ -121,7 +121,7 @@ begin
              ini_val => locVal,
              counter => loc);
 
- LocShiftOut : ShiftOutN
+ LocShiftOut : ShiftOutNS
   generic map(opVal => opBase + F_Rd_Loc,
               opBits => opBits,
               n => locBits,

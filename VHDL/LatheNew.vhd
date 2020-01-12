@@ -177,6 +177,22 @@ architecture Behavioral of LatheNew is
    syncOut : out std_logic);
  end Component;
 
+ component IndexClocks is
+  generic (opval : unsigned;
+           opBits : positive;
+           n : positive;
+           outBits : positive);
+  port (
+   clk : in std_logic;
+   dshift : in std_logic;
+   op : in unsigned (opBits-1 downto 0);
+   copy : in std_logic;
+   ch : in std_logic;
+   index : in std_logic;
+   dout : out std_logic
+   );
+ end Component;
+
  component FreqGen is
   generic(opVal : unsigned;
           opBits : positive;
@@ -285,6 +301,9 @@ architecture Behavioral of LatheNew is
  constant phaseBits : positive := 16;
  constant totalBits : positive := 32;
 
+ constant idxClkBits : positive := 28;
+ -- constant idxClkBits : positive := 16; 
+
  constant freqBits : positive := 16;
  constant freqcountBits : positive := 32;
 
@@ -373,6 +392,7 @@ architecture Behavioral of LatheNew is
  signal encDOut : std_logic;
  signal zDOut : std_logic;
  signal xDOut : std_logic;
+ signal idxClkDout : std_logic;
  
  signal zFreqGen : std_logic;
  signal xFreqGen : std_logic;
@@ -540,7 +560,8 @@ begin
    y => direction
    );
 
- internalDout <= statusDout or phaseDout or EncDout or zDOut or xDOut;
+ internalDout <= statusDout or phaseDout or idxClkDout or
+                 EncDout or zDOut or xDOut;
  dout <= internalDout;
 
  dshift <= spiShift when spiActive = '1' else dspShift;
@@ -655,6 +676,21 @@ begin
    dir => direction,
    dout => phaseDOut,
    syncOut => sync);
+
+ index_clocks: IndexClocks
+  generic map (opval => F_Rd_Idx_Clks,
+               opBits => opBits,
+               n => idxClkBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   ch => ch,
+   index => sync,
+   dout => idxClkDout
+   );
 
  zFreqGenEna <= '1' when ((zFreqSel = "001") and (zExtEna = '1')) else '0';
 

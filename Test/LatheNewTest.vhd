@@ -121,6 +121,7 @@ begin
   end procedure delay;
 
   variable count : integer := 0;
+  variable indexCount : integer := 0;
 
   procedure delayQuad(constant n : in integer) is
   begin
@@ -129,6 +130,15 @@ begin
     if (count > 3) then
      count := 0;
     end if;
+
+    indexCount := indexCount + 1;
+    if (indexCount > 127) then
+     indexCount := 0;
+     syncIn <= '1';
+    else
+     syncIn <= '0';
+    end if;
+    
     case count is
      when 0 =>
       bIn <= '0';
@@ -383,10 +393,11 @@ begin
   ctl := to_integer(clkCtlReg);
   loadValue(ctl, clkCtlSize);
 
-  --delayQuad(500);
-  delay(3600);
+  delayQuad(360);
+  -- delay(3600);
   loadParm(base + F_Dist_Base + F_Ld_Dist);
   loadValue(dist, distBits);
+  -- delayQuad(500);
   delay(5000);
 
   clkCtlReg := (others => '0');
@@ -415,6 +426,8 @@ begin
   loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
+
+  delayQuad(500);
   
   wait;
  end process;
