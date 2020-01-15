@@ -36,18 +36,18 @@ package SimProc is
 
  procedure loadShift(variable value : in integer;
                      constant bits : in natural;
-                     signal shift : out std_logic;
+                     signal shift : out boolean;
                      signal din : out std_logic);
 
  procedure loadCtl(variable value : in integer;
                    constant bits : in natural;
-                   signal shift : out std_logic;
+                   signal shift : out boolean;
                    signal din : out std_logic;
-                   signal load : out std_logic);
+                   signal load : out boolean);
 
  procedure readShift(constant bits : in natural;
-                     signal copy: out std_logic;
-                     signal shift : out std_logic;
+                     signal copy: out boolean;
+                     signal shift : out boolean;
                      signal dout : in std_logic);
 end SimProc;
 
@@ -128,59 +128,59 @@ package body SimProc is
 
  procedure loadShift(variable value : in integer;
                      constant bits : in natural;
-                     signal shift : out std_logic;
+                     signal shift : out boolean;
                      signal din : out std_logic) is
   variable tmp: std_logic_vector(32-1 downto 0);
  begin
   tmp := conv_std_logic_vector(value, 32);
-  shift <= '1';
+  shift <= true;
   for i in 0 to bits-1 loop
    din <= tmp(bits - 1);
    wait until clk = '1';
    tmp := tmp(31-1 downto 0) & tmp(31);
    wait until clk = '0';
   end loop;
-  shift <= '0';
+  shift <= false;
  end procedure loadShift;
 
  procedure loadCtl(variable value : in integer;
                    constant bits : in natural;
-                   signal shift : out std_logic;
+                   signal shift : out boolean;
                    signal din : out std_logic;
-                   signal load : out std_logic) is
+                   signal load : out boolean) is
   variable tmp : unsigned(32-1 downto 0);
  begin
   tmp := to_unsigned(value, 32);
-  shift <= '1';
+  shift <= true;
   for i in 0 to bits-1 loop
    din <= tmp(bits - 1);
    wait until clk = '1';
    tmp := shift_left(tmp, 1);
    wait until clk = '0';
   end loop;
-  shift <= '0';
-  load <= '1';
+  shift <= false;
+  load <= true;
   delay(2);
-  load <= '0';
+  load <= false;
  end procedure loadCtl;
 
  procedure readShift(constant bits : in natural;
-                     signal copy: out std_logic;
-                     signal shift : out std_logic;
+                     signal copy: out boolean;
+                     signal shift : out boolean;
                      signal dout : in std_logic) is
   variable tmp : unsigned(bits-1 downto 0);
  begin
-  copy <= '1';
+  copy <= true;
   delay(1);
-  copy <= '0';
+  copy <= false;
   delay(1);
-  shift <= '1';
+  shift <= true;
   for i in 0 to bits-1 loop
    wait until clk = '1';
    tmp := tmp(bits-2 downto 0) & dout;
    wait until clk = '0';
   end loop;
-  shift <= '0';
+  shift <= false;
   report "value " & integer'image(to_integer(tmp));
  end procedure readShift;
   

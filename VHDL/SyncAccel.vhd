@@ -41,10 +41,10 @@ entity SyncAccel is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  copy : in std_logic;
-  load : in std_logic;
+  copy : in boolean;
+  load : in boolean;
   init : in std_logic;                  --reset
   ena : in std_logic;                   --enable operation
   decel : in std_logic;
@@ -65,7 +65,7 @@ architecture Behavioral of SyncAccel is
           n : positive);
   port (
    clk : in std_logic;
-   shift : in std_logic;
+   shift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout  unsigned (n-1 downto 0));
@@ -136,9 +136,9 @@ architecture Behavioral of SyncAccel is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );

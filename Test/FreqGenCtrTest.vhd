@@ -51,9 +51,9 @@ ARCHITECTURE behavior OF FreqGenCtrTest IS
   port(
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    ena : in std_logic;
    pulseOut : out std_logic
    );
@@ -67,9 +67,9 @@ ARCHITECTURE behavior OF FreqGenCtrTest IS
  --Inputs
  signal clk : std_logic := '0';
  signal din : std_logic := '0';
- signal dshift : std_logic := '0';
+ signal dshift : boolean := false;
  signal op : unsigned(opBits-1 downto 0) := (others => '0');
- signal load : std_logic := '0';
+ signal load : boolean := false;
  signal ena : std_logic := '0';
 
  --Outputs
@@ -119,17 +119,17 @@ begin
   variable tmp: std_logic_vector(32-1 downto 0);
  begin
   tmp := conv_std_logic_vector(value, 32);
-  dshift <= '1';
+  dshift <= true;
   for i in 0 to bits-1 loop
    din <= tmp(bits - 1);
    wait until clk = '1';
    tmp := tmp(31-1 downto 0) & tmp(31);
    wait until clk = '0';
   end loop;
-  dshift <= '0';
-  load <= '1';
+  dshift <= false;
+  load <= true;
   delay(1);
-  load <= '0';
+  load <= false;
  end procedure loadShift;
 
  variable freqVal : natural;

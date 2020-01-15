@@ -36,9 +36,9 @@ entity ShiftOutN is
          outBits : positive);
  port (
   clk : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  load : in std_logic;
+  load : in boolean;
   data : in unsigned(n-1 downto 0);
   dout : out std_logic := '0'
   );
@@ -46,29 +46,30 @@ end ShiftOutN;
 
 architecture Behavioral of ShiftOutN is
 
- signal shiftSel : std_logic := '0';
+ signal shiftSel : boolean := false;
  signal shiftReg : unsigned(n-1 downto 0) := (n-1 downto 0 => '0');
  signal padding : integer range 0 to outBits-n;
 
 begin
 
  -- shiftSel <= '1' when op = opVal else '0';
- dout <= shiftReg(n-1) when ((shiftSel = '1') and (padding = 0)) else
+ dout <= shiftReg(n-1) when (shiftSel and (padding = 0)) else
          '0';
 
  shiftout: process (clk)
  begin
   if (rising_edge(clk)) then
    if (op = opVal) then
-    shiftSel <= '1';
+    shiftSel <= true;
    else
-    shiftSel <= '0';
+    shiftSel <= false;
    end if;
-   if ((shiftSel and load) = '1') then
+   
+   if (shiftSel and load) then
     shiftReg <= data;
     padding <= 32-n;
    else 
-    if ((shiftSel and dShift) = '1') then
+    if (shiftSel and dShift) then
      if (padding = 0) then
       shiftReg <= shiftReg(n-2 downto 0) & shiftReg(n-1);
      else

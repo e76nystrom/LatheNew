@@ -37,7 +37,7 @@ entity ShiftOpSel is
   clk : in std_logic;
   din : in std_logic;
   op : in unsigned (opBits-1 downto 0);
-  shift : in std_logic;
+  shift : in boolean;
   sel : out boolean := false;
   data : inout unsigned (n-1 downto 0) := (others => '0')
   );
@@ -59,7 +59,7 @@ begin
 
    sel <= opSel;
 
-   if (opSel and (shift = '1')) then
+   if (opSel and shift) then
     data <= data(n-2 downto 0) & din;
    end if;
   end if;

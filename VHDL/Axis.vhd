@@ -19,10 +19,10 @@ entity Axis is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
-  copy : in std_logic;
-  load : in std_logic;
+  copy : in boolean;
+  load : in boolean;
   extInit : in std_logic;               --reset
   extEna : in std_logic;                --enable operation
   extUpdLoc : in std_logic;
@@ -50,8 +50,8 @@ architecture Behavioral of Axis is
    clk : in std_logic;                   --clock
    din : in std_logic;                   --data in
    op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in std_logic;                 --shift data
-   load : in std_logic;                  --load to data register
+   shift : in boolean;                 --shift data
+   load : in boolean;                  --load to data register
    data : inout  unsigned (n-1 downto 0)); --data register
  end Component;
 
@@ -64,10 +64,10 @@ architecture Behavioral of Axis is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
    decel : in std_logic;
@@ -88,10 +88,10 @@ architecture Behavioral of Axis is
   Port (
    clk : in  std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);  --current reg address
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    init : in std_logic;                  --reset
    step : in std_logic;                  --all steps
    accelFlag : in std_logic;             --acceleration step
@@ -109,9 +109,9 @@ architecture Behavioral of Axis is
   Port (
    clk : in  std_logic;
    din : in std_logic;          --shift data in
-   dshift : in std_logic;       --shift clock in
+   dshift : in boolean;       --shift clock in
    op : in unsigned(opBits-1 downto 0); --operation code
-   copy : in std_logic;         --copy location for output
+   copy : in boolean;         --copy location for output
    setLoc : in std_logic;       --set location
    updLoc : in std_logic;       --location update enabled
    step : in std_logic;         --input step pulse

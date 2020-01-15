@@ -51,11 +51,11 @@ ARCHITECTURE behavior OF SPITest IS
    dsel : in std_logic;
    din : in std_logic;
    op : out unsigned(opBits-1 downto 0);
-   copy : out std_logic;
-   shift : out std_logic;
-   load : out std_logic;
-   header : inout std_logic;
-   spiActive : out std_logic
+   copy : out boolean;
+   shift : out boolean;
+   load : out boolean;
+   header : out boolean;
+   spiActive : out boolean
    --info : out std_logic_vector(2 downto 0) --state info
    );
  end component;
@@ -76,16 +76,16 @@ ARCHITECTURE behavior OF SPITest IS
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    ena : in boolean;
 
    dinOut : out std_logic;
-   dshiftOut : out std_logic;
+   dshiftOut : out boolean;
    opOut : out unsigned(opBits-1 downto 0);
-   loadOut : out std_logic
+   loadOut : out boolean
    );
  end Component;
 
@@ -103,11 +103,11 @@ ARCHITECTURE behavior OF SPITest IS
  signal op : unsigned(7 downto 0);
 
  --Outputs
- signal copy : std_logic;
- signal shift : std_logic;
- signal load : std_logic;
- signal header : std_logic;
- signal spiActive : std_logic;
+ signal copy : boolean;
+ signal shift : boolean;
+ signal load : boolean;
+ signal header : boolean;
+ signal spiActive : boolean;
  --signal info : std_logic_vector(2 downto 0);
  signal clkena1 : std_logic;
 
@@ -116,9 +116,9 @@ ARCHITECTURE behavior OF SPITest IS
 
  signal ena : boolean := false;
  signal dinOut : std_logic := '0';
- signal dshiftOut : std_logic := '0';
+ signal dshiftOut : boolean := false;
  signal opOut : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
- signal loadOut : std_logic := '0';
+ signal loadOut : boolean := false;
 
  -- Clock period definitions
  constant clk_period : time := 10 ns;

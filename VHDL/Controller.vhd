@@ -12,16 +12,16 @@ entity Controller is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
-  copy : in std_logic;
-  load : in std_logic;
+  copy : in boolean;
+  load : in boolean;
   ena : in boolean;
 
   dinOut : out std_logic := '0';
-  dshiftOut : out std_logic := '0';
+  dshiftOut : out boolean := false;
   opOut : out unsigned(opBits-1 downto 0) := (others => '0');
-  loadOut : out std_logic := '0'
+  loadOut : out boolean := false
   );
 end Controller;
 
@@ -35,7 +35,7 @@ architecture behavioral of  Controller is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    sel : out boolean;
    data : inout unsigned (n-1 downto 0)
    );
@@ -120,15 +120,15 @@ begin
   if (rising_edge(clk)) then
    case ctlState is
     when ctlIdle =>
-     if (opSel and (copy = '1')) then
+     if (opSel and copy) then
       ctlState <= ctlShift;
       count <= 7;
      end if;
 
     when ctlShift =>
-     if ((not opSel) or (load = '1')) then
+     if ((not opSel) or load) then
       ctlState <= ctlIdle;
-     elsif (dshift = '1') then
+     elsif (dshift) then
       if (count /= 0) then
        count <= count - 1;
       else
@@ -153,7 +153,7 @@ begin
    if (ena) then
     case runState is
      when rIdle =>
-      loadOut <= '0';
+      loadOut <= false;
       if (not empty) then
        rdOp <= unsigned(outData);
        rdAddress <= rdAddress + 1;
@@ -195,7 +195,7 @@ begin
        if (not empty) then
         data <= unsigned(outData);
         count <= 7;
-        dshiftOut <= '1';
+        dshiftOut <= true;
         rdAddress <= rdAddress + 1;
         dataCount <= dataCount - 1;
         runState <= rShift;
@@ -203,7 +203,7 @@ begin
         null;
        end if;
       else
-       loadOut <= '1';
+       loadOut <= true;
        runState <= rDone;
       end if;
 
@@ -212,13 +212,13 @@ begin
        count <= count - 1;
        data <= shift_left(data, 1);
       else
-       dshiftOut <= '0';
+       dshiftOut <= false;
        len <= len - 1;
        runState <= rData;
       end if;
 
      when rDone =>
-      loadOut <= '0';
+      loadOut <= false;
       opOut <= (others => '0');
       runState <= rIdle;
 

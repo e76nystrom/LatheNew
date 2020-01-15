@@ -36,8 +36,8 @@ entity FreqGen is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
-  load : in std_logic;
+  dshift : in boolean;
+  load : in boolean;
   op : in unsigned(opBits-1 downto 0);
   ena : in std_logic;
   pulseOut : out std_logic := '0'
@@ -52,7 +52,7 @@ architecture Behavioral of FreqGen is
          n : positive);
   port (
    clk : in std_logic;
-   shift : in std_logic;
+   shift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout  unsigned (freqBits-1 downto 0));

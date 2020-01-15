@@ -11,9 +11,9 @@ entity IndexClocks is
           outBits : positive);
  port (
   clk : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  copy : in std_logic;
+  copy : in boolean;
   ch : in std_logic;
   index : in std_logic;
   dout : out std_logic := '0'
@@ -29,9 +29,9 @@ architecture behavioral of  IndexClocks is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );

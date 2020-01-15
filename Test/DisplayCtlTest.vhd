@@ -20,11 +20,11 @@ architecture behavior OF DisplayCtlTest is
    clk : in std_logic;
    dsel : in Std_logic;
    din : in std_logic;
-   shift : in std_logic;
+   shift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    dout : in std_logic;
-   dspCopy : out std_logic;
-   dspShift : out std_logic;
+   dspCopy : out boolean;
+   dspShift : out boolean;
    dspOp : inout unsigned (opBits-1 downto 0);
    dspreg : inout unsigned (displayBits-1 downto 0)
    );
@@ -38,10 +38,10 @@ architecture behavior OF DisplayCtlTest is
    dsel : in std_logic;                   --spi select
    din : in std_logic;                    --spi data in
    op : out unsigned(opBits-1 downto 0); --op code
-   copy : out std_logic;          --copy data to be shifted out
-   shift : out std_logic;         --shift data
-   load : out std_logic;          --load data shifted in
-   header : inout std_logic
+   copy : out boolean;          --copy data to be shifted out
+   shift : out boolean;         --shift data
+   load : out boolean;          --load data shifted in
+   header : inout boolean
    --info : out std_logic_vector(2 downto 0) --state info
    );
  end Component;
@@ -53,9 +53,9 @@ architecture behavior OF DisplayCtlTest is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -69,11 +69,11 @@ architecture behavior OF DisplayCtlTest is
  signal clk : std_logic := '0';
  signal dsel : Std_logic := '1';
  signal din : std_logic := '0';
- signal shift : std_logic := '0';
+ signal shift : boolean := false;
  signal op : unsigned (opBits-1 downto 0) := (others => '0');
  signal dout : std_logic := '0';
- signal dspCopy : std_logic := '0';
- signal dspShift : std_logic := '0';
+ signal dspCopy : boolean := false;
+ signal dspShift : boolean := false;
  signal dspOp : unsigned (opBits-1 downto 0) := (others => '0');
  signal dspreg : unsigned (displayBits-1 downto 0) := (others => '0');
 

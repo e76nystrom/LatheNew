@@ -39,9 +39,9 @@ entity FreqGenCtr is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  load : in std_logic;
+  load : in boolean;
   ena : in std_logic;
   pulseOut : out std_logic := '0'
   );
@@ -55,7 +55,7 @@ architecture Behavioral of FreqGenCtr is
          n : positive);
   port (
    clk : in std_logic;
-   shift : in std_logic;
+   shift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    din : in std_logic;
    data : inout unsigned (n-1 downto 0));
@@ -146,7 +146,7 @@ begin
       if (ena = '0') then               --if enable cleared
        state <= idle;                   --return to idle state
       end if;
-      if ((op = opBase + F_Ld_Dbg_Count) and (load = '1')) then
+      if ((op = opBase + F_Ld_Dbg_Count) and load) then
        outputCounter <= countVal;
        freqCounter <= freqVal;          --reload counter
        state <= run;

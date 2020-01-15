@@ -24,10 +24,10 @@ architecture behavior OF AxisTest is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    extInit : in std_logic;               --reset
    extEna : in std_logic;                --enable operation
    extUpdLoc : in std_logic;
@@ -57,10 +57,10 @@ architecture behavior OF AxisTest is
  
  signal clk : std_logic := '0';
  signal din : std_logic := '0';
- signal dshift : std_logic := '0';
+ signal dshift : boolean := false;
  signal op : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
- signal copy : std_logic := '0';
- signal load : std_logic := '0';
+ signal copy : boolean := false;
+ signal load : boolean := false;
  signal extInit : std_logic := '0';
  signal extEna : std_logic := '0';
  signal extUpdLoc : std_logic := '0';
@@ -150,17 +150,17 @@ begin
   variable tmp: std_logic_vector(32-1 downto 0);
  begin
   tmp := conv_std_logic_vector(value, 32);
-  dshift <= '1';
+  dshift <= true;
   for i in 0 to bits-1 loop
    din <= tmp(bits - 1);
    wait until clk = '1';
    tmp := tmp(31-1 downto 0) & tmp(31);
    wait until clk = '0';
   end loop;
-  dshift <= '0';
-  load <= '1';
+  dshift <= false;
+  load <= true;
   delay(1);
-  load <= '0';
+  load <= false;
  end procedure loadShift;
 
  variable count : integer;

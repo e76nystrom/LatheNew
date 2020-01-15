@@ -36,10 +36,10 @@ entity RegCtr is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
   ena : in std_logic;
-  load : in std_logic;
+  load : in boolean;
   data : inout  unsigned (n-1 downto 0) := (n-1 downto 0 => '0');
   zero : inout std_logic := '0');
 end RegCtr;
@@ -54,7 +54,7 @@ architecture Behavioral of RegCtr is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    data : inout unsigned (n-1 downto 0)
    );
  end Component;

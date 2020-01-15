@@ -40,8 +40,8 @@ entity CtlReg is
   clk : in std_logic;                   --clock
   din : in std_logic;                   --data in
   op : in unsigned(opb-1 downto 0);     --current reg address
-  shift : in std_logic;                 --shift data
-  load : in std_logic;                  --load to data register
+  shift : in boolean;                   --shift data
+  load : in boolean;                    --load to data register
   data : inout unsigned (n-1 downto 0) := (others => '0')); --data register
 end CtlReg;
 
@@ -55,10 +55,10 @@ ctlreg1: process (clk)
  begin
   if (rising_edge(clk)) then
    if (op = opVal) then
-    if (load = '1') then             --if load set
+    if (load) then                   --if load set
      data <= sreg;                   --copy from shift reg to data reg
     else                             --if load not set
-     if (shift = '1') then           --if shift set
+     if (shift) then                 --if shift set
       sreg <= sreg(n-2 downto 0) & din; --shift data in
      end if;
     end if;

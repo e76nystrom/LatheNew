@@ -14,11 +14,11 @@ entity DisplayCtl is
   clk : in std_logic;
   dsel : in Std_logic;
   din : in std_logic;
-  shift : in std_logic;
+  shift : in boolean;
   op : in unsigned (opBits-1 downto 0);
   dout : in std_logic;
-  dspCopy : out std_logic := '0';
-  dspShift : out std_logic := '0';
+  dspCopy : out boolean := false;
+  dspShift : out boolean := false;
   dspOp : inout unsigned (opBits-1 downto 0) := (others => '0');
   dspreg : inout unsigned (displayBits-1 downto 0) := (others => '0')
   );
@@ -34,7 +34,7 @@ architecture behavioral of  DisplayCtl is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    data : inout unsigned (n-1 downto 0)
    );
  end Component;
@@ -66,19 +66,19 @@ begin
    case state is
     when idle =>
      if ((dspOp /= x"00") and (lastDsel = '0') and (dsel = '1')) then
-      dspCopy <= '1';
+      dspCopy <= true;
       count <= 32;
       state <= shiftVal;
      end if;
 
     when shiftVal =>
      dspReg <= dspReg(displayBits-2 downto 0) & dout;
-     dspCopy <= '0';
+     dspCopy <= false;
      if (count = 0) then
-      dspShift <= '0';
+      dspShift <= false;
       state <= idle;
      else
-      dspShift <= '1';
+      dspShift <= true;
       count <= count - 1;
      end if;
    end case;

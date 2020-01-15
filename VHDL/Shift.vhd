@@ -34,7 +34,7 @@ entity Shift is
  port(
   clk : in std_logic;
   din : in std_logic;
-  shift : in std_logic;
+  shift : in boolean;
   data : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end Shift;
@@ -46,7 +46,7 @@ begin
 shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (shift = '1') then
+   if (shift) then
     data <= data(n-2 downto 0) & din;
    end if;
   end if;

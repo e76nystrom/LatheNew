@@ -50,10 +50,10 @@ ARCHITECTURE behavior OF PhaseCtrTest IS
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  copy : in std_logic;
-  load : in std_logic;
+  copy : in boolean;
+  load : in boolean;
   init : in std_logic;
   genSync : in std_logic;
   ch : in std_logic;
@@ -71,10 +71,10 @@ ARCHITECTURE behavior OF PhaseCtrTest IS
 
  --Inputs
  signal din : std_logic := '0';
- signal dshift : std_logic := '0';
+ signal dshift : boolean := false;
  signal op : unsigned (opBits-1 downto 0) := (opBits-1 downto 0 => '0');
- signal copy : std_logic := '0';
- signal load : std_logic := '0';
+ signal copy : boolean := false;
+ signal load : boolean := false;
  signal init : std_logic := '0';
  signal genSync : std_logic := '0';
  signal ch : std_logic := '0';

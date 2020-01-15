@@ -48,12 +48,12 @@ architecture Behavioral of LatheNew is
    dclk : in std_logic;                  --spi clk
    dsel : in std_logic;                  --spi select
    din : in std_logic;                   --spi data in
-   shift : out std_logic;                --shift data
+   shift : out boolean;                  --shift data
    op : out unsigned(opBits-1 downto 0);  --op code
-   copy : out std_logic;                 --copy data to be shifted out
-   load : out std_logic;                 --load data shifted in
-   header : inout std_logic;
-   spiActive : out std_logic
+   copy : out boolean;                   --copy data to be shifted out
+   load : out boolean;                   --load data shifted in
+   header : out boolean;
+   spiActive : out boolean
    );
  end Component;
 
@@ -76,11 +76,11 @@ architecture Behavioral of LatheNew is
    clk : in std_logic;
    dsel : in Std_logic;
    din : in std_logic;
-   shift : in std_logic;
+   shift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    dout : in std_logic;
-   dspCopy : out std_logic;
-   dspShift : out std_logic;
+   dspCopy : out boolean;
+   dspShift : out boolean;
    dspOp : inout unsigned (opBits-1 downto 0);
    dspreg : inout unsigned (displayBits-1 downto 0)
    );
@@ -93,9 +93,9 @@ architecture Behavioral of LatheNew is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -121,10 +121,10 @@ architecture Behavioral of LatheNew is
   port(
    clk : in std_logic;                   --system clock
    din : in std_logic;                   --spi data in
-   dshift : in std_logic;                --spi shift signal
+   dshift : in boolean;                  --spi shift signal
    op : in unsigned (opBits-1 downto 0); --current operation
-   copy : in std_logic;                  --copy for output
-   load : in std_logic;                  --load value
+   copy : in boolean;                    --copy for output
+   load : in boolean;                    --load value
    init : in std_logic;                  --init signal
    ena : in std_logic;                   --enable input
    ch : in std_logic;                    --input clock
@@ -150,8 +150,8 @@ architecture Behavioral of LatheNew is
    clk : in std_logic;                   --clock
    din : in std_logic;                   --data in
    op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in std_logic;                 --shift data
-   load : in std_logic;                  --load to data register
+   shift : in boolean;                   --shift data
+   load : in boolean;                    --load to data register
    data : inout  unsigned (n-1 downto 0));
  end Component;
 
@@ -164,10 +164,10 @@ architecture Behavioral of LatheNew is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    init : in std_logic;
    genSync : in std_logic;
    ch : in std_logic;
@@ -184,9 +184,9 @@ architecture Behavioral of LatheNew is
            outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in std_logic;
+   copy : in boolean;
    ch : in std_logic;
    index : in std_logic;
    dout : out std_logic
@@ -200,9 +200,9 @@ architecture Behavioral of LatheNew is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    ena : in std_logic;
    pulseOut : out std_logic
    );
@@ -216,9 +216,9 @@ architecture Behavioral of LatheNew is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    ena : in std_logic;
    pulseOut : out std_logic
    );
@@ -253,10 +253,10 @@ architecture Behavioral of LatheNew is
   port (
    clk : in std_logic;
    din : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   copy : in std_logic;
-   load : in std_logic;
+   copy : in boolean;
+   load : in boolean;
    extInit : in std_logic;               --reset
    extEna : in std_logic;                --enable operation
    extUpdLoc : in std_logic;
@@ -363,24 +363,24 @@ architecture Behavioral of LatheNew is
 
  -- spi interface
 
- signal spiCopy : std_logic := '0';
- signal spiShift : std_logic := '0';
+ signal spiCopy : boolean := false;
+ signal spiShift : boolean := false;
  signal spiOp : unsigned (opBits-1 downto 0) := (others => '0');
- signal spiActive : std_logic := '0';
+ signal spiActive : boolean := false;
 
  signal internalDout : std_logic;
 
- signal copy : std_logic;               --copy to output register
- signal dshift : std_logic;             --shift data
- signal load : std_logic;               --load to register
+ signal copy : boolean;               --copy to output register
+ signal dshift : boolean;             --shift data
+ signal load : boolean;               --load to register
  signal op : unsigned (opBits-1 downto 0); --operation code
- signal header : std_logic;
+ -- signal header : boolean;
 
  -- display
 
  constant displayBits : positive := 16;
- signal dspCopy : std_logic;
- signal dspShift : std_logic;
+ signal dspCopy : boolean;
+ signal dspShift : boolean;
  signal dspOp : unsigned (opBits-1 downto 0);
 
  signal dspData : unsigned (displayBits-1 downto 0);
@@ -564,9 +564,9 @@ begin
                  EncDout or zDOut or xDOut;
  dout <= internalDout;
 
- dshift <= spiShift when spiActive = '1' else dspShift;
- op <= spiOp when spiActive = '1' else dspOp;
- copy <= spiCopy when spiActive = '1' else dspCopy;
+ dshift <= spiShift when spiActive else dspShift;
+ op <= spiOp when spiActive else dspOp;
+ copy <= spiCopy when spiActive else dspCopy;
  -- dshift <= spiShift;
  -- op <= spiOp;
  -- copy <= spiCopy;
@@ -582,7 +582,7 @@ begin
    op => spiOp,
    copy => spiCopy,
    load => load,
-   header => header,
+   header => open,
    spiActive => spiActive
    );
 

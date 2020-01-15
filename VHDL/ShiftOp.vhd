@@ -37,7 +37,7 @@ entity ShiftOp is
   clk : in std_logic;
   din : in std_logic;
   op : in unsigned (opBits-1 downto 0);
-  shift : in std_logic;
+  shift : in boolean;
   data : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end ShiftOp;
@@ -49,7 +49,7 @@ begin
 shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
-   if ((op = opVal) and (shift = '1')) then
+   if ((op = opVal) and shift) then
     data <= data(n-2 downto 0) & din;
    end if;
   end if;

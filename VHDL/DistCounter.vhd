@@ -39,10 +39,10 @@ entity DistCounter is
  Port (
   clk : in  std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);  --current reg address
-  copy : in std_logic;
-  load : in std_logic;
+  copy : in boolean;
+  load : in boolean;
   init : in std_logic;                  --reset
   step : in std_logic;                  --all steps
   accelFlag : in std_logic;             --acceleration step
@@ -62,7 +62,7 @@ architecture Behavioral of DistCounter is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    data : inout unsigned (n-1 downto 0)
    );
  end Component;
@@ -74,9 +74,9 @@ architecture Behavioral of DistCounter is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -150,7 +150,7 @@ begin
     end if;
    end if;
 
-   if ((op = opBase + F_Ld_Dist) and (load = '1')) then
+   if ((op = opBase + F_Ld_Dist) and load) then
     distUpdate <= '1';                  --update distance
    end if;
   end if;

@@ -41,10 +41,10 @@ entity Encoder is
  port(
   clk : in std_logic;                   --system clock
   din : in std_logic;                   --spi data in
-  dshift : in std_logic;                --spi shift signal
+  dshift : in boolean;                --spi shift signal
   op : in unsigned (opBits-1 downto 0); --current operation
-  copy : in std_logic;                  --copy for output
-  load : in std_logic;                  --load value
+  copy : in boolean;                  --copy for output
+  load : in boolean;                  --load value
   init : in std_logic;                  --init signal
   ena : in std_logic;                   --enable input
   ch : in std_logic;                    --input clock
@@ -65,9 +65,9 @@ architecture Behavioral of Encoder is
   port(
    clk : in std_logic;                   --system clock
    din : in std_logic;                   --spi data in
-   dshift : in std_logic;                --spi shift signal
+   dshift : in boolean;                --spi shift signal
    op: in unsigned (opBits-1 downto 0);  --current operation
-   copy: in std_logic;                   --copy for output
+   copy: in boolean;                   --copy for output
    init : in std_logic;                  --init signal
    ena : in std_logic;                   --enable input
    encClk : in std_logic;                --encoder clock
@@ -86,9 +86,9 @@ architecture Behavioral of Encoder is
   port(
    clk : in std_logic;                  --system clock
    din : in std_logic;                  --spi data in
-   dshift : in std_logic;               --spi shift in
+   dshift : in boolean;               --spi shift in
    op: in unsigned (opBits-1 downto 0); --current operation
-   copy: in std_logic;                  --copy for output
+   copy: in boolean;                  --copy for output
    dout: out std_logic;                 --data out
    init : in std_logic;                 --init signal
    intClk : out std_logic;              --output clock

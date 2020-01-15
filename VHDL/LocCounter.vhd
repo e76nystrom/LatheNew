@@ -38,15 +38,16 @@ entity LocCounter is
          outBits : positive);
  Port (
   clk : in  std_logic;
-  din : in std_logic;          --shift data in
-  dshift : in std_logic;       --shift clock in
-  op : in unsigned(opBits-1 downto 0); --operation code
-  copy : in std_logic;         --copy location for output
-  setLoc : in std_logic;       --set location
-  updLoc : in std_logic;       --location update enabled
-  step : in std_logic;         --input step pulse
-  dir : in std_logic;          --direction
-  dout : out std_logic;        --data out
+  din : in std_logic;                   --shift data in
+
+  dshift : in boolean;                  --shift clock in
+  op : in unsigned(opBits-1 downto 0);  --operation code
+  copy : in boolean;                    --copy location for output
+  setLoc : in std_logic;                --set location
+  updLoc : in std_logic;                --location update enabled
+  step : in std_logic;                  --input step pulse
+  dir : in std_logic;                   --direction
+  dout : out std_logic;                 --data out
   loc : inout unsigned(locBits-1 downto 0) --current location
   );
 end LocCounter;
@@ -61,7 +62,7 @@ architecture Behavioral of LocCounter is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    data : inout unsigned (n-1 downto 0)
    );
  end Component;
@@ -83,9 +84,9 @@ architecture Behavioral of LocCounter is
           outBits : positive);
   port (
    clk : in std_logic;
-   dshift : in std_logic;
+   dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in std_logic;
+   load : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );

@@ -32,16 +32,16 @@ use IEEE.NUMERIC_STD.ALL;
 entity SPI is
  generic (opBits : positive := 8);
  port (
-  clk : in std_logic;                    --system clock
-  dclk : in std_logic;                   --spi clk
-  dsel : in std_logic;                   --spi select
-  din : in std_logic;                    --spi data in
+  clk : in std_logic;                   --system clock
+  dclk : in std_logic;                  --spi clk
+  dsel : in std_logic;                  --spi select
+  din : in std_logic;                   --spi data in
   op : out unsigned(opBits-1 downto 0) := (others => '0'); --op code
-  copy : out std_logic := '0';          --copy data to be shifted out
-  shift : out std_logic := '0';         --shift data
-  load : out std_logic := '0';          --load data shifted in
-  header : inout std_logic := '0';      --receiving header
-  spiActive : out std_logic := '0'
+  copy : out boolean := false;          --copy data to be shifted out
+  shift : out boolean := false;         --shift data
+  load : out boolean := false;          --load data shifted in
+  header : out boolean := true;         --receiving header
+  spiActive : out boolean := false
   --info : out std_logic_vector(2 downto 0) --state info
   );
 end SPI;
@@ -60,15 +60,15 @@ architecture Behavioral of SPI is
                   active, dclk_wait, load_reg);
  signal state : spi_fsm := start;
 
- signal count : unsigned(3 downto 0) := "1000";
+ signal count : integer range 0 to opBits := opBits;
  signal opReg : unsigned(opbits-1 downto 0) := (others => '0');
 
  signal clkena : std_logic;
  constant n : positive := 4;
  signal dseldly : std_logic_vector(n-1 downto 0) := (others => '1');
- signal dselEna : std_logic := '0';
- signal dselDis : std_logic := '0';
- signal msgData : std_logic := '0';
+ signal dselEna : boolean := false;
+ signal dselDis : boolean := false;
+ signal msgData : boolean := false;
 
  --function convert(a: spi_fsm) return std_logic_vector is
  --begin
@@ -97,8 +97,8 @@ begin
    ena => dclk,
    clkena =>clkena);
 
- dselEna <= '1' when dseldly = (n-1 downto 0 => '0') else '0';
- dselDis <= '1' when dseldly = (n-1 downto 0 => '1') else '0';
+ dselEna <= True when dseldly = (n-1 downto 0 => '0') else False;
+ dselDis <= True when dseldly = (n-1 downto 0 => '1') else False;
 
  din_proc: process(clk)
  begin
@@ -106,28 +106,28 @@ begin
    dseldly <= dseldly(n-2 downto 0) & dsel;
    case state is
     when start =>
-     if (dselDis = '1') then
+     if (dselDis) then
       op <= (opBits-1 downto 0 => '0');
       state <= idle;
      end if;
 
     when idle =>
-     shift <= '0';
-     load <= '0';
-     copy <= '0';
-     if (dselEna = '1') then
-      header <= '1';
-      spiActive <= '1';
-      msgData <= '0';
+     shift <= false;
+     load <= false;
+     copy <= false;
+     if (dselEna) then
+      header <= true;
+      spiActive <= true;
+      msgData <= false;
       opReg <= (opBits-1 downto 0 => '0');
-      count <= "1000";
+      count <= opBits;
       state <= read_hdr;
      else
-      spiActive <= '0';
+      spiActive <= false;
      end if;
 
     when read_hdr =>
-     if (dselDis = '1') then
+     if (dselDis) then
       state <= idle;
      else
       if (clkena = '1') then
@@ -141,40 +141,40 @@ begin
      state <= chk_count;
 
     when chk_count =>
-     if (count = "0000") then
+     if (count = 0) then
       op <= opReg;
-      header <= '0';
+      header <= false;
       state <= copy_data;
      else
       state <= read_hdr;
      end if;
 
     when copy_data =>
-     copy <= '1';
+     copy <= true;
      state <= active;
 
     when active =>
-     copy <= '0';
-     if (dselDis = '1') then
-      if (msgdata = '1') then
-       msgData <= '0';
-       load <= '1';
+     copy <= false;
+     if (dselDis) then
+      if (msgdata) then
+       msgData <= false;
+       load <= true;
        state <= load_reg;
       end if;
      else
       if (clkena = '1') then
-       msgData <= '1';
-       shift <= '1';
+       msgData <= True;
+       shift <= true;
        state <= dclk_wait;
       end if;
      end if;
 
     when dclk_wait =>
-     shift <= '0';
+     shift <= false;
      state <= active;
  
     when load_reg =>
-     load <= '0';
+     load <= false;
      op <= to_unsigned(0, opBits);
      state <= idle;
 
