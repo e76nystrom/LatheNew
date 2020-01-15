@@ -175,6 +175,7 @@ begin
  
     when load_reg =>
      load <= '0';
+     op <= to_unsigned(0, opBits);
      state <= idle;
 
    end case;

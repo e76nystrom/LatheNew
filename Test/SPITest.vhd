@@ -68,8 +68,30 @@ ARCHITECTURE behavior OF SPITest IS
    clkena : out std_logic);
  end component;
 
+ component Controller is
+  generic (opBase : unsigned;
+           opBits : positive;
+           addrBits : positive
+           );
+  port (
+   clk : in std_logic;
+   din : in std_logic;
+   dshift : in std_logic;
+   op : in unsigned(opBits-1 downto 0);
+   copy : in std_logic;
+   load : in std_logic;
+   ena : in boolean;
+
+   dinOut : out std_logic;
+   dshiftOut : out std_logic;
+   opOut : out unsigned(opBits-1 downto 0);
+   loadOut : out std_logic
+   );
+ end Component;
+
  constant valBits : positive := 32;
  constant opBits : integer := 8;
+ constant byteBits : integer := 8;
  
  --Inputs
  signal clk : std_logic := '0';
@@ -88,6 +110,15 @@ ARCHITECTURE behavior OF SPITest IS
  signal spiActive : std_logic;
  --signal info : std_logic_vector(2 downto 0);
  signal clkena1 : std_logic;
+
+ constant opBase : unsigned := x"00";
+ constant addrBits : positive := 8;
+
+ signal ena : boolean := false;
+ signal dinOut : std_logic := '0';
+ signal dshiftOut : std_logic := '0';
+ signal opOut : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
+ signal loadOut : std_logic := '0';
 
  -- Clock period definitions
  constant clk_period : time := 10 ns;
@@ -119,6 +150,26 @@ begin
    clk => clk,
    ena => dclk,
    clkena =>clkena1);
+
+ uut1 : Controller
+  generic map (opBase => opBase + F_Ctrl_Base,
+               opBits => opBits,
+               addrBits => addrBits
+               )
+  port map (
+   clk => clk,
+   din => din,
+   dshift => shift,
+   op => op,
+   copy => copy,
+   load => load,
+   ena => ena,
+
+   dinOut => dinOut,
+   dshiftOut => dshiftOut,
+   opOut => opOut,
+   loadOut => loadOut
+   );
 
  -- Clock process definitions
  clk_process :process
@@ -182,6 +233,14 @@ begin
    delay(10);
   end procedure loadValue;
 
+  procedure loadValueC(constant value : in integer;
+                       constant bits : in natural) is
+   variable tmp : integer;
+  begin
+   tmp := value;
+   loadValue(tmp, bits);
+  end procedure loadValueC;
+  
   procedure loadMid(variable value : in integer;
                     constant bits : in natural) is
    variable tmp : std_logic_vector (32-1 downto 0);
@@ -199,8 +258,15 @@ begin
    dclk <= '0';
   end procedure loadMid;
 
+  procedure loadMidC(constant value : in integer;
+                     constant bits : in natural) is
+   variable tmp : integer;
+  begin
+   tmp := value;
+   loadMid(tmp, bits);
+  end procedure loadMidC;
+  
   variable parm : unsigned(opBits-1 downto 0) :=  (opBits-1 downto 0 => '0');
-  variable value : unsigned(31 downto 0) :=  (31 downto 0 => '0');
   variable val : integer := 16#12345678#;
 
  begin		
@@ -212,35 +278,9 @@ begin
   -- insert stimulus here 
 
   parm := to_unsigned(16#a5#, 8);
-  value := to_unsigned(16#12345678#, valBits);
 
   wait for clk_period*2;
   
-  -- dsel <= '0';
-  -- delay(10);
-  -- for i in 0 to 7 loop
-  --  dclk <= '0';
-  --  din <= parm(7);
-  --  parm := shift_left(parm,1);
-  --  delay(6);
-  --  dclk <= '1';
-  --  delay(6);
-  -- end loop;
-
-  -- dsel <= '1';
-  -- delay(20);
-  -- dsel <= '0';
-
-  -- for i in 0 to 31 loop
-  --  dclk <= '0';
-  --  din <= value(31);
-  --  value := shift_left(value,1);
-  --  delay(6);
-  --  dclk <= '1';
-  --  delay(6);
-  -- end loop;
-  -- dsel <= '1';
-
   delay(5);
 
   loadParm(parm);
@@ -250,7 +290,42 @@ begin
   val := 16#12345678#;
   loadValue(val, valBits);
 
+  delay(10);
+
+  parm := F_Ctrl_Base + F_Ld_Ctrl_Data;
+  loadParm(parm);
+
+  val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd);
+  loadMid(val, opBits);
+  delay(5);
+  val := 0;
+  loadMid(val, byteBits);
+
+  delay(5);
+
+  val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_D);
+  loadMid(val, byteBits);
+  delay(5);
+  loadMidC(4, byteBits);
+  delay(5);
+  loadMidC(100000, 32);
+  
+  delay(5);
+  
+  val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1);
+  loadMid(val, byteBits);
+  delay(5);
+  loadMidC(4, byteBits);
+  delay(5);
+  loadValueC(1000000, 32);
+
   delay(20);
+
+  ena <= true;
+
+  delay(100);
+
+  ena <= false;
   
   wait;
  end process;

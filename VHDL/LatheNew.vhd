@@ -305,7 +305,7 @@ architecture Behavioral of LatheNew is
  -- constant idxClkBits : positive := 16; 
 
  constant freqBits : positive := 16;
- constant freqcountBits : positive := 32;
+ constant freqCountBits : positive := 32;
 
  constant cycleLenBits : positive := 16;
  constant encClkBits : positive := 24;
