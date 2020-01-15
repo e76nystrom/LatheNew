@@ -27,10 +27,14 @@
 --------------------------------------------------------------------------------
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
+use ieee.std_logic_arith.conv_std_logic_vector;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
 USE ieee.numeric_std.ALL;
+
+use work.SimProc.all;
+use work.RegDef.all;
 
 ENTITY SPITest IS
 END SPITest;
@@ -40,7 +44,7 @@ ARCHITECTURE behavior OF SPITest IS
  -- Component Declaration for the Unit Under Test (UUT)
  
  component SPI
- generic (opBits : positive := 8);
+  generic (opBits : positive := 8);
   PORT(
    clk : in std_logic;
    dclk : in std_logic;
@@ -57,32 +61,14 @@ ARCHITECTURE behavior OF SPITest IS
  end component;
 
  component ClockEnableN is
- generic (n : positive);
+  generic (n : positive);
   Port (
    clk : in  std_logic;
    ena : in  std_logic;
    clkena : out std_logic);
  end component;
 
- --component Shift is
- -- generic(n : positive);
- -- Port(
- --  clk : in  std_logic;
- --  shift : in std_logic;
- --  din : in std_logic;
- --  data : inout  unsigned (n-1 downto 0));
- --end component;
-
- --component CtlReg is
- -- generic(n : positive);
- -- port (
- --  clk : in std_logic;
- --  din : in std_logic;
- --  shift : in std_logic;
- --  load : in std_logic;
- --  data : inout  unsigned (n-1 downto 0));
- --end component;
-
+ constant valBits : positive := 32;
  constant opBits : integer := 8;
  
  --Inputs
@@ -105,39 +91,12 @@ ARCHITECTURE behavior OF SPITest IS
 
  -- Clock period definitions
  constant clk_period : time := 10 ns;
- 
- procedure delay(constant n : in integer) is
- begin
-  for i in 0 to n loop
-   wait until clk = '1';
-   wait until clk = '0';
-  end loop;
- end procedure delay;
-
- --procedure send(signal val : in unsigned(7 downto 0)) is
- -- variable tmp : unsigned(7 downto 0);
- --begin
- -- tmp <= val;
- -- dsel <= '0';
- -- delay(5);
- -- for i in 0 to 7 loop
- --  dclk <= '0';
- --  din <= tmp(7);
- --  tmp <= shift_left(tmp,1);
- --  delay(3);
- --  dclk <= '1';
- --  delay(3);
- -- end loop;
- --end procedure send;
-
- signal tmp : unsigned(opBits-1 downto 0) :=  (opBits-1 downto 0 => '0');
- signal tmp1 : unsigned(31 downto 0) :=  (31 downto 0 => '0');
 
  constant testBits : integer := 32;
  --signal test_reg : unsigned(testBits-1 downto 0);
  signal test1_reg : unsigned(testBits-1 downto 0);
 
-BEGIN
+begin
  
  -- Instantiate the Unit Under Test (UUT)
  uut: SPI port MAP (
@@ -160,23 +119,6 @@ BEGIN
    clk => clk,
    ena => dclk,
    clkena =>clkena1);
- 
- --testreg: Shift
- -- generic map(testBits)
- -- port map (
- --  clk => clk,
- --  shift => dshift,
- --  din => din,
- --  data => test_reg);
-
- --test1reg: CtlReg
- -- generic map(testBits)
- -- port map (
- --  clk => clk,
- --  din => din,
- --  shift => shift,
- --  load => load,
- --  data => test1_reg);
 
  -- Clock process definitions
  clk_process :process
@@ -188,7 +130,79 @@ BEGIN
  end process;
  
  -- Stimulus process
+
  stim_proc: process
+
+  procedure delay(constant n : in integer) is
+  begin
+   for i in 0 to n-1 loop
+    wait until (clk = '1');
+    wait until (clk = '0');
+   end loop;
+  end procedure delay;
+
+  procedure loadParm(constant parmIdx : in unsigned (opbx-1 downto 0)) is
+   variable i : integer := 0;
+   variable tmp : unsigned (opbx-1 downto 0);
+  begin
+   dsel <= '0';                          --start of load
+   delay(10);
+
+   tmp := parmIdx;
+   for i in 0 to opbx-1 loop             --load parameter
+    dclk <= '0';
+    din <= tmp(opbx-1);
+    tmp := shift_left(tmp, 1);
+    delay(2);
+    dclk <= '1';
+    delay(6);
+   end loop;
+   din <= '0';
+   dclk <= '0';
+
+   delay(10);
+  end procedure loadParm;
+
+  procedure loadValue(variable value : in integer;
+                      constant bits : in natural) is
+   variable tmp : std_logic_vector (32-1 downto 0);
+  begin
+   tmp := conv_std_logic_vector(value, 32);
+   for i in 0 to bits-1 loop             --load value
+    dclk <= '0';
+    din <= tmp(bits-1);
+    delay(2);
+    dclk <= '1';
+    tmp := tmp(31-1 downto 0) & tmp(31);
+    delay(6);
+   end loop;
+   din <= '0';
+   dclk <= '0';
+   dsel <= '1';                          --end of load
+   delay(10);
+  end procedure loadValue;
+
+  procedure loadMid(variable value : in integer;
+                    constant bits : in natural) is
+   variable tmp : std_logic_vector (32-1 downto 0);
+  begin
+   tmp := conv_std_logic_vector(value, 32);
+   for i in 0 to bits-1 loop             --load value
+    dclk <= '0';
+    din <= tmp(bits-1);
+    delay(2);
+    dclk <= '1';
+    tmp := tmp(31-1 downto 0) & tmp(31);
+    delay(6);
+   end loop;
+   din <= '0';
+   dclk <= '0';
+  end procedure loadMid;
+
+  variable parm : unsigned(opBits-1 downto 0) :=  (opBits-1 downto 0 => '0');
+  variable value : unsigned(31 downto 0) :=  (31 downto 0 => '0');
+  variable val : integer := 16#12345678#;
+
  begin		
   -- hold reset state for 100 ns.
   wait for 100 ns;	
@@ -197,41 +211,48 @@ BEGIN
 
   -- insert stimulus here 
 
-  tmp <= to_unsigned(16#a5#,8);
-  tmp1 <= to_unsigned(16#12345678#,32);
+  parm := to_unsigned(16#a5#, 8);
+  value := to_unsigned(16#12345678#, valBits);
 
-  --send(tmp);
-  
   wait for clk_period*2;
   
-  dsel <= '0';
+  -- dsel <= '0';
+  -- delay(10);
+  -- for i in 0 to 7 loop
+  --  dclk <= '0';
+  --  din <= parm(7);
+  --  parm := shift_left(parm,1);
+  --  delay(6);
+  --  dclk <= '1';
+  --  delay(6);
+  -- end loop;
+
+  -- dsel <= '1';
+  -- delay(20);
+  -- dsel <= '0';
+
+  -- for i in 0 to 31 loop
+  --  dclk <= '0';
+  --  din <= value(31);
+  --  value := shift_left(value,1);
+  --  delay(6);
+  --  dclk <= '1';
+  --  delay(6);
+  -- end loop;
+  -- dsel <= '1';
+
+  delay(5);
+
+  loadParm(parm);
+  val := 10;
+  loadMid(val, 8);
   delay(10);
-  for i in 0 to 7 loop
-   dclk <= '0';
-   din <= tmp(7);
-   tmp <= shift_left(tmp,1);
-   delay(6);
-   dclk <= '1';
-   delay(6);
-  end loop;
-
-  dsel <= '1';
-  delay(20);
-  dsel <= '0';
-
-  for i in 0 to 31 loop
-   dclk <= '0';
-   din <= tmp1(31);
-   tmp1 <= shift_left(tmp1,1);
-   delay(6);
-   dclk <= '1';
-   delay(6);
-  end loop;
-  dsel <= '1';
+  val := 16#12345678#;
+  loadValue(val, valBits);
 
   delay(20);
   
   wait;
  end process;
 
-END;
+end;
