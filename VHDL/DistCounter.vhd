@@ -41,8 +41,10 @@ entity DistCounter is
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);  --current reg address
-  copy : in boolean;
   load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned(opBits-1 downto 0); --current reg address
+  copyR : in boolean;
   init : in std_logic;                  --reset
   step : in std_logic;                  --all steps
   accelFlag : in std_logic;             --acceleration step
@@ -163,9 +165,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => distCtr,
    dout => distDout);
 
@@ -176,9 +178,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => aclSteps,
    dout => aclStepsDout);
 

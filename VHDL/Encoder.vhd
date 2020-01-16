@@ -39,17 +39,19 @@ entity Encoder is
          cycleClkbits : positive := 32;
          outBits : positive := 32);
  port(
-  clk : in std_logic;                   --system clock
-  din : in std_logic;                   --spi data in
-  dshift : in boolean;                --spi shift signal
-  op : in unsigned (opBits-1 downto 0); --current operation
-  copy : in boolean;                  --copy for output
-  load : in boolean;                  --load value
-  init : in std_logic;                  --init signal
-  ena : in std_logic;                   --enable input
-  ch : in std_logic;                    --input clock
-  dout : out std_logic := '0';          --data out
-  intclk : out std_logic := '0'         --output clock
+  clk : in std_logic;                    --system clock
+  din : in std_logic;                    --spi data in
+  dshift : in boolean;                   --spi shift signal
+  op : in unsigned (opBits-1 downto 0);  --current operation
+  load : in boolean;                     --load value
+  dshiftR : in boolean;                  --spi shift signal
+  opR : in unsigned (opBits-1 downto 0); --current operation
+  copyR : in boolean;                    --copy for output
+  init : in std_logic;                   --init signal
+  ena : in std_logic;                    --enable input
+  ch : in std_logic;                     --input clock
+  dout : out std_logic := '0';           --data out
+  intclk : out std_logic := '0'          --output clock
   );
 end Encoder;
 
@@ -63,16 +65,18 @@ architecture Behavioral of Encoder is
            cycleClkbits : positive := 32;
            outBits : positive := 32);
   port(
-   clk : in std_logic;                   --system clock
-   din : in std_logic;                   --spi data in
-   dshift : in boolean;                --spi shift signal
+   clk : in std_logic;                  --system clock
+   din : in std_logic;                  --spi data in
+   dshift : in boolean;                 --spi shift signal
    op: in unsigned (opBits-1 downto 0);  --current operation
-   copy: in boolean;                   --copy for output
-   init : in std_logic;                  --init signal
-   ena : in std_logic;                   --enable input
-   encClk : in std_logic;                --encoder clock
-   dout: out std_logic;                  --data out
-   encCycleDone: out std_logic;          --encoder cycle done
+   dshiftR : in boolean;                --spi shift signal
+   opR: in unsigned (opBits-1 downto 0);  --current operation
+   copyR: in boolean;                   --copy for output
+   init : in std_logic;                 --init signal
+   ena : in std_logic;                  --enable input
+   encClk : in std_logic;               --encoder clock
+   dout: out std_logic;                 --data out
+   encCycleDone: out std_logic;         --encoder cycle done
    cycleClocks: inout unsigned (cycleClkBits-1 downto 0) --cycle counter
    );
  end component;
@@ -86,9 +90,8 @@ architecture Behavioral of Encoder is
   port(
    clk : in std_logic;                  --system clock
    din : in std_logic;                  --spi data in
-   dshift : in boolean;               --spi shift in
+   dshift : in boolean;                 --spi shift in
    op: in unsigned (opBits-1 downto 0); --current operation
-   copy: in boolean;                  --copy for output
    dout: out std_logic;                 --data out
    init : in std_logic;                 --init signal
    intClk : out std_logic;              --output clock
@@ -121,8 +124,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    init => init,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    ena => ena,
    encClk => ch,
    dout => cmpTmrDout,
@@ -144,7 +149,6 @@ begin
    dshift => dshift,
    init => init,
    op => op,
-   copy => copy,
    dout => intTmrDout,
    intClk => intClkOut,
    encCycleDone => encCycleDone,

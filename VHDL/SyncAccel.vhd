@@ -43,8 +43,10 @@ entity SyncAccel is
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  copy : in boolean;
   load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned (opBits-1 downto 0);
+  copyR : in boolean;
   init : in std_logic;                  --reset
   ena : in std_logic;                   --enable operation
   decel : in std_logic;
@@ -288,9 +290,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => sum,
    dout => sumDout
    );
@@ -316,9 +318,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => accelSUm,
    dout => accelSumDout
    );
@@ -341,9 +343,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => accelCounter,
    dout => accelCtrDout
    );
@@ -364,9 +366,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => xPos,
    dout => xPosDout
    );
@@ -387,9 +389,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => yPos,
    dout => yPosDout
    );

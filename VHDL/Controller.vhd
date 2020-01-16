@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.conversion.all;
 
 entity Controller is
  generic (opBase : unsigned;
@@ -44,11 +45,11 @@ architecture behavioral of  Controller is
  component CMem IS
   port
    (
-    clock : in std_logic := '1';
+    clock : in std_logic;
     data  : in std_logic_vector (7 downto 0);
     rdaddress : in std_logic_vector (7 downto 0);
     wraddress : in std_logic_vector (7 downto 0);
-    wren : in std_logic := '0';
+    wren : in std_logic;
     q : out std_logic_vector (7 downto 0)
     );
  end component;
@@ -68,7 +69,7 @@ architecture behavioral of  Controller is
  signal dataCount : integer range 0 to (2 ** addrBits) - 1 := 0;
  signal empty : boolean := true;
 
- signal writeEna : std_logic := '0';
+ signal writeEna : boolean := false;
  signal opSel : boolean;
 
  signal outData : std_logic_vector (byteBits-1 downto 0);
@@ -108,7 +109,7 @@ begin
    data => std_logic_vector(dataReg),
    rdaddress => std_logic_vector(rdAddress),
    wraddress => std_logic_vector(wrAddress),
-   wren => writeEna,
+   wren => to_std_logic(writeEna),
    q => outData
    );
 
@@ -132,17 +133,17 @@ begin
       if (count /= 0) then
        count <= count - 1;
       else
-       writeEna <= '1';
+       writeEna <= true;
        count <= 7;
        ctlState <= ctlWrite;
       end if;
      end if;
 
     when CtlWrite =>
-     writeEna <= '0';
+     writeEna <= false;
      ctlState <= ctlUpdAdr;
 
-     when ctlUpdAdr =>
+    when ctlUpdAdr =>
      wrAddress <= wrAddress + 1;
      dataCount <= dataCount + 1;
      ctlState <= ctlShift;
@@ -222,7 +223,7 @@ begin
       opOut <= (others => '0');
       runState <= rIdle;
 
-    when others => null;
+     when others => null;
     end case;
    else
     len <= (others => '0');

@@ -21,8 +21,10 @@ entity Axis is
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
-  copy : in boolean;
   load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned(opBits-1 downto 0);
+  copyR : in boolean;
   extInit : in std_logic;               --reset
   extEna : in std_logic;                --enable operation
   extUpdLoc : in std_logic;
@@ -50,8 +52,8 @@ architecture Behavioral of Axis is
    clk : in std_logic;                   --clock
    din : in std_logic;                   --data in
    op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in boolean;                 --shift data
-   load : in boolean;                  --load to data register
+   shift : in boolean;                   --shift data
+   load : in boolean;                    --load to data register
    data : inout  unsigned (n-1 downto 0)); --data register
  end Component;
 
@@ -66,8 +68,10 @@ architecture Behavioral of Axis is
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned (opBits-1 downto 0);
+   copyR : in boolean;
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
    decel : in std_logic;
@@ -90,8 +94,10 @@ architecture Behavioral of Axis is
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);  --current reg address
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned(opBits-1 downto 0); --current reg address
+   copyR : in boolean;
    init : in std_logic;                  --reset
    step : in std_logic;                  --all steps
    accelFlag : in std_logic;             --acceleration step
@@ -111,7 +117,9 @@ architecture Behavioral of Axis is
    din : in std_logic;          --shift data in
    dshift : in boolean;       --shift clock in
    op : in unsigned(opBits-1 downto 0); --operation code
-   copy : in boolean;         --copy location for output
+   dshiftR : in boolean;       --shift clock in
+   opR : in unsigned(opBits-1 downto 0); --operation code
+   copyR : in boolean;         --copy location for output
    setLoc : in std_logic;       --set location
    updLoc : in std_logic;       --location update enabled
    step : in std_logic;         --input step pulse
@@ -236,8 +244,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    init => runInit,
    ena => runEna,
    decel => distDecel,
@@ -259,8 +269,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    init => runInit,
    step => step,
    accelFlag => syncAccelFlag,
@@ -279,7 +291,9 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    setLoc => ctlSetLoc,
    updLoc => updLoc,
    step => step,

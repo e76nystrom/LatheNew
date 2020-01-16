@@ -119,16 +119,18 @@ architecture Behavioral of LatheNew is
           encClkBits : positive;
           cycleClkbits : positive);
   port(
-   clk : in std_logic;                   --system clock
-   din : in std_logic;                   --spi data in
-   dshift : in boolean;                  --spi shift signal
+   clk : in std_logic;                  --system clock
+   din : in std_logic;                  --spi data in
+   dshift : in boolean;                 --spi shift signal
    op : in unsigned (opBits-1 downto 0); --current operation
-   copy : in boolean;                    --copy for output
-   load : in boolean;                    --load value
-   init : in std_logic;                  --init signal
-   ena : in std_logic;                   --enable input
-   ch : in std_logic;                    --input clock
-   dout : out std_logic;                 --data out
+   load : in boolean;                   --load value
+   dshiftR : in boolean;                --spi shift signal
+   opR : in unsigned (opBits-1 downto 0); --current operation
+   copyR : in boolean;                  --copy for output
+   init : in std_logic;                 --init signal
+   ena : in std_logic;                  --enable input
+   ch : in std_logic;                   --input clock
+   dout : out std_logic;                --data out
    intclk : out std_logic
    );
  end Component;
@@ -166,8 +168,10 @@ architecture Behavioral of LatheNew is
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned (opBits-1 downto 0);
+   copyR : in boolean;
    init : in std_logic;
    genSync : in std_logic;
    ch : in std_logic;
@@ -255,8 +259,10 @@ architecture Behavioral of LatheNew is
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned(opBits-1 downto 0);
+   copyR : in boolean;
    extInit : in std_logic;               --reset
    extEna : in std_logic;                --enable operation
    extUpdLoc : in std_logic;
@@ -370,10 +376,13 @@ architecture Behavioral of LatheNew is
 
  signal internalDout : std_logic;
 
- signal copy : boolean;               --copy to output register
- signal dshift : boolean;             --shift data
- signal load : boolean;               --load to register
+ signal dshift : boolean;                  --shift data
  signal op : unsigned (opBits-1 downto 0); --operation code
+ signal load : boolean;                    --load to register
+
+ signal dshiftR : boolean;                  --shift data
+ signal opR : unsigned (opBits-1 downto 0); --operation code
+ signal copyR : boolean;                    --copy to output register
  -- signal header : boolean;
 
  -- display
@@ -540,8 +549,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    init => synEncInit,
    ena => synEncEna,
    ch => ch,
@@ -564,9 +575,13 @@ begin
                  EncDout or zDOut or xDOut;
  dout <= internalDout;
 
- dshift <= spiShift when spiActive else dspShift;
- op <= spiOp when spiActive else dspOp;
- copy <= spiCopy when spiActive else dspCopy;
+ dshift <= spiShift;
+ op <= spiOp;
+
+ dshiftR <= spiShift when spiActive else dspShift;
+ opR <= spiOp when spiActive else dspOp;
+ copyR <= spiCopy when spiActive else dspCopy;
+ 
  -- dshift <= spiShift;
  -- op <= spiOp;
  -- copy <= spiCopy;
@@ -613,9 +628,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => statusReg,
    dout => statusDout
    );
@@ -667,8 +682,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    init => synPhaseInit,
    genSync => cfgGenSync,
    ch => ch,
@@ -684,9 +701,9 @@ begin
                outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   copy => copy,
+   dshift => dshiftR,
+   op => opR,
+   copy => copyR,
    ch => ch,
    index => sync,
    dout => idxClkDout
@@ -779,8 +796,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    extInit => xExtInit,
    extEna => xExtEna,
    extUpdLoc => xUpdLoc,
@@ -838,8 +857,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
    extInit => zExtInit,
    extEna => zExtEna,
    extUpdLoc => zUpdLoc,

@@ -54,8 +54,10 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned (opBits-1 downto 0);
+   copyR : in boolean;
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
    decel : in std_logic;
@@ -78,8 +80,10 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);  --current reg address
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned(opBits-1 downto 0);  --current reg address
+   copyR : in boolean;
    init : in std_logic;                  --reset
    step : in std_logic;                  --all steps
    accelFlag : in std_logic;             --acceleration step
@@ -146,8 +150,10 @@ BEGIN
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshift,
+   opR => op,
+   copyR => copy,
    init => init,
    ena => syncEna,
    decel => decel,
@@ -169,8 +175,10 @@ BEGIN
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshift,
+   opR => op,
+   copyR => copy,
    init => init,
    step => synStp,
    accelFlag => accelFlag,

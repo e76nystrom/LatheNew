@@ -26,8 +26,10 @@ architecture behavior OF AxisTest is
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
-   copy : in boolean;
    load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned(opBits-1 downto 0);
+   copyR : in boolean;
    extInit : in std_logic;               --reset
    extEna : in std_logic;                --enable operation
    extUpdLoc : in std_logic;
@@ -95,8 +97,10 @@ begin
    din => din,
    dshift => dshift,
    op => op,
-   copy => copy,
    load => load,
+   dshiftR => dshift,
+   opR => op,
+   copyR => copy,
    extInit => extInit,
    extEna => extEna,
    extUpdLoc => extUpdLoc,

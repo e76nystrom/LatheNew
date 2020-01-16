@@ -42,7 +42,9 @@ entity LocCounter is
 
   dshift : in boolean;                  --shift clock in
   op : in unsigned(opBits-1 downto 0);  --operation code
-  copy : in boolean;                    --copy location for output
+  dshiftR : in boolean;                 --shift clock in
+  opR : in unsigned(opBits-1 downto 0); --operation code
+  copyR : in boolean;                   --copy location for output
   setLoc : in std_logic;                --set location
   updLoc : in std_logic;                --location update enabled
   step : in std_logic;                  --input step pulse
@@ -129,12 +131,11 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshift,
-   op => op,
-   load => copy,
+   dshift => dshiftR,
+   op => opR,
+   load => copyR,
    data => loc,
    dout => locDout
    );
 
 end Behavioral;
-

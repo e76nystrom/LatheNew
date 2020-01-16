@@ -42,8 +42,10 @@ entity PhaseCounter is
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  copy : in boolean;
   load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned (opBits-1 downto 0);
+  copyR : in boolean;
   init : in std_logic;
   genSync : in std_logic;
   ch : in std_logic;
@@ -127,9 +129,9 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dShift,
-   op => op,
-   load => copy,
+   dshift => dShiftR,
+   op => opR,
+   load => copyR,
    data => phaseSyn,
    dout => doutPhaseSyn
    );
