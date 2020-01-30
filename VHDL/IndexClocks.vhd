@@ -31,7 +31,7 @@ architecture behavioral of  IndexClocks is
    clk : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
+   copy : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -57,7 +57,7 @@ begin
    clk => clk,
    dshift => dshift,
    op => op,
-   load => copy,
+   copy => copy,
    data => clockReg,
    dout => dout
    );

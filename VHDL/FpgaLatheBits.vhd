@@ -6,12 +6,28 @@ package FpgaLatheBits is
 
 -- status register
 
- constant statusSize : integer := 4;
+ constant statusSize : integer := 6;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna   : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone  : std_logic is statusreg(1); -- x02 z axis done
  alias xAxisEna   : std_logic is statusreg(2); -- x04 x axis enable flag
  alias xAxisDone  : std_logic is statusreg(3); -- x08 x axis done
+ alias queEmpty   : std_logic is statusreg(4); -- x10 controller queue empty
+ alias ctlIdle    : std_logic is statusreg(5); -- x20 controller idle
+
+-- run control register
+
+ constant runSize : integer := 2;
+ signal runReg : unsigned(runSize-1 downto 0);
+ alias runEna     : std_logic is runreg(0); -- x01 run from controller data
+ alias runInit    : std_logic is runreg(1); -- x02 initialize controller
+
+-- command register
+
+ constant cmdSize : integer := 2;
+ signal cmdReg : unsigned(cmdSize-1 downto 0);
+ alias cmdWaitZ   : std_logic is cmdreg(0); -- x01 wait for z done
+ alias cmdWaitX   : std_logic is cmdreg(1); -- x02 wait for x done
 
 -- axis control register
 

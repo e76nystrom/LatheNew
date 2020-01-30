@@ -3,12 +3,15 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 use ieee.std_logic_arith.conv_std_logic_vector;
 
+use std.textio.all;
+use ieee.std_logic_textio.all;
+
 use work.SimProc.all;
 use work.RegDef.all;
 
-entity LatheNewTest is
-end LatheNewTest;
-architecture behavior OF LatheNewTest is
+entity LatheNewFileTest is
+end LatheNewFileTest;
+architecture behavior OF LatheNewFileTest is
 
  component LatheNew is
   port(
@@ -204,8 +207,12 @@ begin
    loadValue(tmp, bits);
   end procedure loadValueC;
   
+  constant lenBits : integer := 8;
+  constant parmBits : integer := 8;
+  constant byteBits : integer := 8;
+
   procedure loadMid(variable value : in integer;
-                    constant bits : in natural) is
+                    variable bits : in natural) is
    variable tmp : std_logic_vector (32-1 downto 0);
   begin
    tmp := conv_std_logic_vector(value, 32);
@@ -221,13 +228,41 @@ begin
    dclk <= '0';
   end procedure loadMid;
 
-  procedure loadMidC(constant value : in integer;
-                     constant bits : in natural) is
+  procedure loadMidValue(variable value : in integer;
+                         constant bits : in natural) is
+   variable val : integer;
+   variable bitLen : integer;
+  begin
+   val := (bits + 7) / 8;
+   bitLen := lenBits;
+   loadMid(val, bitLen);
+   bitLen := val * 8;
+   loadMid(value, bitLen);
+  end procedure loadMidValue;
+
+  procedure loadMidVC(variable value : in integer;
+                      constant bits : in natural) is
+   variable len : integer;
+  begin
+   len := bits;
+   loadMid(value, len);
+  end procedure loadMidVC;
+
+  procedure loadMidCC(constant value : in integer;
+                      constant bits : in natural) is
    variable tmp : integer;
+   variable len : integer;
   begin
    tmp := value;
-   loadMid(tmp, bits);
-  end procedure loadMidC;
+   len := bits;
+   loadMid(tmp, len);
+  end procedure loadMidCC;
+  
+  procedure loadEnd is
+  begin
+   dsel <= '1';                          --end of load
+   delay(10);
+  end procedure loadEnd;
   
   procedure readValue(constant bits : in natural) is
    variable tmp : unsigned (bits-1 downto 0);
@@ -336,6 +371,11 @@ begin
   -- alias freqSel : unsigned is clkCtlreg(2 downto 0);
   alias freqSel : unsigned is clkCtlreg(5 downto 3);
 
+  constant waitZ : integer := 1;
+  constant waitX : integer := 2;
+
+  -- file cmdData : text;
+  variable val : integer;
  begin
 
 -- hold reset state for 100 ns.
@@ -359,108 +399,131 @@ begin
   incr2 := 2 * (dy - dx);
   d := incr1 - dx;
 
+  loadParm(F_Ctrl_Base + F_Ld_Ctrl_Data); --load data
+
+  -- val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd); --wait for axis done
+  -- loadMidVC(val, opB);
+  -- loadMidCC(waitX, byteBits);
+
+  val := to_integer(base + F_Ld_Axis_Ctl);
+  loadMidVC(val, parmBits);
+
+  axisCtlReg := (others => '0');        --clear axis control
+  ctl := to_integer(axisCtlReg);
+  loadMidValue(ctl, axisCtlSize);
+
+  -- file_open(cmdData, "ctrlCmds.txt", read_mode);
+
+  -- while not endfile(cmdData) loop
+  --  readline(cmdData, inpLine);
+  --  read(inpLine, dataVal);
+  --  read(inpLine, sep);
+  --  read(inpLine, lenVal);
+  --  loadMid(dataVal, lenVal);
+  -- end loop;
+
+  -- loadEnd;
+  -- file_close(cmdData);
+
   accelVal := 8;
   accelCount := 100;
 
-  loadParm(base + F_Sync_Base + F_Ld_D);
-  loadValue(d, synBits);
+  val := to_integer(base + F_Sync_Base + F_Ld_D);
+  loadMidVC(val, parmBits);
+  loadMidValue(d, synBits);
 
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_Incr1);
-  loadValue(incr1, synBits);
+  val := to_integer(base + F_Sync_Base + F_Ld_Incr1);
+  loadMidVC(val, parmBits);
+  loadMidValue(incr1, synBits);
 
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_Incr2);
-  loadValue(incr2, synBits);
+  val := to_integer(base + F_Sync_Base + F_Ld_Incr2);
+  loadMidVC(val, parmBits);
+  loadMidValue(incr2, synBits);
 
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_Accel_Val);
-  loadValue(accelVal, synBits);
+  val := to_integer(base + F_Sync_Base + F_Ld_Accel_Val);
+  loadMidVC(val, parmBits);
+  loadMidValue(accelVal, synBits);
 
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_Accel_Count);
-  loadValue(accelCount, countBits);
+  val := to_integer(base + F_Sync_Base + F_Ld_Accel_Count);
+  loadMidVC(val, parmBits);
+  loadMidValue(accelCount, countBits);
   
   delay(1);
 
-  loadParm(base + F_Dist_Base + F_Ld_Dist);
-  loadValue(dist, distBits);
+  val := to_integer(base + F_Dist_Base + F_Ld_Dist);
+  loadMidVC(val, parmBits);
+  loadMidValue(dist, distBits);
 
   delay(1);
 
-  loadParm(base + F_Loc_Base + F_Ld_Loc);
-  loadValue(loc, locBits);
+  val := to_integer(base + F_Loc_Base + F_Ld_Loc);
+  loadMidVC(val, parmBits);
+  loadMidValue(loc, locBits);
 
+  val := to_integer(base + F_Ld_Axis_Ctl);
+  loadMidVC(val, parmBits);
+
+  axisCtlReg := (others => '0');
   ctlInit := '1';
   ctlSetLoc := '1';
-  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
-  loadValue(ctl, axisCtlSize);
+  loadMidValue(ctl, axisCtlSize);
+
+  val := to_integer(base + F_Ld_Axis_Ctl);
+  loadMidVC(val, parmBits);
 
   ctlInit := '0';
   ctlSetLoc := '0';
   ctlStart := '1';
   ctlDir := '1';
-  --ctlChDirect := '1';
-  loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
-  loadValue(ctl, axisCtlSize);
+  loadMidValue(ctl, axisCtlSize);
 
+  val := to_integer(F_Dbg_Freq_Base + F_Ld_Dbg_Freq);
+  loadMidCC(val, parmBits);
   freq := 10-1;
-  loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Freq);
-  loadValue(freq, freqBits);
+  loadMidValue(freq, freqBits);
 
+  val := to_integer(F_Dbg_Freq_Base + F_Ld_Dbg_Count);
+  loadMidCC(val, parmBits);
   dbgCount := 3000;
-  loadParm(F_Dbg_Freq_Base + F_Ld_Dbg_Count);
-  loadValue(dbgCount ,freqCountBits);
+  loadMidValue(dbgCount ,freqCountBits);
 
   clkCtlReg := (others => '0');
   freqSel := clkDbgFreq;                --to_unsigned(7, 3);
   clkDbgFreqEna := '1';
   
-  loadParm(F_Ld_Clk_Ctl);
+  val := to_integer(F_Ld_Clk_Ctl);
+  loadMidVC(val, parmBits);
   ctl := to_integer(clkCtlReg);
-  loadValue(ctl, clkCtlSize);
+  loadMidValue(ctl, clkCtlSize);
 
-  delayQuad(360);
-  -- delay(3600);
-  loadParm(base + F_Dist_Base + F_Ld_Dist);
-  loadValue(dist, distBits);
-  -- delayQuad(500);
-  delay(5000);
+  val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd); --wait for axis done
+  loadMidVC(val, opB);
+  loadMidCC(waitX, byteBits);
 
-  clkCtlReg := (others => '0');
-  freqSel := clkDbgFreq;                --to_unsigned(7, 3);
-  loadParm(F_Ld_Clk_Ctl);
-  ctl := to_integer(clkCtlReg);
-  loadValue(ctl, clkCtlSize);
+  val := to_integer(base + F_Ld_Axis_Ctl); --clear axis control
+  loadMidVC(val, parmBits);
 
+  axisCtlReg := (others => '0');
+  ctl := to_integer(axisCtlReg);
+  loadMidValue(ctl, axisCtlSize);
+
+  loadEnd;
+  
   delay(10);
-
-  loadParm(F_Rd_Status);
-  readValue(readBits);
-
-  delay(20);
-
-  axisCtlReg := (others => '0');
-  ctlInit := '1';
-  ctlSetLoc := '1';
-  loadParm(base + F_Ld_Axis_Ctl);
-  ctl := to_integer(axisCtlReg);
-  loadValue(ctl, axisCtlSize);
-
-  axisCtlReg := (others => '0');
-  ctlStart := '1';
-  ctlDir := '1';
-  loadParm(base + F_Ld_Axis_Ctl);
-  ctl := to_integer(axisCtlReg);
-  loadValue(ctl, axisCtlSize);
-
-  delayQuad(500);
+  
+  loadParm(F_Ld_Run_ctl);
+  val := 1;
+  loadValue(val, byteBits);
   
   wait;
  end process;

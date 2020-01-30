@@ -25,7 +25,9 @@ add wave -noupdate -radix unsigned /spitest/uut1/wrAddress
 add wave -noupdate -radix unsigned /spitest/uut1/dataCount
 add wave -noupdate /spitest/uut1/empty
 add wave -noupdate -radix unsigned /spitest/uut1/data
+add wave -noupdate /spitest/uut1/init
 add wave -noupdate /spitest/ena
+add wave -noupdate /spitest/uut1/statusReg
 add wave -noupdate /spitest/uut1/runState
 add wave -noupdate -radix unsigned /spitest/uut1/rdAddress
 add wave -noupdate -color Salmon -radix hexadecimal /spitest/uut1/outData
@@ -37,7 +39,7 @@ add wave -noupdate /spitest/uut1/dinOut
 add wave -noupdate /spitest/uut1/dshiftOut
 add wave -noupdate /spitest/uut1/loadOut
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {16060000 ps} 0} {{Cursor 2} {15060000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {21630000 ps} 0} {{Cursor 2} {4510000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 182
 configure wave -valuecolwidth 95
@@ -53,4 +55,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {15502187 ps} {16617813 ps}
+WaveRestoreZoom {0 ps} {26250 ns}

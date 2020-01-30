@@ -140,7 +140,7 @@ architecture Behavioral of SyncAccel is
    clk : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
+   copy : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -292,7 +292,7 @@ begin
    clk => clk,
    dshift => dshiftR,
    op => opR,
-   load => copyR,
+   copy => copyR,
    data => sum,
    dout => sumDout
    );
@@ -320,7 +320,7 @@ begin
    clk => clk,
    dshift => dshiftR,
    op => opR,
-   load => copyR,
+   copy => copyR,
    data => accelSUm,
    dout => accelSumDout
    );
@@ -345,7 +345,7 @@ begin
    clk => clk,
    dshift => dshiftR,
    op => opR,
-   load => copyR,
+   copy => copyR,
    data => accelCounter,
    dout => accelCtrDout
    );
@@ -368,7 +368,7 @@ begin
    clk => clk,
    dshift => dshiftR,
    op => opR,
-   load => copyR,
+   copy => copyR,
    data => xPos,
    dout => xPosDout
    );
@@ -391,7 +391,7 @@ begin
    clk => clk,
    dshift => dshiftR,
    op => opR,
-   load => copyR,
+   copy => copyR,
    data => yPos,
    dout => yPosDout
    );

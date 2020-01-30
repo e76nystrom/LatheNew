@@ -38,7 +38,7 @@ entity ShiftOutNS is
   clk : in std_logic;
   dshift : in boolean;
   op : in unsigned (opBits-1 downto 0);
-  load : in boolean;
+  copy : in boolean;
   data : in unsigned(n-1 downto 0);
   dout : out std_logic := '0'
   );
@@ -64,7 +64,7 @@ begin
     shiftSel <= false;
    end if;
 
-   if (shiftSel and load) then
+   if (shiftSel and copy) then
     shiftReg <= data;
     padding <= 32-n;
    else 

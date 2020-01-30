@@ -4,7 +4,7 @@
 --
 -- Create Date:   05:56:52 04/05/2015
 -- Design Name:   
--- Module Name:   C:/Development/Xilinx/Spartan6/SPITest.vhd
+-- Module Name:   C:/Development/Xilinx/Spartan6/SPITestFile.vhd
 -- Project Name:  Spartan6
 -- Target Device:  
 -- Tool versions:  
@@ -25,21 +25,24 @@
 -- to guarantee that the testbench will bind correctly to the post-implementation 
 -- simulation model.
 --------------------------------------------------------------------------------
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
+library ieee;
+use ieee.std_logic_1164.ALL;
 use ieee.std_logic_arith.conv_std_logic_vector;
+
+use std.textio.all;
+use ieee.std_logic_textio.all;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
-USE ieee.numeric_std.ALL;
+use ieee.numeric_std.ALL;
 
 use work.SimProc.all;
 use work.RegDef.all;
 
-ENTITY SPITest IS
-END SPITest;
+entity SPITestFile is
+end SPITestFile;
 
-ARCHITECTURE behavior OF SPITest IS 
+architecture behavior of SPITestFile is 
  
  -- Component Declaration for the Unit Under Test (UUT)
  
@@ -261,7 +264,7 @@ begin
   end procedure loadValueC;
   
   procedure loadMid(variable value : in integer;
-                    constant bits : in natural) is
+                    variable bits : in natural) is
    variable tmp : std_logic_vector (32-1 downto 0);
   begin
    tmp := conv_std_logic_vector(value, 32);
@@ -277,22 +280,39 @@ begin
    dclk <= '0';
   end procedure loadMid;
 
-  procedure loadMidC(constant value : in integer;
-                     constant bits : in natural) is
+  procedure loadMidVC(variable value : in integer;
+                      constant bits : in natural) is
+   variable len : integer;
+  begin
+   len := bits;
+   loadMid(value, len);
+  end procedure loadMidVC;
+
+  procedure loadMidCC(constant value : in integer;
+                      constant bits : in natural) is
    variable tmp : integer;
+   variable len : integer;
   begin
    tmp := value;
-   loadMid(tmp, bits);
-  end procedure loadMidC;
+   len := bits;
+   loadMid(tmp, len);
+  end procedure loadMidCC;
   
   procedure loadEnd is
   begin
    dsel <= '1';                          --end of load
    delay(10);
   end procedure loadEnd;
-  
-  variable parm : unsigned(opBits-1 downto 0) :=  (opBits-1 downto 0 => '0');
+
+  variable parm : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
   variable val : integer := 16#12345678#;
+
+  variable inpLine : line;
+  variable dataVal : integer;
+  variable lenVal : integer;
+  variable sep : character;
+
+  file cmdData : text;
 
  begin		
   -- hold reset state for 100 ns.
@@ -310,82 +330,63 @@ begin
 
   loadParm(parm);
   val := 10;
-  loadMid(val, 8);
+  loadMidVC(val, 8);
   delay(10);
   val := 16#12345678#;
   loadValue(val, valBits);
-
-  init <= true;
-  delay(10);
-  init <= false;
 
   delay(10);
 
   parm := F_Ctrl_Base + F_Ld_Ctrl_Data;
   loadParm(parm);
 
-  val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd);
-  loadMid(val, opBits);
-  delay(5);
-  val := 1;
-  loadMid(val, byteBits);
+  loadMidCC(to_integer(F_Ctrl_Base + F_Ctrl_Cmd), opBits);
+  loadMidCC(0, byteBits);
 
-  delay(5);
+  file_open(cmdData, "ctrlCmds.txt", read_mode);
 
-  val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_D);
-  loadMid(val, byteBits);
-  delay(5);
-  loadMidC(4, byteBits);
-  delay(5);
-  loadMidC(100000, 32);
-  
-  delay(5);
-  
-  val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1);
-  loadMid(val, byteBits);
-  delay(5);
-  loadMidC(4, byteBits);
-  delay(5);
-  loadMidC(1000000, 32);
-
-  delay(5);
-
-  val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd);
-  loadMid(val, opBits);
-  delay(5);
-  val := 2;
-  loadMid(val, byteBits);
-
-  delay(5);
-
-  val := to_integer(F_XAxis_Base + F_Sync_Base + F_Ld_Incr1);
-  loadMid(val, byteBits);
-  delay(5);
-  loadMidC(4, byteBits);
-  delay(5);
-  loadValueC(1000000, 32);
+  while not endfile(cmdData) loop
+   readline(cmdData, inpLine);
+   read(inpLine, dataVal);
+   read(inpLine, sep);
+   read(inpLine, lenVal);
+   loadMid(dataVal, lenVal);
+  end loop;
 
   loadEnd;
+  file_close(cmdData);
+
+  -- val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd);
+  -- loadMidVC(val, opBits);
+  -- delay(5);
+  -- val := 0;
+  -- loadMidVC(val, byteBits);
+
+  -- delay(5);
+
+  -- val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_D);
+  -- loadMidVC(val, byteBits);
+  -- delay(5);
+  -- loadMidCC(4, byteBits);
+  -- delay(5);
+  -- loadMidCC(100000, 32);
   
+  -- delay(5);
+  
+  -- val := to_integer(F_ZAxis_Base + F_Sync_Base + F_Ld_Incr1);
+  -- loadMidVC(val, byteBits);
+  -- delay(5);
+  -- loadMidCC(4, byteBits);
+  -- delay(5);
+  -- loadValueC(1000000, 32);
+
   delay(20);
 
-  zAxisEna <= '1';
-  xAxisEna <= '1';
   ena <= true;
 
   delay(100);
 
-  zAxisDone <= '1';
-
-  delay(100);
-
   ena <= false;
-
-  delay(100);
-
-  init <= true;
-  delay(5);
-  init <= false;
   
   wait;
  end process;

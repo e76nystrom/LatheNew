@@ -3,6 +3,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.conversion.all;
 
 entity LatheNew is
  port(
@@ -57,6 +58,31 @@ architecture Behavioral of LatheNew is
    );
  end Component;
 
+ component Controller is
+  generic (opBase : unsigned;
+           opBits : positive;
+           addrBits : positive;
+           statusBits : positive
+           );
+  port (
+   clk : in std_logic;
+   init : in boolean;
+   din : in std_logic;
+   dshift : in boolean;
+   op : in unsigned(opBits-1 downto 0);
+   copy : in boolean;
+   load : in boolean;
+   ena : in boolean;
+   statusReg : in unsigned(statusBits-1 downto 0);
+
+   dinOut : out std_logic;
+   dshiftOut : out boolean;
+   opOut : out unsigned(opBits-1 downto 0);
+   loadOut : out boolean;
+   empty : out boolean
+   );
+ end Component;
+
  component Display is
   port (
    clk : in std_logic;
@@ -95,7 +121,7 @@ architecture Behavioral of LatheNew is
    clk : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
+   copy : in boolean;
    data : in unsigned(n-1 downto 0);
    dout : out std_logic
    );
@@ -302,8 +328,10 @@ architecture Behavioral of LatheNew is
  constant dbgBits : positive := 4;
 
  constant outBits : positive := 32;
-
+ 
  constant opBits : positive := 8;
+ constant addrBits : positive := 8;
+
  constant phaseBits : positive := 16;
  constant totalBits : positive := 32;
 
@@ -321,12 +349,20 @@ architecture Behavioral of LatheNew is
 
 -- status register
 
- constant statusSize : integer := 4;
+ constant statusSize : integer := 5;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna   : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone  : std_logic is statusreg(1); -- x02 z axis done
  alias xAxisEna   : std_logic is statusreg(2); -- x04 x axis enable flag
- alias xAxisDone  : std_logic is statusreg(3); -- x02 x axis done
+ alias xAxisDone  : std_logic is statusreg(3); -- x08 x axis done
+ alias queEmpty   : std_logic is statusreg(4); -- x10 controller queue empty
+
+-- run control register
+
+ constant runSize : integer := 2;
+ signal runReg : unsigned(runSize-1 downto 0);
+ alias runEna     : std_logic is runreg(0); -- x01 run from controller data
+ alias runInit    : std_logic is runreg(1); -- x02 initialize controller
 
  -- configuration control register
 
@@ -369,22 +405,35 @@ architecture Behavioral of LatheNew is
 
  -- spi interface
 
- signal spiCopy : boolean := false;
  signal spiShift : boolean := false;
  signal spiOp : unsigned (opBits-1 downto 0) := (others => '0');
+ signal spiCopy : boolean := false;
+ signal spiLoad : boolean := false;
  signal spiActive : boolean := false;
 
  signal internalDout : std_logic;
 
- signal dshift : boolean;                  --shift data
+ signal dinW : std_logic := '0';
+
+ signal curDin : std_logic := '0';      --current din
+
+ signal dshift : boolean := false;         --shift data
  signal op : unsigned (opBits-1 downto 0); --operation code
- signal load : boolean;                    --load to register
+ signal load : boolean := false;           --load to register
 
- signal dshiftR : boolean;                  --shift data
+ signal dshiftR : boolean := false;         --shift data
  signal opR : unsigned (opBits-1 downto 0); --operation code
- signal copyR : boolean;                    --copy to output register
- -- signal header : boolean;
+ signal copyR : boolean := false;           --copy to output register
+-- signal header : boolean;
 
+ -- controller
+
+ signal ctlDin : std_logic;
+ signal ctlShift : boolean;
+ signal ctlOp : unsigned (opBits-1 downto 0); --operation code
+ signal ctlLoad : boolean;
+ signal ctlEmpty : boolean;
+ 
  -- display
 
  constant displayBits : positive := 16;
@@ -450,6 +499,8 @@ begin
 
  zAxisDone <= intZDoneInt;
  xAxisDone <= intXDoneInt;
+
+ queEmpty <= to_std_logic(ctlEmpty);
 
  led(7) <= div(divBits);
  led(6) <= div(divBits-1);
@@ -546,7 +597,7 @@ begin
               cycleClkbits => cycleClkBits)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -575,8 +626,15 @@ begin
                  EncDout or zDOut or xDOut;
  dout <= internalDout;
 
- dshift <= spiShift;
- op <= spiOp;
+ -- curDin <= din;
+ -- dshift <= spiShift;
+ -- op <= spiOp;
+ -- load <= spiLoad;
+
+ curDin <= ctlDin when to_boolean(runEna) else din;
+ dshift <= ctlShift when to_boolean(runEna) else spiShift;
+ op <= ctlOp when to_boolean(runEna) else spiOp;
+ load <= ctlLoad when to_boolean(runEna) else spiLoad;
 
  dshiftR <= spiShift when spiActive else dspShift;
  opR <= spiOp when spiActive else dspOp;
@@ -596,9 +654,32 @@ begin
    shift => spiShift,
    op => spiOp,
    copy => spiCopy,
-   load => load,
+   load => spiLoad,
    header => open,
    spiActive => spiActive
+   );
+
+ ctrlProc : Controller
+  generic map (opBase => F_Ctrl_Base,
+               opBits => opBits,
+               addrBits => addrBits,
+               statusBits => statusSize
+               )
+  port map (
+   clk => clk,
+   init => to_boolean(runInit),
+   din => din,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
+   load => load,
+   ena => to_boolean(runEna),
+   statusReg => statusReg,
+   dinOut => ctlDin,
+   dshiftOut => ctlShift,
+   opOut => ctlOp,
+   loadOut => ctlLoad,
+   empty => ctlEmpty
    );
 
  dispalyCtlProc : DisplayCtl
@@ -628,12 +709,24 @@ begin
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   load => copyR,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
    data => statusReg,
    dout => statusDout
    );
+
+ run_reg: CtlReg
+  generic map(opVal => F_Ld_Run_Ctl,
+              opb => opBits,
+              n => runSize)
+  port map (
+   clk => clk,
+   din => din,
+   op => op,
+   shift => dshift,
+   load => load,
+   data => runReg);
 
  sync_reg: CtlReg
   generic map(opVal => F_Ld_Sync_Ctl,
@@ -641,7 +734,7 @@ begin
               n => synCtlSize)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    op => op,
    shift => dshift,
    load => load,
@@ -653,7 +746,7 @@ begin
               n => clkCtlSize)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    op => op,
    shift => dshift,
    load => load,
@@ -679,7 +772,7 @@ begin
                outBits => outBits)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -717,7 +810,7 @@ begin
               freqBits => freqBits)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -733,7 +826,7 @@ begin
               freqBits => freqBits)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -748,7 +841,7 @@ begin
               countBits=> freqCountBits)
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -793,7 +886,7 @@ begin
    )
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
@@ -854,7 +947,7 @@ begin
    )
   port map (
    clk => clk,
-   din => din,
+   din => curDin,
    dshift => dshift,
    op => op,
    load => load,
