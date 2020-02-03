@@ -22,13 +22,6 @@ package FpgaLatheBits is
  alias runEna     : std_logic is runreg(0); -- x01 run from controller data
  alias runInit    : std_logic is runreg(1); -- x02 initialize controller
 
--- command register
-
- constant cmdSize : integer := 2;
- signal cmdReg : unsigned(cmdSize-1 downto 0);
- alias cmdWaitZ   : std_logic is cmdreg(0); -- x01 wait for z done
- alias cmdWaitX   : std_logic is cmdreg(1); -- x02 wait for x done
-
 -- axis control register
 
  constant axisCtlSize : integer := 8;
