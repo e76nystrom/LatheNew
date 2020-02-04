@@ -318,6 +318,7 @@ architecture Behavioral of LatheNew is
  constant divBits : integer := 26;
  signal div : unsigned (divBits downto 0) := (others => '0');
  alias digSel: unsigned(1 downto 0) is div(19 downto 18);
+ -- alias digSel: unsigned(1 downto 0) is div(8 downto 7);
 
  constant synBits : positive := 32;
  constant posBits : positive := 24;
