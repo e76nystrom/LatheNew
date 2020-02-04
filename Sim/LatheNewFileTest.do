@@ -78,6 +78,7 @@ add wave -noupdate /lathenewfiletest/uut/ctrlProc/init
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/dshiftOut
 add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/opOut
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/loadOut
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/seqReg
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {295245000 ps} 0} {{Cursor 2} {3595000 ps} 0}
 quietly wave cursor active 2

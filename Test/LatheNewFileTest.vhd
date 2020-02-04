@@ -506,6 +506,11 @@ begin
   ctl := to_integer(clkCtlReg);
   loadMidValue(ctl, clkCtlSize);
 
+  val := to_integer(F_Ctrl_Base + F_Ld_seq);
+  loadMidVC(val, opB);
+  val := 3;
+  loadMidVC(val, byteBits);
+
   val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd); --wait for axis done
   loadMidVC(val, opB);
   loadMidCC(waitX, byteBits);

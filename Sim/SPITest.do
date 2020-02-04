@@ -38,6 +38,7 @@ add wave -noupdate -radix hexadecimal /spitest/uut1/opOut
 add wave -noupdate /spitest/uut1/dinOut
 add wave -noupdate /spitest/uut1/dshiftOut
 add wave -noupdate /spitest/uut1/loadOut
+add wave -noupdate -radix unsigned /spitest/uut1/seqReg
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {21630000 ps} 0} {{Cursor 2} {4510000 ps} 0}
 quietly wave cursor active 1
@@ -55,4 +56,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {26250 ns}
+WaveRestoreZoom {0 ps} {31500 ns}

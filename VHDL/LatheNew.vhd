@@ -62,7 +62,9 @@ architecture Behavioral of LatheNew is
   generic (opBase : unsigned;
            opBits : positive;
            addrBits : positive;
-           statusBits : positive
+           statusBits : positive;
+           seqBits : positive;
+           outBits : positive
            );
   port (
    clk : in std_logic;
@@ -75,6 +77,7 @@ architecture Behavioral of LatheNew is
    ena : in boolean;
    statusReg : in unsigned(statusBits-1 downto 0);
 
+   dout : out std_logic;
    dinOut : out std_logic;
    dshiftOut : out boolean;
    opOut : out unsigned(opBits-1 downto 0);
@@ -332,6 +335,7 @@ architecture Behavioral of LatheNew is
  
  constant opBits : positive := 8;
  constant addrBits : positive := 8;
+ constant seqBits : positive := 8;
 
  constant phaseBits : positive := 16;
  constant totalBits : positive := 32;
@@ -664,7 +668,9 @@ begin
   generic map (opBase => F_Ctrl_Base,
                opBits => opBits,
                addrBits => addrBits,
-               statusBits => statusSize
+               statusBits => statusSize,
+               seqBits => seqBits,
+               outBits => outBits
                )
   port map (
    clk => clk,

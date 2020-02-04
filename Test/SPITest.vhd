@@ -72,7 +72,9 @@ ARCHITECTURE behavior OF SPITest IS
   generic (opBase : unsigned;
            opBits : positive;
            addrBits : positive;
-           statusBits : positive
+           statusBits : positive;
+           seqBits : positive;
+           outBits : positive
            );
   port (
    clk : in std_logic;
@@ -85,6 +87,7 @@ ARCHITECTURE behavior OF SPITest IS
    ena : in boolean;
    statusReg : in unsigned(statusBits-1 downto 0);
 
+   dout : out std_logic;
    dinOut : out std_logic;
    dshiftOut : out boolean;
    opOut : out unsigned(opBits-1 downto 0);
@@ -116,9 +119,12 @@ ARCHITECTURE behavior OF SPITest IS
  signal spiActive : boolean;
  --signal info : std_logic_vector(2 downto 0);
  signal clkena1 : std_logic;
+ signal dout : std_logic;
 
  constant opBase : unsigned := x"00";
  constant addrBits : positive := 8;
+ constant seqBits : positive := 8;
+ constant outBits : positive := 8;
 
  signal init : boolean := false;
  signal ena : boolean := false;
@@ -170,7 +176,9 @@ begin
   generic map (opBase => opBase + F_Ctrl_Base,
                opBits => opBits,
                addrBits => addrBits,
-               statusBits => statusSize
+               statusBits => statusSize,
+               seqBits => seqBits,
+               outBits => outBits
                )
   port map (
    clk => clk,
@@ -183,6 +191,7 @@ begin
    ena => ena,
    statusReg => statusReg,
 
+   dout => dout,
    dinOut => dinOut,
    dshiftOut => dshiftOut,
    opOut => opOut,
@@ -323,6 +332,12 @@ begin
 
   parm := F_Ctrl_Base + F_Ld_Ctrl_Data;
   loadParm(parm);
+
+  val := to_integer(F_Ctrl_Base + F_Ld_seq);
+  loadMid(val, opBits);
+  delay(5);
+  val := 3;
+  loadMid(val, byteBits);
 
   val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd);
   loadMid(val, opBits);

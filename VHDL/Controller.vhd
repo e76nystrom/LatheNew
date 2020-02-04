@@ -9,7 +9,9 @@ entity Controller is
  generic (opBase : unsigned;
           opBits : positive;
           addrBits : positive := 8;
-          statusBits : positive
+          statusBits : positive;
+          seqBits : positive;
+          outBits : positive
           );
  port (
   clk : in std_logic;
@@ -22,6 +24,7 @@ entity Controller is
   ena : in boolean;
   statusReg : in unsigned(statusBits-1 downto 0);
   
+  dout : out std_logic := '0';
   dinOut : out std_logic := '0';
   dshiftOut : out boolean := false;
   opOut : out unsigned(opBits-1 downto 0) := (others => '0');
@@ -58,12 +61,27 @@ architecture behavioral of  Controller is
     );
  end component;
 
+ component ShiftOutN is
+  generic(opVal : unsigned;
+          opBits : positive;
+          n : positive;
+          outBits : positive);
+  port (
+   clk : in std_logic;
+   dshift : in boolean;
+   op : in unsigned (opBits-1 downto 0);
+   copy : in boolean;
+   data : in unsigned(n-1 downto 0);
+   dout : out std_logic
+   );
+ end Component;
+
  constant byteBits : positive := 8;
 
  type ctlFsm is (cIdle, cShift, cWrite, cUpdAdr);
  signal ctlState : ctlFsm := cIdle;
 
- type runFsm is (rIdle, rDly, rCmdLen, rCmd, rData, rShift, rDone);
+ type runFsm is (rIdle, rDly, rCmdLen, lSeq, rCmd, rData, rShift, rDone);
  signal runState : runFsm := rIdle;
 
  type cmdRec is record
@@ -86,6 +104,12 @@ architecture behavioral of  Controller is
  signal wrAddress : unsigned (addrBits-1 downto 0) := (others => '0');
  signal dataCount : integer range 0 to (2 ** addrBits) - 1 := 0;
  signal emptyFlag : boolean := true;
+
+ signal tmp : unsigned (addrBits-1 downto 0);
+
+ signal seqReg : unsigned (seqBits-1 downto 0) := (others => '0');
+ signal seqDout : std_logic;
+ signal countDout : std_logic;
 
  signal writeEna : boolean := false;
  signal opSel : boolean;
@@ -137,6 +161,38 @@ begin
    wraddress => std_logic_vector(wrAddress),
    wren => to_std_logic(writeEna),
    q => outData
+   );
+
+ dout <= seqDout or countDout;
+
+ rdSeq : ShiftOutN
+  generic map(opVal => opBase + F_Rd_Seq,
+              opBits => opBits,
+              n => seqBits,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   data => seqReg,
+   dout => seqDout
+   );
+
+ tmp <= to_unsigned(dataCount, addrBits);
+
+ rdCount : ShiftOutN
+  generic map(opVal => opBase + F_Rd_Seq,
+              opBits => opBits,
+              n => addrBits,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshift,
+   op => op,
+   copy => copy,
+   data => tmp,
+   dout => countDout
    );
 
  emptyFlag <= true when (dataCount = 0) else false;
@@ -213,6 +269,9 @@ begin
          cmd <= to_cmdRec(outData);
          -- cmd <= unsigned(outData);
          dlyNxt <= rCmd;
+        elsif (rdOp = opBase + F_Ld_seq) then
+         seqReg <= unsigned(outdata);
+         dlyNxt <= rIdle;
         else
          opOut <= rdOp;
          len <= unsigned(outData);
