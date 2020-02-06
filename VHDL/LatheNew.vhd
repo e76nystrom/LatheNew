@@ -68,13 +68,15 @@ architecture Behavioral of LatheNew is
            );
   port (
    clk : in std_logic;
-   init : in boolean;
+   -- init : in boolean;
+   init : in std_logic;
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
    copy : in boolean;
    load : in boolean;
-   ena : in boolean;
+   -- ena : in boolean;
+   ena : in std_logic;
    statusReg : in unsigned(statusBits-1 downto 0);
 
    dout : out std_logic;
@@ -83,6 +85,26 @@ architecture Behavioral of LatheNew is
    opOut : out unsigned(opBits-1 downto 0);
    loadOut : out boolean;
    empty : out boolean
+   );
+ end Component;
+
+ component Reader is
+  generic(opBase : unsigned;
+          opBits : positive;
+          rdAddrBits : positive;
+          outBits : positive
+          );
+  port (
+   clk : in std_logic;
+   init : in std_logic;
+   din : in std_logic;
+   dshift : in boolean;
+   op : in unsigned(opBits-1 downto 0);
+   copy : in boolean;
+   load : in boolean;
+   copyOut : out boolean;
+   opOut : out unsigned(opBits-1 downto 0);
+   active : out boolean
    );
  end Component;
 
@@ -331,6 +353,7 @@ architecture Behavioral of LatheNew is
 
  constant dbgBits : positive := 4;
 
+ constant rdAddrBits : positive := 5;
  constant outBits : positive := 32;
  
  constant opBits : positive := 8;
@@ -364,10 +387,11 @@ architecture Behavioral of LatheNew is
 
 -- run control register
 
- constant runSize : integer := 2;
+ constant runSize : integer := 3;
  signal runReg : unsigned(runSize-1 downto 0);
  alias runEna     : std_logic is runreg(0); -- x01 run from controller data
  alias runInit    : std_logic is runreg(1); -- x02 initialize controller
+ alias readerInit : std_logic is runreg(2); -- x04 initialize reader
 
  -- configuration control register
 
@@ -438,6 +462,13 @@ architecture Behavioral of LatheNew is
  signal ctlOp : unsigned (opBits-1 downto 0); --operation code
  signal ctlLoad : boolean;
  signal ctlEmpty : boolean;
+ signal ctlDout : std_logic;
+
+ -- reader
+
+ signal rdActive : boolean;
+ signal rdCopy : boolean;
+ signal rdOp : unsigned (opBits-1 downto 0); --operation code
  
  -- display
 
@@ -520,6 +551,8 @@ begin
  dspData(7 downto 4) <= xDbg;
  dspData(15 downto 8) <= op;
 
+ -- test 1 output pulse
+
  testOut1 : PulseGen
   generic map (pulseWidth => 25)
   port map (
@@ -540,10 +573,19 @@ begin
 
  dbg(0) <= test1;
  dbg(1) <= test2;
- dbg(2) <= xDbg(0);
- dbg(3) <= intXDoneInt;
 
- dbg(7 downto 4) <= std_logic_vector(zDbg);
+ dbg(2) <= runEna;
+ dbg(3) <= intXDoneInt;
+ dbg(7 downto 4) <= std_logic_vector(xDbg);
+
+ -- dbg(4) = dbgOUt(0) <= runEna;
+ -- dbg(5) = dbgOut(1) <= distDecel;
+ -- dbg(6) = dbgOut(2) <= distZero;
+ -- dbg(7) = dbgOut(3) <= syncAccelActive;
+
+ -- dbg(2) <= zDbg(0);
+ -- dbg(3) <= intZDoneInt;
+ -- dbg(7 downto 4) <= std_logic_vector(zDbg);
 
  -- dbg(4) <= div(divBits-4);
  -- dbg(5) <= div(divBits-5);
@@ -627,7 +669,7 @@ begin
    y => direction
    );
 
- internalDout <= statusDout or phaseDout or idxClkDout or
+ internalDout <= statusDout or ctlDout or phaseDout or idxClkDout or
                  EncDout or zDOut or xDOut;
  dout <= internalDout;
 
@@ -636,15 +678,35 @@ begin
  -- op <= spiOp;
  -- load <= spiLoad;
 
- curDin <= ctlDin when to_boolean(runEna) else din;
- dshift <= ctlShift when to_boolean(runEna) else spiShift;
- op <= ctlOp when to_boolean(runEna) else spiOp;
- load <= ctlLoad when to_boolean(runEna) else spiLoad;
+ curDin <= ctlDin when runEna = '1' else din;
+ dshift <= ctlShift when runEna = '1' else spiShift;
+ op <= ctlOp when runEna = '1' else spiOp;
+ load <= ctlLoad when runEna = '1' else spiLoad;
 
- dshiftR <= spiShift when spiActive else dspShift;
- opR <= spiOp when spiActive else dspOp;
- copyR <= spiCopy when spiActive else dspCopy;
+ -- dshiftR <= spiShift when spiActive else dspShift;
+ -- opR <= spiOp when spiActive else dspOp;
+ -- copyR <= spiCopy when spiActive else dspCopy;
  
+ readProc : process (spiActive, rdActive,
+                     spiShift, spiCopy, spiOp,
+                     rdCopy, rdOp,
+                     dspShift, dspCopy, dspOp)
+ begin
+  if (rdActive) then
+   dshiftR <= spiShift;
+   copyR <= rdCopy;
+   opR <= rdOp;
+  elsif spiActive then
+   dshiftR <= spiShift;
+   copyR <= spiCopy;
+   opR <= spiOp;
+  else
+   dshiftR <= dspShift;
+   copyR <= dspCopy;
+   opR <= dspOp;
+  end if;
+ end process readProc;
+
  -- dshift <= spiShift;
  -- op <= spiOp;
  -- copy <= spiCopy;
@@ -674,20 +736,42 @@ begin
                )
   port map (
    clk => clk,
-   init => to_boolean(runInit),
+   -- init => to_boolean(runInit),
+   init => runInit,
    din => din,
    dshift => spiShift,
    op => spiOp,
    copy => spiCopy,
    load => load,
-   ena => to_boolean(runEna),
+   -- ena => to_boolean(runEna),
+   ena => runEna,
    statusReg => statusReg,
+   dout => ctlDout,
    dinOut => ctlDin,
    dshiftOut => ctlShift,
    opOut => ctlOp,
    loadOut => ctlLoad,
    empty => ctlEmpty
    );
+
+ dataReader: Reader
+  generic map(opBase => F_Read_Base,
+         opBits => opBits,
+         rdAddrBits => rdAddrBits,
+         outBits => outBits
+)
+  port map (
+  clk => clk,
+  init => readerInit,
+  din => din,
+  dshift => spiShift,
+  op => spiOp,
+  copy => spiCopy,
+  load => load,
+  copyOut => rdCopy,
+  opOut => rdOp,
+  active => rdActive
+  );
 
  dispalyCtlProc : DisplayCtl
   generic map (opVal => F_Ld_Dsp_Reg,
@@ -730,9 +814,9 @@ begin
   port map (
    clk => clk,
    din => din,
-   op => op,
-   shift => dshift,
-   load => load,
+   op => spiOp,
+   shift => spiShift,
+   load => spiLoad,
    data => runReg);
 
  sync_reg: CtlReg
@@ -766,9 +850,9 @@ begin
   port map (
    clk => clk,
    din => din,
-   op => op,
-   shift => dshift,
-   load => load,
+   op => spiOp,
+   shift => spiShift,
+   load => spiLoad,
    data => cfgCtlReg);
 
  phase_counter : PhaseCounter

@@ -71,6 +71,8 @@ architecture behavior OF LatheNewFileTest is
  signal zDoneInt : std_logic := '0';
  signal xDoneInt : std_logic := '0';
 
+ signal tmpx : unsigned(32-1 downto 0) := (others => '0');
+
 begin
 
  uut : LatheNew
@@ -264,7 +266,7 @@ begin
    delay(10);
   end procedure loadEnd;
   
-  procedure readValue(constant bits : in natural) is
+  procedure readMidValue(constant bits : in natural) is
    variable tmp : unsigned (bits-1 downto 0);
   begin
    tmp := (others => '0');
@@ -278,8 +280,14 @@ begin
    end loop;
    report "value " & integer'image(to_integer(tmp));
    dclk <= '0';
-   dsel <= '1';                          --end of load
    delay(10);
+   tmpx <= tmp;
+  end procedure readMidValue;
+
+  procedure readValue(constant bits : in natural) is
+  begin
+   readMidValue(bits);
+   dsel <= '1';
   end procedure readValue;
 
   -- procedure loadShift(variable value : in integer;
@@ -346,16 +354,16 @@ begin
   variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
   alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
   alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
- alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
+  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
- constant clkNone    : unsigned (2 downto 0) := "000";
- constant clkFreq    : unsigned (2 downto 0) := "001";
- constant clkCh      : unsigned (2 downto 0) := "010";
- constant clkIntClk  : unsigned (2 downto 0) := "011";
- constant clkSlvStep : unsigned (2 downto 0) := "100";
- constant clkslvFreq : unsigned (2 downto 0) := "101";
- constant clkSpare   : unsigned (2 downto 0) := "110";
- constant clkDbgFreq : unsigned (2 downto 0) := "111";
+  constant clkNone    : unsigned (2 downto 0) := "000";
+  constant clkFreq    : unsigned (2 downto 0) := "001";
+  constant clkCh      : unsigned (2 downto 0) := "010";
+  constant clkIntClk  : unsigned (2 downto 0) := "011";
+  constant clkSlvStep : unsigned (2 downto 0) := "100";
+  constant clkslvFreq : unsigned (2 downto 0) := "101";
+  constant clkSpare   : unsigned (2 downto 0) := "110";
+  constant clkDbgFreq : unsigned (2 downto 0) := "111";
 
   -- sync control register
 
@@ -404,6 +412,11 @@ begin
   -- val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd); --wait for axis done
   -- loadMidVC(val, opB);
   -- loadMidCC(waitX, byteBits);
+
+  val := to_integer(F_Ctrl_Base + F_Ld_seq);
+  loadMidVC(val, opB);
+  val := 3;
+  loadMidVC(val, byteBits);
 
   val := to_integer(base + F_Ld_Axis_Ctl);
   loadMidVC(val, parmBits);
@@ -506,11 +519,6 @@ begin
   ctl := to_integer(clkCtlReg);
   loadMidValue(ctl, clkCtlSize);
 
-  val := to_integer(F_Ctrl_Base + F_Ld_seq);
-  loadMidVC(val, opB);
-  val := 3;
-  loadMidVC(val, byteBits);
-
   val := to_integer(F_Ctrl_Base + F_Ctrl_Cmd); --wait for axis done
   loadMidVC(val, opB);
   loadMidCC(waitX, byteBits);
@@ -526,9 +534,47 @@ begin
   
   delay(10);
   
+  loadParm(F_Ctrl_Base + F_Rd_Ctr);     --read byte count
+  readValue(32);
+  
+  delay(10);
+
   loadParm(F_Ld_Run_ctl);
   val := 1;
   loadValue(val, byteBits);
+
+  delay(1000);
+
+  loadParm(F_Rd_Status);  --read byte count
+  readValue(32);
+  
+  loadParm(F_Ctrl_Base + F_Rd_Seq);     --read sequence number
+  readValue(32);
+
+  loadParm(F_Ctrl_Base + F_Rd_Ctr);     --read byte count
+  readValue(32);
+
+  -- while (true) loop
+  --  loadParm(F_Rd_Status);  --read byte count
+  --  readValue(32);
+  --  if (tmpx(4) = '1')  then
+  --   exit;
+  --  end if;
+  -- end loop;
+  
+  delay(4500);
+
+  loadParm(F_Read_Base + F_Ld_Read_Data);
+  val := to_integer(F_XAxis_Base + F_Loc_Base + F_Rd_Loc);
+  loadMidVC(val, opBx);
+  val := to_integer(F_XAxis_Base + F_Sync_Base + F_Rd_XPos);
+  loadMidVC(val, opBx);
+  loadEnd;
+
+  loadParm(F_Read_Base + F_Read);
+  readMidValue(32);
+  readMidValue(32);
+  loadEnd;
   
   wait;
  end process;

@@ -22,6 +22,12 @@ constant F_Rd_Seq           : unsigned(opb-1 downto 0) := x"03"; -- read sequenc
 constant F_Rd_Ctr           : unsigned(opb-1 downto 0) := x"04"; -- read counter
 constant F_Ctrl_Max         : unsigned(opb-1 downto 0) := x"05"; -- number of controller registers
 
+-- reader
+
+constant F_Ld_Read_Data     : unsigned(opb-1 downto 0) := x"00"; -- load reader data
+constant F_Read             : unsigned(opb-1 downto 0) := x"01"; -- read data
+constant F_Read_Max         : unsigned(opb-1 downto 0) := x"02"; -- number of reader registers
+
 -- PWM
 
 constant F_Ld_PWM_Max       : unsigned(opb-1 downto 0) := x"00"; -- pwm counter maximum
@@ -97,25 +103,29 @@ constant F_Ld_Dsp_Reg       : unsigned(opb-1 downto 0) := x"06"; -- display regi
 
 constant F_Ctrl_Base        : unsigned(opb-1 downto 0) := x"07"; -- controller
 
+-- reader
+
+constant F_Read_Base        : unsigned(opb-1 downto 0) := x"0c"; -- reader
+
 -- debug frequency control
 
-constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"0c"; -- dbg frequency
+constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"0e"; -- dbg frequency
 
 -- spindle speed
 
-constant F_Rd_Idx_Clks      : unsigned(opb-1 downto 0) := x"0e"; -- read clocks between index pulses
+constant F_Rd_Idx_Clks      : unsigned(opb-1 downto 0) := x"10"; -- read clocks between index pulses
 
 -- pwm
 
-constant F_PWM_Base         : unsigned(opb-1 downto 0) := x"0f"; -- pwm control
+constant F_PWM_Base         : unsigned(opb-1 downto 0) := x"11"; -- pwm control
 
 -- base for modules
 
-constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"11"; -- encoder registers
-constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"14"; -- phase registers
-constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"16"; -- z axis registers
-constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"27"; -- x axis registers
-constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"38"; -- number of commands
+constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"13"; -- encoder registers
+constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"16"; -- phase registers
+constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"18"; -- z axis registers
+constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"29"; -- x axis registers
+constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"3a"; -- number of commands
 
 end RegDef;
 

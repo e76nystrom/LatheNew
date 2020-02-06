@@ -15,13 +15,15 @@ entity Controller is
           );
  port (
   clk : in std_logic;
-  init : in boolean;
+  -- init : in boolean;
+  init : in std_logic;
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
   copy : in boolean;
   load : in boolean;
-  ena : in boolean;
+  -- ena : in boolean;
+  ena : in std_logic;
   statusReg : in unsigned(statusBits-1 downto 0);
   
   dout : out std_logic := '0';
@@ -81,7 +83,8 @@ architecture behavioral of  Controller is
  type ctlFsm is (cIdle, cShift, cWrite, cUpdAdr);
  signal ctlState : ctlFsm := cIdle;
 
- type runFsm is (rIdle, rDly, rCmdLen, lSeq, rCmd, rData, rShift, rDone);
+ type runFsm is (rIdle, raddr, rDly, rCmd, rWait, rSeq, rLen,
+                 rData, rShift, rDone);
  signal runState : runFsm := rIdle;
 
  type cmdRec is record
@@ -111,7 +114,7 @@ architecture behavioral of  Controller is
  signal seqDout : std_logic;
  signal countDout : std_logic;
 
- signal writeEna : boolean := false;
+ signal writeEna : std_logic := '0';
  signal opSel : boolean;
 
  signal outData : std_logic_vector (byteBits-1 downto 0);
@@ -120,13 +123,12 @@ architecture behavioral of  Controller is
 
  signal count : integer range 0 to 7;
 
- signal rdOp : unsigned (opBits-1 downto 0) := (others => '0'); 
  signal len : unsigned (byteBits-1 downto 0) := (others => '0'); 
  -- signal cmd : unsigned (byteBits-1 downto 0) := (others => '0');
  signal cmd : cmdRec := (others => false);
  -- signal cmd : cmdRec := (cmdWaitZ => false, cmdWaitX => false);
 
- constant readDelay : integer := 1;
+ constant readDelay : integer := 2-1;
 
  signal dlyNxt : runFsm := rIdle;
  signal delay : integer range 0 to readDelay := 0;
@@ -159,7 +161,7 @@ begin
    data => std_logic_vector(dataReg),
    rdaddress => std_logic_vector(rdAddress),
    wraddress => std_logic_vector(wrAddress),
-   wren => to_std_logic(writeEna),
+   wren => writeEna,
    q => outData
    );
 
@@ -182,7 +184,7 @@ begin
  tmp <= to_unsigned(dataCount, addrBits);
 
  rdCount : ShiftOutN
-  generic map(opVal => opBase + F_Rd_Seq,
+  generic map(opVal => opBase + F_Rd_Ctr,
               opBits => opBits,
               n => addrBits,
               outBits => outBits)
@@ -201,41 +203,42 @@ begin
  empty <= emptyFlag;
 
  Proc : process(clk)
+  variable rdOp : unsigned (opBits-1 downto 0) := (others => '0'); 
  begin
   if (rising_edge(clk)) then
-   if (init) then
+   if (init = '1') then
     ctlState <= cIdle;
     runState <= rIdle;
-    writeEna <= False;
+    writeEna <= '0';
     rdAddress <= (others => '0');
     wrAddress <= (others => '0');
     dataCount <= 0;
    else
     case ctlState is
-     when cIdle =>
+     when cIdle =>                      --idle
       if (opSel and copy) then
        ctlState <= cShift;
        count <= 7;
       end if;
 
-     when cShift =>
+     when cShift =>                     --shift data in
       if ((not opSel) or load) then
        ctlState <= cIdle;
       elsif (dshift) then
        if (count /= 0) then
         count <= count - 1;
        else
-        writeEna <= true;
+        writeEna <= '1';
         count <= 7;
         ctlState <= cWrite;
        end if;
       end if;
 
-     when CWrite =>
-      writeEna <= false;
+     when CWrite =>                     --write to memory
+      writeEna <= '0';
       ctlState <= cUpdAdr;
 
-     when cUpdAdr =>
+     when cUpdAdr =>                    --update address
       wrAddress <= wrAddress + 1;
       dataCount <= dataCount + 1;
       ctlState <= cShift;
@@ -243,48 +246,46 @@ begin
      when others => null;
     end case;
 
-    if (ena) then
+    if (ena = '1') then                 --if enabled
      case runState is
-      when rIdle =>
+      when rIdle =>                     --idle
        loadOut <= false;
        if (not emptyFlag) then
-        rdOp <= unsigned(outData);
-        rdAddress <= rdAddress + 1;
-        dataCount <= dataCount - 1;
-        dlyNxt <= rCmdLen;
-        delay <= readDelay;
-        runState <= rDly;
-       end if;
-
-      when rDly =>
-       if (delay = 0) then
-        runState <= dlyNxt;
-       else
-        delay <= delay - 1;
-       end if;
-
-      when rCmdLen =>
-       if (not emptyFlag) then
+        rdOp := unsigned(outData);
         if (rdOp = opBase + F_Ctrl_Cmd) then
-         cmd <= to_cmdRec(outData);
-         -- cmd <= unsigned(outData);
          dlyNxt <= rCmd;
         elsif (rdOp = opBase + F_Ld_seq) then
-         seqReg <= unsigned(outdata);
-         dlyNxt <= rIdle;
+         dlyNxt <= rSeq;
         else
          opOut <= rdOp;
-         len <= unsigned(outData);
-         dlyNxt <= rData;
+         dlyNxt <= rLen;
         end if;
+        runState <= rAddr;
+       end if;
+
+      when rAddr =>                     --update address
+       if (not emptyFlag) then
         rdAddress <= rdAddress + 1;
         dataCount <= dataCount - 1;
         delay <= readDelay;
         runState <= rDly;
        else
+        runState <= rIdle;
        end if;
        
-      when rCmd =>
+      when rDly =>                      --delay for data
+       if (delay /= 0) then
+        delay <= delay - 1;
+       else
+        runState <= dlyNxt;
+       end if;
+
+      when rCmd =>                      --get command
+       -- cmd <= unsigned(outData);
+       cmd <= to_cmdRec(outData);
+       runState <= rWait;
+
+      when rWait =>                     --wait for axis done
        -- if (cmd = 1) then
        if (cmd.cmdWaitZ) then
         if (zAxisDone = '1') then
@@ -298,10 +299,21 @@ begin
          runState <= rIdle;
         end if;
        else
-        runState <= rIdle;
+        dlyNxt <= rIdle;
+        runState <= rAddr;
        end if;
 
-      when rData =>
+      when rSeq =>                      --save sequence number
+       seqReg <= unsigned(outdata);
+       dlyNxt <= rIdle;
+       runState <= rAddr;
+
+      when rLen =>                      --get length
+       len <= unsigned(outData);
+       dlyNxt <= rData;
+       runState <= rAddr;
+       
+      when rData =>                     --read data
        if (len /= 0) then
         if (not emptyFlag) then
          data <= unsigned(outData);
@@ -318,7 +330,7 @@ begin
         runState <= rDone;
        end if;
 
-      when rShift =>
+      when rShift =>                    --shift data out
        if (count /= 0) then
         count <= count - 1;
         data <= shift_left(data, 1);
@@ -328,17 +340,17 @@ begin
         runState <= rData;
        end if;
 
-      when rDone =>
+      when rDone =>                     --done
        loadOut <= false;
        opOut <= (others => '0');
        runState <= rIdle;
 
       when others => null;
      end case;
+     
     else
      len <= (others => '0');
      data <= (others => '0');
-     rdOp <= (others => '0');
      -- cmd <= (others => '0');
      cmd <= (others => false);
      opOut <= (others => '0');

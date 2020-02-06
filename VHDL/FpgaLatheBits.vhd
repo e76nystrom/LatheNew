@@ -17,10 +17,11 @@ package FpgaLatheBits is
 
 -- run control register
 
- constant runSize : integer := 2;
+ constant runSize : integer := 3;
  signal runReg : unsigned(runSize-1 downto 0);
  alias runEna     : std_logic is runreg(0); -- x01 run from controller data
  alias runInit    : std_logic is runreg(1); -- x02 initialize controller
+ alias readerInit : std_logic is runreg(2); -- x04 initialize reader
 
 -- axis control register
 

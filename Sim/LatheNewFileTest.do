@@ -1,6 +1,5 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /lathenewfiletest/uut/sysClk
 add wave -noupdate /lathenewfiletest/uut/aIn
 add wave -noupdate /lathenewfiletest/uut/bIn
 add wave -noupdate /lathenewfiletest/uut/dsel
@@ -66,21 +65,46 @@ add wave -noupdate -radix unsigned /lathenewfiletest/uut/index_clocks/clockReg
 add wave -noupdate /lathenewfiletest/uut/index_clocks/active
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/init
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/ctlState
+add wave -noupdate /lathenewfiletest/uut/sysClk
 add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/wrAddress
 add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/dataReg
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/writeEna
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/runState
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/dataCount
 add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/rdAddress
 add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/outData
-add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/dataCount
+add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/memProc/q
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/seqReg
+add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/opOut
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/emptyFlag
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/init
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/dshiftOut
-add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/opOut
 add wave -noupdate /lathenewfiletest/uut/ctrlProc/loadOut
-add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/seqReg
+add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/ctrlProc/op
+add wave -noupdate /lathenewfiletest/uut/ctrlProc/rdCount/shiftSel
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/rdCount/shiftReg
+add wave -noupdate /lathenewfiletest/uut/ctrlProc/rdSeq/shiftSel
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/ctrlProc/rdSeq/shiftReg
+add wave -noupdate /lathenewfiletest/uut/status/shiftSel
+add wave -noupdate -radix unsigned /lathenewfiletest/tmpx
+add wave -noupdate /lathenewfiletest/uut/statusReg
+add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/spiOp
+add wave -noupdate /lathenewfiletest/uut/spiCopy
+add wave -noupdate /lathenewfiletest/uut/dataReader/ctlState
+add wave -noupdate /lathenewfiletest/uut/dataReader/runState
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/dataReader/wrAddress
+add wave -noupdate /lathenewfiletest/uut/dataReader/writeEna
+add wave -noupdate /lathenewfiletest/uut/spiShift
+add wave -noupdate /lathenewfiletest/uut/spiCopy
+add wave -noupdate /lathenewfiletest/uut/spiActive
+add wave -noupdate /lathenewfiletest/uut/dataReader/active
+add wave -noupdate -radix unsigned /lathenewfiletest/uut/dataReader/rdAddress
+add wave -noupdate /lathenewfiletest/uut/dataReader/count
+add wave -noupdate -radix hexadecimal /lathenewfiletest/uut/dataReader/opOut
+add wave -noupdate /lathenewfiletest/uut/dataReader/copyOut
+add wave -noupdate /lathenewfiletest/uut/dshiftR
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {295245000 ps} 0} {{Cursor 2} {3595000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {115682927 ps} 0} {{Cursor 2} {122195000 ps} 0}
 quietly wave cursor active 2
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100
@@ -96,4 +120,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {105 us}
+WaveRestoreZoom {117273124 ps} {127116876 ps}
