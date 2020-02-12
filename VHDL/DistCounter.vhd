@@ -144,7 +144,7 @@ begin
       active <= '0';                    --set to inactive
      end if;
      
-     if (aclSteps >= distCtr) then      --if accel ge dist left
+     if (aclSteps > distCtr) then       --if accel ge dist left
       decel <= '1';                     --set decel flag
      else
       decel <= '0';

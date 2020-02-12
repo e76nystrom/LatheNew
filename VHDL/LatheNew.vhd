@@ -182,6 +182,7 @@ architecture Behavioral of LatheNew is
    ena : in std_logic;                  --enable input
    ch : in std_logic;                   --input clock
    dout : out std_logic;                --data out
+   active : out std_logic;              --active
    intclk : out std_logic
    );
  end Component;
@@ -377,13 +378,15 @@ architecture Behavioral of LatheNew is
 
 -- status register
 
- constant statusSize : integer := 5;
+ constant statusSize : integer := 7;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna   : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone  : std_logic is statusreg(1); -- x02 z axis done
  alias xAxisEna   : std_logic is statusreg(2); -- x04 x axis enable flag
  alias xAxisDone  : std_logic is statusreg(3); -- x08 x axis done
  alias queEmpty   : std_logic is statusreg(4); -- x10 controller queue empty
+ alias ctlIdle    : std_logic is statusreg(5); -- x20 controller idle
+ alias syncActive : std_logic is statusreg(6); -- x40 sync active
 
 -- run control register
 
@@ -494,6 +497,7 @@ architecture Behavioral of LatheNew is
 
  signal sync : std_logic;
 
+ signal intActive : std_logic;
  signal intClk : std_logic;
  signal xCh : std_logic;
  signal zCh : std_logic;
@@ -537,6 +541,7 @@ begin
  xAxisDone <= intXDoneInt;
 
  queEmpty <= to_std_logic(ctlEmpty);
+ syncActive <= intActive;
 
  led(7) <= div(divBits);
  led(6) <= div(divBits-1);
@@ -655,6 +660,7 @@ begin
    ena => synEncEna,
    ch => ch,
    dout => encDout,
+   active => intActive,
    intclk => intClk
    );
 

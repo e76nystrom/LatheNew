@@ -188,6 +188,7 @@ architecture Behavioral of Axis is
 
  signal distDecel: std_logic;
  signal distZero : std_logic;
+ signal syncAccelEna : std_logic;
  signal syncAccelFlag : std_logic;
  signal syncAccelActive : std_logic;
 
@@ -233,6 +234,8 @@ begin
    load => load,
    data => axisCtlReg);
 
+ syncAccelEna <= runEna when ctlChDirect = '0' else '0';
+
  AxisSyncAccel: SyncAccel
   generic map (opBase => opBase + F_Sync_Base,
                opBits => opBits,
@@ -249,7 +252,7 @@ begin
    opR => opR,
    copyR => copyR,
    init => runInit,
-   ena => runEna,
+   ena => syncAccelEna,
    decel => distDecel,
    ch => ch,
    dir => encDir,

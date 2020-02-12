@@ -124,8 +124,8 @@ architecture behavioral of  Controller is
  signal count : integer range 0 to 7;
 
  signal len : unsigned (byteBits-1 downto 0) := (others => '0'); 
- -- signal cmd : unsigned (byteBits-1 downto 0) := (others => '0');
- signal cmd : cmdRec := (others => false);
+ signal cmd : unsigned (byteBits-1 downto 0) := (others => '0');
+ -- signal cmd : cmdRec := (others => false);
  -- signal cmd : cmdRec := (cmdWaitZ => false, cmdWaitX => false);
 
  constant readDelay : integer := 2-1;
@@ -281,22 +281,22 @@ begin
        end if;
 
       when rCmd =>                      --get command
-       -- cmd <= unsigned(outData);
-       cmd <= to_cmdRec(outData);
+       cmd <= unsigned(outData);
+       -- cmd <= to_cmdRec(outData);
        runState <= rWait;
 
       when rWait =>                     --wait for axis done
-       -- if (cmd = 1) then
-       if (cmd.cmdWaitZ) then
+       if (cmd(0) = '1') then
+       -- if (cmd.cmdWaitZ) then
         if (zAxisDone = '1') then
-         cmd.cmdWaitZ <= false;
-         runState <= rIdle;
+         cmd(0) <= '0';
+         -- cmd.cmdWaitZ <= false;
         end if;
-       -- elsif (cmd = 2) then
-       elsif (cmd.cmdWaitX) then
+       elsif (cmd(1) = '1') then
+       -- elsif (cmd.cmdWaitX) then
         if (xAxisDone = '1') then
-         cmd.cmdWaitX <= false;
-         runState <= rIdle;
+         cmd(1) <= '0';
+         -- cmd.cmdWaitX <= false;
         end if;
        else
         dlyNxt <= rIdle;
@@ -351,8 +351,8 @@ begin
     else
      len <= (others => '0');
      data <= (others => '0');
-     -- cmd <= (others => '0');
-     cmd <= (others => false);
+     cmd <= (others => '0');
+     -- cmd <= (others => false);
      opOut <= (others => '0');
     end if;
    end if;

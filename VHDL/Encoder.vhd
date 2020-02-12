@@ -51,6 +51,7 @@ entity Encoder is
   ena : in std_logic;                    --enable input
   ch : in std_logic;                     --input clock
   dout : out std_logic := '0';           --data out
+  active : out std_logic := '0';         --active
   intclk : out std_logic := '0'          --output clock
   );
 end Encoder;
@@ -95,6 +96,7 @@ architecture Behavioral of Encoder is
    dout: out std_logic;                 --data out
    init : in std_logic;                 --init signal
    intClk : out std_logic;              --output clock
+   active : out std_logic;              --active
    encCycleDone: in std_logic;          --encoder cycle done
    cycleClocks: in unsigned (cycleClkBits-1 downto 0) --cycle counter
    );
@@ -107,6 +109,7 @@ architecture Behavioral of Encoder is
  signal cycleClocks : unsigned (cycleClkBits-1 downto 0);
 
  signal intClkOut : std_logic;
+ signal intActive : std_logic;
 
 begin
 
@@ -135,6 +138,7 @@ begin
    cycleClocks => cycleClocks
    );
 
+ active <= intActive;
  intClk <= intClkOUt;
 
  int_tmr : IntTmr
@@ -151,6 +155,7 @@ begin
    op => op,
    dout => intTmrDout,
    intClk => intClkOut,
+   Active => intActive,
    encCycleDone => encCycleDone,
    cycleClocks => cycleClocks
    );
