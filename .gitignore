@@ -1,3 +1,5 @@
+#*
+*#
 *.txt
 *.bdf
 *.bsf
@@ -19,3 +21,4 @@ Sim/db
 Sim/wlf*
 Sim/work
 VHDL/greybox_tmp
+

@@ -520,6 +520,7 @@ architecture Behavioral of LatheNew is
 
  signal test1 : std_logic;
  signal test2 : std_logic;
+ signal test3 : std_logic;
 
  signal zDbg : unsigned(3 downto 0);
  signal xDbg : unsigned(3 downto 0);
@@ -576,12 +577,21 @@ begin
    pulseOut => test2
    );
 
+ testOut3 : PulseGen
+  generic map (pulseWidth => 25)
+  port map (
+   clk => clk,
+   pulseIn => sync,
+   pulseOut => test3
+   );
+
  dbg(0) <= test1;
  dbg(1) <= test2;
 
- dbg(2) <= runEna;
- dbg(3) <= intXDoneInt;
- dbg(7 downto 4) <= std_logic_vector(xDbg);
+ dbg(2) <= intZDoneInt;
+ -- dbg(3) <= intXDoneInt;
+ dbg(3) <= test3;
+ dbg(7 downto 4) <= std_logic_vector(zDbg);
 
  -- dbg(4) = dbgOUt(0) <= runEna;
  -- dbg(5) = dbgOut(1) <= distDecel;
@@ -962,8 +972,8 @@ begin
    d1 => zFreqGen,
    d2 => ch,
    d3 => intClk,
-   d4 => xDelayStep,
-   d5 => xFreqGen,
+   d4 => xFreqGen,
+   d5 => xCh,
    d6 => '0',
    d7 => dbgFreqGen,
    dout => zCh
@@ -1024,8 +1034,8 @@ begin
    d1 => xFreqGen,
    d2 => ch,
    d3 => intClk,
-   d4 => zDelayStep,
-   d5 => zFreqGen,
+   d4 => zFreqGen,
+   d5 => zCh,
    d6 => '0',
    d7 => dbgFreqGen,
    dout => xCh);

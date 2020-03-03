@@ -56,25 +56,25 @@ package FpgaLatheBits is
  alias clkFreq    : std_logic is clkCtlreg(0); -- x01 
  alias clkCh      : std_logic is clkCtlreg(0); -- x01 
  alias clkIntClk  : std_logic is clkCtlreg(0); -- x01 
- alias clkSlvStep : std_logic is clkCtlreg(0); -- x01 
- alias clkslvFreq : std_logic is clkCtlreg(0); -- x01 
+ alias clkSlvFreq : std_logic is clkCtlreg(0); -- x01 
+ alias clkSlvCh   : std_logic is clkCtlreg(0); -- x01 
  alias clkSpare   : std_logic is clkCtlreg(0); -- x01 
  alias clkDbgFreq : std_logic is clkCtlreg(0); -- x01 
  alias zFreqSel   : std_logic is clkCtlreg(0); -- x01 z Frequency select
  alias zClkZFreq  : std_logic is clkCtlreg(0); -- x01 
  alias zClkCh     : std_logic is clkCtlreg(0); -- x01 
  alias zClkIntClk : std_logic is clkCtlreg(0); -- x01 
- alias zClkXStep  : std_logic is clkCtlreg(0); -- x01 
  alias zClkXFreq  : std_logic is clkCtlreg(0); -- x01 
+ alias zClkXCh    : std_logic is clkCtlreg(0); -- x01 
  alias zClkSpare  : std_logic is clkCtlreg(0); -- x01 
  alias zClkDbgFreq : std_logic is clkCtlreg(0); -- x01 
  alias xFreqSel   : std_logic is clkCtlreg(3); -- x08 x Frequency select
  alias xClkXFreq  : std_logic is clkCtlreg(3); -- x08 
  alias xClkCh     : std_logic is clkCtlreg(3); -- x08 
  alias xClkIntClk : std_logic is clkCtlreg(3); -- x08 
- alias xClkZStep  : std_logic is clkCtlreg(3); -- x08 
  alias xClkZFreq  : std_logic is clkCtlreg(3); -- x08 
- alias xClkSpare  : std_logic is clkCtlreg(0); -- x01 
+ alias xClkZCh    : std_logic is clkCtlreg(3); -- x08 
+ alias xClkSpare  : std_logic is clkCtlreg(3); -- x08 
  alias xClkDbgFreq : std_logic is clkCtlreg(3); -- x08 
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 

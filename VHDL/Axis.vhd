@@ -129,22 +129,22 @@ architecture Behavioral of Axis is
    );
  end Component;
 
- component DataSel4_2 is
-  port ( sel : in std_logic;
-         a0 : in std_logic;
-         a1 : in std_logic;
-         a2 : in std_logic;
-         a3 : in std_logic;
-         b0 : in std_logic;
-         b1 : in std_logic;
-         b2 : in std_logic;
-         b3 : in std_logic;
-         y0 : out std_logic;
-         y1 : out std_logic;
-         y2 : out std_logic;
-         y3 : out std_logic
-         );
- end Component;
+ -- component DataSel4_2 is
+ --  port ( sel : in std_logic;
+ --         a0 : in std_logic;
+ --         a1 : in std_logic;
+ --         a2 : in std_logic;
+ --         a3 : in std_logic;
+ --         b0 : in std_logic;
+ --         b1 : in std_logic;
+ --         b2 : in std_logic;
+ --         b3 : in std_logic;
+ --         y0 : out std_logic;
+ --         y1 : out std_logic;
+ --         y2 : out std_logic;
+ --         y3 : out std_logic
+ --         );
+ -- end Component;
 
  component DataSel2_1 is
   port (
@@ -218,7 +218,8 @@ type run_fsm is (idle, loadReg, synWait, run, done);
 begin
 
  dbgOUt(0) <= runEna;
- dbgOut(1) <= distDecel;
+ -- dbgOut(1) <= distDecel;
+ dbgOut(1) <= ctlWaitSync;
  dbgOut(2) <= distZero;
  dbgOut(3) <= syncAccelActive;
 
@@ -305,22 +306,26 @@ begin
    loc => loc
    );
 
-  AxisCtlSelect : DataSel4_2
-  port map (
-   sel => ctlSlave,
-   a0 => axisInit,
-   a1 => axisEna,
-   a2 => axisUpdLoc,
-   a3 => '0',
-   b0 => extInit,
-   b1 => extEna,
-   b2 => extUpdLoc,
-   b3 => '0',
-   y0 => runInit,
-   y1 => runEna,
-   y2 => updLoc,
-   y3 => open
-   );
+  -- AxisCtlSelect : DataSel4_2
+  -- port map (
+  --  sel => ctlSlave,
+  --  a0 => axisInit,
+  --  a1 => axisEna,
+  --  a2 => axisUpdLoc,
+  --  a3 => '0',
+  --  b0 => extInit,
+  --  b1 => extEna,
+  --  b2 => extUpdLoc,
+  --  b3 => '0',
+  --  y0 => runInit,
+  --  y1 => runEna,
+  --  y2 => updLoc,
+  --  y3 => open
+  --  );
+
+ runInit <= extInit when ctlSlave = '1' else axisInit;
+ runEna <= extEna when ctlSlave = '1' else axisEna;
+ updLoc <= extUpdLoc when ctlSlave = '1' else axisUpdLoc;
 
  AxisStepSel : DataSel2_1
   port map (
@@ -333,6 +338,7 @@ begin
  initOut <= axisInit;
  enaOut <= axisEna;
  updLocOut <= axisUpdLoc;
+ 
  enaCh <= runEna and ch;
  dout <= doutSync or doutDist or doutLoc;
  dirOut <= ctlDir;
@@ -343,8 +349,8 @@ begin
  begin
   if (rising_edge(clk)) then            --if clock active
    if (ctlInit = '1') then              --if time to set new locaton
-    runState <= idle;                  --clear state
-    doneInt <= '0';                    --clear interrupt
+    runState <= idle;                   --clear state
+    doneInt <= '0';                     --clear interrupt
     axisEna <= '0';                     --clear run flag
     axisUpdLoc <= '0';
    else                                 --if normal operation
@@ -352,7 +358,7 @@ begin
      when idle =>                       --idle state
       if (ctlStart = '1') then          --if start requested
        runState <= loadReg;             --advance to load state
-       axisInit <= '1';                --set flag to load accel and sync
+       axisInit <= '1';			--set flag to load accel and sync
       end if;
 
      when loadReg =>                    --load state
@@ -368,7 +374,6 @@ begin
       end if;
 
      when synWait =>                    --sync wait state
-
       if (ctlStart = '0') then          --if start flag cleared
        runState <= idle;                --return to idle
       else                              --if start flag set
