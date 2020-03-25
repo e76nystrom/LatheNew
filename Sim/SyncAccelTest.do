@@ -16,15 +16,15 @@ add wave -noupdate -radix unsigned /syncacceltest/uut/ypos
 add wave -noupdate -radix unsigned /syncacceltest/uut/accelCount
 add wave -noupdate -radix unsigned /syncacceltest/uut/accelCounter
 add wave -noupdate -radix unsigned /syncacceltest/uut/accelSum
-add wave -noupdate -radix unsigned /syncacceltest/uut/aval
 add wave -noupdate /syncacceltest/uut/state
 add wave -noupdate /syncacceltest/distZero
-add wave -noupdate -radix unsigned /syncacceltest/uut/accelAccum/a
-add wave -noupdate -radix unsigned /syncacceltest/uut/accelAccum/sum
 add wave -noupdate -radix unsigned /syncacceltest/AxisDistCounter/distCtr
 add wave -noupdate -radix unsigned /syncacceltest/AxisDistCounter/aclSteps
+add wave -noupdate /syncacceltest/uut/synStep
+add wave -noupdate /syncacceltest/uut/decel
+add wave -noupdate /syncacceltest/uut/accelActive
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {3205000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {9972919 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 260
 configure wave -valuecolwidth 100
@@ -40,4 +40,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ps
 update
-WaveRestoreZoom {0 ps} {50724314 ps}
+WaveRestoreZoom {0 ps} {52500096 ps}

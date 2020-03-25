@@ -61,11 +61,11 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
    decel : in std_logic;
+   decelDisable : in boolean;
    ch : in std_logic;
    dir : in std_logic;
    dout : out std_logic;
    accelActive : out std_logic;
-   accelFlag : out std_logic;
    synStep : out std_logic
    );
  end Component;
@@ -106,6 +106,7 @@ ARCHITECTURE behavior OF SyncAccelTest IS
  signal init : std_logic := '0';
  signal ena : std_logic := '0';
  signal decel : std_logic := '0';
+ signal decelDisable : boolean := false;
  signal ch : std_logic := '0';
  signal dir : std_logic := '0';
  signal din : std_logic := '0';
@@ -121,7 +122,6 @@ ARCHITECTURE behavior OF SyncAccelTest IS
 
  --Outputs
  signal dout : std_logic;
- signal accelFlag : std_logic;
  signal accelActive : std_logic;
  signal synstp : std_logic;
 
@@ -157,11 +157,11 @@ BEGIN
    init => init,
    ena => syncEna,
    decel => decel,
+   decelDisable => decelDisable,
    ch => ch,
    dir => dir,
    dout => dout,
    accelActive => accelActive,
-   accelFlag => accelFlag,
    synStep => synStp
    );
 
@@ -181,7 +181,7 @@ BEGIN
    copyR => copy,
    init => init,
    step => synStp,
-   accelFlag => accelFlag,
+   accelFlag => accelActive,
    dout => dout,
    decel => decel,
    distZero => distZero

@@ -18,6 +18,8 @@ entity Jog is
   opR : in unsigned(opBits-1 downto 0);
   copyR : in boolean;
   quad : in std_logic_vector(1 downto 0);
+  enable : in boolean;
+  currentDir : in std_logic;
   jogStep : out std_logic := '0';
   jogDir : out std_logic := '0';
   jogUpdLoc : out std_logic := '1';
@@ -87,21 +89,19 @@ architecture Behavioral of Jog is
  constant deltaMax : natural := 50000;
  constant slowJog : natural := 20000;
  constant fastSteps : natural := 14;
- constant maxDist : natural := 1024;
+
  signal deltaTimer : unsigned(deltaBits-1 downto 0) := (others => '0');
  signal jogTimer : unsigned(deltaBits-1 downto 0) := (others => '0');
  signal deltaJog : unsigned(deltaBits-1 downto 0) := (others => '0');
+
  signal jogDist : unsigned(distBits-1 downto 0) := (others => '0');
  signal jogInc : unsigned(distBits-1 downto 0) := (others => '0');
 
  signal jogActive : boolean := False;
  signal activeDir : std_logic := '0';
 
- constant incBits : positive := 12;
- constant backlashDistBits : positive := 10;
-
  signal incDist : unsigned(distBits-1 downto 0);
- signal backlashDist : unsigned(DistBits-1 downto 0);
+ signal backlashDist : unsigned(distBits-1 downto 0);
 
  -- jog control register
 
@@ -162,64 +162,36 @@ begin
  --   dout => posDout
  --   );
 
- delay_proc: process(clk)
- begin
-  if (rising_edge(clk)) then
-   lastA <= lastA(0) & a;
-   lastB <= lastB(0) & b;
-  end if;
- end process;
-
- -- calculate direction based upon a and b inputs
- 
- directionProcess : process(clk)
+ jogProc : process(clk)
   variable quadState : std_logic_vector(3 downto 0);
   variable ch : std_logic;
  begin
-  if (rising_edge(clk)) then
-   ch := (lastA(1) xor lastA(0)) or (lastB(1) xor lastB(0)); --input change
-   update <= ch;
-   if (ch = '1') then
-    quadState := lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
-    case (quadState) is
-     when "0001" => dir <= '0';
-     when "0111" => dir <= '0';
-     when "1110" => dir <= '0';
-     when "1000" => dir <= '0';
-     when "0010" => dir <= '1';
-     when "1011" => dir <= '1';
-     when "1101" => dir <= '1';
-     when "0100" => dir <= '1';
-     when others => null;
-    end case;
-   end if;
-  end if;
- end process;
-
- -- timerProc : process(clk)
- -- begin
- --  if (rising_edge(clk)) then
- --   if (timer = 0) then
- --    uSec <= '1';
- --    timer <= timerMax - 1;
- --   else
- --    uSec <= '0';
- --    timer <= timer - 1;
- --   end if;
- --  end if;
- -- end process;
-
- jogDir <= activeDir;
-
- jogProc : process(clk)
-  -- variable resetTimer : boolean := false;
- begin
   if (rising_edge(clk)) then            --if time to process
 
-   if (update = '0') then               --if no update
-    
-    if (uSec = '1') then                --if next uSec
+   if (enable and (uSec = '1')) then    --if enabled and next uSec
 
+    ch := (lastA(1) xor lastA(0)) or (lastB(1) xor lastB(0)); --input change
+    update <= ch;
+    if (ch = '1') then
+     quadState := lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
+     case (quadState) is
+      when "0001" => dir <= '0';
+      when "0111" => dir <= '0';
+      when "1110" => dir <= '0';
+      when "1000" => dir <= '0';
+      when "0010" => dir <= '1';
+      when "1011" => dir <= '1';
+      when "1101" => dir <= '1';
+      when "0100" => dir <= '1';
+      when others => null;
+     end case;
+    end if;
+
+    lastA <= lastA(0) & a;
+    lastB <= lastB(0) & b;
+
+    if (update = '0') then              --if no update
+     
      if (deltaTimer < deltaMax-1) then  --if timer in range
       deltaTimer <= deltaTimer + 1;     --increment timer
      end if;
@@ -244,70 +216,67 @@ begin
       jogDist <= to_unsigned(0, distBits); --clear distance
      end if;                            --end jog active
      
-    else
-     jogStep <= '0';                    --clear step flag
-    end if;                             --end usec
-    
-   else                                 --if input change
-    
-    if (dir = activeDir) then           --if direction same
-
+    else                                --if input update
+     update <= '0';                     --clear input update flag
      deltaJog <= deltaTimer;            --save time interval
-     deltaTimer <= to_unsigned(0, deltaBits); --reset timer
-     if (jogContinuous = '1') then      --if continuous jog
-      if (deltaJog <= slowJog) then     --if fast jog
-       jogInc <= to_unsigned(fastSteps, distBits); --set number of jog pulses
-       jogDist <= jogDist + fastSteps;  --add to distance
-      else                              --if slow jog
-       jogInc <= to_unsigned(fastSteps, distBits); --set to one jog pulse
-       jogDist <= jogDist + 1;          --add to distance
-      end if;
-      jogActive <= true;
-     else                               --if incremental jog
-
-      if (not jogActive) then           --if jog not active
-       jogInc <= to_unsigned(fastSteps, distBits); --set increment
-       jogDist <= incDist;              --set distance
-       jogActive <= true;               --set to active
-       -- resetTimer := true;              --restart timer
-      end if;                           --end jog active
-
-     end if;                            --end continuous incremental
-
-    else                                --if direction change
-
-     if (jogActive) then                --if active
-      jogActive <= false;               --stop
-     else                               --if not active
-      if (jogBacklash = '1') then       --if backlash
-       jogInc <= to_unsigned(fastSteps, distBits); --set speed
-       jogDist <= backlashDist;         --set distance
-       jogUpdLoc <= '0';                --disable location update
-       jogActive <= true;               --set to active
-       -- resetTimer := true;              --restart timer
-      end if;
-      activeDir <= dir;                 --set current direction
+     if (not jogActive) then            --if not active
+      jogTimer <= deltaTimer;            --initialize timer
      end if;
+     deltaTimer <= to_unsigned(0, deltaBits); --reset timer
+     
+     if (dir = currentDir) then         --if direction same
 
-    end if;                             --end direction change
-    
-   end if;                              --end change
+      if (jogContinuous = '1') then     --if continuous jog
+       if (deltaJog <= slowJog) then    --if fast jog
+        jogInc <= to_unsigned(fastSteps, distBits); --set number of jog pulses
+        jogDist <= jogDist + fastSteps; --add to distance
+       else                             --if slow jog
+        jogInc <= to_unsigned(fastSteps, distBits); --set to one jog pulse
+        jogDist <= jogDist + 1;         --add to distance
+       end if;
+       jogActive <= true;
+      else                              --if incremental jog
 
-   -- if ((timer = 0) or resetTimer) then                  
-   --  if (not resetTimer) then
-   --   uSec <= '1';
-   --  end if;
-   if (timer = 0) then
-    timer <= timerMax - 1;
-    uSec <= '1';
-   else
-    uSec <= '0';
-    timer <= timer - 1;
-   end if;
-   -- resetTimer := false;
+       if (not jogActive) then          --if jog not active
+        jogInc <= to_unsigned(fastSteps, distBits); --set increment
+        jogDist <= incDist;             --set distance
+        jogActive <= true;              --set to active
+       end if;                          --end jog active
+
+      end if;                           --end continuous incremental
+
+     else                               --if direction change
+
+      if (jogActive) then               --if active
+       jogActive <= false;              --stop
+      else                              --if not active
+       if (jogBacklash = '1') then      --if backlash
+        jogInc <= to_unsigned(fastSteps, distBits); --set speed
+        jogDist <= backlashDist;        --set distance
+        jogUpdLoc <= '0';               --disable location update
+        jogActive <= true;              --set to active
+       end if;                          --end backlash
+       jogDir <= dir;                   --set current direction
+      end if;                           --end active
+
+     end if;                            --end direction change
+     
+    end if;                             --end change
+
+   else                                 --if not enabled or not usec
+    jogDir <= currentDir;               --keep direction current
+    jogStep <= '0';                     --clear step flag
+   end if;                              --end enable and usec
+   
+   if (timer = 0) then                  --if usec timer zero
+    timer <= timerMax - 1;              --reset to maximum
+    uSec <= '1';                        --output usec pulse
+   else                                 --if non zero
+    timer <= timer - 1;                 --decrement timer
+    uSec <= '0';                        --clear usec pulse
+   end if;                              --end usec timer
 
   end if;                               --end rising edge
  end process;
 
 end Behavioral;
-

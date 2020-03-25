@@ -58,7 +58,7 @@ end Encoder;
 
 architecture Behavioral of Encoder is
 
- component CmpTmr
+ component CmpTmrNewMem
   generic (opBase : unsigned := x"00";
            opBits : positive := 8;
            cycleLenBits : positive := 16;
@@ -82,7 +82,7 @@ architecture Behavioral of Encoder is
    );
  end component;
 
- component IntTmr is
+ component IntTmrNew is
   generic (opBase : unsigned := x"00";
            opBits : positive := 8;
            cycleLenBits : positive := 16;
@@ -115,7 +115,7 @@ begin
 
  dout <= cmpTmrDout or intTmrDout;
 
- cmp_tmr : CmpTmr
+ cmp_tmr : CmpTmrNewMem
   generic map (opBase => opBase + 0,
                opBits => opBits,
                cycleLenBits => cycleLenBits,
@@ -141,7 +141,7 @@ begin
  active <= intActive;
  intClk <= intClkOUt;
 
- int_tmr : IntTmr
+ int_tmr : IntTmrNew
   generic map (opBase => opBase + 0,
                opBits => opBits,
                cycleLenBits => cycleLenBits,

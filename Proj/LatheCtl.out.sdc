@@ -1,4 +1,4 @@
-## Generated SDC file "LatheCtl.sdc"
+## Generated SDC file "LatheCtl.out.sdc"
 
 ## Copyright (C) 1991-2013 Altera Corporation
 ## Your use of Altera Corporation's design tools, logic functions 
@@ -19,7 +19,7 @@
 ## PROGRAM "Quartus II"
 ## VERSION "Version 13.0.1 Build 232 06/12/2013 Service Pack 1 SJ Web Edition"
 
-## DATE    "Tue Mar 03 07:36:24 2020"
+## DATE    "Tue Mar 03 07:37:23 2020"
 
 ##
 ## DEVICE  "EP4CE22F17C6"
@@ -59,14 +59,14 @@ create_generated_clock -name {sys_Clk|sys_Clk|altpll_component|auto_generated|pl
 # Set Clock Uncertainty
 #**************************************************************
 
-set_clock_uncertainty -rise_from [get_clocks {sysClk}] -rise_to [get_clocks {sysClk}]  0.020  
-set_clock_uncertainty -rise_from [get_clocks {sysClk}] -fall_to [get_clocks {sysClk}]  0.020  
-set_clock_uncertainty -fall_from [get_clocks {sysClk}] -rise_to [get_clocks {sysClk}]  0.020  
-set_clock_uncertainty -fall_from [get_clocks {sysClk}] -fall_to [get_clocks {sysClk}]  0.020  
 set_clock_uncertainty -rise_from [get_clocks {altera_reserved_tck}] -rise_to [get_clocks {altera_reserved_tck}]  0.020  
 set_clock_uncertainty -rise_from [get_clocks {altera_reserved_tck}] -fall_to [get_clocks {altera_reserved_tck}]  0.020  
 set_clock_uncertainty -fall_from [get_clocks {altera_reserved_tck}] -rise_to [get_clocks {altera_reserved_tck}]  0.020  
 set_clock_uncertainty -fall_from [get_clocks {altera_reserved_tck}] -fall_to [get_clocks {altera_reserved_tck}]  0.020  
+set_clock_uncertainty -rise_from [get_clocks {sysClk}] -rise_to [get_clocks {sysClk}]  0.020  
+set_clock_uncertainty -rise_from [get_clocks {sysClk}] -fall_to [get_clocks {sysClk}]  0.020  
+set_clock_uncertainty -fall_from [get_clocks {sysClk}] -rise_to [get_clocks {sysClk}]  0.020  
+set_clock_uncertainty -fall_from [get_clocks {sysClk}] -fall_to [get_clocks {sysClk}]  0.020  
 set_clock_uncertainty -rise_from [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}] -rise_to [get_clocks {sysClk}] -setup 0.100  
 set_clock_uncertainty -rise_from [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}] -rise_to [get_clocks {sysClk}] -hold 0.070  
 set_clock_uncertainty -rise_from [get_clocks {sys_Clk|sys_Clk|altpll_component|auto_generated|pll1|clk[0]}] -fall_to [get_clocks {sysClk}] -setup 0.100  
@@ -178,6 +178,7 @@ set_output_delay -add_delay  -clock [get_clocks {sys_Clk|sys_Clk|altpll_componen
 # Set Clock Groups
 #**************************************************************
 
+set_clock_groups -asynchronous -group [get_clocks {altera_reserved_tck}] 
 set_clock_groups -asynchronous -group [get_clocks {altera_reserved_tck}] 
 
 

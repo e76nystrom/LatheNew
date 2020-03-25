@@ -31,13 +31,16 @@ entity Axis is
   ch : in std_logic;
   encDir : in std_logic;
   sync : in std_logic;
+  droQuad : in std_logic_vector(1 downto 0);
+  droInvert : in std_logic;
+  mpgQuad : in std_logic_vector(1 downto 0);
   dbgOut : out unsigned (dbgBits-1 downto 0) := (others => '0');
   initOut : out std_logic := '0';
   enaOut : out std_logic := '0';
   updLocOut : out std_logic := '0';
   dout : out std_logic := '0';
   stepOut : out std_logic := '0';
-  dirOut : out std_logic := '0';
+  dirOut : inout std_logic := '0';
   doneInt : out std_logic := '0'
   );
 end Axis;
@@ -75,11 +78,11 @@ architecture Behavioral of Axis is
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
    decel : in std_logic;
+   decelDisable : in boolean;
    ch : in std_logic;
    dir : in std_logic;
    dout : out std_logic;
    accelActive : out std_logic;
-   accelFlag : out std_logic;
    synStep : out std_logic
    );
  end Component;
@@ -129,22 +132,51 @@ architecture Behavioral of Axis is
    );
  end Component;
 
- -- component DataSel4_2 is
- --  port ( sel : in std_logic;
- --         a0 : in std_logic;
- --         a1 : in std_logic;
- --         a2 : in std_logic;
- --         a3 : in std_logic;
- --         b0 : in std_logic;
- --         b1 : in std_logic;
- --         b2 : in std_logic;
- --         b3 : in std_logic;
- --         y0 : out std_logic;
- --         y1 : out std_logic;
- --         y2 : out std_logic;
- --         y3 : out std_logic
- --         );
- -- end Component;
+ component QuadDro is
+ generic (opBase : unsigned;
+          opBits : positive;
+          droBits : positive;
+          outBits : positive);
+ port (
+  clk : in std_logic;
+  din : in std_logic;
+  dshift : in boolean;
+  op : in unsigned(opBits - 1 downto 0);
+  load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned(opBits-1 downto 0);
+  copyR : in boolean;
+  quad : in std_logic_vector(1 downto 0);
+  dirInvert : in std_logic;
+  endCheck : in std_logic;
+  decelDisable : out boolean;
+  done : out boolean;
+  dout : out std_logic
+  );
+ end Component;
+
+ component Jog is
+ generic (opBase : unsigned;
+          opBits : positive;
+          outBits : positive);
+ port (
+  clk : in std_logic;
+  din : in std_logic;
+  dshift : in boolean;
+  op : in unsigned(opBits - 1 downto 0);
+  load : in boolean;
+  dshiftR : in boolean;
+  opR : in unsigned(opBits-1 downto 0);
+  copyR : in boolean;
+  quad : in std_logic_vector(1 downto 0);
+  enable : in boolean;
+  currentDir : in std_logic;
+  jogStep : out std_logic;
+  jogDir : out std_logic;
+  jogUpdLoc: out std_logic;
+  dout : out std_logic
+  );
+ end Component;
 
  component DataSel2_1 is
   port (
@@ -158,7 +190,7 @@ architecture Behavioral of Axis is
 --(++ axisCtl
 -- axis control register
 
- constant axisCtlSize : integer := 8;
+ constant axisCtlSize : integer := 9;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  alias ctlInit    : std_logic is axisCtlreg(0); -- x01 reset flag
  alias ctlStart   : std_logic is axisCtlreg(1); -- x02 start
@@ -168,13 +200,15 @@ architecture Behavioral of Axis is
  alias ctlDirPos  : std_logic is axisCtlreg(4); -- x10 move in positive dir
  alias ctlSetLoc  : std_logic is axisCtlreg(5); -- x20 set location
  alias ctlChDirect : std_logic is axisCtlreg(6); -- x40 ch input direct
- alias ctlSlave   : std_logic is axisCtlreg(7); -- x80 slave controlled by other
+ alias ctlSlave   : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
+ alias ctlDroEnd  : std_logic is axisCtlreg(8); -- x100 use dro to end move
 
 --++)
 
  signal axisEna : std_logic := '0';
  signal axisInit : std_logic := '0';
  signal axisUpdLoc : std_logic := '0';
+ signal jogUpdLoc : std_logic;
 
  signal runInit : std_logic;
  signal runEna : std_logic;
@@ -185,11 +219,13 @@ architecture Behavioral of Axis is
  signal doutSync : std_logic;
  signal doutDist : std_logic;
  signal doutLoc : std_logic;
+ signal doutDro : std_logic;
+ signal doutJog : std_logic;
 
  signal distDecel: std_logic;
  signal distZero : std_logic;
+
  signal syncAccelEna : std_logic;
- signal syncAccelFlag : std_logic;
  signal syncAccelActive : std_logic;
 
  signal synStepOut : std_logic;
@@ -197,7 +233,16 @@ architecture Behavioral of Axis is
 
  signal enaCh : std_logic;
 
- signal loc : unsigned(locBits-1 downto 0);
+ signal loc : unsigned(locBits-1 downto 0) := (others => '0');
+
+ signal jogEnable : boolean;
+ signal jogStep : std_logic;
+ signal jogDir : std_logic;
+
+ signal decelDisable : boolean;
+ signal droDone : boolean;
+
+ signal currentDir : std_logic := '0';
 
 type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -255,11 +300,11 @@ begin
    init => runInit,
    ena => syncAccelEna,
    decel => distDecel,
+   decelDisable => decelDisable,
    ch => ch,
    dir => encDir,
    dout => doutSync,
    accelActive => syncAccelActive,
-   accelFlag => syncAccelFlag,
    synStep => synStepOut
    );
 
@@ -279,7 +324,7 @@ begin
    copyR => copyR,
    init => runInit,
    step => step,
-   accelFlag => syncAccelFlag,
+   accelFlag => syncAccelActive,
    dout => doutDist,
    decel => distDecel,
    distZero => distZero
@@ -306,26 +351,56 @@ begin
    loc => loc
    );
 
-  -- AxisCtlSelect : DataSel4_2
-  -- port map (
-  --  sel => ctlSlave,
-  --  a0 => axisInit,
-  --  a1 => axisEna,
-  --  a2 => axisUpdLoc,
-  --  a3 => '0',
-  --  b0 => extInit,
-  --  b1 => extEna,
-  --  b2 => extUpdLoc,
-  --  b3 => '0',
-  --  y0 => runInit,
-  --  y1 => runEna,
-  --  y2 => updLoc,
-  --  y3 => open
-  --  );
+ AxisDro : QuadDro
+  generic map (opBase => opBase + 0,
+               opBits => opBits,
+               droBits => locBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
+   quad => droQuad,
+   dirInvert => droInvert,
+   endCheck => ctlDroEnd,
+   decelDisable => decelDisable,
+   done => droDone,
+   dout => doutDro
+   );
+
+ jogEnable <= true when (runState = idle) else false;
+
+ AxisJog :  Jog
+  generic map (opBase => opBase + 0,
+               opBits => opBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
+   quad => mpgQuad,
+   enable => jogEnable,
+   currentDir => currentDir,
+   jogStep => jogStep,
+   jogDir => jogDir,
+   jogUpdLoc => jogUpdLoc,
+   dout => doutJog
+   );
 
  runInit <= extInit when ctlSlave = '1' else axisInit;
  runEna <= extEna when ctlSlave = '1' else axisEna;
- updLoc <= extUpdLoc when ctlSlave = '1' else axisUpdLoc;
+ updLoc <= extUpdLoc when ctlSlave = '1' else
+           axisUpdLoc when jogEnable else jogUpdLoc;
 
  AxisStepSel : DataSel2_1
   port map (
@@ -340,14 +415,14 @@ begin
  updLocOut <= axisUpdLoc;
  
  enaCh <= runEna and ch;
- dout <= doutSync or doutDist or doutLoc;
- dirOut <= ctlDir;
- stepOut <= step;
- -- info <= convert(runState);
+ dout <= doutSync or doutDist or doutLoc or doutDro or doutJog;
+ dirOut <= ctlDir when jogEnable else jogDir;
+ stepOut <= step when jogEnable else jogStep;
 
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
+   currentDir <= dirOut;                --save direction
    if (ctlInit = '1') then              --if time to set new locaton
     runState <= idle;                   --clear state
     doneInt <= '0';                     --clear interrupt
@@ -385,7 +460,9 @@ begin
       end if;
       
      when run =>                        --run state
-      if ((distZero = '1') or (ctlStart = '0')) then --if distance counter zero
+      if (((distZero = '1') and (ctlDroEnd = '0')) or
+          (droDone and (ctlDroEnd ='1')) or
+          (ctlStart = '0')) then        --if distance counter zero
        runState <= done;                --advance to done state
        doneInt <= '1';                  --set done interrupt
        axisUpdLoc <= '0';               --stop location updates

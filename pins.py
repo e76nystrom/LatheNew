@@ -48,10 +48,10 @@ pinList = \
     ("A5",  "GPIO_0-13[8]",   "i", "syncIn"),
     ("D5",  "GPIO_0-14[9]",   "i", ""),
 
-    ("B6",  "GPIO_0-15[10]",  "o", "zStep"), # out2
-    ("A6",  "GPIO_0-16[11]",  "o", "zDir"),  # out1
-    ("B7",  "GPIO_0-17[12]",  "o", "xStep"), # out4
-    ("D6",  "GPIO_0-18[13]",  "o", "xDir"),  # out3
+    ("B6",  "GPIO_0-15[10]",  "o", "bufOut[0]"),
+    ("A6",  "GPIO_0-16[11]",  "o", "bufOut[1]"),
+    ("B7",  "GPIO_0-17[12]",  "o", "bufOut[2]"),
+    ("D6",  "GPIO_0-18[13]",  "o", "bufOut[3]"),
 
     ("A7",  "GPIO_0-19[14]",  "o", "dbg[1]"),
     ("C6",  "GPIO_0-20[15]",  "o", "dbg[0]"),
@@ -79,42 +79,42 @@ pinList = \
 
     "gpio 1",
 
-    ("T9",  "GPIO_1_IN[0]", "i", "zDroBBuf"),
-    ("F13", "GPIO_1[0]",    "i", "zDroABuf"),
-    ("R9",  "GPIO_1_IN[1]", "i", "xDroABuf"),
-    ("T15", "GPIO_1[1]",  "i", "xDroBBuf"),
-    ("T14", "GPIO_1[2]",  "i", "zMpgABuf"),
-    ("T13", "GPIO_1[3]",  "i", "zMpgBBuf"),
-    ("R13", "GPIO_1[4]",  "i", "xMpgABuf"),
-    ("T12", "GPIO_1[5]",  "i", "xMpgBBuf"),
-    ("R12", "GPIO_1[6]",  "o", "ext1"),
-    ("T11", "GPIO_1[7]",  "o", "ext2"),
-    ("T10", "GPIO_1[8]",  "i", "pin1"),
-    ("R11", "GPIO_1[9]",  "i", "pin14"),
-    ("P11", "GPIO_1[10]", "i", "pin2"),
-    ("R10", "GPIO_1[11]", "i", "pin3"),
-    ("N12", "GPIO_1[12]", "i", "pin16"),
-    ("P9",  "GPIO_1[13]", "i", "pin4"),
-    ("N9",  "GPIO_1[14]", "i", "pin17"),
-    ("N11", "GPIO_1[15]", "i", "pin5"),
-    ("L16", "GPIO_1[16]", "i", "pin6"),
-    ("K16", "GPIO_1[17]", "i", "pin7"),
-    ("R16", "GPIO_1[18]", "i", "pin8"),
-    ("L15", "GPIO_1[19]", "i", "pin9"),
-    ("P15", "GPIO_1[20]", "i", "ext3"),
-    ("P16", "GPIO_1[21]", "i", "pin15Buf"),
-    ("R14", "GPIO_1[22]", "i", "pin10Buf"),
-    ("N16", "GPIO_1[23]", "i", "pin11Buf"),
-    ("N15", "GPIO_1[24]", "i", "pin12Buf"),
-    ("P14", "GPIO_1[25]", "i", "pin13Buf"),
-    ("L14", "GPIO_1[26]", "i", "aux8Buf"),
-    ("N14", "GPIO_1[27]", "i", "aux7Buf"),
-    ("M10", "GPIO_1[28]", "i", "aux6Buf"),
-    ("L13", "GPIO_1[29]", "i", "aux5Buf"),
-    ("J16", "GPIO_1[30]", "i", "aux4Buf"),
-    ("K15", "GPIO_1[31]", "i", "aux3Buf"),
-    ("J13", "GPIO_1[32]", "i", "aux2Buf"),
-    ("J14", "GPIO_1[33]", "i", "aux1Buf"),
+    ("T9",  "GPIO_1_IN-1[0]", "i", "zDro[1]"),
+    ("F13", "GPIO_1-2[0]",    "i", "zDro[0]"),
+    ("R9",  "GPIO_1_IN-3[1]", "i", "xDro[0]"),
+    ("T15", "GPIO_1-4[1]",    "i", "xDro[1]"),
+    ("T14", "GPIO_1-5[2]",    "i", "zMpg[0]"),
+    ("T13", "GPIO_1-6[3]",    "i", "zMpg[1]"),
+    ("R13", "GPIO_1-7[4]",    "i", "xMpg[0]"),
+    ("T12", "GPIO_1-8[5]",    "i", "xMpg[1]"),
+    ("R12", "GPIO_1-9[6]",    "o", "extOut[0]"),
+    ("T11", "GPIO_1-10[7]",   "o", "extOut[1]"),
+    ("T10", "GPIO_1-13[8]",   "o", "pinOut[8]"),  # pin 1
+    ("R11", "GPIO_1-14[9]",   "o", "pinOut[9]"),  # pin 14
+    ("P11", "GPIO_1-15[10]",  "o", "pinOut[0]"),  # pin 2 zDir
+    ("R10", "GPIO_1-16[11]",  "o", "pinOut[1]"),  # pin 3 zStep
+    ("N12", "GPIO_1-17[12]",  "o", "pinOut[10]"), # pin 16
+    ("P9",  "GPIO_1-18[13]",  "o", "pinOut[2]"),  # pin 4 xDir
+    ("N9",  "GPIO_1-19[14]",  "o", "pinOut[11]"), # pin 17
+    ("N11", "GPIO_1-20[15]",  "o", "pinOut[3]"),  # pin 5 xstep
+    ("L16", "GPIO_1-21[16]",  "o", "pinOut[4]"),  # pin 6
+    ("K16", "GPIO_1-22[17]",  "o", "pinOut[5]"),  # pin 7
+    ("R16", "GPIO_1-23[18]",  "o", "pinOut[6]"),  # pin 8
+    ("L15", "GPIO_1-24[19]",  "o", "pinOut[7]"),  # pin 9
+    ("P15", "GPIO_1-25[20]",  "o", "extOut[2]"),
+    ("P16", "GPIO_1-26[21]",  "i", "pinIn[4]"),   # pin 15
+    ("R14", "GPIO_1-27[22]",  "i", "pinIn[0]"),   # pin 10
+    ("N16", "GPIO_1-28[23]",  "i", "pinIn[1]"),   # pin 11
+    ("N15", "GPIO_1-31[24]",  "i", "pinIn[2]"),   # pin 12
+    ("P14", "GPIO_1-32[25]",  "i", "pinIn[3]"),   # pin 13
+    ("L14", "GPIO_1-34[26]",  "i", "aux[7]"),
+    ("N14", "GPIO_1-35[27]",  "i", "aux[6]"),
+    ("M10", "GPIO_1-36[28]",  "i", "aux[5]"),
+    ("L13", "GPIO_1-36[29]",  "i", "aux[4]"),
+    ("J16", "GPIO_1-37[30]",  "i", "aux[3]"),
+    ("K15", "GPIO_1-38[31]",  "i", "aux[2]"),
+    ("J13", "GPIO_1-39[32]",  "i", "aux[1]"),
+    ("J14", "GPIO_1-40[33]",  "i", "aux[0]"),
 
     "gpio 2 2x13 gpio header",
 

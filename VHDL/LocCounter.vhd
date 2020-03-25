@@ -50,7 +50,7 @@ entity LocCounter is
   step : in std_logic;                  --input step pulse
   dir : in std_logic;                   --direction
   dout : out std_logic;                 --data out
-  loc : inout unsigned(locBits-1 downto 0) --current location
+  loc : inout unsigned(locBits-1 downto 0) := (others => '0') --cur location
   );
 end LocCounter;
 
@@ -69,16 +69,6 @@ architecture Behavioral of LocCounter is
    );
  end Component;
 
- component UpDownCounter is
-  generic(n : positive);
-  port ( clk : in std_logic;
-         ena : in std_logic;
-         inc : in std_logic;
-         load : in std_logic;
-         ini_val : in unsigned(n-1 downto 0);
-         counter : inout unsigned(n-1 downto 0));
- end component;
-
  component ShiftOutNS is
   generic(opVal : unsigned;
           opBits : positive;
@@ -94,7 +84,6 @@ architecture Behavioral of LocCounter is
    );
  end Component;
 
- signal updStep : std_logic;
  signal locVal : unsigned(locBits-1 downto 0); --location input
 
  signal locDOut : std_logic;
@@ -113,17 +102,6 @@ begin
              shift => dshift,
              data => locVal);
 
- updStep <= '1' when ((step = '1') and (updLoc = '1')) else '0';
- 
- LocCounter: UpDownCounter
-  generic map(n => locBits)
-  port map ( clk => clk,
-             ena => updStep,
-             inc => dir,
-             load => setLoc,
-             ini_val => locVal,
-             counter => loc);
-
  LocShiftOut : ShiftOutNS
   generic map(opVal => opBase + F_Rd_Loc,
               opBits => opBits,
@@ -137,5 +115,22 @@ begin
    data => loc,
    dout => locDout
    );
+
+ LocCounter: process(clk)
+ begin
+  if (rising_edge(clk)) then
+
+   if (setLoc = '1') then
+    loc <= locVal;
+   elsif (step = '1') then
+    if (dir = '1') then
+     loc <= loc + 1;
+    else
+     loc <= loc - 1;
+    end if;      
+   end if;
+
+  end if;
+ end process LocCounter;
 
 end Behavioral;

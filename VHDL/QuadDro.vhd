@@ -19,7 +19,10 @@ entity QuadDro is
   opR : in unsigned(opBits-1 downto 0);
   copyR : in boolean;
   quad : in std_logic_vector(1 downto 0);
-  pos : out unsigned(droBits-1 downto 0) := (others => '0');
+  dirInvert : in std_logic;
+  endCheck : in std_logic;
+  decelDisable : out boolean := false;
+  done : out boolean := false;
   dout : out std_logic
   );
 end QuadDro;
@@ -57,17 +60,24 @@ architecture Behavioral of QuadDro is
  alias a : std_logic is quad(0);
  alias b : std_logic is quad(1);
 
- signal lastA : std_logic_vector(1 downto 0) := (others => '0');
- signal lastB : std_logic_vector(1 downto 0) := (others => '0');
+ signal quadState : std_logic_vector(3 downto 0) := (others => '0');
  signal dir : std_logic := '0';
 
  signal ch : std_logic := '0';
  signal update : std_logic := '0';
 
- signal posInput : unsigned(droBits-1 downto 0);
- signal posVal : unsigned(droBits-1 downto 0) := (others => '0');
+ signal droInput : unsigned(droBits-1 downto 0);
+ signal droEnd : unsigned(droBits-1 downto 0);
+ signal droVal : unsigned(droBits-1 downto 0) := (others => '0');
+ signal droDist : signed(droBits-1 downto 0) := (others => '0');
 
  signal posDout : std_logic;
+
+ type droFSM is (idle, calcDist, chkDisable, chkDone);
+ signal droState : droFSM := idle;
+
+ constant decelLimit : signed(droBits-1 downto 0) := to_signed(10, droBits);
+ constant zero : signed(droBits-1 downto 0) := to_signed(0, droBits);
 
 begin
 
@@ -79,7 +89,17 @@ begin
              din => din,
              op => op,
              shift => dshift,
-             data => posInput);
+             data => droInput);
+
+ droEndReg: ShiftOp
+  generic map(opVal => opBase + F_Ld_Dro_End,
+              opBits => opBits,
+              n => droBits)
+  port map ( clk => clk,
+             din => din,
+             op => op,
+             shift => dshift,
+             data => droEnd);
 
  dout <= posDout;
 
@@ -93,59 +113,87 @@ begin
    dshift => dshiftR,
    op => opR,
    copy => copyR,
-   data => posVal,
+   data => unsigned(droVal),
    dout => posDout
    );
 
- delay_proc: process(clk)
- begin
-  if (rising_edge(clk)) then
-   lastA <= lastA(0) & a;
-   lastB <= lastB(0) & b;
-  end if;
- end process;
 
- -- calculate direction based upon a and b inputs
- 
- directionProcess : process(clk)
-  variable quadState : std_logic_vector(3 downto 0);
+ droPorcess : process(clk)
   variable ch : std_logic;
  begin
   if (rising_edge(clk)) then
-   ch := (lastA(1) xor lastA(0)) or (lastB(1) xor lastB(0)); --input change
-   update <= ch;
+
+   ch := ((quadState(3) xor quadState(1)) or
+          (quadState(2) xor quadState(0))); --input change   
    if (ch = '1') then
-    quadState := lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
     case (quadState) is
-     when "0001" => dir <= '0';
-     when "0111" => dir <= '0';
-     when "1110" => dir <= '0';
-     when "1000" => dir <= '0';
-     when "0010" => dir <= '1';
-     when "1011" => dir <= '1';
-     when "1101" => dir <= '1';
-     when "0100" => dir <= '1';
-     when others => null;
+     when "0001" => dir <= dirInvert; update <= '1';
+     -- when "0111" => dir <= dirInvert;
+     -- when "1110" => dir <= dirInvert;
+     -- when "1000" => dir <= dirInvert;
+     when "0010" => dir <= not dirInvert; update <= '1';
+     -- when "1011" => dir <= not dirInvert;
+     -- when "1101" => dir <= not dirInvert;
+     -- when "0100" => dir <= not dirInvert;
+     when others => update <= '0';
     end case;
-   end if;
-  end if;
- end process;
+   end if;                              --end change
 
- pos <= posVal;
+   quadState <= quadState(1 downto 0) & b & a;
 
- droPorcess : process(clk)
- begin
-  if (rising_edge(clk)) then
-   if (load) then
-    posVal <= posInput;
-   elsif (update = '1') then
-    if (dir = '1') then
-     posVal <= posVal + 1;
-    else
-     posVal <= posVal - 1;
+   if (load) then                       --if load
+
+    droVal <= droInput;                 --set new value
+
+   elsif (update = '1') then            --if update
+
+    if (dir = '1') then                 --if positive direction
+     droVal <= droVal + 1;              --increment position
+    else                                --if negative direction
+     droVal <= droVal - 1;              --decrement position
+    end if;                             --end direction chekc
+
+    if (endCheck = '1') then            --if using dro for end
+     droState <= calcDist;              --start end check
     end if;
-   end if;
-  end if;
+    
+   end if;                              --end update
+
+   case droState is                     --select state
+    when idle => null;                  --idle
+
+    when calcDist =>                    --calculate distance
+     if ((update and endCheck) = '1') then --if using dro for end
+      if (dir = '1') then               --if positive direction
+       droDist <= signed(droEnd) - signed(droVal); --dist for pos Dir
+      else                              --if negative direction
+       droDist <= signed(droVal) - signed(droEnd); --dist for neg dir
+      end if;
+      droState <= chkDisable;
+     end if;                            --end direction check
+
+    when chkDisable =>                  --check for decel disable
+     if (droDist < decelLimit) then
+      decelDisable <= true;
+     else
+      decelDisable <= false;
+     end if;
+     droState <= chkDone;
+     
+    when chkDone =>                     --check for done
+     if (droDist < zero) then
+      done <= true;
+     else
+      done <= false;
+     end if;
+     droState <= idle;
+
+    when others =>
+     droState <= idle;
+   end case;
+
+  end if;                               --end rising_edge
+
  end process;
 
 end Behavioral;

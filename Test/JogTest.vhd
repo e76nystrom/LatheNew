@@ -24,6 +24,8 @@ architecture behavior OF JogTest is
    opR : in unsigned(opBits-1 downto 0);
    copyR : in boolean;
    quad : in std_logic_vector(1 downto 0);
+   enable : in boolean;
+   currentDir : in std_logic;
    jogStep : out std_logic;
    jogDir : out std_logic;
    jogUpdLoc : out std_logic;
@@ -44,6 +46,8 @@ architecture behavior OF JogTest is
  signal opR : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
  signal copyR : boolean := false;
  signal quad : std_logic_vector(1 downto 0) := (1 downto 0 => '0');
+ signal enable : boolean := false;
+ signal currentDir : std_logic := '0';
  signal jogStep : std_logic := '0';
  signal jogDir : std_logic := '0';
  signal jogUpdLoc : std_logic := '0';
@@ -65,6 +69,8 @@ begin
    opR => opR,
    copyR => copyR,
    quad => quad,
+   enable => enable,
+   currentDir => currentDir,
    jogStep => jogStep,
    jogDir => jogDir,
    jogUpdLoc => jogUpdLoc,
@@ -109,7 +115,6 @@ begin
      count := 3;
     end if;
    end if;
-    
    
    case count is
     when 0 =>
@@ -125,6 +130,7 @@ begin
    end case;
 
    for i in 0 to n-1 loop
+    currentDir <= jogDir;
     delay(1);
    end loop;
 
@@ -167,8 +173,8 @@ begin
   wait for 100 ns;
 
   jogReg := (others => '0');
-  jogContinuous := '0';
-  jogBacklash := '1';
+  jogContinuous := '1';
+  jogBacklash := '0';
   op <= F_Jog_Base + F_Ld_Jog_Ctl;
   loadShift(to_integer(jogReg), jogSize);
 
@@ -184,6 +190,8 @@ begin
   delay(10);
 
   -- insert stimulus here
+
+  enable <= true;
 
   for i in 0 to 3 loop
    delayQuad(2000);

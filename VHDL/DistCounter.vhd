@@ -117,13 +117,16 @@ begin
  begin
   if (rising_edge(clk)) then
    if (init = '1') then                 --if load
+
     distCtr <= distVal;
     aclSteps <= (others => '0');
     zero <= '0';
     decel <= '0';
     distUpdate <= '0';
     active <= '1';
+
    elsif (step = '1') then              --if time to step
+
     if (zero = '0') then                --if distance non zero
      distCtr <= distCtr - 1;            --decrement distance counter
      if (decel = '0') then              --if accelerating
@@ -134,28 +137,36 @@ begin
       aclSteps <= aclSteps - 1;         --decrement accel steps
      end if;
     end if;
+
    elsif (active = '1') then            --if active
+
     if (distUpdate = '1') then          --if update flag set
      distUpdate <= '0';                 --clear update flag
      distCtr <= distVal;                --load new distance
-    else
-     if distCtr = 0 then                --if distance zero
+    else                                --if not an update
+
+     if (distCtr = 0) then              --if distance zero
       zero <= '1';                      --set zero distance flag
       active <= '0';                    --set to inactive
-     end if;
+     end if;                            --end distance zero
      
-     if (aclSteps > distCtr) then       --if accel ge dist left
+     if (aclSteps >= distCtr) then      --if accel ge dist left
       decel <= '1';                     --set decel flag
      else
       decel <= '0';
-     end if;
-    end if;
-   end if;
+     end if;                            --end decel check
 
-   if ((op = opBase + F_Ld_Dist) and load) then
+    end if;                             --end update
+
+   else                                 --if not active
+    decel <= '0';                       --clear decel flag
+   end if;                              --end load, step, active
+
+   if ((op = opBase + F_Ld_Dist) and load) then --if distance update
     distUpdate <= '1';                  --update distance
-   end if;
-  end if;
+   end if;                              --end distance update
+
+  end if;                               --end rising_edge
  end process distanceProc;
 
  DistShiftOut: ShiftOutN

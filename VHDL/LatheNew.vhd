@@ -9,10 +9,10 @@ entity LatheNew is
  port(
   sysClk : in std_logic;
   
-  led : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
-  dbg : out std_logic_vector(7 downto 0) := (7 downto 0 => '0');
-  anode : out std_logic_vector(3 downto 0) := (3 downto 0 => '1');
-  seg : out std_logic_vector(6 downto 0) := (6 downto 0 => '1');
+  led : out std_logic_vector(7 downto 0) := (others => '0');
+  dbg : out std_logic_vector(7 downto 0) := (others => '0');
+  anode : out std_logic_vector(3 downto 0) := (others => '1');
+  seg : out std_logic_vector(6 downto 0) := (others => '1');
 
   dclk : in std_logic;
   dout : out std_logic := '0';
@@ -23,10 +23,18 @@ entity LatheNew is
   bIn : in std_logic;
   syncIn : in std_logic;
 
-  zStep : out std_logic := '0';
-  zDir : out std_logic := '0';
-  xStep : out std_logic := '0';
-  xDir : out std_logic := '0';
+  zDro : in std_logic_vector(1 downto 0);
+  xDro : in std_logic_vector(1 downto 0);
+  zMpg : in std_logic_vector(1 downto 0);
+  xMpg : in std_logic_vector(1 downto 0);
+
+  pinIn : in std_logic_vector(4 downto 0);
+  aux : in std_logic_vector(7 downto 0);
+
+  pinOut : out std_logic_vector(11 downto 0) := (others => '0');
+  extOut : out std_logic_vector(2 downto 0) := (others => '0');
+  
+  bufOut : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -34,6 +42,11 @@ entity LatheNew is
 end LatheNew;
 
 architecture Behavioral of LatheNew is
+
+ alias zDir  : std_logic is pinOut(0);
+ alias zStep : std_logic is pinOut(1);
+ alias xDir  : std_logic is pinOut(2);
+ alias xStep : std_logic is pinOut(3);
 
  component Clock is
   port(
@@ -321,13 +334,16 @@ architecture Behavioral of LatheNew is
    ch : in std_logic;
    encDir : in std_logic;
    sync : in std_logic;
+   droQuad : in std_logic_vector(1 downto 0);
+   droInvert : in std_logic;
+   mpgQuad : in std_logic_vector(1 downto 0);
    dbgOut : out unsigned(dbgBits-1 downto 0);
    initOut : out std_logic;
    enaOut : out std_logic;
    updLocOut : out std_logic;
    dout : out std_logic;
    stepOut : out std_logic;
-   dirOut : out std_logic;
+   dirOut : inout std_logic;
    doneInt : out std_logic
    );
  end Component;
@@ -370,7 +386,7 @@ architecture Behavioral of LatheNew is
  constant freqBits : positive := 16;
  constant freqCountBits : positive := 32;
 
- constant cycleLenBits : positive := 16;
+ constant cycleLenBits : positive := 11;
  constant encClkBits : positive := 24;
  constant cycleClkBits : positive := 32;
 
@@ -398,14 +414,16 @@ architecture Behavioral of LatheNew is
 
  -- configuration control register
 
- constant cfgCtlSize : integer := 6;
+ constant cfgCtlSize : integer := 8;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  alias cfgZDir    : std_logic is cfgCtlreg(0); -- x01 z direction inverted
  alias cfgXDir    : std_logic is cfgCtlreg(1); -- x02 x direction inverted
- alias cfgSpDir   : std_logic is cfgCtlreg(2); -- x04 spindle directiion inverted
- alias cfgEncDir  : std_logic is cfgCtlreg(3); -- x08 invert encoder direction
- alias cfgEnaEncDir : std_logic is cfgCtlreg(4); -- x10 enable encoder direction
- alias cfgGenSync : std_logic is cfgCtlreg(5); -- x20 no encoder generate sync pulse
+ alias cfgZDro    : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
+ alias cfgXDro    : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
+ alias cfgSpDir   : std_logic is cfgCtlreg(4); -- x10 spindle directiion inverted
+ alias cfgEncDir  : std_logic is cfgCtlreg(5); -- x20 invert encoder direction
+ alias cfgEnaEncDir : std_logic is cfgCtlreg(6); -- x40 enable encoder direction
+ alias cfgGenSync : std_logic is cfgCtlreg(7); -- x80 no encoder generate sync
 
  -- clock control register
 
@@ -533,6 +551,16 @@ architecture Behavioral of LatheNew is
 
 begin
 
+ pinOut(5 downto 4) <= zMpg;
+ pinout(7 downto 6) <= xMpg;
+ pinOut(9 downto 8) <= zDro;
+ pinOut(11 downto 10) <= xDro;
+
+ bufOut <= pinIn(3 downto 0);
+ extOut(0) <= pinIn(4);
+ extOut(1) <= aux(7) xor aux(6) xor aux(5) xor aux(4);
+ extOut(2) <= aux(3) xor aux(2) xor aux(1) xor aux(0);
+
  zAxisEna <= zExtEna;
  zDoneInt <= intZDoneInt;
  xAxisEna <= xExtEna;
@@ -542,6 +570,7 @@ begin
  xAxisDone <= intXDoneInt;
 
  queEmpty <= to_std_logic(ctlEmpty);
+ ctlIdle <= '0';
  syncActive <= intActive;
 
  led(7) <= div(divBits);
@@ -1006,6 +1035,9 @@ begin
    ch => zCh,
    encDir => direction,
    sync => sync,
+   droQuad => zDro,
+   droInvert => cfgZDro,
+   mpgQuad => zMpg,
    dbgOut => zDbg,
    initOut => zExtInit,
    enaOut => zExtEna,
@@ -1020,7 +1052,7 @@ begin
   generic map(pulseWidth => stepWidth)
   port map (
    clk => clk,
-   pulseIn => zAxisStep,
+   pulseIn => zDelayStep,
    pulseOut => zStep
    );
 
@@ -1067,6 +1099,9 @@ begin
    ch => xCh,
    encDir => direction,
    sync => sync,
+   droQuad => xDro,
+   droInvert => cfgXDro,
+   mpgQuad => xMpg,
    dbgOut => xDbg,
    initOut => xExtInit,
    enaOut => xExtEna,
@@ -1081,7 +1116,7 @@ begin
   generic map(pulseWidth => stepWidth)
   port map (
    clk => clk,
-   pulseIn => xAxisStep,
+   pulseIn => xDelayStep,
    pulseOut => xStep
    );
  

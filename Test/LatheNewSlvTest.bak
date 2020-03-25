@@ -6,9 +6,9 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 use work.SimProc.all;
 use work.RegDef.all;
 
-entity LatheNewTest is
-end LatheNewTest;
-architecture behavior OF LatheNewTest is
+entity LatheNewSlvTest is
+end LatheNewSlvTest;
+architecture behavior OF LatheNewSlvTest is
 
  component LatheNew is
   port(
@@ -305,11 +305,11 @@ begin
   variable freq : integer;
   variable dbgCount : integer;
 
+--(++ axisCtl
 -- axis control register
 
   constant axisCtlSize : integer := 9;
   variable axisCtlReg : unsigned(axisCtlSize-1 downto 0);
-
   alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
   alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
   alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
@@ -332,37 +332,33 @@ begin
   constant c_ctlSlave     : integer :=  7; -- x80 slave controlled by other axis
   constant c_ctlDroEnd    : integer :=  8; -- x100 use dro to end move
 
--- configuration control register
+  -- configuration control register
 
-  constant cfgCtlSize : integer := 8;
+  constant cfgCtlSize : integer := 6;
   variable cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
   alias cfgZDir    : std_logic is cfgCtlreg(0); -- x01 z direction inverted
   alias cfgXDir    : std_logic is cfgCtlreg(1); -- x02 x direction inverted
-  alias cfgZDro    : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
-  alias cfgXDro    : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
-  alias cfgSpDir   : std_logic is cfgCtlreg(4); -- x10 spindle directiion inverted
-  alias cfgEncDir  : std_logic is cfgCtlreg(5); -- x20 invert encoder direction
-  alias cfgEnaEncDir : std_logic is cfgCtlreg(6); -- x40 enable encoder direction
-  alias cfgGenSync : std_logic is cfgCtlreg(7); -- x80 no encoder generate sync pulse
+  alias cfgSpDir   : std_logic is cfgCtlreg(2); -- x04 spindle directiion inverted
+  alias cfgEncDir  : std_logic is cfgCtlreg(3); -- x08 invert encoder direction
+  alias cfgEnaEncDir : std_logic is cfgCtlreg(4); -- x10 enable encoder direction
+  alias cfgGenSync : std_logic is cfgCtlreg(5); -- x20 no encoder generate sync pulse
 
--- clock control register
+  -- clock control register
 
   constant clkCtlSize : integer := 7;
   variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
+  alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
+  alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
+ alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
-  alias zFreqSel : unsigned is clkCtlReg(2 downto 0);
-  alias xFreqSel : unsigned is clkCtlReg(5 downto 3);
-  
-  constant clkNone    : unsigned (2 downto 0) := "000";
-  constant clkFreq    : unsigned (2 downto 0) := "001";
-  constant clkCh      : unsigned (2 downto 0) := "010";
-  constant clkIntClk  : unsigned (2 downto 0) := "011";
-  constant clkSlvFreq : unsigned (2 downto 0) := "100";
-  constant clkslvCh   : unsigned (2 downto 0) := "101";
-  constant clkSpare   : unsigned (2 downto 0) := "110";
-  constant clkDbgFreq : unsigned (2 downto 0) := "111";
-
-  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
+ constant clkNone    : unsigned (2 downto 0) := "000";
+ constant clkFreq    : unsigned (2 downto 0) := "001";
+ constant clkCh      : unsigned (2 downto 0) := "010";
+ constant clkIntClk  : unsigned (2 downto 0) := "011";
+ constant clkSlvFreq : unsigned (2 downto 0) := "100";
+ constant clkSlvCh   : unsigned (2 downto 0) := "101";
+ constant clkSpare   : unsigned (2 downto 0) := "110";
+ constant clkDbgFreq : unsigned (2 downto 0) := "111";
 
   -- sync control register
 
@@ -372,9 +368,11 @@ begin
   alias synEncInit : std_logic is synCtlreg(1); -- x02 init encoder
   alias synEncEna  : std_logic is synCtlreg(2); -- x04 enable encoder
 
+--++)
+
   alias base : unsigned is F_ZAxis_Base;
   alias slvBase : unsigned is F_XAxis_Base;
-  alias freqSel : unsigned is zFreqSel;
+  -- alias freqSel : unsigned is clkCtlreg(2 downto 0);
   -- alias freqSel : unsigned is clkCtlreg(5 downto 3);
 
  begin
@@ -400,8 +398,8 @@ begin
   incr2 := 2 * (dy - dx);
   d := incr1 - dx;
 
-  accelVal := 8;
-  accelCount := 100;
+  accelVal := 0;
+  accelCount := 0;
 
   loadParm(base + F_Sync_Base + F_Ld_D);
   loadValue(d, synBits);
@@ -436,6 +434,62 @@ begin
   loadParm(base + F_Loc_Base + F_Ld_Loc);
   loadValue(loc, locBits);
 
+  delay(1);
+
+  loadParm(slvBase + F_Sync_Base + F_Ld_D);
+  loadValue(d, synBits);
+
+  delay(1);
+
+  -- load slave axis
+
+  loadParm(slvBase + F_Sync_Base + F_Ld_Incr1);
+  loadValue(incr1, synBits);
+
+  delay(1);
+
+  loadParm(slvBase + F_Sync_Base + F_Ld_Incr2);
+  loadValue(incr2, synBits);
+
+  delay(1);
+
+  loadParm(slvBase + F_Sync_Base + F_Ld_Accel_Val);
+  loadValue(accelVal, synBits);
+
+  delay(1);
+
+  loadParm(slvBase + F_Sync_Base + F_Ld_Accel_Count);
+  loadValue(accelCount, countBits);
+  
+  delay(1);
+
+  loadParm(slvBase + F_Dist_Base + F_Ld_Dist);
+  loadValue(dist, distBits);
+
+  delay(1);
+
+  loadParm(slvBase + F_Loc_Base + F_Ld_Loc);
+  loadValue(loc, locBits);
+
+  -- init slave axis
+
+  axisCtlReg := (others => '0');
+  axisCtlReg(c_ctlInit) := '1';
+  axisCtlReg(c_ctlSetLoc) := '1';
+  loadParm(slvBase + F_Ld_Axis_Ctl);
+  ctl := to_integer(AxisCtlReg);
+  loadValue(ctl, axisCtlSize);
+
+  axisCtlReg(c_ctlInit) := '0';
+  axisCtlReg(c_ctlSetLoc) := '0';
+  axisCtlReg(c_ctlStart) := '1';
+  axisCtlReg(c_ctlDir) := '1';
+  loadParm(slvBase + F_Ld_Axis_Ctl);
+  ctl := to_integer(AxisCtlReg);
+  loadValue(ctl, axisCtlSize);
+
+  -- init main axis
+
   axisCtlReg := (others => '0');
   axisCtlReg(c_ctlInit) := '1';
   axisCtlReg(c_ctlSetLoc) := '1';
@@ -447,7 +501,6 @@ begin
   axisCtlReg(c_ctlSetLoc) := '0';
   axisCtlReg(c_ctlStart) := '1';
   axisCtlReg(c_ctlDir) := '1';
-  --ctlChDirect := '1';
   loadParm(base + F_Ld_Axis_Ctl);
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
@@ -461,7 +514,14 @@ begin
   loadValue(dbgCount ,freqCountBits);
 
   clkCtlReg := (others => '0');
-  freqSel := clkDbgFreq;                --to_unsigned(7, 3);
+
+  -- init slave clock
+
+  xFreqSel := clkSlvCh;
+
+  -- init main clock
+
+  zFreqSel := clkDbgFreq;                --to_unsigned(7, 3);
   clkDbgFreqEna := '1';
   
   loadParm(F_Ld_Clk_Ctl);
@@ -476,11 +536,7 @@ begin
   delay(5000);
 
   clkCtlReg := (others => '0');
-  clkCtlReg(2 downto 0) := clkDbgFreq;
-  clkCtlReg(6) := '1';
-  -- freqSel := clkDbgFreq;                --to_unsigned(7, 3);
-  clkDbgFreqEna := '1';
-  
+  zFreqSel := clkDbgFreq;                --to_unsigned(7, 3);
   loadParm(F_Ld_Clk_Ctl);
   ctl := to_integer(clkCtlReg);
   loadValue(ctl, clkCtlSize);
