@@ -227,7 +227,9 @@ BEGIN
   dist := 20;
 
   incr1 := 2 * dy;
-  incr2 := 2 * (dy - dx);
+  -- incr2 := 2 * (dy - dx);
+  -- incr2 := 2 * dy - 2 * dx;
+  incr2 := incr1 - 2 * dx;
   d := incr1 - dx;
 
   accelVal := 8;
@@ -262,7 +264,7 @@ BEGIN
   loadShift(dist, distBits, dshift, din);
 
   delay(5);
-    
+
   init <= '1';
   delay(5);
   init <= '0';

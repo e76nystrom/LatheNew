@@ -397,7 +397,9 @@ begin
   loc := 5;
 
   incr1 := 2 * dy;
-  incr2 := 2 * (dy - dx);
+  -- incr2 := 2 * (dy - dx);
+  -- incr2 := 2 * dy - 2 * dx;
+  incr2 := incr1 - 2 * dx;
   d := incr1 - dx;
 
   accelVal := 8;
@@ -491,6 +493,11 @@ begin
   readValue(readBits);
 
   delay(20);
+
+  accelCount := 1000;
+
+  loadParm(base + F_Sync_Base + F_Ld_Accel_Count);
+  loadValue(accelCount, countBits);
 
   axisCtlReg := (others => '0');
   axisCtlReg(c_ctlInit) := '1';

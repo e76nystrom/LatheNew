@@ -15,7 +15,12 @@ add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/accelCo
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/xpos
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/ypos
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/accelSum
+add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisSyncAccel/sum
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/state
+add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/init
+add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/ena
+add wave -noupdate /lathenewtest/uut/z_Axis/synStepOut
+add wave -noupdate /lathenewtest/uut/zStep
 add wave -noupdate /lathenewtest/uut/quad_encoder/dir
 add wave -noupdate /lathenewtest/uut/spiCopy
 add wave -noupdate /lathenewtest/uut/load
@@ -44,7 +49,7 @@ add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/distZero
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/accelFlag
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/loc
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {149769714 ps} 0}
+WaveRestoreCursors {{Cursor 1} {47505000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100

@@ -43,11 +43,6 @@ end LatheNew;
 
 architecture Behavioral of LatheNew is
 
- alias zDir  : std_logic is pinOut(0);
- alias zStep : std_logic is pinOut(1);
- alias xDir  : std_logic is pinOut(2);
- alias xStep : std_logic is pinOut(3);
-
  component Clock is
   port(
    clockIn : in std_logic;
@@ -549,8 +544,18 @@ architecture Behavioral of LatheNew is
  signal intZDoneInt : std_logic;
  signal intXDoneInt : std_logic;
 
+ signal zDir  : std_logic := '0';
+ signal zStep : std_logic := '0';
+ signal xDir  : std_logic := '0';
+ signal xStep : std_logic := '0';
+
 begin
 
+ pinOut(0) <= zDir;
+ pinOut(1) <= zStep;
+ pinOut(2) <= xStep;
+ pinOut(3) <= xDir;
+ 
  pinOut(5 downto 4) <= zMpg;
  pinout(7 downto 6) <= xMpg;
  pinOut(9 downto 8) <= zDro;
@@ -616,8 +621,9 @@ begin
 
  dbg(0) <= test1;
  dbg(1) <= test2;
+ dbg(2) <= clkDbgFreqEna;
 
- dbg(2) <= intZDoneInt;
+ -- dbg(2) <= intZDoneInt;
  -- dbg(3) <= intXDoneInt;
  dbg(3) <= test3;
  dbg(7 downto 4) <= std_logic_vector(zDbg);

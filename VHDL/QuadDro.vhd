@@ -67,17 +67,16 @@ architecture Behavioral of QuadDro is
  signal update : std_logic := '0';
 
  signal droInput : unsigned(droBits-1 downto 0);
- signal droEnd : unsigned(droBits-1 downto 0);
  signal droVal : unsigned(droBits-1 downto 0) := (others => '0');
  signal droDist : signed(droBits-1 downto 0) := (others => '0');
+ signal droEnd : unsigned(droBits-1 downto 0);
+ signal decelLimit : unsigned(droBits-1 downto 0);
 
  signal posDout : std_logic;
 
  type droFSM is (idle, calcDist, chkDisable, chkDone);
  signal droState : droFSM := idle;
 
- constant decelLimit : signed(droBits-1 downto 0) := to_signed(10, droBits);
- constant zero : signed(droBits-1 downto 0) := to_signed(0, droBits);
 
 begin
 
@@ -100,6 +99,16 @@ begin
              op => op,
              shift => dshift,
              data => droEnd);
+
+ droLimitReg: ShiftOp
+  generic map(opVal => opBase + F_Ld_Dro_Limit,
+              opBits => opBits,
+              n => droBits)
+  port map ( clk => clk,
+             din => din,
+             op => op,
+             shift => dshift,
+             data => decelLimit);
 
  dout <= posDout;
 
@@ -173,7 +182,7 @@ begin
      end if;                            --end direction check
 
     when chkDisable =>                  --check for decel disable
-     if (droDist < decelLimit) then
+     if (droDist < signed(decelLimit)) then
       decelDisable <= true;
      else
       decelDisable <= false;
@@ -181,7 +190,7 @@ begin
      droState <= chkDone;
      
     when chkDone =>                     --check for done
-     if (droDist < zero) then
+     if (droDist < to_signed(0, droBits)) then
       done <= true;
      else
       done <= false;

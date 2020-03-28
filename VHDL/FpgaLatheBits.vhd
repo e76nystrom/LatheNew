@@ -56,6 +56,7 @@ package FpgaLatheBits is
  alias ctlWaitSync  : std_logic is axisCtlreg(3); -- x08 wait for sync to start
  alias ctlDir       : std_logic is axisCtlreg(4); -- x10 direction
  alias ctlDirPos    : std_logic is axisCtlreg(4); -- x10 move in positive dir
+ alias ctlDirNeg    : std_logic is axisCtlreg(4); -- x10 move in negative dir
  alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
  alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
@@ -67,6 +68,7 @@ package FpgaLatheBits is
  constant c_ctlWaitSync  : integer :=  3; -- x08 wait for sync to start
  constant c_ctlDir       : integer :=  4; -- x10 direction
  constant c_ctlDirPos    : integer :=  4; -- x10 move in positive dir
+ constant c_ctlDirNeg    : integer :=  4; -- x10 move in negative dir
  constant c_ctlSetLoc    : integer :=  5; -- x20 set location
  constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
  constant c_ctlSlave     : integer :=  7; -- x80 slave controlled by other axis
@@ -98,54 +100,34 @@ package FpgaLatheBits is
 
  constant clkCtlSize : integer := 7;
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
- alias clkFreq      : std_logic is clkCtlreg(0); -- x01 
- alias clkCh        : std_logic is clkCtlreg(0); -- x01 
- alias clkIntClk    : std_logic is clkCtlreg(0); -- x01 
- alias clkSlvFreq   : std_logic is clkCtlreg(0); -- x01 
- alias clkSlvCh     : std_logic is clkCtlreg(0); -- x01 
- alias clkSpare     : std_logic is clkCtlreg(0); -- x01 
- alias clkDbgFreq   : std_logic is clkCtlreg(0); -- x01 
- alias zFreqSel     : std_logic is clkCtlreg(0); -- x01 z Frequency select
- alias zClkZFreq    : std_logic is clkCtlreg(0); -- x01 
- alias zClkCh       : std_logic is clkCtlreg(0); -- x01 
- alias zClkIntClk   : std_logic is clkCtlreg(0); -- x01 
- alias zClkXFreq    : std_logic is clkCtlreg(0); -- x01 
- alias zClkXCh      : std_logic is clkCtlreg(0); -- x01 
- alias zClkSpare    : std_logic is clkCtlreg(0); -- x01 
- alias zClkDbgFreq  : std_logic is clkCtlreg(0); -- x01 
- alias xFreqSel     : std_logic is clkCtlreg(3); -- x08 x Frequency select
- alias xClkXFreq    : std_logic is clkCtlreg(3); -- x08 
- alias xClkCh       : std_logic is clkCtlreg(3); -- x08 
- alias xClkIntClk   : std_logic is clkCtlreg(3); -- x08 
- alias xClkZFreq    : std_logic is clkCtlreg(3); -- x08 
- alias xClkZCh      : std_logic is clkCtlreg(3); -- x08 
- alias xClkSpare    : std_logic is clkCtlreg(3); -- x08 
- alias xClkDbgFreq  : std_logic is clkCtlreg(3); -- x08 
+ alias zFreqSel     : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
+ alias xFreqSel     : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
+ constant clkNone      : unsigned (2 downto 0) := "000"; -- 
+ constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
+ constant clkCh        : unsigned (2 downto 0) := "010"; -- 
+ constant clkIntClk    : unsigned (2 downto 0) := "011"; -- 
+ constant clkSlvFreq   : unsigned (2 downto 0) := "100"; -- 
+ constant clkSlvCh     : unsigned (2 downto 0) := "101"; -- 
+ constant clkSpare     : unsigned (2 downto 0) := "110"; -- 
+ constant clkDbgFreq   : unsigned (2 downto 0) := "111"; -- 
+ constant zClkNone     : unsigned (2 downto 0) := "000"; -- 
+ constant zClkZFreq    : unsigned (2 downto 0) := "001"; -- 
+ constant zClkCh       : unsigned (2 downto 0) := "010"; -- 
+ constant zClkIntClk   : unsigned (2 downto 0) := "011"; -- 
+ constant zClkXFreq    : unsigned (2 downto 0) := "100"; -- 
+ constant zClkXCh      : unsigned (2 downto 0) := "101"; -- 
+ constant zClkSpare    : unsigned (2 downto 0) := "110"; -- 
+ constant zClkDbgFreq  : unsigned (2 downto 0) := "111"; -- 
+ constant xClkNone     : unsigned (5 downto 3) := "000"; -- 
+ constant xClkXFreq    : unsigned (5 downto 3) := "001"; -- 
+ constant xClkCh       : unsigned (5 downto 3) := "010"; -- 
+ constant xClkIntClk   : unsigned (5 downto 3) := "011"; -- 
+ constant xClkZFreq    : unsigned (5 downto 3) := "100"; -- 
+ constant xClkZCh      : unsigned (5 downto 3) := "101"; -- 
+ constant xClkSpare    : unsigned (5 downto 3) := "110"; -- 
+ constant xClkDbgFreq  : unsigned (5 downto 3) := "111"; -- 
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
- constant c_clkFreq      : integer :=  0; -- x01 
- constant c_clkCh        : integer :=  0; -- x01 
- constant c_clkIntClk    : integer :=  0; -- x01 
- constant c_clkSlvFreq   : integer :=  0; -- x01 
- constant c_clkSlvCh     : integer :=  0; -- x01 
- constant c_clkSpare     : integer :=  0; -- x01 
- constant c_clkDbgFreq   : integer :=  0; -- x01 
- constant c_zFreqSel     : integer :=  0; -- x01 z Frequency select
- constant c_zClkZFreq    : integer :=  0; -- x01 
- constant c_zClkCh       : integer :=  0; -- x01 
- constant c_zClkIntClk   : integer :=  0; -- x01 
- constant c_zClkXFreq    : integer :=  0; -- x01 
- constant c_zClkXCh      : integer :=  0; -- x01 
- constant c_zClkSpare    : integer :=  0; -- x01 
- constant c_zClkDbgFreq  : integer :=  0; -- x01 
- constant c_xFreqSel     : integer :=  3; -- x08 x Frequency select
- constant c_xClkXFreq    : integer :=  3; -- x08 
- constant c_xClkCh       : integer :=  3; -- x08 
- constant c_xClkIntClk   : integer :=  3; -- x08 
- constant c_xClkZFreq    : integer :=  3; -- x08 
- constant c_xClkZCh      : integer :=  3; -- x08 
- constant c_xClkSpare    : integer :=  3; -- x08 
- constant c_xClkDbgFreq  : integer :=  3; -- x08 
  constant c_clkDbgFreqEna : integer :=  6; -- x40 enable debug frequency
 
 -- sync control register

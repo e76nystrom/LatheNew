@@ -263,8 +263,8 @@ type run_fsm is (idle, loadReg, synWait, run, done);
 begin
 
  dbgOUt(0) <= runEna;
- -- dbgOut(1) <= distDecel;
- dbgOut(1) <= ctlWaitSync;
+ dbgOut(1) <= distDecel;
+ -- dbgOut(1) <= ctlWaitSync;
  dbgOut(2) <= distZero;
  dbgOut(3) <= syncAccelActive;
 
@@ -400,7 +400,7 @@ begin
  runInit <= extInit when ctlSlave = '1' else axisInit;
  runEna <= extEna when ctlSlave = '1' else axisEna;
  updLoc <= extUpdLoc when ctlSlave = '1' else
-           axisUpdLoc when jogEnable else jogUpdLoc;
+           jogUpdLoc when jogEnable else axisUpdLoc;
 
  AxisStepSel : DataSel2_1
   port map (
@@ -416,8 +416,8 @@ begin
  
  enaCh <= runEna and ch;
  dout <= doutSync or doutDist or doutLoc or doutDro or doutJog;
- dirOut <= ctlDir when jogEnable else jogDir;
- stepOut <= step when jogEnable else jogStep;
+ dirOut <= JogDir when jogEnable else ctlDir;
+ stepOut <= jogStep when jogEnable else step;
 
  z_run: process(clk)
  begin
