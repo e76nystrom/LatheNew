@@ -49,8 +49,8 @@ entity LocCounter is
   updLoc : in std_logic;                --location update enabled
   step : in std_logic;                  --input step pulse
   dir : in std_logic;                   --direction
-  dout : out std_logic;                 --data out
-  loc : inout unsigned(locBits-1 downto 0) := (others => '0') --cur location
+  dout : out std_logic                  --data out
+  -- loc : inout unsigned(locBits-1 downto 0) := (others => '0') --cur location
   );
 end LocCounter;
 
@@ -85,7 +85,8 @@ architecture Behavioral of LocCounter is
  end Component;
 
  signal locVal : unsigned(locBits-1 downto 0); --location input
-
+ signal loc : unsigned(locBits-1 downto 0) := (others => '0'); --cur location
+                                             
  signal locDOut : std_logic;
 
 begin

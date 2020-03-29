@@ -20,6 +20,7 @@ add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/state
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/init
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/ena
 add wave -noupdate /lathenewtest/uut/z_Axis/synStepOut
+add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisLocCounter/loc
 add wave -noupdate /lathenewtest/uut/zStep
 add wave -noupdate /lathenewtest/uut/quad_encoder/dir
 add wave -noupdate /lathenewtest/uut/spiCopy
@@ -47,10 +48,13 @@ add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/dist
 add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/distVal
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/distZero
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/accelFlag
-add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/loc
+add wave -noupdate /lathenewtest/uut/z_Axis/AxisDro/decelDisable
+add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/decelLimit
+add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/droEnd
+add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/droDist
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {47505000 ps} 0}
-quietly wave cursor active 1
+WaveRestoreCursors {{Cursor 1} {162845000 ps} 0} {{Cursor 2} {3653445 ps} 0}
+quietly wave cursor active 2
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left

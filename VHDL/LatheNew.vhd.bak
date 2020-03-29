@@ -167,7 +167,7 @@ architecture Behavioral of LatheNew is
    b : in std_logic;
    ch : inout std_logic;
    dir : out std_logic
-   );
+   )
  end Component;
 
  component Encoder is

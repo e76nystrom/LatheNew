@@ -36,7 +36,8 @@ entity QuadEncoder is
   b : in std_logic;
   ch : inout std_logic;
   dir : out std_logic := '0'
- );
+  -- dir_ch : out std_logic := '0';
+  -- err : out std_logic := '0');
 end QuadEncoder;
 
 architecture Behavioral of QuadEncoder is

@@ -34,6 +34,7 @@ entity Axis is
   droQuad : in std_logic_vector(1 downto 0);
   droInvert : in std_logic;
   mpgQuad : in std_logic_vector(1 downto 0);
+  currentDir : in std_logic;
   dbgOut : out unsigned (dbgBits-1 downto 0) := (others => '0');
   initOut : out std_logic := '0';
   enaOut : out std_logic := '0';
@@ -127,8 +128,8 @@ architecture Behavioral of Axis is
    updLoc : in std_logic;       --location update enabled
    step : in std_logic;         --input step pulse
    dir : in std_logic;          --direction
-   dout : out std_logic;        --data out
-   loc : inout unsigned(locBits-1 downto 0) --current location
+   dout : out std_logic         --data out
+   -- loc : inout unsigned(locBits-1 downto 0) --current location
    );
  end Component;
 
@@ -233,7 +234,7 @@ architecture Behavioral of Axis is
 
  signal enaCh : std_logic;
 
- signal loc : unsigned(locBits-1 downto 0) := (others => '0');
+ -- signal loc : unsigned(locBits-1 downto 0) := (others => '0');
 
  signal jogEnable : boolean;
  signal jogStep : std_logic;
@@ -242,7 +243,7 @@ architecture Behavioral of Axis is
  signal decelDisable : boolean;
  signal droDone : boolean;
 
- signal currentDir : std_logic := '0';
+ -- signal currentDir : std_logic := '0';
 
 type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -347,12 +348,12 @@ begin
    updLoc => updLoc,
    step => step,
    dir => ctlDir,
-   dout => doutLoc,
-   loc => loc
+   dout => doutLoc
+   -- loc => loc
    );
 
  AxisDro : QuadDro
-  generic map (opBase => opBase + 0,
+  generic map (opBase => opBase + F_Dro_Base,
                opBits => opBits,
                droBits => locBits,
                outBits => outBits)
@@ -376,7 +377,7 @@ begin
  jogEnable <= true when (runState = idle) else false;
 
  AxisJog :  Jog
-  generic map (opBase => opBase + 0,
+  generic map (opBase => opBase + F_Jog_Base,
                opBits => opBits,
                outBits => outBits)
   port map (
@@ -422,7 +423,7 @@ begin
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   currentDir <= dirOut;                --save direction
+   -- currentDir <= dirOut;                --save direction
    if (ctlInit = '1') then              --if time to set new locaton
     runState <= idle;                   --clear state
     doneInt <= '0';                     --clear interrupt

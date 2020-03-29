@@ -6,23 +6,27 @@ package FpgaLatheBits is
 
 -- status register
 
- constant statusSize : integer := 7;
+ constant statusSize : integer := 9;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
- alias xAxisEna     : std_logic is statusreg(2); -- x04 x axis enable flag
+ alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
  alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
- alias queEmpty     : std_logic is statusreg(4); -- x10 controller queue empty
- alias ctlIdle      : std_logic is statusreg(5); -- x20 controller idle
- alias syncActive   : std_logic is statusreg(6); -- x40 sync active
+ alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
+ alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
+ alias queEmpty     : std_logic is statusreg(6); -- x40 controller queue empty
+ alias ctlIdle      : std_logic is statusreg(7); -- x80 controller idle
+ alias syncActive   : std_logic is statusreg(8); -- x100 sync active
 
  constant c_zAxisEna     : integer :=  0; -- x01 z axis enable flag
  constant c_zAxisDone    : integer :=  1; -- x02 z axis done
- constant c_xAxisEna     : integer :=  2; -- x04 x axis enable flag
+ constant c_zAxisCurDir  : integer :=  2; -- x04 z axis current dir
  constant c_xAxisDone    : integer :=  3; -- x08 x axis done
- constant c_queEmpty     : integer :=  4; -- x10 controller queue empty
- constant c_ctlIdle      : integer :=  5; -- x20 controller idle
- constant c_syncActive   : integer :=  6; -- x40 sync active
+ constant c_xAxisEna     : integer :=  4; -- x10 x axis enable flag
+ constant c_xAxisCurDir  : integer :=  5; -- x20 x axis current dir
+ constant c_queEmpty     : integer :=  6; -- x40 controller queue empty
+ constant c_ctlIdle      : integer :=  7; -- x80 controller idle
+ constant c_syncActive   : integer :=  8; -- x100 sync active
 
 -- run control register
 
