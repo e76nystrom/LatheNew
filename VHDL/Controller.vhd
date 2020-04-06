@@ -31,7 +31,8 @@ entity Controller is
   dshiftOut : out boolean := false;
   opOut : out unsigned(opBits-1 downto 0) := (others => '0');
   loadOut : out boolean := false;
-  empty : out boolean := true
+  busy : out boolean := false;
+  notEmpty : out boolean := false
   );
 end Controller;
 
@@ -106,7 +107,7 @@ architecture behavioral of  Controller is
  signal rdAddress : unsigned (addrBits-1 downto 0) := (others => '0');
  signal wrAddress : unsigned (addrBits-1 downto 0) := (others => '0');
  signal dataCount : integer range 0 to (2 ** addrBits) - 1 := 0;
- signal emptyFlag : boolean := true;
+ signal notEmptyFlag : boolean := false;
 
  signal tmp : unsigned (addrBits-1 downto 0);
 
@@ -133,11 +134,17 @@ architecture behavioral of  Controller is
  signal dlyNxt : runFsm := rIdle;
  signal delay : integer range 0 to readDelay := 0;
 
- alias zAxisEna   : std_logic is statusreg(0); -- x01 z axis enable flag
- alias zAxisDone  : std_logic is statusreg(1); -- x02 z axis done
- alias xAxisEna   : std_logic is statusreg(2); -- x04 x axis enable flag
- alias xAxisDone  : std_logic is statusreg(3); -- x08 x axis done
- alias queEmpty   : std_logic is statusreg(4); -- x10 controller queue empty
+ constant statusSize : integer := 10;
+ alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
+ alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
+ alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
+ alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
+ alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
+ alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
+ alias spindleActive : std_logic is statusreg(6); -- x40 x axis current dir
+ alias queEmpty     : std_logic is statusreg(7); -- x80 controller queue empty
+ alias ctlIdle      : std_logic is statusreg(8); -- x100 controller idle
+ alias syncActive   : std_logic is statusreg(9); -- x200 sync active
 
 begin
 
@@ -197,10 +204,8 @@ begin
    dout => countDout
    );
 
- emptyFlag <= true when (dataCount = 0) else false;
-
  dinOut <= data(byteBits-1);
- empty <= emptyFlag;
+ notEmpty <= notEmptyFlag;
 
  Proc : process(clk)
   variable rdOp : unsigned (opBits-1 downto 0) := (others => '0'); 
@@ -213,6 +218,7 @@ begin
     rdAddress <= (others => '0');
     wrAddress <= (others => '0');
     dataCount <= 0;
+    notEmptyFlag <= false;
    else
     case ctlState is
      when cIdle =>                      --idle
@@ -241,6 +247,7 @@ begin
      when cUpdAdr =>                    --update address
       wrAddress <= wrAddress + 1;
       dataCount <= dataCount + 1;
+      notEmptyFlag <= true;
       ctlState <= cShift;
 
      when others => null;
@@ -250,7 +257,7 @@ begin
      case runState is
       when rIdle =>                     --idle
        loadOut <= false;
-       if (not emptyFlag) then
+       if (notEmptyFlag) then
         rdOp := unsigned(outData);
         if (rdOp = opBase + F_Ctrl_Cmd) then
          dlyNxt <= rCmd;
@@ -264,7 +271,7 @@ begin
        end if;
 
       when rAddr =>                     --update address
-       if (not emptyFlag) then
+       if (not notEmptyFlag) then
         rdAddress <= rdAddress + 1;
         dataCount <= dataCount - 1;
         delay <= readDelay;
@@ -283,22 +290,24 @@ begin
       when rCmd =>                      --get command
        cmd <= unsigned(outData);
        -- cmd <= to_cmdRec(outData);
+       busy <= true;
        runState <= rWait;
 
       when rWait =>                     --wait for axis done
        if (cmd(0) = '1') then
-       -- if (cmd.cmdWaitZ) then
+        -- if (cmd.cmdWaitZ) then
         if (zAxisDone = '1') then
          cmd(0) <= '0';
-         -- cmd.cmdWaitZ <= false;
+        -- cmd.cmdWaitZ <= false;
         end if;
        elsif (cmd(1) = '1') then
-       -- elsif (cmd.cmdWaitX) then
+        -- elsif (cmd.cmdWaitX) then
         if (xAxisDone = '1') then
          cmd(1) <= '0';
-         -- cmd.cmdWaitX <= false;
+        -- cmd.cmdWaitX <= false;
         end if;
        else
+        busy <= false;
         dlyNxt <= rIdle;
         runState <= rAddr;
        end if;
@@ -315,7 +324,7 @@ begin
        
       when rData =>                     --read data
        if (len /= 0) then
-        if (not emptyFlag) then
+        if (notEmptyFlag) then
          data <= unsigned(outData);
          count <= 7;
          dshiftOut <= true;
@@ -337,6 +346,9 @@ begin
        else
         dshiftOut <= false;
         len <= len - 1;
+        if (dataCount = 0) then
+         notEmptyFlag <= false;
+        end if;
         runState <= rData;
        end if;
 

@@ -66,6 +66,7 @@ ARCHITECTURE behavior OF SyncAccelTest IS
    dir : in std_logic;
    dout : out std_logic;
    accelActive : out std_logic;
+   decelDone : out boolean;
    synStep : out std_logic
    );
  end Component;
@@ -123,6 +124,7 @@ ARCHITECTURE behavior OF SyncAccelTest IS
  --Outputs
  signal dout : std_logic;
  signal accelActive : std_logic;
+ signal decelDone : boolean;
  signal synstp : std_logic;
 
  signal distZero : std_logic;
@@ -162,6 +164,7 @@ BEGIN
    dir => dir,
    dout => dout,
    accelActive => accelActive,
+   decelDone => decelDone,
    synStep => synStp
    );
 
@@ -269,17 +272,26 @@ BEGIN
   delay(5);
   init <= '0';
 
-  ena <= '1';
-  
-  delay(5);
-
-  dir <= '1';
-  for j in 0 to 10000 loop
+  for j in 0 to 5 loop
    ch <= '1';
    delay(4);
    ch <= '0';
    delay(4);
   end loop;
+
+  ena <= '1';
+  
+  delay(5);
+
+  dir <= '1';
+  for j in 0 to 1000 loop
+   ch <= '1';
+   delay(4);
+   ch <= '0';
+   delay(4);
+  end loop;
+
+  ena <= '0';
 
   wait;
  end process;

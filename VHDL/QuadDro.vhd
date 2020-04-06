@@ -23,7 +23,7 @@ entity QuadDro is
   endCheck : in std_logic;
   decelDisable : out boolean := false;
   done : out boolean := false;
-  dout : out std_logic
+  dout : out std_logic := '0'
   );
 end QuadDro;
 
@@ -137,13 +137,13 @@ begin
    if (ch = '1') then
     case (quadState) is
      when "0001" => dir <= dirInvert; update <= '1';
-     -- when "0111" => dir <= dirInvert;
-     -- when "1110" => dir <= dirInvert;
-     -- when "1000" => dir <= dirInvert;
+     when "0111" => dir <= dirInvert; update <= '1';
+     when "1110" => dir <= dirInvert; update <= '1';
+     when "1000" => dir <= dirInvert; update <= '1';
      when "0010" => dir <= not dirInvert; update <= '1';
-     -- when "1011" => dir <= not dirInvert;
-     -- when "1101" => dir <= not dirInvert;
-     -- when "0100" => dir <= not dirInvert;
+     when "1011" => dir <= not dirInvert; update <= '1';
+     when "1101" => dir <= not dirInvert; update <= '1';
+     when "0100" => dir <= not dirInvert; update <= '1';
      when others => update <= '0';
     end case;
    end if;                              --end change

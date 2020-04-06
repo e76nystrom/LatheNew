@@ -11,7 +11,7 @@ entity PWM is
  port (
   clk : in std_logic;
   din : in std_logic;
-  dshift : in std_logic;
+  dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
   ena : in std_logic;
   pwmOut : out std_logic := '0'
@@ -28,7 +28,7 @@ architecture behavioral of  PWM is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    data : inout unsigned (n-1 downto 0)
    );
  end Component;
@@ -41,7 +41,7 @@ architecture behavioral of  PWM is
    clk : in std_logic;
    din : in std_logic;
    op : in unsigned (opBits-1 downto 0);
-   shift : in std_logic;
+   shift : in boolean;
    sel : out boolean;
    data : inout unsigned (n-1 downto 0)
    );

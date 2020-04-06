@@ -55,6 +55,7 @@ entity SyncAccel is
   dir : in std_logic;
   dout : out std_logic := '0';
   accelActive : out std_logic := '0';
+  decelDone : out boolean := false;
   synStep : out std_logic := '0'
   );
 end SyncAccel;
@@ -88,7 +89,7 @@ architecture Behavioral of SyncAccel is
    );
  end Component;
 
- type fsm is (idle, updAccel, doneWait);
+ type fsm is (idle, enabled, updAccel, doneWait);
  signal state : fsm := idle;
 
  signal d      : unsigned(synBits-1 downto 0);
@@ -260,6 +261,7 @@ begin
     accelSum <= (others => '0');
 
     accelActive <= '0';
+    decelDone <= false;
 
     synStep <= '0';                     --clear output step
     synStepTmp <= '0';
@@ -269,8 +271,16 @@ begin
 
     case state is                       --select state
      when idle =>                       --idle
+      if (ena = '1') then
+       state <= enabled;
+      end if;
+
+     when enabled =>                    --enabled
       synStep <= '0';
-      if (ena = '1') and (ch = '1') then --if enabled
+      if (ena = '0') then               --if enable cleared
+       decelDone <= false;              --clear deceldone
+       state <= idle;                   --return to idle state
+      elsif (ch = '1') then
        xPos <= xPos + 1; 
        if (sumNeg = '1') then           --if negative (sign bit set)
         sum <= sum + incr1;
@@ -298,6 +308,8 @@ begin
         if (accelCounter /= to_unsigned(0, countBits)) then
          accelSum <= accelSum - accel;
          accelCounter <= accelCounter - 1;
+        else
+         decelDone <= true;
         end if;
        end if;
       end if;
@@ -307,7 +319,7 @@ begin
       synStep <= synStepTmp;            --output step
       synStepTmp <= '0';                --clear tmp value
       if (ch = '0') then                --if change flag cleared
-       state <= idle;                   --return to idle state
+       state <= enabled;                --return to enabled state
       end if;
 
      when others =>

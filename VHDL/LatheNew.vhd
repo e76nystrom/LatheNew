@@ -92,7 +92,8 @@ architecture Behavioral of LatheNew is
    dshiftOut : out boolean;
    opOut : out unsigned(opBits-1 downto 0);
    loadOut : out boolean;
-   empty : out boolean
+   busy : out boolean;
+   notEmpty : out boolean
    );
  end Component;
 
@@ -194,15 +195,6 @@ architecture Behavioral of LatheNew is
    );
  end Component;
 
- component DataSel2_1 is
-  port (
-   sel : in std_logic;
-   a : in std_logic;
-   b : in std_logic;
-   y : out std_logic
-   );
- end component;
-
  component CtlReg is
   generic(opVal : unsigned;
           opb : positive;
@@ -287,22 +279,6 @@ architecture Behavioral of LatheNew is
    );
  end Component;
 
- component DataSelSyn8_1 is
-  port (
-   clk : in std_logic;
-   sel : in unsigned (2 downto 0);
-   d0 : in std_logic;
-   d1 : in std_logic;
-   d2 : in std_logic;
-   d3 : in std_logic;
-   d4 : in std_logic;
-   d5 : in std_logic;
-   d6 : in std_logic;
-   d7 : in std_logic;
-   dout : out std_logic
-   );
- end Component;
-
  component Axis is
   generic (opBase : unsigned;
            opBits : positive;
@@ -331,7 +307,10 @@ architecture Behavioral of LatheNew is
    droQuad : in std_logic_vector(1 downto 0);
    droInvert : in std_logic;
    mpgQuad : in std_logic_vector(1 downto 0);
+   jogInvert : in std_logic;
    currentDir : in std_logic;
+   switches : in std_logic_vector(3 downto 0);
+   eStop : in std_logic;
    dbgOut : out unsigned(dbgBits-1 downto 0);
    initOut : out std_logic;
    enaOut : out std_logic;
@@ -340,6 +319,47 @@ architecture Behavioral of LatheNew is
    stepOut : out std_logic;
    dirOut : inout std_logic;
    doneInt : out std_logic
+   );
+ end Component;
+
+ component Spindle is
+  generic (opBase : unsigned;
+           opBits : positive;
+           synBits : positive;
+           posBits : positive;
+           countBits : positive;
+           outBits : positive);
+  port (
+   clk : in std_logic;
+   din : in std_logic;
+   dshift : in boolean;
+   op : in unsigned(opBits - 1 downto 0);
+   load : in boolean;
+   dshiftR : in boolean;
+   opR : in unsigned(opBits-1 downto 0);
+   copyR : in boolean;
+   ch : in std_logic;
+   mpgQuad : in std_logic_vector(1 downto 0);
+   jogInvert : in std_logic;
+   eStop : in std_logic;
+   spActive : out std_logic;
+   stepOut : out std_logic;
+   dirOut : out std_logic;
+   dout : out std_logic
+   );
+ end Component;
+
+ component PWM is
+  generic (opBase : unsigned;
+           opBits : positive;
+           n : positive);
+  port (
+   clk : in std_logic;
+   din : in std_logic;
+   dshift : in boolean;
+   op : in unsigned(opBits-1 downto 0);
+   ena : in std_logic;
+   pwmOut : out std_logic
    );
  end Component;
 
@@ -385,11 +405,13 @@ architecture Behavioral of LatheNew is
  constant encClkBits : positive := 24;
  constant cycleClkBits : positive := 32;
 
+ constant pwmBits : positive := 16;
+
  constant stepWidth : positive :=  25;
 
--- status register
+ -- status register
 
- constant statusSize : integer := 9;
+ constant statusSize : integer := 11;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
@@ -397,11 +419,31 @@ architecture Behavioral of LatheNew is
  alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
  alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
- alias queEmpty     : std_logic is statusreg(6); -- x40 controller queue empty
- alias ctlIdle      : std_logic is statusreg(7); -- x80 controller idle
- alias syncActive   : std_logic is statusreg(8); -- x100 sync active
+ alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
+ alias spindleActive : std_logic is statusreg(7); -- x80 x axis current dir
+ alias queNotEmpty  : std_logic is statusreg(8); -- x100 ctl queue not empty
+ alias ctlBusy      : std_logic is statusreg(9); -- x200 controller busy
+ alias syncActive   : std_logic is statusreg(10); -- x400 sync active
 
--- run control register
+ -- inputs register
+
+ constant inputsSize : integer := 13;
+ signal inputsReg : unsigned(inputsSize-1 downto 0);
+ alias inZHome      : std_logic is inputsreg(0); -- x01 z home switch
+ alias inZMinus     : std_logic is inputsreg(1); -- x02 z limit minus
+ alias inZPlus      : std_logic is inputsreg(2); -- x04 z Limit Plus
+ alias inXHome      : std_logic is inputsreg(3); -- x08 x home switch
+ alias inXMinus     : std_logic is inputsreg(4); -- x10 x limit minus
+ alias inXPlus      : std_logic is inputsreg(5); -- x20 x Limit Plus
+ alias inSpare      : std_logic is inputsreg(6); -- x40 spare input
+ alias inProbe      : std_logic is inputsreg(7); -- x80 probe input
+ alias inPin10      : std_logic is inputsreg(8); -- x100 pin 10
+ alias inPin11      : std_logic is inputsreg(9); -- x200 pin 11
+ alias inPin12      : std_logic is inputsreg(10); -- x400 pin 12
+ alias inPin13      : std_logic is inputsreg(11); -- x800 pin 13
+ alias inPin15      : std_logic is inputsreg(12); -- x1000 pin 15
+
+ -- run control register
 
  constant runSize : integer := 3;
  signal runReg : unsigned(runSize-1 downto 0);
@@ -411,16 +453,21 @@ architecture Behavioral of LatheNew is
 
  -- configuration control register
 
- constant cfgCtlSize : integer := 8;
+ constant cfgCtlSize : integer := 13;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
- alias cfgZDir    : std_logic is cfgCtlreg(0); -- x01 z direction inverted
- alias cfgXDir    : std_logic is cfgCtlreg(1); -- x02 x direction inverted
- alias cfgZDro    : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
- alias cfgXDro    : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
- alias cfgSpDir   : std_logic is cfgCtlreg(4); -- x10 spindle directiion inverted
- alias cfgEncDir  : std_logic is cfgCtlreg(5); -- x20 invert encoder direction
- alias cfgEnaEncDir : std_logic is cfgCtlreg(6); -- x40 enable encoder direction
- alias cfgGenSync : std_logic is cfgCtlreg(7); -- x80 no encoder generate sync
+ alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z direction inverted
+ alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x direction inverted
+ alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
+ alias cfgXDroInv   : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
+ alias cfgZJogInv   : std_logic is cfgCtlreg(4); -- x10 z jog direction inverted
+ alias cfgXJogInv   : std_logic is cfgCtlreg(5); -- x20 x jog direction inverted
+ alias cfgSpDirInv  : std_logic is cfgCtlreg(6); -- x40 spindle directiion inverted
+ alias cfgEncDirInv : std_logic is cfgCtlreg(7); -- x80 invert encoder direction
+ alias cfgEStopEna  : std_logic is cfgCtlreg(8); -- x100 estop enable
+ alias cfgEStopInv  : std_logic is cfgCtlreg(9); -- x200 estop invert
+ alias cfgEnaEncDir : std_logic is cfgCtlreg(10); -- x400 enable encoder direction
+ alias cfgGenSync   : std_logic is cfgCtlreg(11); -- x800 no encoder generate sync pulse
+ alias cfgPWMEna    : std_logic is cfgCtlreg(12); -- x1000 pwm enable
 
  -- clock control register
 
@@ -428,6 +475,15 @@ architecture Behavioral of LatheNew is
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
  alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
+ constant clkNone      : unsigned (2 downto 0) := "000"; -- 
+ constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
+ constant clkCh        : unsigned (2 downto 0) := "010"; -- 
+ constant clkIntClk    : unsigned (2 downto 0) := "011"; -- 
+ constant clkSlvFreq   : unsigned (2 downto 0) := "100"; -- 
+ constant clkSlvCh     : unsigned (2 downto 0) := "101"; -- 
+ constant clkSpindle   : unsigned (2 downto 0) := "110"; -- 
+ constant clkDbgFreq   : unsigned (2 downto 0) := "111"; -- 
+
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
  -- sync control register
@@ -435,8 +491,8 @@ architecture Behavioral of LatheNew is
  constant synCtlSize : integer := 3;
  signal synCtlReg : unsigned(synCtlSize-1 downto 0);
  alias synPhaseInit : std_logic is synCtlreg(0); -- x01 init phase counter
- alias synEncInit : std_logic is synCtlreg(1); -- x02 init encoder
- alias synEncEna  : std_logic is synCtlreg(2); -- x04 enable encoder
+ alias synEncInit   : std_logic is synCtlreg(1); -- x02 init encoder
+ alias synEncEna    : std_logic is synCtlreg(2); -- x04 enable encoder
 
  -- system clock
 
@@ -446,8 +502,6 @@ architecture Behavioral of LatheNew is
 
  signal ch : std_logic;
  signal encDir : std_logic;
- signal encDirXor : std_logic;
- signal cfgEncDirNot : std_logic;
  signal direction : std_logic;
 
  -- spi interface
@@ -459,6 +513,9 @@ architecture Behavioral of LatheNew is
  signal spiActive : boolean := false;
 
  signal internalDout : std_logic;
+ signal dout0 : std_logic;
+ signal dout1 : std_logic;
+ signal dout2 : std_logic;
 
  signal dinW : std_logic := '0';
 
@@ -479,7 +536,8 @@ architecture Behavioral of LatheNew is
  signal ctlShift : boolean;
  signal ctlOp : unsigned (opBits-1 downto 0); --operation code
  signal ctlLoad : boolean;
- signal ctlEmpty : boolean;
+ signal controllerBusy : boolean;
+ signal ctlNotEmpty : boolean;
  signal ctlDout : std_logic;
 
  -- reader
@@ -500,6 +558,7 @@ architecture Behavioral of LatheNew is
  -- signal locked : std_logic;
 
  signal statusDout : std_logic;
+ signal inputsDout : std_logic;
  signal phaseDOut : std_logic;
  signal encDOut : std_logic;
  signal zDOut : std_logic;
@@ -509,6 +568,7 @@ architecture Behavioral of LatheNew is
  signal zFreqGen : std_logic;
  signal xFreqGen : std_logic;
  signal dbgFreqGen : std_logic;
+ signal spFreqGen : std_logic;
 
  signal sync : std_logic;
 
@@ -554,7 +614,29 @@ architecture Behavioral of LatheNew is
  signal zCurrentDir : std_logic := '0';
  signal xCurrentDir : std_logic := '0';
 
+ signal spEna : std_logic;
+ signal spindleDout : std_logic;
+ signal spindleStep : std_logic;
+ signal spindleDir : std_logic;
+ signal spindleStepOUt : std_logic;
+ signal spindleDirOut : std_logic;
+
+ signal zSwitches : std_logic_vector(3 downto 0);
+ signal xSwitches : std_logic_vector(3 downto 0);
+
+ alias eStopIn : std_logic is pinIn(0);
+ alias pwmOut : std_logic is pinOut(10);
+ alias chgPump : std_logic is pinOut(11);
+
+ signal lastDsel : std_logic := '0';
+ signal chgPumpOut : std_logic := '0';
+
+ signal eStop : std_logic;
+ signal pwmEna : std_logic;
 begin
+
+ eStop <= cfgEStopEna and (eStopIn xor cfgEStopInv);
+ stEStop <= eStop;
 
  pinOut(0) <= zDir;
  pinOut(1) <= zStep;
@@ -564,12 +646,17 @@ begin
  pinOut(5 downto 4) <= zMpg;
  pinout(7 downto 6) <= xMpg;
  pinOut(9 downto 8) <= zDro;
- pinOut(11 downto 10) <= xDro;
+
+ zSwitches <= aux(7) & aux(2 downto 0);
+ xSwitches <= aux(7) & aux(5 downto 3);
+
+ inputsReg <= unsigned(pinIn & aux);
 
  bufOut <= pinIn(3 downto 0);
- extOut(0) <= pinIn(4);
- extOut(1) <= aux(7) xor aux(6) xor aux(5) xor aux(4);
- extOut(2) <= aux(3) xor aux(2) xor aux(1) xor aux(0);
+ extOut(0) <= spindleDirOut;
+ extOut(1) <= spindleStepOut;
+ extOut(2) <= pinIn(4) xor aux(7) xor aux(6) xor aux(5) xor aux(4) xor
+              aux(3) xor aux(2) xor aux(1) xor aux(0);
 
  zAxisEna <= zExtEna;
  zDoneInt <= intZDoneInt;
@@ -579,8 +666,7 @@ begin
  zAxisDone <= intZDoneInt;
  xAxisDone <= intXDoneInt;
 
- queEmpty <= to_std_logic(ctlEmpty);
- ctlIdle <= '0';
+ queNotEmpty <= to_std_logic(ctlNotEmpty);
  syncActive <= intActive;
 
  led(7) <= div(divBits);
@@ -626,9 +712,9 @@ begin
 
  dbg(0) <= test1;
  dbg(1) <= test2;
- dbg(2) <= clkDbgFreqEna;
+ -- dbg(2) <= clkDbgFreqEna;
 
- -- dbg(2) <= intZDoneInt;
+ dbg(2) <= intZDoneInt;
  -- dbg(3) <= intXDoneInt;
  dbg(3) <= test3;
  dbg(7 downto 4) <= std_logic_vector(zDbg);
@@ -686,9 +772,6 @@ begin
    dir => encDir
    );
 
- -- encDout <= '0';
- -- intClk <= '0';
-
  encoderProc : Encoder
   generic map(opBase => F_Enc_Base,
               opBits => opBits,
@@ -712,20 +795,23 @@ begin
    intclk => intClk
    );
 
- encDirXor <= encDir xor cfgEncDir;
- cfgEncDirNot <= not cfgEncDir;
+ direction <= (not cfgEncDirInv) when (cfgEnaEncDir = '0') else
+              (encDir xor cfgEncDirInv);
 
- EncoderDir: DataSel2_1
-  port map (
-   sel => cfgEnaEncDir,
-   a => cfgEncDirNot,
-   b => encDirXor,
-   y => direction
-   );
-
- internalDout <= statusDout or ctlDout or phaseDout or idxClkDout or
-                 EncDout or zDOut or xDOut;
  dout <= internalDout;
+
+ doutProcess : process(clk)
+ begin
+  if rising_edge(clk) then
+   dout0 <= statusDout or inputsDout or ctlDout;
+   dout1 <= phaseDout or idxClkDout or EncDout;
+   dout2 <= zDOut or xDOut or spindleDout;
+   internalDout <= dout0 or dout1 or dout2;
+  end if;
+ end process;
+
+ -- internalDout <= statusDout or inputs or ctlDout or phaseDout or idxClkDout or
+ --                 EncDout or zDOut or xDOut or spindleDout;
 
  -- curDin <= din;
  -- dshift <= spiShift;
@@ -805,27 +891,30 @@ begin
    dshiftOut => ctlShift,
    opOut => ctlOp,
    loadOut => ctlLoad,
-   empty => ctlEmpty
+   busy => controllerBusy,
+   notEmpty => ctlNotEmpty
    );
+
+ ctlBusy <= '1' when controllerBusy else '0';
 
  dataReader: Reader
   generic map(opBase => F_Read_Base,
-         opBits => opBits,
-         rdAddrBits => rdAddrBits,
-         outBits => outBits
-)
+              opBits => opBits,
+              rdAddrBits => rdAddrBits,
+              outBits => outBits
+              )
   port map (
-  clk => clk,
-  init => readerInit,
-  din => din,
-  dshift => spiShift,
-  op => spiOp,
-  copy => spiCopy,
-  load => load,
-  copyOut => rdCopy,
-  opOut => rdOp,
-  active => rdActive
-  );
+   clk => clk,
+   init => readerInit,
+   din => din,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
+   load => load,
+   copyOut => rdCopy,
+   opOut => rdOp,
+   active => rdActive
+   );
 
  dispalyCtlProc : DisplayCtl
   generic map (opVal => F_Ld_Dsp_Reg,
@@ -859,6 +948,20 @@ begin
    copy => spiCopy,
    data => statusReg,
    dout => statusDout
+   );
+
+ inputs: ShiftOutN
+  generic map(opVal => F_Rd_Status,
+              opBits => opBits,
+              n => inputsSize,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
+   data => inputsReg,
+   dout => inputsDout
    );
 
  run_reg: CtlReg
@@ -947,7 +1050,7 @@ begin
    dout => idxClkDout
    );
 
- zFreqGenEna <= '1' when ((zFreqSel = "001") and (zExtEna = '1')) else '0';
+ zFreqGenEna <= '1' when ((zFreqSel = clkFreq) and (zExtEna = '1')) else '0';
 
  zFreq_Gen : FreqGen
   generic map(opVal => F_ZAxis_Base + F_Ld_Freq,
@@ -963,7 +1066,7 @@ begin
    pulseOut => zFreqGen
    );
 
- xFreqGenEna <= '1' when ((xFreqSel = "001") and (xExtEna = '1')) else '0';
+ xFreqGenEna <= '1' when ((xFreqSel = clkFreq) and (xExtEna = '1')) else '0';
 
  xFreq_Gen : FreqGen
   generic map(opVal => F_XAxis_Base + F_Ld_Freq,
@@ -977,6 +1080,20 @@ begin
    load => load,
    ena => xFreqGenEna,
    pulseOut => xFreqGen
+   );
+
+ spFreq_Gen : FreqGen
+  generic map(opVal => F_XAxis_Base + F_Ld_Freq,
+              opBits => opBits,
+              freqBits => freqBits)
+  port map (
+   clk => clk,
+   din => curDin,
+   dshift => dshift,
+   op => op,
+   load => load,
+   ena => spEna,
+   pulseOut => spFreqGen
    );
 
  dbgFreq_gen : FreqGenCtr
@@ -1001,21 +1118,22 @@ begin
    xDelayStep <= xAxisStep;
   end if;
  end process;
- 
- zCh_Data : DataSelSyn8_1
-  port map (
-   clk => clk,
-   sel => zFreqSel,
-   d0 => '0',
-   d1 => zFreqGen,
-   d2 => ch,
-   d3 => intClk,
-   d4 => xFreqGen,
-   d5 => xCh,
-   d6 => '0',
-   d7 => dbgFreqGen,
-   dout => zCh
-   );
+
+ zCh_Data : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   case zFreqSel is
+    when clkFreq    => zCh <= zFreqGen;
+    when clkCh      => zCh <= ch;
+    when clkIntClk  => zCh <= intClk;
+    when clkSlvFreq => zCh <= xFreqGen;
+    when clkSlvCh   => zCh <= xCh;
+    when clkSpindle => zCh <= spFreqGen;
+    when clkDbgFreq => zCh <= dbgFreqGen;
+    when others => zCh <= '0';
+   end case;
+  end if;
+ end process;
 
  z_Axis : Axis
   generic map (
@@ -1045,9 +1163,12 @@ begin
    encDir => direction,
    sync => sync,
    droQuad => zDro,
-   droInvert => cfgZDro,
+   droInvert => cfgZDroInv,
    mpgQuad => zMpg,
+   jogInvert => cfgZJogInv,
    currentDir => zCurrentDir,
+   switches => zSwitches,
+   eStop => eStop,
    dbgOut => zDbg,
    initOut => zExtInit,
    enaOut => zExtEna,
@@ -1066,19 +1187,21 @@ begin
    pulseOut => zStep
    );
 
- xCh_Data : DataSelSyn8_1
-  port map (
-   clk => clk,
-   sel => xFreqSel,
-   d0 => '0',
-   d1 => xFreqGen,
-   d2 => ch,
-   d3 => intClk,
-   d4 => zFreqGen,
-   d5 => zCh,
-   d6 => '0',
-   d7 => dbgFreqGen,
-   dout => xCh);
+ xCh_Data : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   case xFreqSel is
+    when clkFreq    => xCh <= xFreqGen;
+    when clkCh      => xCh <= ch;
+    when clkIntClk  => xCh <= intClk;
+    when clkSlvFreq => xCh <= zFreqGen;
+    when clkSlvCh   => xCh <= zCh;
+    when clkSpindle => xCh <= spFreqGen;
+    when clkDbgFreq => xCh <= dbgFreqGen;
+    when others => xCh <= '0';
+   end case;
+  end if;
+ end process;
 
  x_Axis : Axis
   generic map (
@@ -1108,9 +1231,12 @@ begin
    encDir => direction,
    sync => sync,
    droQuad => xDro,
-   droInvert => cfgXDro,
+   droInvert => cfgXDroInv,
    mpgQuad => xMpg,
+   jogInvert => cfgXJogInv,
    currentDir => xCurrentDir,
+   switches => xSwitches,
+   eStop => eStop,
    dbgOut => xDbg,
    initOut => xExtInit,
    enaOut => xExtEna,
@@ -1131,19 +1257,84 @@ begin
 
  zAxisCurDir <= zCurrentDir;
  xAxisCurDir <= xCurrentDir;
+
+ chgPump <= chgPumpOut;
  
  dirProcess: process(clk)
  begin
   if (rising_edge(clk)) then
    if (zStep = '1') then
     zCurrentDir <= zAxisDir;
-    zDir <= zAxisDir xor cfgZDir;
+    zDir <= zAxisDir xor cfgZDirInv;
    end if;
    if (xStep = '1') then
     xCurrentDir <= xAxisDir;
-    xDir <= xAxisDir xor cfgxDir;
+    xDir <= xAxisDir xor cfgxDirInv;
+   end if;
+
+   if ((dsel = '0') and (lastDsel = '1')) then
+    if (op = F_Rd_Status) then
+     chgPumpOut <= not chgPumpOut;
+     lastDsel <= '0';
+    end if;
+   else
+    lastDsel <= '1';
    end if;
   end if;
  end process;
+
+ spindleProc: Spindle
+  generic map (opBase => F_Spindle_Base,
+               opBits => opBits,
+               synBits => synBits,
+               
+               posBits => posBits,
+               countBits => countBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
+   ch => spFreqGen,
+   mpgQuad => zMpg,
+   jogInvert => cfgZJogInv,
+   eStop => eStop,
+   spActive => spEna,
+   stepOut => spindleStep,
+   dirOut => spindleDir,
+   dout => spindleDout
+   );
+
+ spindleActive <= spEna;
+
+ spStep_Pulse : PulseGen
+  generic map(pulseWidth => stepWidth)
+  port map (
+   clk => clk,
+   pulseIn => spindleStep,
+   pulseOut => spindleStepOut
+   );
+
+ spindleDirOut <= spindleDir xor cfgSpDirInv;
+
+ pwmEna <= '1' when (eStop = '0') and (cfgPWMEna = '1') else '0';
+ 
+ pwmProc : PWM
+  generic map (opBase => F_PWM_Base,
+               opBits => opBits,
+               n => pwmBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   ena => pwmEna,
+   pwmOut => pwmOut
+   );
 
 end Behavioral;

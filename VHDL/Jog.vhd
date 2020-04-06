@@ -18,7 +18,8 @@ entity Jog is
   opR : in unsigned(opBits-1 downto 0);
   copyR : in boolean;
   quad : in std_logic_vector(1 downto 0);
-  enable : in boolean;
+  enable : in std_logic;
+  jogInvert : in std_logic;
   currentDir : in std_logic;
   jogStep : out std_logic := '0';
   jogDir : out std_logic := '0';
@@ -168,23 +169,24 @@ begin
  begin
   if (rising_edge(clk)) then            --if time to process
 
-   if (enable and (uSec = '1')) then    --if enabled and next uSec
+   if ((enable = '1') and (uSec = '1')) then --if enabled and next uSec
 
     ch := (lastA(1) xor lastA(0)) or (lastB(1) xor lastB(0)); --input change
-    update <= ch;
     if (ch = '1') then
      quadState := lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
      case (quadState) is
-      when "0001" => dir <= '0';
-      when "0111" => dir <= '0';
-      when "1110" => dir <= '0';
-      when "1000" => dir <= '0';
-      when "0010" => dir <= '1';
-      when "1011" => dir <= '1';
-      when "1101" => dir <= '1';
-      when "0100" => dir <= '1';
-      when others => null;
+      when "0001" => dir <= jogInvert; update <= '1';
+      -- when "0111" => dir <= jogInvert; update <= '1';
+      -- when "1110" => dir <= jogInvert; update <= '1';
+      -- when "1000" => dir <= jogInvert; update <= '1';
+      when "0010" => dir <= not jogInvert; update <= '1';
+      -- when "1011" => dir <= not jogInvert; update <= '1';
+      -- when "1101" => dir <= not jogInvert; update <= '1';
+      -- when "0100" => dir <= not jogInvert; update <= '1';
+      when others => update <= '0';
      end case;
+    else
+     update <= '0';
     end if;
 
     lastA <= lastA(0) & a;

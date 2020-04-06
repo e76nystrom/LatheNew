@@ -44,6 +44,7 @@ add wave -noupdate /lathenewtest/uut/status/dout
 add wave -noupdate /lathenewtest/uut/xDoneInt
 add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/aclSteps
 add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/decel
+add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/step
 add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/distCtr
 add wave -noupdate -radix unsigned /lathenewtest/uut/z_Axis/AxisDistCounter/distVal
 add wave -noupdate /lathenewtest/uut/z_Axis/AxisDistCounter/distZero
@@ -52,8 +53,9 @@ add wave -noupdate /lathenewtest/uut/z_Axis/AxisDro/decelDisable
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/decelLimit
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/droEnd
 add wave -noupdate -radix decimal /lathenewtest/uut/z_Axis/AxisDro/droDist
+add wave -noupdate /lathenewtest/uut/z_Axis/AxisSyncAccel/decelDone
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {162845000 ps} 0} {{Cursor 2} {3653445 ps} 0}
+WaveRestoreCursors {{Cursor 1} {162845000 ps} 0} {{Cursor 2} {46617954 ps} 0}
 quietly wave cursor active 2
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100

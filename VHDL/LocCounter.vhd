@@ -49,7 +49,7 @@ entity LocCounter is
   updLoc : in std_logic;                --location update enabled
   step : in std_logic;                  --input step pulse
   dir : in std_logic;                   --direction
-  dout : out std_logic                  --data out
+  dout : out std_logic := '0'           --data out
   -- loc : inout unsigned(locBits-1 downto 0) := (others => '0') --cur location
   );
 end LocCounter;
