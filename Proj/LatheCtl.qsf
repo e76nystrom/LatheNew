@@ -40,12 +40,12 @@ set_global_assignment -name DEVICE EP4CE22F17C6
 set_global_assignment -name TOP_LEVEL_ENTITY LatheNew
 set_global_assignment -name ORIGINAL_QUARTUS_VERSION "13.0 SP1"
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "05:58:23  DECEMBER 06, 2019"
-set_global_assignment -name LAST_QUARTUS_VERSION "13.0 SP1"
+set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
 set_global_assignment -name MIN_CORE_JUNCTION_TEMP 0
 set_global_assignment -name MAX_CORE_JUNCTION_TEMP 85
 set_global_assignment -name ERROR_CHECK_FREQUENCY_DIVISOR 1
-set_global_assignment -name EDA_SIMULATION_TOOL "ModelSim-Altera (VHDL)"
+set_global_assignment -name EDA_SIMULATION_TOOL "Questa Intel FPGA (VHDL)"
 set_global_assignment -name EDA_OUTPUT_DATA_FORMAT VHDL -section_id eda_simulation
 set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "23 MM HEAT SINK WITH 200 LFPM AIRFLOW"
 set_global_assignment -name POWER_BOARD_THERMAL_MODEL "NONE (CONSERVATIVE)"
@@ -690,16 +690,56 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[0]
 #-- pins
 
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to sysClk -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to dsel -section_id auto_signaltap_0
-set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[0] -to dsel -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=1" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_BITS=1" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_LOWORD=28161" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SEGMENT_SIZE=4096" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_SAMPLE_DEPTH=4096" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=00000000000000000000000000000" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=29" -section_id auto_signaltap_0
-set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_NODE_CRC_HIWORD=65036" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_RAM_BLOCK_TYPE=M9K" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INCREMENTAL_ROUTING=1" -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[0] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[1] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[5] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[6] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[10] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[11] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[12] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[16] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[18] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[19] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[20] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[21] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[22] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[25] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[27] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[28] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[30] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_TRIGGER_PIPELINE=0" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_RAM_PIPELINE=0" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_COUNTER_PIPELINE=0" -section_id auto_signaltap_0
+set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
+set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[0] -to "Axis:z_Axis|axisUpdLoc" -section_id auto_signaltap_0
+set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[1] -to "Axis:z_Axis|step" -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[2] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[7] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[8] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[13] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[14] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[17] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[24] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to "Axis:z_Axis|DistCounter:AxisDistCounter|distUpdate" -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT acq_data_in[2] -to "Axis:z_Axis|DistCounter:AxisDistCounter|distUpdate" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_DATA_BITS=3" -section_id auto_signaltap_0
+set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_STORAGE_QUALIFIER_BITS=3" -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[3] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[4] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[9] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[15] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_global_assignment -name VHDL_FILE ../VHDL/Spindle.vhd
 set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/IntTmrNew.vhd
 set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmrNewMem.vhd
@@ -708,7 +748,6 @@ set_global_assignment -name VHDL_FILE ../VHDL/SyncAccelNew.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/QuadDro.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Jog.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Reader.vhd
-set_global_assignment -name VHDL_FILE RdMem.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Controller.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/Conversion.vhd
 set_global_assignment -name VHDL_FILE ../VHDL/ShiftOpSel.vhd
@@ -763,5 +802,6 @@ set_global_assignment -name QIP_FILE CMem.qip
 set_global_assignment -name QIP_FILE RdMem.qip
 set_global_assignment -name SIGNALTAP_FILE output_files/stp1.stp
 set_global_assignment -name QIP_FILE CmpTmrMem.qip
-set_global_assignment -name SLD_FILE "C:/Development/Altera/LatheNew/Proj/output_files/stp1_auto_stripped.stp"
+set_global_assignment -name QIP_FILE CmpTmrMem2.qip
+set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
