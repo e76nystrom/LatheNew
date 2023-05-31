@@ -303,8 +303,8 @@ type run_fsm is (idle, loadReg, synWait, run, done);
 
 begin
 
- dbgOUt(0) <= runEna;
- dbgOut(1) <= distDecel;
+ dbgOUt(0) <= updLoc;
+ dbgOut(1) <= step;
  -- dbgOut(1) <= ctlWaitSync;
  dbgOut(2) <= distZero;
  dbgOut(3) <= syncAccelActive;

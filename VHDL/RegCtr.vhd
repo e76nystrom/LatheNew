@@ -82,7 +82,7 @@ begin
    else
     zero <= '0';
    end if;
-   if (load = '1') then
+   if (load) then
     data <= distReg;
     zero <= '0';
    elsif (ena = '1') then

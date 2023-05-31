@@ -123,6 +123,7 @@ begin
 
    if (setLoc = '1') then
     loc <= locVal;
+   -- elsif ((updLoc = '1') and ((step = '1')) then
    elsif (step = '1') then
     if (dir = '1') then
      loc <= loc + 1;

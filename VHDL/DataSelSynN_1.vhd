@@ -29,7 +29,7 @@ use IEEE.NUMERIC_STD.ALL;
 --library UNISIM;
 --use UNISIM.VComponents.all;
 
-entity DataSel8_1 is
+entity DataSelSynN_1 is
  port (
   clk : in std_logic;
   sel : in unsigned (2 downto 0);
@@ -42,23 +42,24 @@ entity DataSel8_1 is
   d6 : in std_logic;
   d7 : in std_logic;
   dout : out std_logic);
-end DataSel8_1;
+end DataSelSynN_1;
 
-architecture Behavioral of DataSel8_1 is
+architecture Behavioral of DataSelSynN_1 is
 
 begin
 
  dataSel8: process(clk)
  begin
   case sel is
-   when (sel = "111") dout <= d7;
-   when (sel = "110") dout <= d6;
-   when (sel = "101") dout <= d5;
-   when (sel = "100") dout <= d4;
-   when (sel = "011") dout <= d3;
-   when (sel = "010") dout <= d2;
-   when (sel = "001") dout <= d1;
-   when (sel = "000") dout <= d0;
+   when "111" => dout <= d7;
+   when "110" => dout <= d6;
+   when "101" => dout <= d5;
+   when "100" => dout <= d4;
+   when "011" => dout <= d3;
+   when "010" => dout <= d2;
+   when "001" => dout <= d1;
+   when "000" => dout <= d0;
+   when others => dout <= '0';                 
   end case;
  end process;
 

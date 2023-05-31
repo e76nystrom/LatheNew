@@ -6,9 +6,9 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 use work.SimProc.all;
 use work.RegDef.all;
 
-entity AxisTest is
-end AxisTest;
-architecture behavior OF AxisTest is
+entity A_AxisTest is
+end A_AxisTest;
+architecture behavior OF A_AxisTest is
 
  component Axis is
   generic (
@@ -36,13 +36,22 @@ architecture behavior OF AxisTest is
    ch : in std_logic;
    encDir : in std_logic;
    sync : in std_logic;
+
+   droQuad : in std_logic_vector(1 downto 0);
+   droInvert : in std_logic;
+   mpgQuad : in std_logic_vector(1 downto 0);
+   jogInvert : in std_logic;
+   currentDir : in std_logic;
+   switches : in std_logic_vector(3 downto 0);
+   eStop : in std_logic;
+
    dbgOut : out unsigned (dbgBits-1 downto 0);
    initOut : out std_logic;
    enaOut : out std_logic;
    updLocOut : out std_logic;
    dout : out std_logic;
    stepOut : out std_logic;
-   dirOut : out std_logic;
+   dirOut : inout std_logic;
    doneInt : out std_logic
    );
  end Component;
@@ -69,6 +78,15 @@ architecture behavior OF AxisTest is
  signal ch : std_logic := '0';
  signal encDir : std_logic := '1';
  signal sync : std_logic := '0';
+
+ signal droQuad : std_logic_vector(1 downto 0) := (1 downto 0 => '0');
+ signal droInvert : std_logic := '0';
+ signal mpgQuad : std_logic_vector(1 downto 0) := (1 downto 0 => '0');
+ signal jogInvert : std_logic := '0';
+ signal currentDir : std_logic := '0';
+ signal switches : std_logic_vector(3 downto 0) := (3 downto 0 => '0');
+ signal eStop : std_logic := '0';
+
  signal dbgOut : unsigned (dbgBits-1 downto 0) := (others => '0');
  signal initOut : std_logic := '0';
  signal enaOut : std_logic := '0';
@@ -80,7 +98,7 @@ architecture behavior OF AxisTest is
 
 begin
 
- uut : Axis
+uut : Axis
   generic map (
    opBase => opBase,
    opBits => opBits,
@@ -107,6 +125,15 @@ begin
    ch => ch,
    encDir => encDir,
    sync => sync,
+
+   droQuad => droQuad,
+   droInvert => droInvert,
+   mpgQuad => mpgQuad,
+   jogInvert => jogInvert,
+   currentDir => currentDir,
+   switches => switches,
+   eStop => eStop,
+
    dbgOut => dbgOut,
    initOut => initOut,
    enaOut => enaOut,
@@ -184,17 +211,22 @@ begin
 --(++ axisCtl
 -- axis control register
 
- constant axisCtlSize : integer := 8;
+ constant axisCtlSize : integer := 12;
  variable axisCtlReg : unsigned(axisCtlSize-1 downto 0) := (others => '0');
- alias ctlInit    : std_logic is axisCtlreg(0); -- x01 reset flag
- alias ctlStart   : std_logic is axisCtlreg(1); -- x02 start
- alias ctlBacklash : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
- alias ctlWaitSync : std_logic is axisCtlreg(3); -- x08 wait for sync to start
- alias ctlDir     : std_logic is axisCtlreg(4); -- x10 direction
- alias ctlDirPos  : std_logic is axisCtlreg(4); -- x10 move in positive dir
- alias ctlSetLoc  : std_logic is axisCtlreg(5); -- x20 set location
- alias ctlChDirect : std_logic is axisCtlreg(6); -- x40 ch input direct
- alias ctlSlave   : std_logic is axisCtlreg(7); -- x80 slave controlled by other
+ alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
+ alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
+ alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
+ alias ctlWaitSync  : std_logic is axisCtlreg(3); -- x08 wait for sync to start
+ alias ctlDir       : std_logic is axisCtlreg(4); -- x10 direction
+ alias ctlDirPos    : std_logic is axisCtlreg(4); -- x10 move in positive dir
+ alias ctlDirNeg    : std_logic is axisCtlreg(4); -- x10 move in negative dir
+ alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
+ alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
+ alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
+ alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
+ alias ctlJogEna    : std_logic is axisCtlreg(9); -- x200 enable jog
+ alias ctlHome      : std_logic is axisCtlreg(10); -- x400 homeing axis
+ alias ctlIgnoreLim : std_logic is axisCtlreg(11); -- x800 ignore limits
 
 --++)
 
