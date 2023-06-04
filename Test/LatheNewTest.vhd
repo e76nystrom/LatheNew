@@ -607,6 +607,9 @@ begin
   ctl := to_integer(axisCtlReg);
   loadValue(ctl, axisCtlSize);
 
+  loadParm(base + F_Rd_Axis_Ctl);
+  readValue(readBits);
+
   delayQuad(50000);
   
   wait;

@@ -199,6 +199,13 @@ architecture Behavioral of Axis is
   );
  end Component;
 
+ component PulseGen is
+  generic(pulseWidth : positive);
+  port ( clk : in std_logic;
+         pulseIn : in std_logic;
+         pulseOut : out std_logic);
+ end Component;
+
 --(++ axisCtl
 -- axis status register
 
@@ -216,7 +223,7 @@ architecture Behavioral of Axis is
 
 -- axis control register
 
- constant axisCtlSize : integer := 12;
+ constant axisCtlSize : integer := 16;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
  alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
@@ -252,6 +259,7 @@ architecture Behavioral of Axis is
  signal doutDro : std_logic;
  signal doutJog : std_logic;
  signal doutStatus : std_logic;
+ signal doutCtl : std_logic;
 
  signal distDecel: std_logic;
  signal distZero : std_logic;
@@ -283,6 +291,8 @@ architecture Behavioral of Axis is
  alias swLimMinus : std_logic is switches(1);
  alias swLimPlus : std_logic is switches(2);
 
+ signal dbgStep : std_logic;
+
  -- signal currentDir : std_logic := '0';
 
 type run_fsm is (idle, loadReg, synWait, run, done);
@@ -303,14 +313,8 @@ type run_fsm is (idle, loadReg, synWait, run, done);
 
 begin
 
- dbgOUt(0) <= updLoc;
- dbgOut(1) <= step;
- -- dbgOut(1) <= ctlWaitSync;
- dbgOut(2) <= distZero;
- dbgOut(3) <= syncAccelActive;
-
  AxStatReg: ShiftOutN
-  generic map(opVal => F_Rd_Axis_Status,
+  generic map(opVal => opBase + F_Rd_Axis_Status,
               opBits => opBits,
               n => axisStatusSize,
               outBits => outBits)
@@ -334,6 +338,20 @@ begin
    shift => dshift,
    load => load,
    data => axisCtlReg);
+
+ AxCtlRegRd: ShiftOutN
+  generic map(opVal => opBase + F_Rd_Axis_Ctl,
+              opBits => opBits,
+              n => axisCtlSize,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => dshiftr,
+   op => opR,
+   copy => copyR,
+   data => axisCtlReg,
+   dout => doutCtl
+   );
 
  syncAccelEna <= runEna when ctlChDirect = '0' else '0';
 
@@ -455,6 +473,23 @@ begin
    dout => doutJog
    );
 
+ -- dbg output pulse
+
+ dbgPulse : PulseGen
+  generic map (pulseWidth => 25)
+  port map (
+   clk => clk,
+   pulseIn => step,
+   PulseOut => dbgStep
+   );
+
+ -- dbgOut(1) <= ctlWaitSync;
+
+ dbgOut(0) <= ctlStart;  --updLoc;
+ -- dbgOut(1) <= distDecel; --distZero;
+ dbgOut(2) <= syncAccelActive;
+ dbgOut(3) <= dbgStep;
+
  runInit <= extInit when ctlSlave = '1' else axisInit;
  runEna <= extEna when ctlSlave = '1' else axisEna;
  updLoc <= extUpdLoc when ctlSlave = '1' else
@@ -468,7 +503,8 @@ begin
  
  enaCh <= runEna and ch;
  dirOut <= JogDir when ctlJogEna = '1' else ctlDir;
- stepOut <= jogStep when ctlJogEna = '1' else step;
+ -- stepOut <= jogStep when ctlJogEna = '1' else step;
+ stepOut <= (jogStep and ctlJogEna) or (step and not(ctlJogEna));
 
  axDoneDist <= '1' when doneDist else '0';
  axDoneDro <= '1' when doneDro else '0';
@@ -479,7 +515,7 @@ begin
  begin
   if (rising_edge(clk)) then            --if clock active
 
-   dout <= doutSync or doutDist or doutLoc or doutDro or doutJog or doutStatus;
+   dout <= doutSync or doutDist or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
 
    doneDist <= (distZero = '1') and (ctlDroEnd = '0');
    doneDro <= droDone and (ctlDroEnd = '1');
@@ -487,7 +523,7 @@ begin
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
                 (ctlIgnoreLim = '0');
 
-   doneMove <= doneDist or doneDro or doneLimit or doneHome;
+   doneMove <= doneDist; -- or doneDro or doneLimit or doneHome;
 
    if (eStop = '1') then                --if emergency stop
     axisEna <= '0';                     --stop axis
@@ -495,18 +531,19 @@ begin
    elsif (ctlInit = '1') then           --if time to set new locaton
     runState <= idle;                   --clear state
     doneInt <= '0';                     --clear interrupt
+    dbgOut(1) <= '0';
     axisEna <= '0';                     --clear run flag
     axisUpdLoc <= '0';
+    axisInit <= '1';			--set flag to load accel and sync
    else                                 --if normal operation
     case runState is                    --check state
      when idle =>                       --idle state
+      axisInit <= '0';                  --clear load flag
       if (ctlStart = '1') then          --if start requested
        runState <= loadReg;             --advance to load state
-       axisInit <= '1';			--set flag to load accel and sync
       end if;
 
      when loadReg =>                    --load state
-      axisInit <= '0';                  --clear load flag
       if (ctlWaitSync = '1') then       --if wating for sync
        runState <= synWait;             --advance to wait for sync state
       else                              --if not synchronous move
@@ -532,6 +569,7 @@ begin
       if (doneMove or (ctlStart = '0')) then --if done
        runState <= done;                --advance to done state
        doneInt <= '1';                  --set done interrupt
+       dbgOut(1) <= '1';
        axisUpdLoc <= '0';               --stop location updates
        axisEna <= '0';                  --clear run flag
       end if;
@@ -539,6 +577,7 @@ begin
      when done =>                       --done state
       if (ctlStart = '0') then          --wait for start flag to clear
        doneInt <= '0';                  --clear done intterrupt
+       dbgOut(1) <= '0';
        runState <= idle;                --to return to idle state
       end if;
 

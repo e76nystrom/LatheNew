@@ -417,8 +417,8 @@ architecture Behavioral of LatheNew is
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
  alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
- alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
- alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
+ alias xAxisEna     : std_logic is statusreg(3); -- x10 x axis enable flag
+ alias xAxisDone    : std_logic is statusreg(4); -- x08 x axis done
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
  alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
  alias spindleActive : std_logic is statusreg(7); -- x80 x axis current dir
@@ -668,14 +668,19 @@ begin
  eStop <= cfgEStopEna and (eStopIn xor cfgEStopInv);
  stEStop <= eStop;
 
- pinOut(0) <= zDir;
- pinOut(1) <= zStep;
- pinOut(2) <= xStep;
- pinOut(3) <= xDir;
- 
- pinOut(5 downto 4) <= zMpg;
- pinout(7 downto 6) <= xMpg;
+ pinOut(0) <= zDir;  -- xor div(10);
+ pinOut(1) <= zStep; -- xor div(11);
+ pinOut(2) <= xDir;  -- xor div(12);
+ pinOut(3) <= xStep; -- xor div(13);
+
+ pinOut(7 downto 4) <= std_logic_vector(xDbg);
+
+ -- alias digSel: unsigned(1 downto 0) is div(19 downto 18);
+ -- pinOut(5 downto 4) <= zMpg;
+ -- pinout(7 downto 6) <= xMpg;
  pinOut(9 downto 8) <= zDro;
+
+ -- pinOut(9 downto 4) <= std_logic_vector(div(19 downto 14));
 
  zSwitches <= std_logic_vector(aux(7) & aux(2 downto 0)) xor
               std_logic_vector(cfgProbeInv &
@@ -718,17 +723,17 @@ begin
  -- test 1 output pulse
 
  testOut1 : PulseGen
-  generic map (pulseWidth => 25)
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => zDbg(2),
+   pulseIn => xCh,
    PulseOut => test1
    );
 
 -- test 2 output pulse
 
  testOut2 : PulseGen
-  generic map (pulseWidth => 25)
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
    pulseIn => zCh,
@@ -736,7 +741,7 @@ begin
    );
 
  testOut3 : PulseGen
-  generic map (pulseWidth => 25)
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
    pulseIn => sync,

@@ -244,15 +244,17 @@ uut : Axis
   --dx := 87381248;
   --dy := 341258;
 
-  dist := 20;
+  dist := 100;
   loc := 5;
 
   incr1 := 2 * dy;
   incr2 := 2 * (dy - dx);
   d := incr1 - dx;
 
-  accelVal := 8;
-  accelCount := 99;
+  -- accelVal := 8;
+  -- accelCount := 99;
+  accelVal := 2;
+  accelCount := 400;
 
   op <= F_ZAxis_Base + F_Sync_Base + F_Ld_D;
   loadShift(d, synBits);
@@ -303,7 +305,7 @@ uut : Axis
 
   op <= F_Noop;
 
-  delayCh(1000);
+  delayCh(5000);
   wait;
  end process;
 

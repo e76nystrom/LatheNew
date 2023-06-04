@@ -11,8 +11,8 @@ package FpgaLatheBits is
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
  alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
- alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
- alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
+ alias xAxisEna     : std_logic is statusreg(3); -- x08 x axis enable flag
+ alias xAxisDone    : std_logic is statusreg(4); -- x10 x axis done
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
  alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
  alias spindleActive : std_logic is statusreg(7); -- x80 x axis current dir
@@ -23,8 +23,8 @@ package FpgaLatheBits is
  constant c_zAxisEna     : integer :=  0; -- x01 z axis enable flag
  constant c_zAxisDone    : integer :=  1; -- x02 z axis done
  constant c_zAxisCurDir  : integer :=  2; -- x04 z axis current dir
- constant c_xAxisDone    : integer :=  3; -- x08 x axis done
- constant c_xAxisEna     : integer :=  4; -- x10 x axis enable flag
+ constant c_xAxisEna     : integer :=  3; -- x08 x axis enable flag
+ constant c_xAxisDone    : integer :=  4; -- x10 x axis done
  constant c_xAxisCurDir  : integer :=  5; -- x20 x axis current dir
  constant c_stEStop      : integer :=  6; -- x40 emergency stop
  constant c_spindleActive : integer :=  7; -- x80 x axis current dir

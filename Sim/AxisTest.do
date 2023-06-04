@@ -1,33 +1,59 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
-add wave -noupdate /axistest/clk
-add wave -noupdate /axistest/din
-add wave -noupdate /axistest/dshift
-add wave -noupdate -radix hexadecimal /axistest/op
-add wave -noupdate /axistest/copy
-add wave -noupdate /axistest/load
-add wave -noupdate -radix unsigned /axistest/uut/AxisDistCounter/distCtr
-add wave -noupdate -radix decimal /axistest/uut/AxisLocCounter/loc
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/accelCounter
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/xpos
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/ypos
-add wave -noupdate /axistest/uut/runState
-add wave -noupdate /axistest/copy
-add wave -noupdate /axistest/load
-add wave -noupdate -radix binary /axistest/uut/axisCtlReg
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/d
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/incr1
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/incr2
-add wave -noupdate /axistest/uut/AxisSyncAccel/state
-add wave -noupdate -radix decimal /axistest/uut/AxisSyncAccel/sum
-add wave -noupdate /axistest/ch
-add wave -noupdate /axistest/uut/step
-add wave -noupdate -radix decimal /axistest/uut/loc
-add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/axistest/uut/AxisLocCounter/locShift} /axistest/uut/AxisLocCounter/dshift
-add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/axistest/uut/AxisLocCounter/locShift} -radix hexadecimal /axistest/uut/AxisLocCounter/op
+add wave -noupdate /a_axistest/clk
+add wave -noupdate /a_axistest/din
+add wave -noupdate /a_axistest/dshift
+add wave -noupdate -radix hexadecimal /a_axistest/op
+add wave -noupdate /a_axistest/copy
+add wave -noupdate /a_axistest/load
+add wave -noupdate -radix unsigned /a_axistest/uut/AxisDistCounter/distCtr
+add wave -noupdate -radix decimal /a_axistest/uut/AxisLocCounter/loc
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/accelCounter
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/xpos
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/ypos
+add wave -noupdate /a_axistest/uut/runState
+add wave -noupdate /a_axistest/copy
+add wave -noupdate /a_axistest/load
+add wave -noupdate -radix binary /a_axistest/uut/axisCtlReg
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/d
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/incr1
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/incr2
+add wave -noupdate /a_axistest/uut/AxisSyncAccel/state
+add wave -noupdate /a_axistest/ch
+add wave -noupdate /a_axistest/uut/step
+add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/a_axistest/uut/AxisLocCounter/locShift} -radix hexadecimal /a_axistest/uut/AxisLocCounter/op
+add wave -noupdate -expand -label {Contributors: locShift} -group {Contributors: sim:/a_axistest/uut/AxisLocCounter/locShift} -radix hexadecimal /a_axistest/uut/AxisLocCounter/op
+add wave -noupdate /a_axistest/clk
+add wave -noupdate /a_axistest/din
+add wave -noupdate /a_axistest/dshift
+add wave -noupdate -radix hexadecimal /a_axistest/op
+add wave -noupdate /a_axistest/copy
+add wave -noupdate /a_axistest/load
+add wave -noupdate -radix unsigned /a_axistest/uut/AxisDistCounter/distCtr
+add wave -noupdate -radix decimal /a_axistest/uut/AxisLocCounter/loc
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/accelCounter
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/xpos
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/ypos
+add wave -noupdate /a_axistest/uut/runState
+add wave -noupdate /a_axistest/copy
+add wave -noupdate /a_axistest/load
+add wave -noupdate -radix binary /a_axistest/uut/axisCtlReg
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/d
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/incr1
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/incr2
+add wave -noupdate /a_axistest/uut/AxisSyncAccel/state
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/sum
+add wave -noupdate /a_axistest/ch
+add wave -noupdate /a_axistest/uut/step
+add wave -noupdate -radix decimal /a_axistest/uut/AxisDistCounter/aclSteps
+add wave -noupdate /a_axistest/uut/AxisDistCounter/decel
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/accelCount
+add wave -noupdate -radix decimal /a_axistest/uut/AxisSyncAccel/accel
+add wave -noupdate /a_axistest/dbgOut(2)
+add wave -noupdate /a_axistest/uut/AxisSyncAccel/accelActive
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {10972985 ps} 0}
-quietly wave cursor active 1
+quietly wave cursor active 0
 configure wave -namecolwidth 260
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
