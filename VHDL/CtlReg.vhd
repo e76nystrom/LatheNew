@@ -47,7 +47,7 @@ end CtlReg;
 
 architecture Behavioral of CtlReg is
 
-signal sreg : unsigned (n-1 downto 0) := (n-1 downto 0 => '0');
+signal sreg : unsigned (n-1 downto 0) := (others => '0');
 
 begin
 
