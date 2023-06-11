@@ -191,6 +191,7 @@ begin
    delay(10);
 
    tmp := parmIdx;
+   report "parmIdx " & integer'image(to_integer(tmp));
    for i in 0 to opbx-1 loop             --load parameter
     dclk <= '0';
     din <= tmp(opbx-1);
@@ -521,7 +522,7 @@ begin
   
   delay(1);
 
-  loadParm(base + F_Dist_Base + F_Ld_Dist);
+  loadParm(base + F_Sync_Base + F_Ld_A_Dist);
   loadValue(dist, distBits);
 
   delay(1);
@@ -563,7 +564,7 @@ begin
 
   delayQuad(500);
   -- delay(3600);
-  loadParm(base + F_Dist_Base + F_Ld_Dist);
+  loadParm(base + F_Sync_Base + F_Ld_A_Dist);
   loadValue(dist, distBits);
   -- delayQuad(500);
   delay(5000);

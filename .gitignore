@@ -5,6 +5,8 @@
 *.bsf
 *.qws
 *~
+*.bak
+*.hex
 LatheCtl.qsf
 Proj/*.rpt
 Proj/*.txt

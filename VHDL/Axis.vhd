@@ -6,38 +6,45 @@ use work.RegDef.ALL;
 
 entity Axis is
  generic (
-  opBase : unsigned;
+  opBase : unsigned(opb-1 downto 0) := x"00";
   opBits : positive := 8;
-  synBits : positive;
-  posBits : positive;
-  countBits : positive;
+  synBits : positive := 32;
+  posBits : positive := 24;
+  countBits : positive := 18;
   distBits : positive := 32;
-  locBits : positive;
-  outBits : positive;
+  locBits : positive := 18;
+  outBits : positive := 32;
   dbgBits : positive := 4
   );
  port (
   clk : in std_logic;
+
   din : in std_logic;
   dshift : in boolean;
   op : in unsigned(opBits-1 downto 0);
   load : in boolean;
+
   dshiftR : in boolean;
   opR : in unsigned(opBits-1 downto 0);
   copyR : in boolean;
+
   extInit : in std_logic;               --reset
   extEna : in std_logic;                --enable operation
   extUpdLoc : in std_logic;
+
   ch : in std_logic;
   encDir : in std_logic;
   sync : in std_logic;
+
   droQuad : in std_logic_vector(1 downto 0);
   droInvert : in std_logic;
   mpgQuad : in std_logic_vector(1 downto 0);
   jogInvert : in std_logic;
+
   currentDir : in std_logic;
   switches : in std_logic_vector(3 downto 0);
   eStop : in std_logic;
+
   dbgOut : out unsigned (dbgBits-1 downto 0) := (others => '0');
   initOut : out std_logic := '0';
   enaOut : out std_logic := '0';
@@ -79,56 +86,88 @@ architecture Behavioral of Axis is
    );
  end Component;
 
- component SyncAccel is
+ -- component SyncAccel is
+  
+ --  generic (opBase : unsigned;
+ --           opBits : positive;
+ --           synBits : positive;
+ --           posBits : positive;
+ --           countBits : positive);
+ --  port (
+ --   clk : in std_logic;
+ --   din : in std_logic;
+ --   dshift : in boolean;
+ --   op : in unsigned (opBits-1 downto 0);
+ --   load : in boolean;
+ --   dshiftR : in boolean;
+ --   opR : in unsigned (opBits-1 downto 0);
+ --   copyR : in boolean;
+ --   init : in std_logic;                  --reset
+ --   ena : in std_logic;                   --enable operation
+ --   decel : in std_logic;
+ --   decelDisable : in boolean;
+ --   ch : in std_logic;
+ --   dir : in std_logic;
+ --   dout : out std_logic;
+ --   accelActive : out std_logic;
+ --   decelDone : out boolean;
+ --   synStep : out std_logic
+ --   );
+ -- end Component;
+
+ component SyncAccelDist is
+  
   generic (opBase : unsigned;
            opBits : positive;
            synBits : positive;
            posBits : positive;
+           distBits : positive;
            countBits : positive);
   port (
    clk : in std_logic;
+
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned (opBits-1 downto 0);
    load : in boolean;
+
    dshiftR : in boolean;
    opR : in unsigned (opBits-1 downto 0);
    copyR : in boolean;
+
    init : in std_logic;                  --reset
    ena : in std_logic;                   --enable operation
-   decel : in std_logic;
-   decelDisable : in boolean;
+   extDone : in boolean;               --external done input
    ch : in std_logic;
-   dir : in std_logic;
+
+   done : inout  boolean;
    dout : out std_logic;
-   accelActive : out std_logic;
-   decelDone : out boolean;
    synStep : out std_logic
    );
  end Component;
 
- component DistCounter is
-  generic (opBase : unsigned;
-           opBits : positive;
-           distBits : positive;
-           outBits : positive);
-  Port (
-   clk : in  std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);  --current reg address
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned(opBits-1 downto 0); --current reg address
-   copyR : in boolean;
-   init : in std_logic;                  --reset
-   step : in std_logic;                  --all steps
-   accelFlag : in std_logic;             --acceleration step
-   dout : out std_logic;                 --data output
-   decel : inout std_logic;              --dist le acceleration steps
-   distZero : out std_logic              --distance zero
-   );
- end Component;
+ -- component DistCounter is
+ --  generic (opBase : unsigned;
+ --           opBits : positive;
+ --           distBits : positive;
+ --           outBits : positive);
+ --  Port (
+ --   clk : in  std_logic;
+ --   din : in std_logic;
+ --   dshift : in boolean;
+ --   op : in unsigned(opBits-1 downto 0);  --current reg address
+ --   load : in boolean;
+ --   dshiftR : in boolean;
+ --   opR : in unsigned(opBits-1 downto 0); --current reg address
+ --   copyR : in boolean;
+ --   init : in std_logic;                  --reset
+ --   step : in std_logic;                  --all steps
+ --   accelFlag : in std_logic;             --acceleration step
+ --   dout : out std_logic;                 --data output
+ --   decel : inout std_logic;              --dist le acceleration steps
+ --   distZero : out std_logic              --distance zero
+ --   );
+ -- end Component;
 
  component LocCounter is
   generic(opBase : unsigned;
@@ -254,18 +293,18 @@ architecture Behavioral of Axis is
  -- signal doneInt : std_logic;
 
  signal doutSync : std_logic;
- signal doutDist : std_logic;
+ -- signal doutDist : std_logic;
  signal doutLoc : std_logic;
  signal doutDro : std_logic;
  signal doutJog : std_logic;
  signal doutStatus : std_logic;
  signal doutCtl : std_logic;
 
- signal distDecel: std_logic;
- signal distZero : std_logic;
+ -- signal distDecel: std_logic;
+ signal distZero : boolean;
 
  signal syncAccelEna : std_logic;
- signal syncAccelActive : std_logic;
+ -- signal syncAccelActive : std_logic;
 
  signal synStepOut : std_logic;
  signal step : std_logic;
@@ -355,54 +394,83 @@ begin
 
  syncAccelEna <= runEna when ctlChDirect = '0' else '0';
 
- AxisSyncAccel: SyncAccel
+ -- AxisSyncAccel: SyncAccel
+ --  generic map (opBase => opBase + F_Sync_Base,
+ --               opBits => opBits,
+ --               synBits => synBits,
+ --               posBits => posBits,
+ --               countBits => countBits)
+ --  port map (
+ --   clk => clk,
+ --   din => din,
+ --   dshift => dshift,
+ --   op => op,
+ --   load => load,
+ --   dshiftR => dshiftR,
+ --   opR => opR,
+ --   copyR => copyR,
+ --   init => runInit,
+ --   ena => syncAccelEna,
+ --   decel => distDecel,
+ --   decelDisable => decelDisable,
+ --   ch => ch,
+ --   dir => encDir,
+ --   dout => doutSync,
+ --   accelActive => syncAccelActive,
+ --   decelDone => open,
+ --   synStep => synStepOut
+ --   );
+
+ AxisSyncAccel: SyncAccelDist
   generic map (opBase => opBase + F_Sync_Base,
                opBits => opBits,
                synBits => synBits,
                posBits => posBits,
+               distBits => distBits,
                countBits => countBits)
   port map (
    clk => clk,
+
    din => din,
    dshift => dshift,
    op => op,
    load => load,
+
    dshiftR => dshiftR,
    opR => opR,
    copyR => copyR,
+
    init => runInit,
    ena => syncAccelEna,
-   decel => distDecel,
-   decelDisable => decelDisable,
+   extDone => doneMove,
    ch => ch,
-   dir => encDir,
+
+   done => distZero,
    dout => doutSync,
-   accelActive => syncAccelActive,
-   decelDone => open,
    synStep => synStepOut
    );
 
- AxisDistCounter: DistCounter
-  generic map (opBase => opBase + F_Dist_Base,
-               opBits => opBits,
-               distBits => distBits,
-               outBits => outBits)
-  port map (
-   clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   init => runInit,
-   step => step,
-   accelFlag => syncAccelActive,
-   dout => doutDist,
-   decel => distDecel,
-   distZero => distZero
-   );
+ -- AxisDistCounter: DistCounter
+ --  generic map (opBase => opBase + F_Dist_Base,
+ --               opBits => opBits,
+ --               distBits => distBits,
+ --               outBits => outBits)
+ --  port map (
+ --   clk => clk,
+ --   din => din,
+ --   dshift => dshift,
+ --   op => op,
+ --   load => load,
+ --   dshiftR => dshiftR,
+ --   opR => opR,
+ --   copyR => copyR,
+ --   init => runInit,
+ --   step => step,
+ --   accelFlag => syncAccelActive,
+ --   dout => doutDist,
+ --   decel => distDecel,
+ --   distZero => distZero
+ --   );
 
  AxisLocCounter: LocCounter
   generic map(opBase => opBase + F_Loc_Base,
@@ -487,7 +555,7 @@ begin
 
  dbgOut(0) <= ctlStart;  --updLoc;
  -- dbgOut(1) <= distDecel; --distZero;
- dbgOut(2) <= syncAccelActive;
+ dbgOut(2) <= '1' when distZero else '0';
  dbgOut(3) <= dbgStep;
 
  runInit <= extInit when ctlSlave = '1' else axisInit;
@@ -515,9 +583,10 @@ begin
  begin
   if (rising_edge(clk)) then            --if clock active
 
-   dout <= doutSync or doutDist or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
+   -- dout <= doutSync or doutDist or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
+   dout <= doutSync or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
 
-   doneDist <= (distZero = '1') and (ctlDroEnd = '0');
+   doneDist <= distZero and (ctlDroEnd = '0');
    doneDro <= droDone and (ctlDroEnd = '1');
    doneHome <= (swHome = '1') and (ctlHome = '1');
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
