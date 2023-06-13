@@ -8,6 +8,7 @@ package FpgaLatheBits is
 
  constant statusSize : integer := 11;
  signal statusReg : unsigned(statusSize-1 downto 0);
+ --variable statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
  alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
@@ -15,7 +16,7 @@ package FpgaLatheBits is
  alias xAxisDone    : std_logic is statusreg(4); -- x10 x axis done
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
  alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
- alias spindleActive : std_logic is statusreg(7); -- x80 x axis current dir
+ alias spindleActive : std_logic is statusreg(7); -- x80 spindle activer
  alias queNotEmpty  : std_logic is statusreg(8); -- x100 ctl queue not empty
  alias ctlBusy      : std_logic is statusreg(9); -- x200 controller busy
  alias syncActive   : std_logic is statusreg(10); -- x400 sync active
@@ -27,7 +28,7 @@ package FpgaLatheBits is
  constant c_xAxisDone    : integer :=  4; -- x10 x axis done
  constant c_xAxisCurDir  : integer :=  5; -- x20 x axis current dir
  constant c_stEStop      : integer :=  6; -- x40 emergency stop
- constant c_spindleActive : integer :=  7; -- x80 x axis current dir
+ constant c_spindleActive : integer :=  7; -- x80 spindle activer
  constant c_queNotEmpty  : integer :=  8; -- x100 ctl queue not empty
  constant c_ctlBusy      : integer :=  9; -- x200 controller busy
  constant c_syncActive   : integer := 10; -- x400 sync active
@@ -36,6 +37,7 @@ package FpgaLatheBits is
 
  constant inputsSize : integer := 13;
  signal inputsReg : unsigned(inputsSize-1 downto 0);
+ --variable inputsReg : unsigned(inputsSize-1 downto 0);
  alias inZHome      : std_logic is inputsreg(0); -- x01 z home switch
  alias inZMinus     : std_logic is inputsreg(1); -- x02 z limit minus
  alias inZPlus      : std_logic is inputsreg(2); -- x04 z Limit Plus
@@ -68,6 +70,7 @@ package FpgaLatheBits is
 
  constant runSize : integer := 3;
  signal runReg : unsigned(runSize-1 downto 0);
+ --variable runReg : unsigned(runSize-1 downto 0);
  alias runEna       : std_logic is runreg(0); -- x01 run from controller data
  alias runInit      : std_logic is runreg(1); -- x02 initialize controller
  alias readerInit   : std_logic is runreg(2); -- x04 initialize reader
@@ -80,6 +83,7 @@ package FpgaLatheBits is
 
  constant jogSize : integer := 2;
  signal jogReg : unsigned(jogSize-1 downto 0);
+ --variable jogReg : unsigned(jogSize-1 downto 0);
  alias jogContinuous : std_logic is jogreg(0); -- x01 jog continuous mode
  alias jogBacklash  : std_logic is jogreg(1); -- x02 jog backlash present
 
@@ -88,8 +92,9 @@ package FpgaLatheBits is
 
 -- axis control register
 
- constant axisCtlSize : integer := 12;
+ constant axisCtlSize : integer := 13;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
+ --variable axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
  alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
  alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
@@ -101,9 +106,10 @@ package FpgaLatheBits is
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
  alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
  alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
- alias ctlJogEna    : std_logic is axisCtlreg(9); -- x200 enable jog
- alias ctlHome      : std_logic is axisCtlreg(10); -- x400 homing axis
- alias ctlIgnoreLim : std_logic is axisCtlreg(11); -- x800 ignore limits
+ alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
+ alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
+ alias ctlHome      : std_logic is axisCtlreg(11); -- x800 homing axis
+ alias ctlIgnoreLim : std_logic is axisCtlreg(12); -- x1000 ignore limits
 
  constant c_ctlInit      : integer :=  0; -- x01 reset flag
  constant c_ctlStart     : integer :=  1; -- x02 start
@@ -116,14 +122,16 @@ package FpgaLatheBits is
  constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
  constant c_ctlSlave     : integer :=  7; -- x80 slave controlled by other axis
  constant c_ctlDroEnd    : integer :=  8; -- x100 use dro to end move
- constant c_ctlJogEna    : integer :=  9; -- x200 enable jog
- constant c_ctlHome      : integer := 10; -- x400 homing axis
- constant c_ctlIgnoreLim : integer := 11; -- x800 ignore limits
+ constant c_ctlJogCmd    : integer :=  9; -- x200 jog with commands
+ constant c_ctlJogMpg    : integer := 10; -- x400 jog with mpg
+ constant c_ctlHome      : integer := 11; -- x800 homing axis
+ constant c_ctlIgnoreLim : integer := 12; -- x1000 ignore limits
 
 -- axis status register
 
  constant axisStatusSize : integer := 4;
  signal axisStatusReg : unsigned(axisStatusSize-1 downto 0);
+ --variable axisStatusReg : unsigned(axisStatusSize-1 downto 0);
  alias axDoneDist   : std_logic is axisStatusreg(0); -- x01 axis done distance
  alias axDoneDro    : std_logic is axisStatusreg(1); -- x02 axis done dro
  alias axDoneHome   : std_logic is axisStatusreg(2); -- x04 axis done home
@@ -138,6 +146,7 @@ package FpgaLatheBits is
 
  constant cfgCtlSize : integer := 20;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
+ --variable cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z direction inverted
  alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x direction inverted
  alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
@@ -184,6 +193,7 @@ package FpgaLatheBits is
 
  constant clkCtlSize : integer := 7;
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
+ --variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel     : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
  alias xFreqSel     : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
  constant clkNone      : unsigned (2 downto 0) := "000"; -- 
@@ -218,6 +228,7 @@ package FpgaLatheBits is
 
  constant synCtlSize : integer := 3;
  signal synCtlReg : unsigned(synCtlSize-1 downto 0);
+ --variable synCtlReg : unsigned(synCtlSize-1 downto 0);
  alias synPhaseInit : std_logic is synCtlreg(0); -- x01 init phase counter
  alias synEncInit   : std_logic is synCtlreg(1); -- x02 init encoder
  alias synEncEna    : std_logic is synCtlreg(2); -- x04 enable encoder
@@ -230,6 +241,7 @@ package FpgaLatheBits is
 
  constant spCtlSize : integer := 4;
  signal spCtlReg : unsigned(spCtlSize-1 downto 0);
+ --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
  alias spInit       : std_logic is spCtlreg(0); -- x01 spindle init
  alias spEna        : std_logic is spCtlreg(1); -- x02 spindle enable
  alias spDir        : std_logic is spCtlreg(2); -- x04 spindle direction

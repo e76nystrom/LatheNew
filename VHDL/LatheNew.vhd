@@ -43,14 +43,30 @@ end LatheNew;
 
 architecture Behavioral of LatheNew is
 
- component Clock is
-  port(
-   clockIn : in std_logic;
-   clockOut : out std_logic
-   );
- end Component;
+ -- component Clock is
+ --  port(
+ --   clockIn : in std_logic;
+ --   clockOut : out std_logic
+ --   );
+ -- end Component;
 
- component SPI is
+ -- component SystemClk is
+ --  port (
+ --   areset : in  std_logic  := '0';
+ --   inclk0 : in  std_logic  := '0';
+ --   c0 :     out std_logic;
+ --   locked : out std_logic 
+ --   );
+ -- end component;
+
+component SystemClk is
+ port (
+  inclk  : in  std_logic := 'X'; -- inclk
+  outclk : out std_logic         -- outclk
+  );
+end component SystemClk;
+
+component SPI is
   generic (opBits : positive);
   port (
    clk : in std_logic;                   --system clock
@@ -773,10 +789,25 @@ begin
 
  -- system clock
 
- sys_Clk : Clock
-  port map(
-   clockIn => sysClk,
-   clockOut => clk
+ -- sys_Clk : Clock
+ --  port map(
+ --   clockIn => sysClk,
+ --   clockOut => clk
+ --   );
+
+
+ -- sys_Clk : SystemClk
+ --  port map(
+ --   areset => '0',
+ --   inclk0 => sysClk,
+ --   c0     => clk, 
+ --   locked => open
+ --   );
+
+ sys_clk : component SystemClk
+  port map (
+   inclk  => sysclk,                    --  altclkctrl_input.inclk
+   outclk => clk                        --  altclkctrl_output.outclk
    );
 
  -- clk <= sysClk;

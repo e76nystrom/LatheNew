@@ -32,75 +32,76 @@ use IEEE.NUMERIC_STD.ALL;
 use work.RegDef.ALL;
 
 entity SyncAccelDist is
- generic (opBase : unsigned := x"00";
-          opBits : positive := 8;
-          synBits : positive := 32;
-          posBits : positive := 18;
+ generic (opBase :    unsigned := x"00";
+          opBits :    positive := 8;
+          synBits :   positive := 32;
+          posBits :   positive := 18;
           countBits : positive := 18;
-          distBits : positive := 18;
-          outBits : positive := 32);
+          distBits :  positive := 18;
+          outBits :   positive := 32);
  port (
-  clk : in std_logic;
+  clk :     in std_logic;
 
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  load : in boolean;
+  din :     in std_logic;
+  dshift :  in boolean;
+  op :      in unsigned (opBits-1 downto 0);
+  load :    in boolean;
 
   dshiftR : in boolean;
-  opR : in unsigned (opBits-1 downto 0);
-  copyR : in boolean;
+  opR :     in unsigned (opBits-1 downto 0);
+  copyR :   in boolean;
 
-  init : in std_logic;                  --reset
-  ena : in std_logic;                   --enable operation
+  init :    in std_logic;               --reset
+  ena :     in std_logic;               --enable operation
   extDone : in boolean;                 --external done input
-  ch : in std_logic;                    --step input clock
+  jogCmd :  in std_logic;               --jog command mode
+  ch :      in std_logic;               --step input clock
 
-  done : inout boolean := false;        --done move
-  dout : out std_logic := '0';          --read data out
-  synStep : out std_logic := '0'        --output step pulse
+  done :    inout boolean := false;     --done move
+  dout :    out   std_logic := '0';     --read data out
+  synStep : out   std_logic := '0'      --output step pulse
   );
 end SyncAccelDist;
 
 architecture Behavioral of SyncAccelDist is
 
  component ShiftOp is
-  generic(opVal : unsigned;
+  generic(opVal :  unsigned;
           opBits : positive;
-          n : positive);
+          n :      positive);
   port (
-   clk : in std_logic;
+   clk :   in std_logic;
    shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   din : in std_logic;
-   data : inout  unsigned (n-1 downto 0));
+   op :    in unsigned (opBits-1 downto 0);
+   din :   in std_logic;
+   data :  inout  unsigned (n-1 downto 0));
  end component;
 
  component ShiftOpLoad is
-  generic(opVal : unsigned;
+  generic(opVal :  unsigned;
           opBits : positive;
-          n : positive);
+          n :      positive);
   port (
-   clk : in std_logic;
-   shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   din : in std_logic;
-   load : out std_logic;
-   data : inout  unsigned (n-1 downto 0));
+   clk :   in    std_logic;
+   shift : in    boolean;
+   op :    in    unsigned (opBits-1 downto 0);
+   din :   in    std_logic;
+   load :  out   std_logic;
+   data :  inout unsigned (n-1 downto 0));
  end component;
 
  component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
+  generic(opVal :   unsigned;
+          opBits :  positive;
+          n :       positive;
           outBits : positive);
   port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
+   clk :    in  std_logic;
+   dshift : in  boolean;
+   op :     in  unsigned (opBits-1 downto 0);
+   copy :   in  boolean;
+   data :   in  unsigned(n-1 downto 0);
+   dout :   out std_logic
    );
  end Component;
 
@@ -121,36 +122,35 @@ architecture Behavioral of SyncAccelDist is
 
  -- accel registers
  
- signal accelCount : unsigned(countBits-1 downto 0);
+ signal accelCount :   unsigned(countBits-1 downto 0);
  signal accelCounter : unsigned(countBits-1 downto 0) := (others => '0');
- signal accelSum : unsigned(synBits-1 downto 0) := (others => '0');
- signal accelSteps : unsigned(distBits-1 downto 0) := (others => '0'); --accel steps
+ signal accelSum :     unsigned(synBits-1 downto 0) := (others => '0');
+ signal accelSteps :   unsigned(distBits-1 downto 0) := (others => '0'); --accel steps
 
  -- sync registers
 
- signal xpos : unsigned(posBits-1 downto 0) := (others => '0'); --sync in counter
- signal ypos : unsigned(posBits-1 downto 0) := (others => '0'); --sync out counter
- signal sum :  unsigned(synBits-1 downto 0) := (others => '0'); --sum accumulator
- alias sumNeg : std_logic is sum(synBits-1);                    --sum sign bit
+ signal xpos :   unsigned(posBits-1 downto 0) := (others => '0'); --sync in counter
+ signal ypos :   unsigned(posBits-1 downto 0) := (others => '0'); --sync out counter
+ signal sum :    unsigned(synBits-1 downto 0) := (others => '0'); --sum accumulator
+ alias  sumNeg : std_logic is sum(synBits-1);           --sum sign bit
 
  -- distance registers
 
- signal distVal : unsigned(distBits-1 downto 0); --input distance
- signal distCtr : unsigned(distBits-1 downto 0) := (others => '0'); --current distance
- signal maxDist : unsigned(distBits-1 downto 0) := (others => '0'); --max distance
- signal loadDist : std_logic;
+ signal distVal :    unsigned(distBits-1 downto 0); --input distance
+ signal distCtr :    unsigned(distBits-1 downto 0) := (others => '0'); --current distance
+ signal maxDist :    unsigned(distBits-1 downto 0) := (others => '0'); --max distance
+ signal loadDist :   std_logic;
  signal distUpdate : boolean := false;
 
  -- read output signals
 
- signal xPosDout : std_logic;           --xPos read output
- signal yPosDout : std_logic;           --yPos read output
- signal sumDout : std_logic;            --sum read output
- signal accelSumDout : std_logic;       --accel sum read output
- signal accelCtrDout : std_logic;       --accel ctr read output
-
- signal distDout : std_logic;
- signal accelStepsDout : std_logic;
+ signal xPosDout :       std_logic;     --xPos read output
+ signal yPosDout :       std_logic;     --yPos read output
+ signal sumDout :        std_logic;     --sum read output
+ signal accelSumDout :   std_logic;     --accel sum read output
+ signal accelCtrDout :   std_logic;     --accel ctr read output
+ signal distDout :       std_logic;     --distance read output
+ signal accelStepsDout : std_logic;     --accel stesp read output
 
  signal synStepTmp : std_logic := '0';
 
@@ -160,20 +160,20 @@ begin
          distDout or accelStepsDout;
  
  dreg: ShiftOp
-  generic map(opVal => opBase + F_Ld_D,
+  generic map(opVal =>  opBase + F_Ld_D,
               opBits => opBits,
-              n => synBits)
+              n =>      synBits)
   port map (
-   clk => clk,
+   clk =>   clk,
    shift => dshift,
-   op => op,
-   din => din,
-   data => d);
+   op =>    op,
+   din =>   din,
+   data =>  d);
 
  incr1reg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Incr1,
+  generic map(opVal =>  opBase + F_Ld_Incr1,
               opBits => opBits,
-              n => synBits)
+              n =>      synBits)
   port map (
    clk => clk,
    shift => dshift,
@@ -359,7 +359,7 @@ begin
 
    else                                 --if initialize not set
 
-    if (loadDist = '1') then            --if distance update
+    if ((jogCmd = '1') and (loadDist = '1')) then --jog and dist update
      distUpdate <= true;                --set distance update flag
     end if;
 
@@ -392,41 +392,36 @@ begin
         yPos <= yPos + 1;               --update output count
         synStepTmp <= '1';              --enable step pulse
 
-        if (distUpdate) then            --if distance update
-         distCtr <= distCtr + distVal;  --add to current distance
-        else
-         distCtr <= distCtr - 1;        --count off distance
-        end if;
-        
+        distCtr <= distCtr - 1;         --count off distance
+       
         if (accelState = accelActive) then --if accel active
          accelSteps <= accelSteps + 1;     --add an accel stesp
         elsif (accelState = decelActive) then --if decel active
          accelSteps <= accelSteps - 1;  --subtract an accel step
         end if;
 
-       end if;
+       end if;                          --sumNeg
        state <= updAccel;
-      end if;
+      end if;                           --ch
 
      --update acceleration
      when updAccel =>
 
-      sum <= sum + accelSum;            --update sum value with accel
-
       if (distUpdate) then              --if distance update
-       distUpdate <= false;             --clear update flag
-       if (distCtr > maxDist) then      --if distance out of range
-        distCtr <= maxDist;             --set to maximum
-       end if;
+       distCtr <= distCtr + distVal;    --add to current distance
       end if;
+
+      sum <= sum + accelSum;            --update sum value with accel
 
       case accelState is                --select accelState
        when accelInactive =>            --inactive
         null;
 
        when accelActive =>              --acceleration
-        accelSum <= accelSum + accel;
-        accelCounter <= accelCounter + 1;
+        if (accelCounter < accelCount) then
+         accelSum <= accelSum + accel;
+         accelCounter <= accelCounter + 1;
+        end if;
 
         if (accelSteps >= distCtr) then --if steps ge dist
          accelState <= decelActive;     --start decelerate
@@ -450,9 +445,16 @@ begin
      -- check acceleration
      when checkAccel =>
 
+      if (distUpdate) then              --if distance update
+       distUpdate <= false;             --clear update flag
+       if (distCtr > maxDist) then      --if distance out of range
+        distCtr <= maxDist;             --set to maximum
+       end if;
+      end if;
+
       case accelState is                --select accelState
        when accelActive =>              --acceleration
-        if (accelCounter = accelCount) then
+        if (accelCounter >= accelCount) then
          accelState <= atSpeed;
         end if;
 
@@ -460,6 +462,10 @@ begin
         null;
 
        when decelActive =>              --deceleration
+        if (distCtr > accelSteps) then
+         accelState <= accelActive;
+        end if;
+
         if (accelCounter = to_unsigned(0, countBits)) then
          accelState <= accelInactive;
         end if;
@@ -478,8 +484,14 @@ begin
        if (distCtr /= 0) then           --if not to distance
         state <= enabled;               --return to enabled state
        else                             --if distance counter zero
-        done <= true;                   --set done flag
-        state <= idle;                  --return to idle state
+        if (jogCmd = '0') then          --if not jogging
+         done <= true;                  --set done flag
+         state <= idle;                 --return to idle state
+        else                            --if jog mode
+         if (distUpdate) then           --if distance update
+          state <= enabled;             --return to enabled state
+         end if;
+        end if;
        end if;
       end if;
 
