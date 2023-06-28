@@ -17,35 +17,31 @@
 -- Additional Comments: 
 --
 --------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.ALL;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use work.RegDef.ALL;
 
 entity ShiftOpLoad is
- generic(opVal : unsigned;
-         opBits : positive;
-         n : positive);
+ generic(opVal :  unsigned (opb-1 downto 0) := x"00";
+         opBits : positive := 8;
+         n :      positive := 8);
  port(
-  clk : in std_logic;
-  din : in std_logic;
-  op : in unsigned (opBits-1 downto 0);
-  shift : in boolean;
-  load : out std_logic;
-  data : inout unsigned (n-1 downto 0) := (others => '0')
+  clk :   in    std_logic;
+  din :   in    std_logic;
+  op :    in    unsigned (opBits-1 downto 0);
+  shift : in    boolean;
+
+  load :  out   std_logic := '0';
+  data :  inout unsigned (n-1 downto 0) := (others => '0')
   );
 end ShiftOpLoad;
 
 architecture Behavioral of ShiftOpLoad is
 
- signal sel : boolean;
+ signal sel :     boolean := false;
  signal lastSel : boolean := false;
 begin
 

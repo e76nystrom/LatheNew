@@ -17,30 +17,26 @@
 -- Additional Comments: 
 --
 --------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.ALL;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use work.RegDef.ALL;
 
 entity ShiftOutN is
- generic(opVal : unsigned;
-         opBits : positive;
-         n : positive;
-         outBits : positive);
+ generic(opVal :   unsigned (opb-1 downto 0) := x"00";
+         opBits :  positive := 8;
+         n :       positive := 8;
+         outBits : positive := 16);
  port (
-  clk : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  copy : in boolean;
-  data : in unsigned(n-1 downto 0);
-  dout : out std_logic := '0'
+  clk :    in  std_logic;
+  dshift : in  boolean;
+  op :     in  unsigned (opBits-1 downto 0);
+  copy :   in  boolean;
+  data :   in  unsigned(n-1 downto 0);
+
+  dout :   out std_logic := '0'
   );
 end ShiftOutN;
 
@@ -48,7 +44,7 @@ architecture Behavioral of ShiftOutN is
 
  signal shiftSel : boolean := false;
  signal shiftReg : unsigned(n-1 downto 0) := (n-1 downto 0 => '0');
- signal padding : integer range 0 to outBits-n;
+ signal padding :  integer range 0 to outBits-n;
 
 begin
 

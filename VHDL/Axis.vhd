@@ -6,53 +6,53 @@ use work.RegDef.ALL;
 
 entity Axis is
  generic (
-  opBase : unsigned(opb-1 downto 0) := x"00";
-  opBits : positive := 8;
-  synBits : positive := 32;
-  posBits : positive := 24;
+  opBase    :  unsigned (opb-1 downto 0) := x"00";
+  opBits    : positive := 8;
+  synBits   : positive := 32;
+  posBits   : positive := 24;
   countBits : positive := 18;
-  distBits : positive := 32;
-  locBits : positive := 18;
-  outBits : positive := 32;
-  dbgBits : positive := 4
+  distBits  : positive := 32;
+  locBits   : positive := 18;
+  outBits   : positive := 32;
+  dbgBits   : positive := 4
   );
  port (
-  clk : in std_logic;
+  clk        : in std_logic;
 
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned(opBits-1 downto 0);
-  load : in boolean;
+  din        : in std_logic;
+  dshift     : in boolean;
+  op         : in unsigned(opBits-1 downto 0);
+  load       : in boolean;
 
-  dshiftR : in boolean;
-  opR : in unsigned(opBits-1 downto 0);
-  copyR : in boolean;
+  dshiftR    : in boolean;
+  opR        : in unsigned(opBits-1 downto 0);
+  copyR      : in boolean;
 
-  extInit : in std_logic;               --reset
-  extEna : in std_logic;                --enable operation
-  extUpdLoc : in std_logic;
+  extInit    : in std_logic;               --reset
+  extEna     : in std_logic;               --enable operation
+  extUpdLoc  : in std_logic;
 
-  ch : in std_logic;
-  encDir : in std_logic;
-  sync : in std_logic;
+  ch         : in std_logic;
+  encDir     : in std_logic;
+  sync       : in std_logic;
 
-  droQuad : in std_logic_vector(1 downto 0);
-  droInvert : in std_logic;
-  mpgQuad : in std_logic_vector(1 downto 0);
-  jogInvert : in std_logic;
+  droQuad    : in std_logic_vector(1 downto 0);
+  droInvert  : in std_logic;
+  mpgQuad    : in std_logic_vector(1 downto 0);
+  jogInvert  : in std_logic;
 
   currentDir : in std_logic;
-  switches : in std_logic_vector(3 downto 0);
-  eStop : in std_logic;
+  switches   : in std_logic_vector(3 downto 0);
+  eStop      : in std_logic;
 
-  dbgOut : out unsigned (dbgBits-1 downto 0) := (others => '0');
-  initOut : out std_logic := '0';
-  enaOut : out std_logic := '0';
-  updLocOut : out std_logic := '0';
-  dout : out std_logic := '0';
-  stepOut : out std_logic := '0';
-  dirOut : inout std_logic := '0';
-  doneInt : out std_logic := '0'
+  dbgOut     : out unsigned (dbgBits-1 downto 0) := (others => '0');
+  initOut    : out std_logic := '0';
+  enaOut     : out std_logic := '0';
+  updLocOut  : out std_logic := '0';
+  dout       : out std_logic := '0';
+  stepOut    : out std_logic := '0';
+  dirOut     : inout std_logic := '0';
+  doneInt    : out std_logic := '0'
   );
 end Axis;
 
@@ -60,118 +60,70 @@ architecture Behavioral of Axis is
 
  component CtlReg is
   generic(opVal : unsigned;
-          opb : positive;
-          n : positive);
+          opb   : positive;
+          n     : positive);
   port (
-   clk : in std_logic;                   --clock
-   din : in std_logic;                   --data in
-   op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in boolean;                   --shift data
-   load : in boolean;                    --load to data register
-   data : inout  unsigned (n-1 downto 0)); --data register
+   clk   : in std_logic;                --clock
+   din   : in std_logic;                --data in
+   op    : in unsigned(opb-1 downto 0); --current reg address
+   shift : in boolean;                  --shift data
+   load  : in boolean;                  --load to data register
+   data  : inout  unsigned (n-1 downto 0)); --data register
  end Component;
 
  component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
+  generic(opVal   : unsigned;
+          opBits  : positive;
+          n       : positive;
           outBits : positive);
   port (
-   clk : in std_logic;
+   clk    : in std_logic;
    dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
+   op     : in unsigned (opBits-1 downto 0);
+   copy   : in boolean;
+   data   : in unsigned(n-1 downto 0);
+   dout   : out std_logic
    );
  end Component;
 
- -- component SyncAccel is
+ component SyncAccelDistJog is
   
- --  generic (opBase : unsigned;
- --           opBits : positive;
- --           synBits : positive;
- --           posBits : positive;
- --           countBits : positive);
- --  port (
- --   clk : in std_logic;
- --   din : in std_logic;
- --   dshift : in boolean;
- --   op : in unsigned (opBits-1 downto 0);
- --   load : in boolean;
- --   dshiftR : in boolean;
- --   opR : in unsigned (opBits-1 downto 0);
- --   copyR : in boolean;
- --   init : in std_logic;                  --reset
- --   ena : in std_logic;                   --enable operation
- --   decel : in std_logic;
- --   decelDisable : in boolean;
- --   ch : in std_logic;
- --   dir : in std_logic;
- --   dout : out std_logic;
- --   accelActive : out std_logic;
- --   decelDone : out boolean;
- --   synStep : out std_logic
- --   );
- -- end Component;
-
- component SyncAccelDist is
-  
-  generic (opBase : unsigned;
-           opBits : positive;
-           synBits : positive;
-           posBits : positive;
-           distBits : positive;
-           countBits : positive);
+  generic (opBase    : unsigned := x"00";
+           opBits    : positive := 8;
+           synBits   : positive := 32;
+           posBits   : positive := 18;
+           distBits  : positive := 18;
+           countBits : positive := 18);
   port (
-   clk : in std_logic;
+   clk       : in std_logic;
 
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
+   din       : in std_logic;
+   dshift    : in boolean;
+   op        : in unsigned (opBits-1 downto 0);
+   load      : in boolean;
 
-   dshiftR : in boolean;
-   opR : in unsigned (opBits-1 downto 0);
-   copyR : in boolean;
+   dshiftR   : in boolean;
+   opR       : in unsigned (opBits-1 downto 0);
+   copyR     : in boolean;
 
-   init : in std_logic;                  --reset
-   ena : in std_logic;                   --enable operation
-   extDone : in boolean;               --external done input
-   ch : in std_logic;
+   init      : in std_logic;            --reset
+   ena       : in std_logic;            --enable operation
+   extDone   : in boolean;              --external done input
+   ch        : in std_logic;
 
-   done : inout  boolean;
-   dout : out std_logic;
-   synStep : out std_logic
+   quad      : in std_logic_vector(1 downto 0);
+   jogInvert : in std_logic;
+   jogMode   : in std_logic_vector(1 downto 0);
+
+   done      : inout  boolean;
+   dout      : out    std_logic;
+   synStep   : out    std_logic
    );
  end Component;
-
- -- component DistCounter is
- --  generic (opBase : unsigned;
- --           opBits : positive;
- --           distBits : positive;
- --           outBits : positive);
- --  Port (
- --   clk : in  std_logic;
- --   din : in std_logic;
- --   dshift : in boolean;
- --   op : in unsigned(opBits-1 downto 0);  --current reg address
- --   load : in boolean;
- --   dshiftR : in boolean;
- --   opR : in unsigned(opBits-1 downto 0); --current reg address
- --   copyR : in boolean;
- --   init : in std_logic;                  --reset
- --   step : in std_logic;                  --all steps
- --   accelFlag : in std_logic;             --acceleration step
- --   dout : out std_logic;                 --data output
- --   decel : inout std_logic;              --dist le acceleration steps
- --   distZero : out std_logic              --distance zero
- --   );
- -- end Component;
 
  component LocCounter is
-  generic(opBase : unsigned;
-          opBits : positive;
+  generic(opBase  : unsigned;
+          opBits  : positive;
           locBits : positive;
           outBits : positive);
   Port (
@@ -214,30 +166,6 @@ architecture Behavioral of Axis is
   );
  end Component;
 
- component Jog is
- generic (opBase : unsigned;
-          opBits : positive;
-          outBits : positive);
- port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned(opBits - 1 downto 0);
-  load : in boolean;
-  dshiftR : in boolean;
-  opR : in unsigned(opBits-1 downto 0);
-  copyR : in boolean;
-  quad : in std_logic_vector(1 downto 0);
-  enable : in std_logic;
-  jogInvert : in std_logic;
-  currentDir : in std_logic;
-  jogStep : out std_logic;
-  jogDir : out std_logic;
-  jogUpdLoc: out std_logic;
-  dout : out std_logic
-  );
- end Component;
-
  component PulseGen is
   generic(pulseWidth : positive);
   port ( clk : in std_logic;
@@ -262,7 +190,7 @@ architecture Behavioral of Axis is
 
 -- axis control register
 
- constant axisCtlSize : integer := 16;
+ constant axisCtlSize : integer := 13;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
  alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
@@ -275,30 +203,31 @@ architecture Behavioral of Axis is
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
  alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
  alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
- alias ctlJogEna    : std_logic is axisCtlreg(9); -- x200 enable jog
- alias ctlHome      : std_logic is axisCtlreg(10); -- x400 homeing axis
- alias ctlIgnoreLim : std_logic is axisCtlreg(11); -- x800 ignore limits
+ alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
+ alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
+ alias ctlHome      : std_logic is axisCtlreg(11); -- x800 homing axis
+ alias ctlIgnoreLim : std_logic is axisCtlreg(12); -- x1000 ignore limits
 
 --++)
 
- signal axisEna : std_logic := '0';
- signal axisInit : std_logic := '0';
+ signal axisEna    : std_logic := '0';
+ signal axisInit   : std_logic := '0';
  signal axisUpdLoc : std_logic := '0';
- signal jogUpdLoc : std_logic;
+ -- signal jogUpdLoc  : std_logic;
 
  signal runInit : std_logic;
- signal runEna : std_logic;
- signal updLoc : std_logic;
+ signal runEna  : std_logic;
+ signal updLoc  : std_logic;
  
  -- signal doneInt : std_logic;
 
- signal doutSync : std_logic;
+ signal doutSync   : std_logic;
  -- signal doutDist : std_logic;
- signal doutLoc : std_logic;
- signal doutDro : std_logic;
- signal doutJog : std_logic;
+ signal doutLoc    : std_logic;
+ signal doutDro    : std_logic;
+ -- signal doutJog    : std_logic;
  signal doutStatus : std_logic;
- signal doutCtl : std_logic;
+ signal doutCtl    : std_logic;
 
  -- signal distDecel: std_logic;
  signal distZero : boolean;
@@ -311,30 +240,32 @@ architecture Behavioral of Axis is
 
  signal enaCh : std_logic;
 
- signal doneDist : boolean;
- signal doneDro : boolean;
+ signal doneDist  : boolean;
+ signal doneDro   : boolean;
  signal doneLimit : boolean;
- signal doneHome : boolean;
- signal doneMove : boolean;
+ signal doneHome  : boolean;
+ signal doneMove  : boolean;
 
  -- signal loc : unsigned(locBits-1 downto 0) := (others => '0');
 
- signal jogEna : std_logic;
- signal jogStep : std_logic;
- signal jogDir : std_logic;
+ -- signal jogEna  : std_logic;
+ -- signal jogStep : std_logic;
+ signal jogDir  : std_logic;
 
  signal decelDisable : boolean;
  signal droDone : boolean;
 
- alias swHome : std_logic is switches(0);
+ alias swHome     : std_logic is switches(0);
  alias swLimMinus : std_logic is switches(1);
- alias swLimPlus : std_logic is switches(2);
+ alias swLimPlus  : std_logic is switches(2);
 
  signal dbgStep : std_logic;
 
+ signal jogMode : std_logic_vector(1 downto 0);
+
  -- signal currentDir : std_logic := '0';
 
-type run_fsm is (idle, loadReg, synWait, run, done);
+ type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
 
  function convert(a: run_fsm) return unsigned is
@@ -394,83 +325,40 @@ begin
 
  syncAccelEna <= runEna when ctlChDirect = '0' else '0';
 
- -- AxisSyncAccel: SyncAccel
- --  generic map (opBase => opBase + F_Sync_Base,
- --               opBits => opBits,
- --               synBits => synBits,
- --               posBits => posBits,
- --               countBits => countBits)
- --  port map (
- --   clk => clk,
- --   din => din,
- --   dshift => dshift,
- --   op => op,
- --   load => load,
- --   dshiftR => dshiftR,
- --   opR => opR,
- --   copyR => copyR,
- --   init => runInit,
- --   ena => syncAccelEna,
- --   decel => distDecel,
- --   decelDisable => decelDisable,
- --   ch => ch,
- --   dir => encDir,
- --   dout => doutSync,
- --   accelActive => syncAccelActive,
- --   decelDone => open,
- --   synStep => synStepOut
- --   );
+ jogMode <= ctlJogMpg & ctlJogCmd;
 
- AxisSyncAccel: SyncAccelDist
-  generic map (opBase => opBase + F_Sync_Base,
-               opBits => opBits,
-               synBits => synBits,
-               posBits => posBits,
-               distBits => distBits,
+ AxisSyncAccel: SyncAccelDistJog
+  generic map (opBase    => opBase + F_Sync_Base,
+               opBits    => opBits,
+               synBits   => synBits,
+               posBits   => posBits,
+               distBits  => distBits,
                countBits => countBits)
   port map (
-   clk => clk,
+   clk       => clk,
 
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
+   din       => din,
+   dshift    => dshift,
+   op        => op,
+   load      => load,
 
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
+   dshiftR   => dshiftR,
+   opR       => opR,
+   copyR     => copyR,
 
-   init => runInit,
-   ena => syncAccelEna,
-   extDone => doneMove,
-   ch => ch,
+   init      => runInit,
+   ena       => syncAccelEna,
+   extDone   => doneMove,
+   ch        => ch,
 
-   done => distZero,
-   dout => doutSync,
-   synStep => synStepOut
+   quad      => mpgQuad,
+   jogInvert => jogInvert,
+   jogMode   => jogMode,
+
+   done      => distZero,
+   dout      => doutSync,
+   synStep   => synStepOut
    );
-
- -- AxisDistCounter: DistCounter
- --  generic map (opBase => opBase + F_Dist_Base,
- --               opBits => opBits,
- --               distBits => distBits,
- --               outBits => outBits)
- --  port map (
- --   clk => clk,
- --   din => din,
- --   dshift => dshift,
- --   op => op,
- --   load => load,
- --   dshiftR => dshiftR,
- --   opR => opR,
- --   copyR => copyR,
- --   init => runInit,
- --   step => step,
- --   accelFlag => syncAccelActive,
- --   dout => doutDist,
- --   decel => distDecel,
- --   distZero => distZero
- --   );
 
  AxisLocCounter: LocCounter
   generic map(opBase => opBase + F_Loc_Base,
@@ -515,34 +403,6 @@ begin
    dout => doutDro
    );
 
- jogEna <= '1' when (eStop = '0') and (ctlJogEna = '1') and
-           (not doneLimit) else '0';
-
- AxisJog :  Jog
-  generic map (opBase => opBase + F_Jog_Base,
-               opBits => opBits,
-               outBits => outBits)
-  port map (
-   clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   quad => mpgQuad,
-   enable => jogEna,
-   jogInvert => jogInvert,
-   currentDir => currentDir,
-   jogStep => jogStep,
-   jogDir => jogDir,
-   jogUpdLoc => jogUpdLoc,
-   dout => doutJog
-   );
-
- -- dbg output pulse
-
  dbgPulse : PulseGen
   generic map (pulseWidth => 25)
   port map (
@@ -551,32 +411,33 @@ begin
    PulseOut => dbgStep
    );
 
- -- dbgOut(1) <= ctlWaitSync;
-
  dbgOut(0) <= ctlStart;  --updLoc;
+ -- dbgOut(1) <= ctlWaitSync;
  -- dbgOut(1) <= distDecel; --distZero;
  dbgOut(2) <= '1' when distZero else '0';
  dbgOut(3) <= dbgStep;
 
  runInit <= extInit when ctlSlave = '1' else axisInit;
- runEna <= extEna when ctlSlave = '1' else axisEna;
- updLoc <= extUpdLoc when ctlSlave = '1' else
-           jogUpdLoc when ctlJogEna = '1' else axisUpdLoc;
+ runEna  <= extEna when ctlSlave = '1' else axisEna;
+ updLoc  <= extUpdLoc when ctlSlave = '1'; --else
+            -- jogUpdLoc when ctlJogMpg = '1' else axisUpdLoc;
 
- step <= synStepOut when ctlChDirect = '0' else enaCh;
+ step    <= synStepOut when ctlChDirect = '0' else enaCh;
 
- initOut <= axisInit;
- enaOut <= axisEna;
+ initOut   <= axisInit;
+ enaOut    <= axisEna;
  updLocOut <= axisUpdLoc;
  
- enaCh <= runEna and ch;
- dirOut <= JogDir when ctlJogEna = '1' else ctlDir;
- -- stepOut <= jogStep when ctlJogEna = '1' else step;
- stepOut <= (jogStep and ctlJogEna) or (step and not(ctlJogEna));
+ enaCh   <= runEna and ch;
+ -- dirOut  <= JogDir when ctlJogMpg = '1' else ctlDir;
+ -- stepOut <= jogStep when ctlJogMpg = '1' else step;
+ -- stepOut <= (jogStep and ctlJogMpg) or (step and not(ctlJogMpg));
+ dirOut <= ctlDir;
+ stepOut <= step;
 
- axDoneDist <= '1' when doneDist else '0';
- axDoneDro <= '1' when doneDro else '0';
- axDoneHome <= '1' when doneHome else '0';
+ axDoneDist  <= '1' when doneDist else '0';
+ axDoneDro   <= '1' when doneDro else '0';
+ axDoneHome  <= '1' when doneHome else '0';
  axDoneLimit <= '1' when doneLimit else '0';
 
  z_run: process(clk)
@@ -584,26 +445,26 @@ begin
   if (rising_edge(clk)) then            --if clock active
 
    -- dout <= doutSync or doutDist or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
-   dout <= doutSync or doutLoc or doutDro or doutJog or doutStatus or doutCtl;
+   dout <= doutSync or doutLoc or doutDro or doutStatus or doutCtl;
 
-   doneDist <= distZero and (ctlDroEnd = '0');
-   doneDro <= droDone and (ctlDroEnd = '1');
-   doneHome <= (swHome = '1') and (ctlHome = '1');
+   doneDist  <= distZero       and (ctlDroEnd = '0');
+   doneDro   <= droDone        and (ctlDroEnd = '1');
+   doneHome  <= (swHome = '1') and (ctlHome = '1');
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
                 (ctlIgnoreLim = '0');
 
    doneMove <= doneDist; -- or doneDro or doneLimit or doneHome;
 
    if (eStop = '1') then                --if emergency stop
-    axisEna <= '0';                     --stop axis
+    axisEna  <= '0';                    --stop axis
     runState <= idle;                   --set idle state
    elsif (ctlInit = '1') then           --if time to set new locaton
     runState <= idle;                   --clear state
-    doneInt <= '0';                     --clear interrupt
-    dbgOut(1) <= '0';
-    axisEna <= '0';                     --clear run flag
+    doneInt    <= '0';                  --clear interrupt
+    dbgOut(1)  <= '0';
+    axisEna    <= '0';                  --clear run flag
     axisUpdLoc <= '0';
-    axisInit <= '1';			--set flag to load accel and sync
+    axisInit   <= '1';                  --set flag to load accel and sync
    else                                 --if normal operation
     case runState is                    --check state
      when idle =>                       --idle state
@@ -616,8 +477,8 @@ begin
       if (ctlWaitSync = '1') then       --if wating for sync
        runState <= synWait;             --advance to wait for sync state
       else                              --if not synchronous move
+       axisEna  <= '1';                 --set run flag
        runState <= run;                 --advance to run state
-       axisEna <= '1';                  --set run flag
        if (ctlBacklash = '0') then      --if not a backlash move
         axisUpdLoc <= '1';              --enable location update
        end if;
@@ -628,26 +489,26 @@ begin
        runState <= idle;                --return to idle
       else                              --if start flag set
        if (sync = '1') then             --if time to sync
-        runState <= run;                --advance to run state
-        axisEna <= '1';                 --set run flag
+        axisEna    <= '1';              --set run flag
         axisUpdLoc <= '1';              --enable location update
+        runState   <= run;              --advance to run state
        end if;
       end if;
       
      when run =>                        --run state
       if (doneMove or (ctlStart = '0')) then --if done
-       runState <= done;                --advance to done state
-       doneInt <= '1';                  --set done interrupt
-       dbgOut(1) <= '1';
+       doneInt    <= '1';               --set done interrupt
+       dbgOut(1)  <= '1';
        axisUpdLoc <= '0';               --stop location updates
-       axisEna <= '0';                  --clear run flag
+       axisEna    <= '0';               --clear run flag
+       runState   <= done;              --advance to done state
       end if;
 
      when done =>                       --done state
       if (ctlStart = '0') then          --wait for start flag to clear
-       doneInt <= '0';                  --clear done intterrupt
+       doneInt   <= '0';                --clear done intterrupt
        dbgOut(1) <= '0';
-       runState <= idle;                --to return to idle state
+       runState  <= idle;               --to return to idle state
       end if;
 
      when others => null;               --all other states
