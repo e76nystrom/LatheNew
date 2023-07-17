@@ -1,11 +1,8 @@
 onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate /a_lathenewtest/uut/sysClk
-add wave -noupdate /a_lathenewtest/uut/aIn
-add wave -noupdate /a_lathenewtest/uut/bIn
 add wave -noupdate /a_lathenewtest/uut/dsel
 add wave -noupdate -radix hexadecimal /a_lathenewtest/uut/op
-add wave -noupdate -color Gold /a_lathenewtest/uut/ch
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/d
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/incr1
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/incr2
@@ -14,7 +11,6 @@ add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/xpos
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/ypos
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/sum
 add wave -noupdate /a_lathenewtest/uut/z_Axis/synStepOut
-add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisLocCounter/loc
 add wave -noupdate /a_lathenewtest/uut/zStep
 add wave -noupdate /a_lathenewtest/uut/quad_encoder/dir
 add wave -noupdate /a_lathenewtest/uut/spiCopy
@@ -37,23 +33,57 @@ add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisDro/decelDisable
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisDro/decelLimit
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisDro/droEnd
 add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisDro/droDist
-add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distVal
-add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/loadDist
-add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distUpdate
-add wave -noupdate -expand -group Accel -color Blue /a_lathenewtest/uut/z_Axis/AxisSyncAccel/init
-add wave -noupdate -expand -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/ena
-add wave -noupdate -expand -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelCount
-add wave -noupdate -expand -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelCounter
-add wave -noupdate -expand -group Accel -color Red /a_lathenewtest/uut/z_Axis/AxisSyncAccel/state
-add wave -noupdate -expand -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelState
-add wave -noupdate -expand -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelSum
-add wave -noupdate -expand -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelSteps
-add wave -noupdate -expand -group Accel -color Gold -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distCtr
-add wave -noupdate -expand -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/synStep
-add wave -noupdate -expand -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/done
+add wave -noupdate /a_lathenewtest/uut/aIn
+add wave -noupdate /a_lathenewtest/uut/bIn
+add wave -noupdate -color Gold /a_lathenewtest/uut/ch
+add wave -noupdate -group Accel -color Blue /a_lathenewtest/uut/z_Axis/AxisSyncAccel/init
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/ena
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/ch
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/syncState
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelCount
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelCounter
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelState
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelSum
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/accelSteps
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distVal
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/loadDist
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distUpdate
+add wave -noupdate -group Accel -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/maxDist
+add wave -noupdate -group Accel -color Gold -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/distCtr
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/synStep
+add wave -noupdate -group Accel /a_lathenewtest/uut/z_Axis/AxisSyncAccel/done
+add wave -noupdate /a_lathenewtest/pinOut(1)
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/quad
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/jogMode
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/lastA
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/lastB
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/update
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/jogState
+add wave -noupdate /a_lathenewtest/uut/z_Axis/jogMode
+add wave -noupdate /a_lathenewtest/uut/z_Axis/axisCtlReg
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/mpgEna
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/dirIn
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/dirOut
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/dir
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/lastDir
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/backlash
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/backlashActive
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/syncState
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/timerClr
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/timer
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/delta
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/chCtr
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/chDiv
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/mpgRegDelta
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/mpgRegDist
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/mpgRegDiv
+add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/loc
+add wave -noupdate -radix decimal /a_lathenewtest/uut/z_Axis/AxisSyncAccel/locVal
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/locLoad
+add wave -noupdate /a_lathenewtest/uut/z_Axis/AxisSyncAccel/locUpdate
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {162845000 ps} 0} {{Cursor 2} {84535172 ps} 0} {{Cursor 3} {31025000 ps} 0}
-quietly wave cursor active 2
+WaveRestoreCursors {{Cursor 1} {108455000 ps} 0}
+quietly wave cursor active 1
 configure wave -namecolwidth 339
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -68,4 +98,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {213557490 ps}
+WaveRestoreZoom {0 ps} {189 us}
