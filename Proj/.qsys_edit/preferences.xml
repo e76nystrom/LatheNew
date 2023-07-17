@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <preferences>
  <debug showDebugMenu="0" />
- <systemtable>
+ <systemtable filter="All Interfaces">
   <columns>
-   <connections preferredWidth="47" />
+   <connections preferredWidth="31" />
    <irq preferredWidth="34" />
   </columns>
  </systemtable>
@@ -14,6 +14,7 @@
    <frequency preferredWidth="337" />
   </columns>
  </clocktable>
- <library expandedCategories="Library,Project,Library/Embedded Processors" />
- <window width="1425" height="800" x="0" y="0" />
+ <library expandedCategories="Library,Project" />
+ <window width="2527" height="1331" x="-3000" y="846" />
+ <generation synthesis="VHDL" simulation="VHDL" />
 </preferences>

@@ -1,0 +1,18 @@
+# system info SystemClk on 2023.06.12.19:20:11
+system_info:
+name,value
+DEVICE,EP4CE22F17C6
+DEVICE_FAMILY,Cyclone IV E
+GENERATION_ID,1686612010
+#
+#
+# Files generated for SystemClk on 2023.06.12.19:20:11
+files:
+filepath,kind,attributes,module,is_top
+simulation/SystemClk.vhd,VHDL,,SystemClk,true
+simulation/submodules/SystemClk_altclkctrl_0.vhd,VHDL,,SystemClk_altclkctrl_0,false
+#
+# Map from instance-path to kind of module
+instances:
+instancePath,module
+SystemClk.altclkctrl_0,SystemClk_altclkctrl_0

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<simPackage>
+ <file
+   path="simulation/submodules/SystemClk_altclkctrl_0.vhd"
+   type="VHDL"
+   library="altclkctrl_0" />
+ <file path="simulation/SystemClk.vhd" type="VHDL" />
+ <topLevel name="SystemClk" />
+ <deviceFamily name="cycloneive" />
+</simPackage>
