@@ -6,75 +6,91 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 use work.SimProc.all;
 use work.RegDef.all;
 
-entity JogTest is
-end JogTest;
-architecture behavior OF JogTest is
+entity a_JogTest is
+end a_JogTest;
+
+architecture behavior OF a_JogTest is
 
  component Jog is
-  generic (opBase : unsigned;
-           opBits : positive;
+  generic (opBase :  unsigned;
+           opBits :  positive;
            outBits : positive);
   port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits - 1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned(opBits-1 downto 0);
-   copyR : in boolean;
-   quad : in std_logic_vector(1 downto 0);
-   enable : in boolean;
+   clk :        in std_logic;
+
+   din :        in std_logic;
+   dshift :     in boolean;
+   op :         in unsigned(opBits - 1 downto 0);
+   load :       in boolean;
+
+   dshiftR :    in boolean;
+   opR :        in unsigned(opBits-1 downto 0);
+   copyR :      in boolean;
+
+   quad :       in std_logic_vector(1 downto 0);
+   enable :     in std_logic;
+   jogInvert :  in std_logic;
    currentDir : in std_logic;
-   jogStep : out std_logic;
-   jogDir : out std_logic;
-   jogUpdLoc : out std_logic;
-   dout : out std_logic
+
+   jogStep :    out std_logic;
+   jogDir :     out std_logic;
+   jogUpdLoc :  out std_logic;
+   dout :       out std_logic
    );
  end Component;
 
- constant opBase : unsigned := F_Jog_Base;
- constant opBits : positive := 8;
- constant outBits : positive := 32;
+ constant opBase :   unsigned := F_Jog_Base;
+ constant opBits :   positive := 8;
+ constant outBits :  positive := 32;
 
- signal clk : std_logic := '0';
- signal din : std_logic := '0';
- signal dshift : boolean := false;
- signal op : unsigned(opBits - 1 downto 0) := (opBits - 1 downto 0 => '0');
- signal load : boolean := false;
- signal dshiftR : boolean := false;
- signal opR : unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
- signal copyR : boolean := false;
- signal quad : std_logic_vector(1 downto 0) := (1 downto 0 => '0');
- signal enable : boolean := false;
+ signal clk :        std_logic := '0';
+
+ signal din :        std_logic := '0';
+ signal dshift :     boolean := false;
+ signal op :         unsigned(opBits - 1 downto 0) := (opBits - 1 downto 0 => '0');
+ signal load :       boolean := false;
+
+ signal dshiftR :    boolean := false;
+ signal opR :        unsigned(opBits-1 downto 0) := (opBits-1 downto 0 => '0');
+ signal copyR :      boolean := false;
+
+ signal quad :       std_logic_vector(1 downto 0) := (1 downto 0 => '0');
+ signal enable :     std_logic := '0';
+ signal jogInvert :  std_logic := '0';
  signal currentDir : std_logic := '0';
- signal jogStep : std_logic := '0';
- signal jogDir : std_logic := '0';
- signal jogUpdLoc : std_logic := '0';
- signal dout : std_logic := '0';
+
+ signal jogStep :    std_logic := '0';
+ signal jogDir :     std_logic := '0';
+ signal jogUpdLoc :  std_logic := '0';
+ signal dout :       std_logic := '0';
 
 begin
 
  uut : Jog
-  generic map (opBase => opBase,
-               opBits => opBits,
+  generic map (opBase =>  opBase,
+               opBits =>  opBits,
                outBits => outBits)
   port map (
-   clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   quad => quad,
-   enable => enable,
+   clk =>        clk,
+
+   din =>        din,
+   dshift =>     dshift,
+   op =>         op,
+   load =>       load,
+
+   dshiftR =>    dshiftR,
+   opR =>        opR,
+   copyR =>      copyR,
+
+   quad  =>      quad,
+   enable =>     enable,
+   jogInvert =>  jogInvert,
    currentDir => currentDir,
-   jogStep => jogStep,
-   jogDir => jogDir,
+
+   jogStep =>   jogStep,
+   jogDir =>    jogDir,
    jogUpdLoc => jogUpdLoc,
-   dout => dout
+   dout =>      dout
    );
 
  -- Clock process definitions
@@ -186,12 +202,11 @@ begin
   op <= F_Jog_Base + F_Ld_Jog_Back;
   loadShift(to_integer(backlashDist), distBits);
 
-
   delay(10);
 
   -- insert stimulus here
 
-  enable <= true;
+  enable <= '1';
 
   for i in 0 to 3 loop
    delayQuad(2000);

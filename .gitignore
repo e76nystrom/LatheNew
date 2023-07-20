@@ -1,6 +1,7 @@
 #*
 *#
 *.txt
+*.bak
 *.bdf
 *.bsf
 *.qws
@@ -24,3 +25,7 @@ Sim/wlf*
 Sim/work
 VHDL/greybox_tmp
 
+
+*.log
+
+Sim/transcript

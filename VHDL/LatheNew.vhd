@@ -4,37 +4,39 @@ use ieee.numeric_std.all;
 
 use work.regDef.all;
 use work.conversion.all;
+-- use work.DebugRecord.All;
 
 entity LatheNew is
  port(
   sysClk : in std_logic;
   
-  led : out std_logic_vector(7 downto 0) := (others => '0');
-  dbg : out std_logic_vector(7 downto 0) := (others => '0');
-  anode : out std_logic_vector(3 downto 0) := (others => '1');
-  seg : out std_logic_vector(6 downto 0) := (others => '1');
+  led      : out std_logic_vector(7 downto 0) := (others => '0');
+  dbg      : out std_logic_vector(7 downto 0) := (others => '0');
+  anode    : out std_logic_vector(3 downto 0) := (others => '1');
+  seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
-  dclk : in std_logic;
-  dout : out std_logic := '0';
-  din  : in std_logic;
-  dsel : in std_logic;
+  dclk     : in std_logic;
+  dout     : out std_logic := '0';
+  din      : in std_logic;
+  dsel     : in std_logic;
 
-  aIn : in std_logic;
-  bIn : in std_logic;
-  syncIn : in std_logic;
+  aIn      : in std_logic;
+  bIn      : in std_logic;
+  syncIn   : in std_logic;
 
-  zDro : in std_logic_vector(1 downto 0);
-  xDro : in std_logic_vector(1 downto 0);
-  zMpg : in std_logic_vector(1 downto 0);
-  xMpg : in std_logic_vector(1 downto 0);
+  zDro     : in std_logic_vector(1 downto 0);
+  xDro     : in std_logic_vector(1 downto 0);
+  zMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn : in std_logic_vector(4 downto 0);
-  aux : in std_logic_vector(7 downto 0);
+  xMpg     : in std_logic_vector(1 downto 0);
 
-  pinOut : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut : out std_logic_vector(2 downto 0) := (others => '0');
+  pinIn    : in std_logic_vector(4 downto 0);
+
+  aux      : out std_logic_vector(7 downto 0);
+  pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
   
-  bufOut : out std_logic_vector(3 downto 0) := (others => '0');
+  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -297,45 +299,53 @@ component SPI is
  end Component;
 
  component Axis is
-  generic (opBase : unsigned;
-           opBits : positive;
-           synBits : positive;
-           posBits : positive;
-           countBits : positive;
-           distBits : positive;
-           locBits : positive;
-           outBits : positive;
-           dbgBits : positive);
+  generic (opBase     : unsigned;
+           opBits     : positive;
+           synBits    : positive;
+           posBits    : positive;
+           countBits  : positive;
+           distBits   : positive;
+           locBits    : positive;
+           outBits    : positive;
+           dbgBits    : positive;
+           synDbgBits : positive);
   port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned(opBits-1 downto 0);
-   copyR : in boolean;
-   extInit : in std_logic;               --reset
-   extEna : in std_logic;                --enable operation
-   extUpdLoc : in std_logic;
-   ch : in std_logic;
-   encDir : in std_logic;
-   sync : in std_logic;
-   droQuad : in std_logic_vector(1 downto 0);
-   droInvert : in std_logic;
-   mpgQuad : in std_logic_vector(1 downto 0);
-   jogInvert : in std_logic;
+   clk        : in std_logic;
+
+   din        : in std_logic;
+   dshift     : in boolean;
+   op         : in unsigned(opBits-1 downto 0);
+   load       : in boolean;
+
+   dshiftR    : in boolean;
+   opR        : in unsigned(opBits-1 downto 0);
+   copyR      : in boolean;
+
+   extInit    : in std_logic;           --reset
+   extEna     : in std_logic;           --enable operation
+
+   ch         : in std_logic;
+   encDir     : in std_logic;
+   sync       : in std_logic;
+
+   droQuad    : in std_logic_vector(1 downto 0);
+   droInvert  : in std_logic;
+   mpgQuad    : in std_logic_vector(1 downto 0);
+   jogInvert  : in std_logic;
+
    currentDir : in std_logic;
-   switches : in std_logic_vector(3 downto 0);
-   eStop : in std_logic;
-   dbgOut : out unsigned(dbgBits-1 downto 0);
-   initOut : out std_logic;
-   enaOut : out std_logic;
-   updLocOut : out std_logic;
-   dout : out std_logic;
-   stepOut : out std_logic;
-   dirOut : inout std_logic;
-   doneInt : out std_logic
+   switches   : in std_logic_vector(3 downto 0);
+   eStop      : in std_logic;
+
+   -- dbg        : out AxisDbg;
+   dbgOut     : out unsigned(dbgBits-1 downto 0);
+   synDbg     : out std_logic_vector(synDbgBits-1 downto 0);
+   initOut    : out std_logic;
+   enaOut     : out std_logic;
+   dout       : out std_logic;
+   stepOut    : out std_logic;
+   dirOut     : inout std_logic;
+   doneInt    : out std_logic
    );
  end Component;
 
@@ -394,37 +404,38 @@ component SPI is
  alias digSel: unsigned(1 downto 0) is div(19 downto 18);
  -- alias digSel: unsigned(1 downto 0) is div(8 downto 7);
 
- constant synBits : positive := 32;
- constant posBits : positive := 24;
- constant countBits : positive := 18;
- constant distBits : positive := 18;
- constant locBits : positive := 18;
+ constant synBits       : positive := 32;
+ constant posBits       : positive := 24;
+ constant countBits     : positive := 18;
+ constant distBits      : positive := 18;
+ constant locBits       : positive := 18;
 
- constant dbgBits : positive := 4;
+ constant dbgBits       : positive := 4;
+ constant synDbgBits    : positive := 4;
 
- constant rdAddrBits : positive := 5;
- constant outBits : positive := 32;
+ constant rdAddrBits    : positive := 5;
+ constant outBits       : positive := 32;
  
- constant opBits : positive := 8;
- constant addrBits : positive := 8;
- constant seqBits : positive := 8;
+ constant opBits        : positive := 8;
+ constant addrBits      : positive := 8;
+ constant seqBits       : positive := 8;
 
- constant phaseBits : positive := 16;
- constant totalBits : positive := 32;
+ constant phaseBits     : positive := 16;
+ constant totalBits     : positive := 32;
 
- constant idxClkBits : positive := 28;
+ constant idxClkBits    : positive := 28;
  -- constant idxClkBits : positive := 16; 
 
- constant freqBits : positive := 16;
+ constant freqBits      : positive := 16;
  constant freqCountBits : positive := 32;
 
- constant cycleLenBits : positive := 11;
- constant encClkBits : positive := 24;
- constant cycleClkBits : positive := 32;
+ constant cycleLenBits  : positive := 11;
+ constant encClkBits    : positive := 24;
+ constant cycleClkBits  : positive := 32;
 
- constant pwmBits : positive := 16;
+ constant pwmBits       : positive := 16;
 
- constant stepWidth : positive :=  25;
+ constant stepWidth     : positive :=  25;
 
  -- status register
 
@@ -622,9 +633,9 @@ component SPI is
  signal xCh : std_logic;
  signal zCh : std_logic;
  signal xInit : std_logic;
- signal xUpdLoc : std_logic;
+ -- signal xUpdLoc : std_logic;
  signal zInit : std_logic;
- signal zUpdLoc : std_logic;
+ -- signal zUpdLoc : std_logic;
 
  signal zAxisStep : std_logic;
  signal xAxisStep : std_logic;
@@ -635,15 +646,21 @@ component SPI is
  signal zExtEna : std_logic;
  signal xExtEna : std_logic;
 
+ -- signal zDbgRec : AxisDbg;
+ -- signal xDbgRec : AxisDbg;
+
  signal zDelayStep : std_logic;
  signal xDelayStep : std_logic;
 
+ signal test0 : std_logic;
  signal test1 : std_logic;
  signal test2 : std_logic;
- signal test3 : std_logic;
 
- signal zDbg : unsigned(3 downto 0);
- signal xDbg : unsigned(3 downto 0);
+ signal zDbg : unsigned(dbgBits-1 downto 0);
+ signal xDbg : unsigned(dbgBits-1 downto 0);
+
+ signal zSynDbg : std_logic_vector(synDbgBits-1 downto 0);
+ signal xSynDbg : std_logic_vector(synDbgBits-1 downto 0);
 
  signal zFreqGenEna : std_logic;
  signal xFreqGenEna : std_logic;
@@ -684,10 +701,10 @@ begin
  eStop <= cfgEStopEna and (eStopIn xor cfgEStopInv);
  stEStop <= eStop;
 
- pinOut(0) <= zDir;  -- xor div(10);
- pinOut(1) <= zStep; -- xor div(11);
- pinOut(2) <= xDir;  -- xor div(12);
- pinOut(3) <= xStep; -- xor div(13);
+ pinOut(0) <= zDir;
+ pinOut(1) <= zStep;
+ pinOut(2) <= xDir;
+ pinOut(3) <= xStep;
 
  pinOut(7 downto 4) <= std_logic_vector(xDbg);
 
@@ -698,19 +715,17 @@ begin
 
  -- pinOut(9 downto 4) <= std_logic_vector(div(19 downto 14));
 
- zSwitches <= std_logic_vector(aux(7) & aux(2 downto 0)) xor
-              std_logic_vector(cfgProbeInv &
+ zSwitches <= std_logic_vector(cfgProbeInv &
                                cfgCtlReg(c_cfgZPlusInv downto c_cfgzHomeInv));
- xSwitches <= std_logic_vector(aux(7) & aux(5 downto 3)) xor
-              std_logic_vector(cfgProbeInv &
+ xSwitches <= std_logic_vector(cfgProbeInv &
                                cfgCtlReg(c_cfgXPlusInv downto c_cfgxHomeInv));
 
- inputsReg <= unsigned(pinIn & aux);
+ inputsReg <= unsigned(pinIn) & "00000000";
 
  bufOut <= pinIn(3 downto 0);
  extOut(0) <= spindleDirOut;
  extOut(1) <= spindleStepOut;
- extOut(2) <= pinIn(4) xor aux(6);
+ extOut(2) <= pinIn(4);
 
  zAxisEna <= zExtEna;
  zDoneInt <= intZDoneInt;
@@ -736,42 +751,43 @@ begin
  dspData(7 downto 4) <= xDbg;
  dspData(15 downto 8) <= op;
 
- -- test 1 output pulse
+ -- test 0 output pulse
+
+ testOut0 : PulseGen
+  generic map (pulseWidth => 50)
+  port map (
+   clk => clk,
+   pulseIn => xCh,
+   PulseOut => test0
+   );
+
+-- test 1 output pulse
 
  testOut1 : PulseGen
   generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => xCh,
-   PulseOut => test1
+   pulseIn => zCh,
+   pulseOut => test1
    );
-
--- test 2 output pulse
 
  testOut2 : PulseGen
   generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => zCh,
+   pulseIn => sync,
    pulseOut => test2
    );
 
- testOut3 : PulseGen
-  generic map (pulseWidth => 50)
-  port map (
-   clk => clk,
-   pulseIn => sync,
-   pulseOut => test3
-   );
+ dbg(0) <= test0;
+ dbg(1) <= test1;
+ dbg(2) <= test2;
 
- dbg(0) <= test1;
- dbg(1) <= test2;
- -- dbg(2) <= clkDbgFreqEna;
-
- dbg(2) <= intZDoneInt;
- -- dbg(3) <= intXDoneInt;
- dbg(3) <= test3;
+ -- dbg(3) <= intZDoneInt;
+ dbg(3) <= intXDoneInt;
  dbg(7 downto 4) <= std_logic_vector(zDbg);
+
+ aux <= xSynDbg & zSynDbg;
 
  -- dbg(4) = dbgOUt(0) <= runEna;
  -- dbg(5) = dbgOut(1) <= distDecel;
@@ -1209,46 +1225,54 @@ begin
 
  z_Axis : Axis
   generic map (
-   opBase => F_ZAxis_Base,
-   opBits => opBits,
-   synBits => synBits,
-   posBits => posBits,
-   countBits => countBits,
-   distBits => distBits,
-   locBits => locBits,
-   outBits => outBits,
-   dbgBits => dbgBits
+   opBase     => F_ZAxis_Base,
+   opBits     => opBits,
+   synBits    => synBits,
+   posBits    => posBits,
+   countBits  => countBits,
+   distBits   => distBits,
+   locBits    => locBits,
+   outBits    => outBits,
+   dbgBits    => dbgBits,
+   synDbgBits => synDbgBits
    )
   port map (
-   clk => clk,
-   din => curDin,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   extInit => xExtInit,
-   extEna => xExtEna,
-   extUpdLoc => xUpdLoc,
-   ch => zCh,
-   encDir => direction,
-   sync => sync,
-   droQuad => zDro,
-   droInvert => cfgZDroInv,
-   mpgQuad => zMpg,
-   jogInvert => cfgZJogInv,
+   clk        => clk,
+
+   din        => curDin,
+   dshift     => dshift,
+   op         => op,
+   load       => load,
+
+   dshiftR    => dshiftR,
+   opR        => opR,
+   copyR      => copyR,
+
+   extInit    => xExtInit,
+   extEna     => xExtEna,
+
+   ch         => zCh,
+   encDir     => direction,
+   sync       => sync,
+
+   droQuad    => zDro,
+   droInvert  => cfgZDroInv,
+   mpgQuad    => zMpg,
+   jogInvert  => cfgZJogInv,
+
    currentDir => zCurrentDir,
-   switches => zSwitches,
-   eStop => eStop,
-   dbgOut => zDbg,
-   initOut => zExtInit,
-   enaOut => zExtEna,
-   updLocOut => zUpdLoc,
-   dout => zDOut,
-   stepOut => zAxisStep,
-   dirOut => zAxisDir,
-   doneInt => intZDoneInt
+   switches   => zSwitches,
+   eStop      => eStop,
+
+   -- dbg        => zDbgRec,
+   dbgOut     => zDbg,
+   synDbg     => zSynDbg,
+   initOut    => zExtInit,
+   enaOut     => zExtEna,
+   dout       => zDOut,
+   stepOut    => zAxisStep,
+   dirOut     => zAxisDir,
+   doneInt    => intZDoneInt
    );
 
  zStep_Pulse: PulseGen
@@ -1277,46 +1301,54 @@ begin
 
  x_Axis : Axis
   generic map (
-   opBase => F_XAxis_Base,
-   opBits => opBits,
-   synBits => synBits,
-   posBits => posBits,
-   countBits => countBits,
-   distBits => distBits,
-   locBits => locBits,
-   outBits => outBits,
-   dbgBits => dbgBits
+   opBase     => F_XAxis_Base,
+   opBits     => opBits,
+   synBits    => synBits,
+   posBits    => posBits,
+   countBits  => countBits,
+   distBits   => distBits,
+   locBits    => locBits,
+   outBits    => outBits,
+   dbgBits    => dbgBits,
+   synDbgBits => synDbgBits
    )
   port map (
-   clk => clk,
-   din => curDin,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   extInit => zExtInit,
-   extEna => zExtEna,
-   extUpdLoc => zUpdLoc,
-   ch => xCh,
-   encDir => direction,
-   sync => sync,
-   droQuad => xDro,
-   droInvert => cfgXDroInv,
-   mpgQuad => xMpg,
-   jogInvert => cfgXJogInv,
+   clk        => clk,
+
+   din        => curDin,
+   dshift     => dshift,
+   op         => op,
+   load       => load,
+
+   dshiftR    => dshiftR,
+   opR        => opR,
+   copyR      => copyR,
+
+   extInit    => zExtInit,
+   extEna     => zExtEna,
+
+   ch         => xCh,
+   encDir     => direction,
+   sync       => sync,
+
+   droQuad    => xDro,
+   droInvert  => cfgXDroInv,
+   mpgQuad    => xMpg,
+   jogInvert  => cfgXJogInv,
+
    currentDir => xCurrentDir,
-   switches => xSwitches,
-   eStop => eStop,
-   dbgOut => xDbg,
-   initOut => xExtInit,
-   enaOut => xExtEna,
-   updLocOut => xUpdLoc,
-   dout => xDOut,
-   stepOut => xAxisStep,
-   dirOut => xAxisDir,
-   doneInt => intXDoneInt
+   switches   => xSwitches,
+   eStop      => eStop,
+
+   -- dbg        => xDbgRec,
+   dbgOut     => xDbg,
+   synDbg     => xSynDbg,
+   initOut    => xExtInit,
+   enaOut     => xExtEna,
+   dout       => xDOut,
+   stepOut    => xAxisStep,
+   dirOut     => xAxisDir,
+   doneInt    => intXDoneInt
    );
 
  xStep_Pulse : PulseGen

@@ -5,90 +5,136 @@ use IEEE.NUMERIC_STD.ALL;
 use IEEE.MATH_REAL.ALL;
 
 use work.RegDef.ALL;
-use work.Common.All;
+-- use work.DebugRecord.All;
 
 entity SyncAccelDistJog is
- generic (opBase    : unsigned := x"00";
-          opBits    : positive := 8;
-          synBits   : positive := 32;
-          posBits   : positive := 18;
-          countBits : positive := 18;
-          distBits  : positive := 18;
-          outBits   : positive := 32);
+ generic (opBase     : unsigned := x"00";
+          opBits     : positive := 8;
+          synBits    : positive := 32;
+          posBits    : positive := 18;
+          countBits  : positive := 18;
+          distBits   : positive := 18;
+          droBits    : positive := 18;
+          locBits    : positive := 18;
+          outBits    : positive := 32;
+          synDbgBits : positive := 4);
  port (
-  clk :     in std_logic;
+  clk        : in std_logic;
 
-  din :     in std_logic;
-  dshift :  in boolean;
-  op :      in unsigned (opBits-1 downto 0);
-  load :    in boolean;
+  din        : in std_logic;
+  dshift     : in boolean;
+  op         : in unsigned (opBits-1 downto 0);
+  load       : in boolean;
 
-  dshiftR : in boolean;
-  opR :     in unsigned (opBits-1 downto 0);
-  copyR :   in boolean;
+  dshiftR    : in boolean;
+  opR        : in unsigned (opBits-1 downto 0);
+  copyR      : in boolean;
 
-  init :    in std_logic;               --reset
-  ena :     in std_logic;               --enable operation
-  extDone : in boolean;                 --external done input
-  ch :      in std_logic;               --step input clock
+  init       : in std_logic;            --reset
+  ena        : in std_logic;            --enable operation
+  extDone    : in std_logic;            --external done input
+  ch         : in std_logic;            --step input clock
+  cmdDir     : in std_logic;            --direction in
+  curDir     : in std_logic;            --current directin
+  locDisable : in std_logic;            --disable location update
 
-  quad :    in std_logic_vector(1 downto 0);
-  jogInvert :  in std_logic;
-  jogMode : in std_logic_vector(1 downto 0);
+  mpgQuad    : in std_logic_vector(1 downto 0);
+  jogInvert  : in std_logic;
+  jogMode    : in std_logic_vector(1 downto 0);
 
-  done :    inout boolean := false;     --done move
-  dout :    out   std_logic := '0';     --read data out
-  synStep : out   std_logic := '0'      --output step pulse
+  droQuad    : in std_logic_vector(1 downto 0);
+  droInvert  : in std_logic;
+  droEndChk  : in std_logic;
+
+  -- dbg        : out SyncAccelDbg := SyncAccelDbgInit; --debug
+  synDbg     : out std_logic_vector(synDbgBits-1 downto 0) := (others => '0');  
+  movDone    : out std_logic := '0';    --done move
+  droDone    : out std_logic := '0';    --dro move done
+  dout       : out std_logic := '0';    --read data out
+  dirOut     : out std_logic := '0';    --direction out
+  synStep    : out std_logic := '0'     --output step pulse
   );
 end SyncAccelDistJog;
 
 architecture Behavioral of SyncAccelDistJog is
 
  component ShiftOp is
-  generic(opVal :  unsigned;
+  generic(opVal  : unsigned;
           opBits : positive;
-          n :      positive);
+          n      : positive);
   port (
-   clk :   in std_logic;
+   clk   : in std_logic;
    shift : in boolean;
-   op :    in unsigned (opBits-1 downto 0);
-   din :   in std_logic;
-   data :  inout  unsigned (n-1 downto 0));
+   op    : in unsigned (opBits-1 downto 0);
+   din   : in std_logic;
+   data  : inout  unsigned (n-1 downto 0));
  end component;
 
  component ShiftOpLoad is
-  generic(opVal :  unsigned;
+  generic(opVal  : unsigned;
           opBits : positive;
-          n :      positive);
+          n      : positive);
   port (
-   clk :   in    std_logic;
+   clk   : in    std_logic;
    shift : in    boolean;
-   op :    in    unsigned (opBits-1 downto 0);
-   din :   in    std_logic;
-   load :  out   std_logic;
-   data :  inout unsigned (n-1 downto 0));
+   op    : in    unsigned (opBits-1 downto 0);
+   din   : in    std_logic;
+   load  : out   std_logic;
+   data  : inout unsigned (n-1 downto 0));
  end component;
 
  component ShiftOutN is
-  generic(opVal :   unsigned;
-          opBits :  positive;
-          n :       positive;
+  generic(opVal   : unsigned;
+          opBits  : positive;
+          n       : positive;
           outBits : positive);
   port (
-   clk :    in  std_logic;
+   clk    : in  std_logic;
    dshift : in  boolean;
-   op :     in  unsigned (opBits-1 downto 0);
-   copy :   in  boolean;
-   data :   in  unsigned(n-1 downto 0);
-   dout :   out std_logic
+   op     : in  unsigned (opBits-1 downto 0);
+   copy   : in  boolean;
+   data   : in  unsigned(n-1 downto 0);
+   dout   : out std_logic
+   );
+ end Component;
+
+ component ShiftOutNS is
+  generic(opVal   : unsigned;
+          opBits  : positive;
+          n       : positive;
+          outBits : positive);
+  port (
+   clk    : in std_logic;
+   dshift : in boolean;
+   op     : in unsigned (opBits-1 downto 0);
+   copy   : in boolean;
+   data   : in unsigned(n-1 downto 0);
+   dout   : out std_logic
    );
  end Component;
 
  -- state machine
 
- type SyncFsm is (syncInit, idle, enabled, updAccel, checkAccel, clkWait,
+ type SyncFsm is (syncInit, syncIdle, enabled, updAccel, checkAccel, clkWait,
                   doneWait, mpgEnabled, mpgEnabled1);
  signal syncState : syncFsm := syncInit;
+
+ function syncConv(a: Syncfsm) return std_logic_vector is
+ begin
+  case a is
+   when syncInit    => return("0001");
+   when syncIdle    => return("0010");
+   when enabled     => return("0011");
+   when updAccel    => return("0100");
+   when checkAccel  => return("0101");
+   when clkWait     => return("0110");
+   when doneWait    => return("0111");
+   when mpgEnabled  => return("1000");
+   when mpgEnabled1 => return("1001");
+   when others      => return("0000");
+  end case;
+  return("0000");
+ end;
 
  type accelFsm is (accelInactive, accelActive, atSpeed, decelActive);
  signal accelState : accelFsm := accelInactive;
@@ -122,7 +168,9 @@ architecture Behavioral of SyncAccelDistJog is
  signal backlash : unsigned(distBits-1 downto 0) := (others => '0');
 
  signal loadDist   : std_logic := '0';
- signal distUpdate : boolean := false;
+ signal distUpdate : boolean   := false;
+
+ signal movDoneInt : std_logic := '0';
 
  -- read output signals
 
@@ -133,8 +181,39 @@ architecture Behavioral of SyncAccelDistJog is
  signal accelCtrDout   : std_logic;     --accel ctr read output
  signal distDout       : std_logic;     --distance read output
  signal accelStepsDout : std_logic;     --accel stesp read output
+ signal locDOut        : std_logic;     --location output
 
- signal synStepTmp : std_logic := '0';
+ signal synStepTmp     : std_logic := '0';
+ signal synStepLast    : std_logic := '0';
+
+  -- ********** location definitions **********
+
+ signal locVal : unsigned(locBits-1 downto 0); --location input
+ signal loc    : unsigned(locBits-1 downto 0) := (others => '0'); --cur loc
+ 
+ signal locLoad   : std_logic := '0';
+ signal locUpdate : boolean   := false;
+
+ -- ********** dro definitions **********
+
+ type droFSM is (droIdle, droCalcDist, droChkDisable, droChkDone,
+                 droDoneWait);
+ signal droState : droFSM := droIdle;
+
+ signal droQuadState : std_logic_vector(3 downto 0) := (others => '0');
+ signal droUpdate    : std_logic := '0';
+ signal droDir       : std_logic := '0';
+
+ signal droInput     : unsigned(droBits-1 downto 0);
+ signal droVal       : unsigned(droBits-1 downto 0) := (others => '0');
+ signal droDist      : signed(droBits-1 downto 0) := (others => '0');
+ signal droEnd       : unsigned(droBits-1 downto 0);
+ signal decelLimit   : unsigned(droBits-1 downto 0);
+ signal droDecelStop : std_logic := '0';
+ signal droDoneInt   : std_logic := '0';
+ signal droDout      : std_logic := '0';
+ signal droLoad      : std_logic := '0';
+ signal droLoadVal   : std_logic := '0';
 
  -- ********** mpg jog definitions **********
 
@@ -151,208 +230,427 @@ architecture Behavioral of SyncAccelDistJog is
 
  -- mpg quadrature input
 
- alias a : std_logic is quad(0);
- alias b : std_logic is quad(1);
+ alias a : std_logic is mpgQuad(0);
+ alias b : std_logic is mpgQuad(1);
 
  signal lastA : std_logic_vector(1 downto 0) := (others => '0');
  signal lastB : std_logic_vector(1 downto 0) := (others => '0');
 
- signal update     : std_logic := '0';
- signal dir        : std_logic := '0';
-
- signal lastDir        : std_logic := '0';
+ signal mpgQuadState   : std_logic_vector(3 downto 0) := (others => '0');
+ signal mpgQuadUpdate  : std_logic := '0';
+ signal mpgDir         : std_logic := '0';
+ signal lastMpgDir     : std_logic := '0';
+ signal jogdir         : std_logic := '0';
  signal backlashActive : std_logic := '0';
 
  constant timerMax  : natural := 30; --50000;
  constant timerBits : natural := integer(ceil(log2(real(timerMax))));
  signal   timer     : unsigned(timerBits-1 downto 0) := (others => '0');
  signal   timerClr  : std_logic := '0';
- signal   chDiv     : unsigned(timerBits-1 downto 0) := (others => '0');
- signal   chCtr     : unsigned(timerBits-1 downto 0) := (others => '0');
+
+ -- constant divMax    : natural := 63;
+ -- constant divBits   : natural := integer(ceil(log2(real(divMax)))); 
+ -- signal   chDiv     : unsigned(divBits-1 downto 0) := (others => '0');
+ -- signal   chCtr     : unsigned(divBits-1 downto 0) := (others => '0');
+
+ -- constant deltaMax  : natural := 50;
+ -- constant deltaBits : natural := integer(ceil(log2(real(deltaMax))));
+ -- signal   delta     : unsigned(deltaBits-1 downto 0) := (others => '0');
+
+ -- type deltaRec is record
+ --  val : unsigned(deltaBits-1 downto 0);
+ -- end record;
+
+ -- constant deltaI0   : natural := 30;
+ -- constant deltaI1   : natural := 15;
+ -- constant deltaI2   : natural := 4;
+ -- constant deltaI3   : natural := 0;
+
+ -- constant divI0     : natural := 1;
+ -- constant divI1     : natural := 3;
+ -- constant divI2     : natural := 5;
+ -- constant divI3     : natural := 7;
+
+ -- constant distI0    : natural := 1;
+ -- constant distI1    : natural := 2;
+ -- constant distI2    : natural := 4;
+ -- constant distI3    : natural := 8;
+
+ -- constant mpgBits   : natural := 32;
+
+ -- constant regDeltaIni : unsigned(mpgBits-1 downto 0) :=
+ --  (to_unsigned(deltaI3, 8) & to_unsigned(deltaI2, 8) &
+ --   to_unsigned(deltaI2, 8) & to_unsigned(deltaI0, 8));
+
+ -- constant regDivIni : unsigned(mpgBits-1 downto 0) :=
+ --  (to_unsigned(divI3, 8) & to_unsigned(divI2, 8) &
+ --   to_unsigned(divI2, 8) & to_unsigned(divI0, 8));
+
+ -- constant regDistIni : unsigned(mpgBits-1 downto 0) :=
+ --  (to_unsigned(distI3, 8) & to_unsigned(distI2, 8) &
+ --   to_unsigned(distI2, 8) & to_unsigned(distI0, 8));
+
+ -- signal mpgRegDelta : unsigned(mpgBits-1 downto 0) := regDeltaIni;
+ -- signal mpgRegDiv   : unsigned(mpgBits-1 downto 0) := regDivIni;
+ -- signal mpgRegDist  : unsigned(mpgBits-1 downto 0) := regDistIni;
+
+ -- constant mpgDistMax  : natural := 200;
+ -- constant mpgDistBits : natural := integer(ceil(log2(real(mpgDistMax))));
+ -- signal   mpgDistUpd  : std_logic := '0';
+ -- signal   mpgDist     : unsigned(mpgDistBits-1 downto 0) := (others => '0');
+ -- signal   mpgDistCtr  : unsigned(mpgDistBits-1 downto 0) := (others => '0');
+
+ -- alias delta0 : unsigned(deltaBits-1 downto 0) is
+ --  mpgRegDelta(0 + deltaBits-1 downto 0);
+ -- alias delta1 : unsigned(deltaBits-1 downto 0) is
+ --  mpgRegDelta(8 + deltaBits-1 downto 8);
+ -- alias delta2 : unsigned(deltaBits-1 downto 0) is
+ --  mpgRegDelta(16 + deltaBits-1 downto 16);
+
+ --  alias div0 : unsigned(timerBits-1 downto 0) is
+ --  mpgRegDiv(0 + timerBits-1 downto 0);
+ -- alias div1 : unsigned(timerBits-1 downto 0) is
+ --  mpgRegDiv(8 + timerBits-1 downto 8);
+ -- alias div2 : unsigned(timerBits-1 downto 0) is
+ --  mpgRegDiv(16 + timerBits-1 downto 16);
+ -- alias div3 : unsigned(timerBits-1 downto 0) is
+ --  mpgRegDiv(24 + timerBits-1 downto 24);
+
+ --  alias dist0 : unsigned(mpgDistBits-1 downto 0) is
+ --  mpgRegDist(0 + mpgDistBits-1 downto 0);
+ -- alias dist1 : unsigned(mpgDistBits-1 downto 0) is
+ --  mpgRegDist(8 + mpgDistBits-1 downto 8);
+ -- alias dist2 : unsigned(mpgDistBits-1 downto 0) is
+ --  mpgRegDist(16 + mpgDistBits-1 downto 16);
+ -- alias dist3 : unsigned(mpgDistBits-1 downto 0) is
+ --  mpgRegDist(24 + mpgDistBits-1 downto 24);
+
+ constant mpgBits   : natural := 32;
 
  constant deltaMax  : natural := 50;
  constant deltaBits : natural := integer(ceil(log2(real(deltaMax))));
  signal   delta     : unsigned(deltaBits-1 downto 0) := (others => '0');
 
- constant delta0    : natural := 30;
- constant delta1    : natural := 15;
- constant delta2    : natural := 4;
+ type deltaRec is record
+  val : unsigned(deltaBits-1 downto 0);
+ end record;
 
- constant div0      : natural := 1;
- constant div1      : natural := 3;
- constant div2      : natural := 5;
- constant div3      : natural := 7;
+ -- delta
 
- constant dist0     : natural := 1;
- constant dist1     : natural := 2;
- constant dist2     : natural := 4;
- constant dist3     : natural := 8;
+ constant deltaI0   : natural := 30;
+ constant deltaI1   : natural := 15;
+ constant deltaI2   : natural := 4;
+ constant deltaI3   : natural := 0;
 
+ constant regDeltaIni : unsigned(mpgBits-1 downto 0) :=
+  (to_unsigned(deltaI3, 8) & to_unsigned(deltaI2, 8) &
+   to_unsigned(deltaI2, 8) & to_unsigned(deltaI0, 8));
+
+ signal mpgRegDelta : unsigned(mpgBits-1 downto 0) := regDeltaIni;
+
+ alias delta0 : unsigned(deltaBits-1 downto 0) is
+  mpgRegDelta(0 + deltaBits-1 downto 0);
+ alias delta1 : unsigned(deltaBits-1 downto 0) is
+  mpgRegDelta(8 + deltaBits-1 downto 8);
+ alias delta2 : unsigned(deltaBits-1 downto 0) is
+  mpgRegDelta(16 + deltaBits-1 downto 16);
+
+ -- div
+ 
+ constant divMax    : natural := 63;
+ constant divBits   : natural := integer(ceil(log2(real(divMax)))); 
+ signal   chDiv     : unsigned(divBits-1 downto 0) := (others => '0');
+ signal   chCtr     : unsigned(divBits-1 downto 0) := (others => '0');
+
+ constant divI0     : natural := 1;
+ constant divI1     : natural := 3;
+ constant divI2     : natural := 5;
+ constant divI3     : natural := 7;
+
+ constant regDivIni : unsigned(mpgBits-1 downto 0) :=
+  (to_unsigned(divI3, 8) & to_unsigned(divI2, 8) &
+   to_unsigned(divI2, 8) & to_unsigned(divI0, 8));
+
+ signal mpgRegDiv   : unsigned(mpgBits-1 downto 0) := regDivIni;
+
+ alias div0 : unsigned(divBits-1 downto 0) is
+  mpgRegDiv(0 + divBits-1 downto 0);
+ alias div1 : unsigned(divBits-1 downto 0) is
+  mpgRegDiv(8 + divBits-1 downto 8);
+ alias div2 : unsigned(divBits-1 downto 0) is
+  mpgRegDiv(16 + divBits-1 downto 16);
+ alias div3 : unsigned(divBits-1 downto 0) is
+  mpgRegDiv(24 + divBits-1 downto 24);
+
+ -- dist
+ 
  constant mpgDistMax  : natural := 200;
  constant mpgDistBits : natural := integer(ceil(log2(real(mpgDistMax))));
  signal   mpgDistUpd  : std_logic := '0';
  signal   mpgDist     : unsigned(mpgDistBits-1 downto 0) := (others => '0');
  signal   mpgDistCtr  : unsigned(mpgDistBits-1 downto 0) := (others => '0');
 
+ constant distI0    : natural := 1;
+ constant distI1    : natural := 2;
+ constant distI2    : natural := 4;
+ constant distI3    : natural := 8;
+
+ constant regDistIni : unsigned(mpgBits-1 downto 0) :=
+  (to_unsigned(distI3, 8) & to_unsigned(distI2, 8) &
+   to_unsigned(distI2, 8) & to_unsigned(distI0, 8));
+
+ signal mpgRegDist  : unsigned(mpgBits-1 downto 0) := regDistIni;
+
+ alias dist0 : unsigned(mpgDistBits-1 downto 0) is
+  mpgRegDist(0 + mpgDistBits-1 downto 0);
+ alias dist1 : unsigned(mpgDistBits-1 downto 0) is
+  mpgRegDist(8 + mpgDistBits-1 downto 8);
+ alias dist2 : unsigned(mpgDistBits-1 downto 0) is
+  mpgRegDist(16 + mpgDistBits-1 downto 16);
+ alias dist3 : unsigned(mpgDistBits-1 downto 0) is
+  mpgRegDist(24 + mpgDistBits-1 downto 24);
+
 begin
 
  dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout or
-         distDout or accelStepsDout;
+         distDout or accelStepsDout or locDout or droDout;
 
  dreg: ShiftOp
-  generic map(opVal =>  opBase + F_Ld_D,
+  generic map(opVal  => opBase + F_Ld_D,
               opBits => opBits,
-              n =>      synBits)
+              n      => synBits)
   port map (
-   clk =>   clk,
+   clk   => clk,
    shift => dshift,
-   op =>    op,
-   din =>   din,
-   data =>  d);
+   op    => op,
+   din   => din,
+   data  => d);
 
  incr1reg: ShiftOp
   generic map(opVal =>  opBase + F_Ld_Incr1,
               opBits => opBits,
               n =>      synBits)
   port map (
-   clk => clk,
+   clk   => clk,
    shift => dshift,
-   op => op,
-   din => din,
-   data => incr1);
+   op    => op,
+   din   => din,
+   data  => incr1);
 
  incr2reg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Incr2,
+  generic map(opVal  => opBase + F_Ld_Incr2,
               opBits => opBits,
-              n => synBits)
+              n      => synBits)
   port map (
-   clk => clk,
+   clk   => clk,
    shift => dshift,
-   op => op,
-   din => din,
-   data => incr2);
+   op    => op,
+   din   => din,
+   data  => incr2);
 
  accelreg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Accel_Val,
+  generic map(opVal  => opBase + F_Ld_Accel_Val,
               opBits => opBits,
-              n => synBits)
+              n      => synBits)
   port map (
-   clk => clk,
+   clk   => clk,
    shift => dshift,
-   op => op,
-   din => din,
-   data => accel);
+   op    => op,
+   din   => din,
+   data  => accel);
 
  accelCountReg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Accel_Count,
+  generic map(opVal  => opBase + F_Ld_Accel_Count,
               opBits => opBits,
-              n => countBits)
+              n      => countBits)
   port map (
-   clk => clk,
+   clk   => clk,
    shift => dshift,
-   op => op,
-   din => din,
-   data => accelCount);
+   op    => op,
+   din   => din,
+   data  => accelCount);
 
   distShiftOp : ShiftOpLoad
-  generic map(opVal => opBase + F_Ld_A_Dist,
+  generic map(opVal  => opBase + F_Ld_A_Dist,
               opBits => opBits,
-              n => distBits)
+              n      => distBits)
   port map(
-   clk => clk,
-   din => din,
-   op => op,
+   clk   => clk,
+   din   => din,
+   op    => op,
    shift => dshift,
-   load => loadDist,
-   data => distVal
+   load  => loadDist,
+   data  => distVal
    );
 
   maxDistShiftOp : ShiftOp
-  generic map(opVal => opBase + F_Ld_Max_Dist,
+  generic map(opVal  => opBase + F_Ld_Max_Dist,
               opBits => opBits,
-              n => distBits)
+              n      => distBits)
   port map(
-   clk => clk,
-   din => din,
-   op => op,
+   clk   => clk,
+   din   => din,
+   op    => op,
    shift => dshift,
-   data => maxDist
+   data  => maxDist
    );
 
-  BacklashShiftOp : ShiftOp
-  generic map(opVal => opBase + F_Ld_Backlash,
+ droPosReg: ShiftOpLoad
+  generic map(opVal  => opBase + F_Ld_Dro,
               opBits => opBits,
-              n => distBits)
-  port map(
-   clk => clk,
-   din => din,
-   op => op,
+              n      => droBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
    shift => dshift,
-   data => backlash
+   load  => droLoad,
+   data  => droInput);
+
+ droEndReg: ShiftOp
+  generic map(opVal  => opBase + F_Ld_Dro_End,
+              opBits => opBits,
+              n      => droBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => droEnd);
+
+ droLimitReg: ShiftOp
+  generic map(opVal  => opBase + F_Ld_Dro_Limit,
+              opBits => opBits,
+              n      => droBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => decelLimit);
+
+  BacklashShiftOp : ShiftOp
+  generic map(opVal  => opBase + F_Ld_Backlash,
+              opBits => opBits,
+              n      => distBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => backlash
+   );
+
+ LocValReg : ShiftOpLoad
+  generic map(opVal  => opBase + F_Ld_X_Loc,
+              opBits => opBits,
+              n      => locBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   load  => locLoad,
+   data  => locVal);
+
+ MpgDeltaOp : ShiftOp
+  generic map(opVal  => opBase + F_Ld_Mpg_Delta,
+              opBits => opBits,
+              n      => mpgBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => mpgRegDelta
+   );
+
+  MpgDivOp : ShiftOp
+  generic map(opVal  => opBase + F_Ld_Mpg_Div,
+              opBits => opBits,
+              n      => mpgBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => mpgRegDiv
+   );
+
+  MpgDistOp : ShiftOp
+  generic map(opVal  => opBase + F_Ld_Mpg_Dist,
+              opBits => opBits,
+              n      => mpgBits)
+  port map (
+   clk   => clk,
+   din   => din,
+   op    => op,
+   shift => dshift,
+   data  => mpgRegDist
    );
 
  -- read registers
 
  sum_out : ShiftOutN
-  generic map(opVal => opBase + F_Rd_Sum,
-              opBits => opBits,
-              n => synBits,
+  generic map(opVal   => opBase + F_Rd_Sum,
+              opBits  => opBits,
+              n       => synBits,
               outBits => outBits)
   port map (
-   clk => clk,
+   clk    => clk,
    dshift => dshiftR,
-   op => opR,
-   copy => copyR,
-   data => sum,
-   dout => sumDout
+   op     => opR,
+   copy   => copyR,
+   data   => sum,
+   dout   => sumDout
    );
 
  accelSum_Out: ShiftOutN
-  generic map(opVal => opBase + F_Rd_Accel_Sum,
-              opBits => opBits,
-              n => synBits,
+  generic map(opVal   => opBase + F_Rd_Accel_Sum,
+              opBits  => opBits,
+              n       => synBits,
               outBits => outBits)
   port map (
-   clk => clk,
+   clk    => clk,
    dshift => dshiftR,
-   op => opR,
-   copy => copyR,
-   data => accelSUm,
-   dout => accelSumDout
+   op     => opR,
+   copy   => copyR,
+   data   => accelSUm,
+   dout   => accelSumDout
    );
 
  accelCtr_out : ShiftOutN
-  generic map(opVal => opBase + F_Rd_Accel_Ctr,
-              opBits => opBits,
-              n => countBits,
+  generic map(opVal   => opBase + F_Rd_Accel_Ctr,
+              opBits  => opBits,
+              n       => countBits,
               outBits => outBits)
   port map (
-   clk => clk,
+   clk    => clk,
    dshift => dshiftR,
-   op => opR,
-   copy => copyR,
-   data => accelCounter,
-   dout => accelCtrDout
+   op     => opR,
+   copy   => copyR,
+   data   => accelCounter,
+   dout   => accelCtrDout
    );
 
  xPos_Shift : ShiftOutN
-  generic map(opVal => opBase + F_Rd_XPos,
-              opBits => opBits,
-              n => posBits,
+  generic map(opVal   => opBase + F_Rd_XPos,
+              opBits  => opBits,
+              n       => posBits,
               outBits => outBits)
   port map (
-   clk => clk,
+   clk    => clk,
    dshift => dshiftR,
-   op => opR,
-   copy => copyR,
-   data => xPos,
-   dout => xPosDout
+   op     => opR,
+   copy   => copyR,
+   data   => xPos,
+   dout   => xPosDout
    );
 
  yPos_Shift : ShiftOutN
-  generic map(opVal => opBase + F_Rd_YPos,
-              opBits => opBits,
-              n => posBits,
+  generic map(opVal   => opBase + F_Rd_YPos,
+              opBits  => opBits,
+              n       => posBits,
               outBits => outBits)
   port map (
    clk => clk,
@@ -364,9 +662,9 @@ begin
    );
 
  DistShiftOut: ShiftOutN
-  generic map(opVal => opBase + F_Rd_A_Dist,
-              opBits => opBits,
-              n => distBits,
+  generic map(opVal   => opBase + F_Rd_A_Dist,
+              opBits  => opBits,
+              n       => distBits,
               outBits => outBits)
   port map (
    clk => clk,
@@ -376,40 +674,91 @@ begin
    data => distCtr,
    dout => distDout);
 
- AccelShiftOut: ShiftOutN
-  generic map(opVal => opBase + F_Rd_A_Acl_Steps,
-              opBits => opBits,
-              n => distBits,
+ LocShiftOut : ShiftOutNS
+  generic map(opVal   => opBase + F_Rd_X_Loc,
+              opBits  => opBits,
+              n       => locBits,
               outBits => outBits)
   port map (
-   clk => clk,
+   clk    => clk,
    dshift => dshiftR,
-   op => opR,
-   copy => copyR,
-   data => accelSteps,
-   dout => accelStepsDout);
+   op     => opR,
+   copy   => copyR,
+   data   => loc,
+   dout   => locDout
+   );
+
+ droShiftOut : ShiftOutNS
+  generic map(opVal   => opBase + F_Rd_Dro,
+              opBits  => opBits,
+              n       => droBits,
+              outBits => outBits)
+  port map (
+   clk    => clk,
+   dshift => dshiftR,
+   op     => opR,
+   copy   => copyR,
+   data   => unsigned(droVal),
+   dout   => droDout
+   );
+
+ dirOut <= cmdDir when (jogMode(1) = '0') else jogDir;
+
+ AccelShiftOut: ShiftOutN
+  generic map(opVal   => opBase + F_Rd_A_Acl_Steps,
+              opBits  => opBits,
+              n       => distBits,
+              outBits => outBits)
+  port map (
+   clk    => clk,
+   dshift => dshiftR,
+   op     => opR,
+   copy   => copyR,
+   data   => accelSteps,
+   dout   => accelStepsDout);
+
+ -- dbg.dbg(3 downto 0) <= syncConv(syncState);
+
+ movDone <= movDoneInt;
+
+ synDbg(0) <= ena;
+ synDbg(1) <= movDoneInt;
+ synDbg(2) <= std_logic(distCtr(0));
+ synDbg(3) <= std_logic(loc(0));
 
  syn_process: process(clk)
-  -- variable varSynEna  : boolean  := false;
-  -- variable varMpgEna  : boolean  := false;
-  -- variable varJogMode : jog_type := jogNone;
 
-  variable quadState  : std_logic_vector(3 downto 0);
-  variable quadChange : std_logic;
+  variable mpgQuadChange : std_logic;
+  variable droQuadChange : std_logic;
+
  begin
+  
   if (rising_edge(clk)) then            --if clock active
+
+   droDone <= droDoneInt;
 
    if ((jogMode = "01") and (loadDist = '1')) then --jog and dist update
     distUpdate <= true;                 --set distance update flag
    end if;
 
+   if (locLoad = '1') then              --if new location
+    locUpdate <= true;                  --set to load
+   end if;
+
    -- varSynEna := (ena = '1')    and (varJogMode = jogNone);
    -- varMpgEna := (mpgEna = '1') and (varJogMode = jogMpg);
+
+   if (init = '1') then                 --if initialization
+    movDoneInt <= '0';                  --clear done
+    droDone <= '0';                     --clear dro done
+    syncState <= syncInit;              --set sync to init state
+   end if;
 
    case syncState is                    --select syncState
 
     -- initialization
     when syncInit =>
+     -- movDone <= '0';                    --clear move done
      xPos <= (others => '0');           --clear input count
      yPos <= (others => '0');           --clear output count
      sum <= d;                          --initialize sum
@@ -422,26 +771,34 @@ begin
      synStep <= '0';                    --clear output step
      synStepTmp <= '0';                 --clear step
      distUpdate <= false;               --clear distance update
-     done <= False;                     --clear done
-     syncState <= idle;                 --set to idle state
+     if (ena = '0') then                --if enable cleared
+      syncState <= syncIdle;            --set to yncIdle state
+     end if;
 
     --idle
-    when idle =>
+    when syncIdle =>
 
      synStep <= '0';                    --clear output step
 
      if (((ena = '1')    and (jogMode = "00")) or
          ((mpgEna = '1') and (jogMode = "10"))) then
-      syncState <= enabled;             --go to enabled state
       accelState <= accelActive;        --start acceleration
       -- if (distLoad = '1') then
       distCtr <= distVal;
       -- end if;
+      syncState <= enabled;             --go to enabled state
      elsif ((mpgEna = '1') and (jogMode = "11")) then --if mpg jog
-      distCtr <= ((distCtr'length - mpgDist'length-1 downto 0 =>'0') &
-                  mpgDist);             --load distance
-      chCtr <= to_unsigned(0, chCtr'length); --initialize clock divider
-      syncState <= mpgEnabled;          --advance to mpg jog state
+
+      if (backlashActive /= '0') then   --if backlash
+       distCtr <= backlash;             --set to move backlash dist
+       syncState <= enabled;            --go to enabled state
+      else
+       distCtr <= ((distCtr'length - mpgDist'length-1 downto 0 =>'0') &
+                   mpgDist);            --load distance
+       chCtr <= to_unsigned(0, chCtr'length); --initialize clock divider
+       syncState <= mpgEnabled;          --advance to mpg jog state
+      end if;
+
      end if;
 
     --enabled
@@ -453,7 +810,7 @@ begin
 
      synStep <= '0';                    --clear output step
 
-     if (ena = '0') or extDone then     --if enable cleared
+     if ((ena = '0') or (extDone = '1')) then --if enable cleared
       syncState <= syncInit;            --return to init state
      elsif (ch = '1') then              --if input clock
 
@@ -502,13 +859,15 @@ begin
         accelState <= decelActive;      --start decelerate
        end if;
 
-      when decelActive =>               --deceleration
-       accelSum <= accelSum - accel;
-       accelCounter <= accelCounter - 1;
-
       when atSpeed =>                   --at speed
        if (accelSteps >= distCtr) then  --if steps ge dist
         accelState <= decelActive;      --start decelerate
+       end if;
+
+      when decelActive =>               --deceleration
+       if (droDecelStop = '0') then     --if not stopped by dro
+        accelSum <= accelSum - accel;
+        accelCounter <= accelCounter - 1;
        end if;
 
       when others =>                    --others
@@ -555,16 +914,25 @@ begin
      synStep <= synStepTmp;             --output step
      synStepTmp <= '0';                 --clear tmp value
      if (ch = '0') then                 --if change flag cleared
-      if (distCtr /= 0) then            --if not to distance
-       syncState <= enabled;            --return to enabled state
-      else
-       if (jogMode = "00") then         --if not jogging
-        done <= true;                   --set done flag
-        syncState <= syncInit;          --return to init state
-       else                             --if jog mode
-        syncState <= doneWait;          --wait to jog again
+      if (droEndChk = '0') then         --if not using dro for end
+       if (distCtr /= 0) then           --if not to distance
+        syncState <= enabled;           --return to enabled state
+       else
+        if (jogMode = "00") then        --if not jogging
+         movDoneInt <= '1';             --set done flag
+         syncState <= syncInit;         --return to init state
+        else                            --if jog mode
+         syncState <= doneWait;         --wait to jog again
+        end if;
        end if;
-      end if;
+      else                              --if using dro for end
+       if (droDoneInt = '0') then       --if not done
+        syncState <= enabled;           --return to enabled
+       else                             --if dro done
+        droDone <= '1';                 --set done flag
+        syncState <= syncInit;          --return to init state
+       end if;
+      end if;       
      end if;
 
     --wait for ch inactive
@@ -579,12 +947,13 @@ begin
 
     -- mpg updates
     when mpgEnabled =>
+     synStep <= '0';                    --clear step output
      if (ch = '1') then                 --if clock
       if (chCtr = chDiv) then           --if time to step
        if (distCtr /= 0) then           --if not done
         chCtr <= to_unsigned(0, chCtr'length); --reset counter
         distCtr <= distCtr - 1;         --update distance
-        synStep <= '1';                 --set step signal
+        synStepTmp <= '1';              --set step signal
         syncState <= mpgEnabled1;       --advance to next state
        else                             --if done
         syncState <= syncInit;          --return to init state
@@ -595,10 +964,14 @@ begin
      end if;
 
     when mpgEnabled1 =>
-     synStep <= '0';                    --clear step pulse
+     synStep <= synStepTmp;             --output step pulse
+     synStepTmp <= '0';                 --clear step pulse
      if (mpgDistUpd = '1') then         --if time for a distance update
       distCtr <= distCtr + mpgDist;     --update distance
+     elsif (distCtr > maxDist) then     --if distctr gt max
+      distCtr <= maxDist;               --reset to max
      end if;
+
      syncState <= mpgEnabled;           --return to enable state
 
     when others =>                      --others
@@ -606,31 +979,112 @@ begin
 
    end case;                            --state
 
+   -- ********** dro  **********
+
+   droQuadChange := ((droQuadState(3) xor droQuadState(1)) or
+                     (droQuadState(2) xor droQuadState(0))); --input change   
+   if (droQuadChange = '1') then
+    case (droQuadState) is
+     when "0001" => droUpdate <= '1'; droDir <= droInvert;
+     when "0111" => droUpdate <= '1'; droDir <= droInvert;
+     when "1110" => droUpdate <= '1'; droDir <= droInvert;
+     when "1000" => droUpdate <= '1'; droDir <= droInvert;
+     when "0010" => droUpdate <= '1'; droDir <= not droInvert; 
+     when "1011" => droUpdate <= '1'; droDir <= not droInvert; 
+     when "1101" => droUpdate <= '1'; droDir <= not droInvert; 
+     when "0100" => droUpdate <= '1'; droDir <= not droInvert; 
+     when others => droUpdate <= '0';
+    end case;
+   end if;                              --end change
+
+   droQuadState <= droQuadState(1 downto 0) & droQuad(1) & droQuad(0);
+
+   if (droLoad = '1') then              --if new value
+    droLoadVal <= '1';                  --set load value flag
+   end if;
+
+   if (droUpdate = '1') then            --if update
+
+    if (droDir = '1') then              --if positive direction
+     droVal <= droVal + 1;              --increment position
+    else                                --if negative direction
+     droVal <= droVal - 1;              --decrement position
+    end if;                             --end direction chekc
+
+    if (droEndChk = '1') then           --if using dro for end
+     droState <= droCalcDist;           --start end check
+    end if;
+    
+   else                                --if not update
+    if (droLoadVal = '1') then         --if new dro value
+     droVal <= droInput;               --set new value
+     droLoadVal <= '0';                --clear load value flag
+    end if;
+   end if;                              --end update
+
+   case droState is                     --select state
+    when droIdle =>                     --idle
+     droDoneInt <= '0';
+     droDecelStop <= '0';
+
+    when droCalcDist =>                 --calculate distance
+     if ((droUpdate and droEndChk) = '1') then --if using dro for end
+      if (drodir = '1') then            --if positive direction
+       droDist <= signed(droEnd) - signed(droVal); --dist for pos Dir
+      else                              --if negative direction
+       droDist <= signed(droVal) - signed(droEnd); --dist for neg dir
+      end if;
+      droState <= droChkDisable;
+     end if;                            --end direction check
+
+    when droChkDisable =>               --check for decel disable
+     if (droDist < signed(decelLimit)) then
+      droDecelStop <= '1';
+      droState <= droChkDone;
+     end if;
+     
+    when droChkDone =>                     --check for done
+     if (droDist < to_signed(0, droBits)) then
+      droDoneInt <= '1';
+      droState <= droDoneWait;
+     end if;
+
+     when droDoneWait =>
+     if (syncState = syncIdle) then
+      droState <= droIdle;
+     end if;
+
+    when others =>
+     droState <= droIdle;
+   end case;
+  
+   -- ********** jog and mpg **********
+
    if (jogMode(1) = '1') then           --if enabled mpg mode
 
-    quadChange := (lastA(1) xor lastA(0)) or
-                  (lastB(1) xor lastB(0)); --quadrature change
+    mpgQuadChange := (lastA(1) xor lastA(0)) or
+                     (lastB(1) xor lastB(0)); --quadrature change
 
-    if (quadChange = '0') then          --if no quadrature change
+    if (mpgQuadChange = '0') then          --if no quadrature change
      -- if (delta < deltaMax) then
      --  delta <= delta + 1;
      -- end if;
-     update <= '0';
+     mpgQuadUpdate <= '0';
     else                                --if quadrature change
-     quadState := lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
+     mpgQuadState <= lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
 
-     case (quadState) is
-      when "0001" => update <= '1'; dir <= jogInvert;
-   -- when "0111" => update <= '1'; dir <= jogInvert;
-   -- when "1110" => update <= '1'; dir <= jogInvert;
-   -- when "1000" => update <= '1'; dir <= jogInvert;
+     case (mpgQuadState) is
+      when "0001" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
+   -- when "0111" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
+   -- when "1110" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
+   -- when "1000" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
 
-      when "0010" =>  update <= '1';dir <= not jogInvert;
-   -- when "1011" =>  update <= '1';dir <= not jogInvert;
-   -- when "1101" =>  update <= '1';dir <= not jogInvert;
-   -- when "0100" =>  update <= '1';dir <= not jogInvert;
+      when "0010" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
+   -- when "1011" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
+   -- when "1101" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
+   -- when "0100" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
 
-      when others => update <= '0';
+      when others => mpgQuadUpdate <= '0';
      end case;
     end if;
 
@@ -656,28 +1110,30 @@ begin
     case jogState is                    --select on jogState
 
      when mpgUpdate =>                  --process message update
-      if (update = '1') then            --if mpg state changed
+      if (mpgQuadUpdate = '1') then     --if mpg state changed
 
-       if (dir /= lastDir) then         --if direction changed
-        lastDir <= dir;                 --save direction
+       -- if (mpgDir /= lastMpgDir) then   --if direction changed
+       --  lastMpgDir <= mpgDir;           --save direction
+
+       if (mpgDir /= curDir) then       --if direction changed
         stop <= '1';                    --stop
         jogState <= mpgDirChange;       --got to direction change state
        else                             --if direction the same
         mpgEna <= '1';
         if (jogMode(0) = '1') then      --if jog mpg continuous
 
-         if (delta >= to_unsigned(delta0, delta'length)) then
-          chDiv   <= to_unsigned(div0, chDiv'length);
-          mpgDist <= to_unsigned(dist0, mpgDist'length);
-         elsif (delta >= to_unsigned(delta1, delta'length)) then
-          chDiv   <= to_unsigned(div1, chDiv'length);
-          mpgDist <= to_unsigned(dist1, mpgDist'length);
-         elsif (delta >= to_unsigned(delta2, delta'length)) then
-          chDiv   <= to_unsigned(div2, chDiv'length);
-          mpgDist <= to_unsigned(dist2, mpgDist'length);
+         if (delta >= delta0) then
+          chDiv   <= div0;
+          mpgDist <= dist0;
+         elsif (delta >= delta1) then
+          chDiv   <= div1;
+          mpgDist <= dist1;
+         elsif (delta >= delta2) then
+          chDiv   <= div2;
+          mpgDist <= dist2;
          else
-          chDiv   <= to_unsigned(div3, chDiv'length);
-          mpgDist <= to_unsigned(dist3, mpgDist'length);
+          chDiv   <= div3;
+          mpgDist <= dist3;
          end if;
 
          if (syncState = mpgEnabled) then --if moving
@@ -695,11 +1151,12 @@ begin
       end if;                           --end update
 
      when mpgDirChange =>               --direction change
-      if (syncState = idle) then        --if syncAccel in idle state
+      if (syncState = syncIdle) then    --if syncAccel in idle state
        stop <= '0';                     --clear stop flag
        if (backlash = 0) then           --if no backlash
         jogState <= mpgMove;            --go to move state
        else                             --if backlash
+        jogDir <= mpgDir;
         backlashActive <= '1';
         -- distLoad <= '1';
         mpgEna <= '1';
@@ -712,7 +1169,7 @@ begin
        mpgEna <= '0';
        backlashActive <= '0';
        jogState <= mpgUpdate;
-      -- elsif (syncState /= idle) then
+      -- elsif (syncState /=syncIdle) then
       --  distLoad <= '0';
       end if;
 
@@ -720,7 +1177,7 @@ begin
       if (syncState = doneWait) then    --if move done
        mpgEna <= '0';
        jogState <= mpgUpdate;
-      -- elsif (syncState /= idle) then
+      -- elsif (syncState /=syncIdle) then
       --  distLoad <= '0';
       end if;
 
@@ -740,20 +1197,28 @@ begin
      when others => null;
     end case;
 
+   -- else                                 --if not mpg mode
+   --  lastMpgDir <= dirIn;                --update last direction
    end if;                              --enabled
+
+   if ((synStepLast = '0') and (synStepTmp = '1')) then --if stepping
+    if ((locDisable = '0') and (backlashActive = '0')) then --enabled
+     if (cmdDir = '1') then             --aif forward
+      loc <= loc + 1;                   --increment location
+     else                               --if backwards
+      loc <= loc - 1;                   --decrement location
+     end if;
+    end if;
+   else
+    if (locUpdate) then                 --if time to update
+     locUpdate <= false;                --clear update flag
+     loc <= locVal;                     --set new location
+    end if;
+   end if;
+
+   synStepLast <= synStepTmp;
 
   end if;                               --end rising_edge
  end process;
-
- -- jogProc : process(clk)
- --  variable quadState  : std_logic_vector(3 downto 0);
- --  variable quadChange : std_logic;
- -- -- variable jogType    : jog_type := jogNone;
- -- begin
- --  if (rising_edge(clk)) then            --if time to process
-
- --  end if;                               --end rising edge
-
- -- end process;
 
 end Behavioral;

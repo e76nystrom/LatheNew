@@ -36,10 +36,10 @@ USE ieee.numeric_std.ALL;
 use work.SimProc.all;
 use work.RegDef.all;
 
-ENTITY SPITest IS
-END SPITest;
+ENTITY A_SPITest IS
+END A_SPITest;
 
-ARCHITECTURE behavior OF SPITest IS 
+ARCHITECTURE behavior OF A_SPITest IS 
  
  -- Component Declaration for the Unit Under Test (UUT)
  
@@ -78,13 +78,13 @@ ARCHITECTURE behavior OF SPITest IS
            );
   port (
    clk : in std_logic;
-   init : in boolean;
+   init : in std_logic;
    din : in std_logic;
    dshift : in boolean;
    op : in unsigned(opBits-1 downto 0);
    copy : in boolean;
    load : in boolean;
-   ena : in boolean;
+   ena : in std_logic;
    statusReg : in unsigned(statusBits-1 downto 0);
 
    dout : out std_logic;
@@ -92,7 +92,7 @@ ARCHITECTURE behavior OF SPITest IS
    dshiftOut : out boolean;
    opOut : out unsigned(opBits-1 downto 0);
    loadOut : out boolean;
-   empty : out boolean
+   notEmpty : out boolean
    );
  end Component;
 
@@ -100,7 +100,7 @@ ARCHITECTURE behavior OF SPITest IS
  constant opBits : integer := 8;
  constant byteBits : integer := 8;
  
- constant statusSize : integer := 5;
+ constant statusSize : integer := 10;
 
  --Inputs
  signal clk : std_logic := '0';
@@ -126,14 +126,14 @@ ARCHITECTURE behavior OF SPITest IS
  constant seqBits : positive := 8;
  constant outBits : positive := 8;
 
- signal init : boolean := false;
- signal ena : boolean := false;
+ signal init : std_logic := '0';
+ signal ena : std_logic := '0';
  signal statusReg : unsigned(statusSize-1 downto 0) := (others => '0');
  signal dinOut : std_logic := '0';
  signal dshiftOut : boolean := false;
  signal opOut : unsigned(opBits-1 downto 0) := (others => '0');
  signal loadOut : boolean := false;
- signal empty : boolean := false;
+ signal notEmpty : boolean := false;
 
  -- Clock period definitions
  constant clk_period : time := 10 ns;
@@ -196,7 +196,7 @@ begin
    dshiftOut => dshiftOut,
    opOut => opOut,
    loadOut => loadOut,
-   empty => empty
+   notEmpty => notEmpty
    );
 
  -- Clock process definitions
@@ -324,9 +324,9 @@ begin
   val := 16#12345678#;
   loadValue(val, valBits);
 
-  init <= true;
+  init <= '1';
   delay(10);
-  init <= false;
+  init <= '0';
 
   delay(10);
 
@@ -386,7 +386,7 @@ begin
 
   zAxisEna <= '1';
   xAxisEna <= '1';
-  ena <= true;
+  ena <= '1';
 
   delay(100);
 
@@ -394,13 +394,13 @@ begin
 
   delay(100);
 
-  ena <= false;
+  ena <= '0';
 
   delay(100);
 
-  init <= true;
+  init <= '1';
   delay(5);
-  init <= false;
+  init <= '0';
   
   wait;
  end process;

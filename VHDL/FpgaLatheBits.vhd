@@ -104,7 +104,7 @@ package FpgaLatheBits is
  alias ctlDirNeg    : std_logic is axisCtlreg(4); -- x10 move in negative dir
  alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
- alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
+ alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave ctl by other axis
  alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
  alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
  alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
@@ -120,7 +120,7 @@ package FpgaLatheBits is
  constant c_ctlDirNeg    : integer :=  4; -- x10 move in negative dir
  constant c_ctlSetLoc    : integer :=  5; -- x20 set location
  constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
- constant c_ctlSlave     : integer :=  7; -- x80 slave controlled by other axis
+ constant c_ctlSlave     : integer :=  7; -- x80 slave ctl by other axis
  constant c_ctlDroEnd    : integer :=  8; -- x100 use dro to end move
  constant c_ctlJogCmd    : integer :=  9; -- x200 jog with commands
  constant c_ctlJogMpg    : integer := 10; -- x400 jog with mpg
@@ -147,13 +147,13 @@ package FpgaLatheBits is
  constant cfgCtlSize : integer := 20;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  --variable cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
- alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z direction inverted
- alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x direction inverted
- alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
- alias cfgXDroInv   : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
- alias cfgZJogInv   : std_logic is cfgCtlreg(4); -- x10 z jog direction inverted
- alias cfgXJogInv   : std_logic is cfgCtlreg(5); -- x20 x jog direction inverted
- alias cfgSpDirInv  : std_logic is cfgCtlreg(6); -- x40 spindle direction inverted
+ alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z dir inverted
+ alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x dir inverted
+ alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro dir inverted
+ alias cfgXDroInv   : std_logic is cfgCtlreg(3); -- x08 x dro dir inverted
+ alias cfgZJogInv   : std_logic is cfgCtlreg(4); -- x10 z jog dir inverted
+ alias cfgXJogInv   : std_logic is cfgCtlreg(5); -- x20 x jog dir inverted
+ alias cfgSpDirInv  : std_logic is cfgCtlreg(6); -- x40 spindle dir inverted
  alias cfgZHomeInv  : std_logic is cfgCtlreg(7); -- x80 z home inverted
  alias cfgZMinusInv : std_logic is cfgCtlreg(8); -- x100 z minus inverted
  alias cfgZPlusInv  : std_logic is cfgCtlreg(9); -- x200 z plus inverted
@@ -161,20 +161,20 @@ package FpgaLatheBits is
  alias cfgXMinusInv : std_logic is cfgCtlreg(11); -- x800 x minus inverted
  alias cfgXPlusInv  : std_logic is cfgCtlreg(12); -- x1000 x plus inverted
  alias cfgProbeInv  : std_logic is cfgCtlreg(13); -- x2000 probe inverted
- alias cfgEncDirInv : std_logic is cfgCtlreg(14); -- x4000 invert encoder direction
+ alias cfgEncDirInv : std_logic is cfgCtlreg(14); -- x4000 invert encoder dir
  alias cfgEStopEna  : std_logic is cfgCtlreg(15); -- x8000 estop enable
  alias cfgEStopInv  : std_logic is cfgCtlreg(16); -- x10000 estop invert
- alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder direction
- alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 no encoder generate sync pulse
+ alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder dir
+ alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 generate sync pulse
  alias cfgPWMEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
 
- constant c_cfgZDirInv   : integer :=  0; -- x01 z direction inverted
- constant c_cfgXDirInv   : integer :=  1; -- x02 x direction inverted
- constant c_cfgZDroInv   : integer :=  2; -- x04 z dro direction inverted
- constant c_cfgXDroInv   : integer :=  3; -- x08 x dro direction inverted
- constant c_cfgZJogInv   : integer :=  4; -- x10 z jog direction inverted
- constant c_cfgXJogInv   : integer :=  5; -- x20 x jog direction inverted
- constant c_cfgSpDirInv  : integer :=  6; -- x40 spindle direction inverted
+ constant c_cfgZDirInv   : integer :=  0; -- x01 z dir inverted
+ constant c_cfgXDirInv   : integer :=  1; -- x02 x dir inverted
+ constant c_cfgZDroInv   : integer :=  2; -- x04 z dro dir inverted
+ constant c_cfgXDroInv   : integer :=  3; -- x08 x dro dir inverted
+ constant c_cfgZJogInv   : integer :=  4; -- x10 z jog dir inverted
+ constant c_cfgXJogInv   : integer :=  5; -- x20 x jog dir inverted
+ constant c_cfgSpDirInv  : integer :=  6; -- x40 spindle dir inverted
  constant c_cfgZHomeInv  : integer :=  7; -- x80 z home inverted
  constant c_cfgZMinusInv : integer :=  8; -- x100 z minus inverted
  constant c_cfgZPlusInv  : integer :=  9; -- x200 z plus inverted
@@ -182,11 +182,11 @@ package FpgaLatheBits is
  constant c_cfgXMinusInv : integer := 11; -- x800 x minus inverted
  constant c_cfgXPlusInv  : integer := 12; -- x1000 x plus inverted
  constant c_cfgProbeInv  : integer := 13; -- x2000 probe inverted
- constant c_cfgEncDirInv : integer := 14; -- x4000 invert encoder direction
+ constant c_cfgEncDirInv : integer := 14; -- x4000 invert encoder dir
  constant c_cfgEStopEna  : integer := 15; -- x8000 estop enable
  constant c_cfgEStopInv  : integer := 16; -- x10000 estop invert
- constant c_cfgEnaEncDir : integer := 17; -- x20000 enable encoder direction
- constant c_cfgGenSync   : integer := 18; -- x40000 no encoder generate sync pulse
+ constant c_cfgEnaEncDir : integer := 17; -- x20000 enable encoder dir
+ constant c_cfgGenSync   : integer := 18; -- x40000 generate sync pulse
  constant c_cfgPWMEna    : integer := 19; -- x80000 pwm enable
 
 -- clock control register

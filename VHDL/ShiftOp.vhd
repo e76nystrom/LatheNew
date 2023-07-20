@@ -25,16 +25,16 @@ use ieee.numeric_std.ALL;
 use work.RegDef.ALL;
 
 entity ShiftOp is
- generic(opVal :  unsigned (opb-1 downto 0) := x"00";
+ generic(opVal  : unsigned (opb-1 downto 0) := x"00";
          opBits : positive := 8;
-         n :      positive := 8);
+         n      : positive := 8);
  port(
-  clk :   in    std_logic;
-  din :   in    std_logic;
-  op :    in    unsigned (opBits-1 downto 0);
+  clk   : in    std_logic;
+  din   : in    std_logic;
+  op    : in    unsigned (opBits-1 downto 0);
   shift : in    boolean;
 
-  data :  inout unsigned (n-1 downto 0) := (others => '0')
+  data  : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end ShiftOp;
 

@@ -5,26 +5,30 @@ use IEEE.NUMERIC_STD.ALL;
 use work.regdef.all;
 
 entity Jog is
- generic (opBase : unsigned;
-          opBits : positive;
-          outBits : positive);
+ generic (opBase :  unsigned (opb-1 downto 0) := x"00";
+          opBits :  positive := 8;
+          outBits : positive := 32);
  port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned(opBits - 1 downto 0);
-  load : in boolean;
-  dshiftR : in boolean;
-  opR : in unsigned(opBits-1 downto 0);
-  copyR : in boolean;
-  quad : in std_logic_vector(1 downto 0);
-  enable : in std_logic;
-  jogInvert : in std_logic;
+  clk :        in std_logic;
+
+  din :        in std_logic;
+  dshift :     in boolean;
+  op :         in unsigned(opBits - 1 downto 0);
+
+  load :       in boolean;
+  dshiftR :    in boolean;
+  opR :        in unsigned(opBits-1 downto 0);
+  copyR :      in boolean;
+
+  quad :       in std_logic_vector(1 downto 0);
+  enable :     in std_logic;
+  jogInvert :  in std_logic;
   currentDir : in std_logic;
-  jogStep : out std_logic := '0';
-  jogDir : out std_logic := '0';
-  jogUpdLoc : out std_logic := '1';
-  dout : out std_logic
+
+  jogStep :    out std_logic := '0';
+  jogDir :     out std_logic := '0';
+  jogUpdLoc :  out std_logic := '1';
+  dout :       out std_logic
   );
 end Jog;
 
@@ -32,42 +36,45 @@ architecture Behavioral of Jog is
 
  component CtlReg is
   generic(opVal : unsigned;
-          opb : positive;
-          n : positive);
+          opb :   positive;
+          n :     positive);
   port (
-   clk : in std_logic;                   --clock
-   din : in std_logic;                   --data in
-   op : in unsigned(opb-1 downto 0);     --current reg address
+   clk :   in std_logic;                --clock
+   din :   in std_logic;                --data in
+   op :    in unsigned(opb-1 downto 0); --current reg address
    shift : in boolean;                   --shift data
-   load : in boolean;                    --load to data register
-   data : inout  unsigned (n-1 downto 0)); --data register
+   load :  in boolean;                   --load to data register
+
+   data :  inout  unsigned (n-1 downto 0)); --data register
  end Component;
 
  component ShiftOp is
-  generic(opVal : unsigned;
+  generic(opVal :  unsigned;
           opBits : positive;
-          n : positive);
+          n :      positive);
   port(
-   clk : in std_logic;
-   din : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
+   clk :   in std_logic;
+   din :   in std_logic;
+   op :    in unsigned (opBits-1 downto 0);
    shift : in boolean;
-   data : inout unsigned (n-1 downto 0)
+   
+   data :  inout unsigned (n-1 downto 0)
    );
  end Component;
 
  component ShiftOutNS is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
+  generic(opVal :   unsigned;
+          opBits :  positive;
+          n :       positive;
           outBits : positive);
   port (
-   clk : in std_logic;
+   clk :    in std_logic;
    dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
+   op :     in unsigned (opBits-1 downto 0);
+   copy :   in boolean;
+   data :   in unsigned(n-1 downto 0);
+
+   dout :   out std_logic
    );
  end Component;
 
@@ -76,40 +83,40 @@ architecture Behavioral of Jog is
 
  signal lastA : std_logic_vector(1 downto 0) := (others => '0');
  signal lastB : std_logic_vector(1 downto 0) := (others => '0');
- signal dir : std_logic := '0';
+ signal dir :   std_logic := '0';
 
  signal update : std_logic := '0';
 
  constant timerMax : natural := 10;
- signal timer : natural range 0 to timerMax-1 := timerMax-1;
- signal uSec : std_logic := '0';
+ signal timer :      natural range 0 to timerMax-1 := timerMax-1;
+ signal uSec :       std_logic := '0';
 
  constant deltaBits : positive := 16;
- constant distBits : positive := 12;
+ constant distBits :  positive := 12;
 
- constant deltaMax : natural := 50000;
- constant slowJog : natural := 20000;
+ constant deltaMax :  natural := 50000;
+ constant slowJog :   natural := 20000;
  constant fastSteps : natural := 14;
 
  signal deltaTimer : unsigned(deltaBits-1 downto 0) := (others => '0');
- signal jogTimer : unsigned(deltaBits-1 downto 0) := (others => '0');
- signal deltaJog : unsigned(deltaBits-1 downto 0) := (others => '0');
+ signal jogTimer :   unsigned(deltaBits-1 downto 0) := (others => '0');
+ signal deltaJog :   unsigned(deltaBits-1 downto 0) := (others => '0');
 
- signal jogDist : unsigned(distBits-1 downto 0) := (others => '0');
- signal jogInc : unsigned(distBits-1 downto 0) := (others => '0');
+ signal jogDist :    unsigned(distBits-1 downto 0) := (others => '0');
+ signal jogInc :     unsigned(distBits-1 downto 0) := (others => '0');
 
  signal jogActive : boolean := False;
  signal activeDir : std_logic := '0';
 
- signal incDist : unsigned(distBits-1 downto 0);
+ signal incDist :      unsigned(distBits-1 downto 0);
  signal backlashDist : unsigned(distBits-1 downto 0);
 
  -- jog control register
 
- constant jogSize : integer := 2;
- signal jogReg : unsigned(jogSize-1 downto 0);
+ constant jogSize :    integer := 2;
+ signal jogReg :       unsigned(jogSize-1 downto 0);
  alias jogContinuous : std_logic is jogreg(0); -- x01 jog continuous mode
- alias jogBacklash : std_logic is jogreg(1); -- x02 jog backlash present
+ alias jogBacklash :   std_logic is jogreg(1); -- x02 jog backlash present
 
 begin
 
@@ -117,35 +124,37 @@ begin
 
  jogCtlReg : ctlReg 
   generic map(opVal => opBase + F_Ld_Jog_ctl,
-              opb => opBits,
-              n => jogSize)
+              opb =>   opBits,
+              n =>     jogSize)
   port map (
-   clk => clk,
-   din => din,
-   op => op,
+   clk =>   clk,
+   din =>   din,
+   op =>    op,
    shift => dshift,
-   load => load,
-   data => jogReg);
+   load =>  load,
+   data =>  jogReg);
 
  jogIncReg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Jog_Inc,
+  generic map(opVal =>  opBase + F_Ld_Jog_Inc,
               opBits => opBits,
-              n => distBits)
-  port map ( clk => clk,
-             din => din,
-             op => op,
-             shift => dshift,
-             data => incDist);
+              n =>      distBits)
+  port map (
+   clk =>   clk,
+   din =>   din,
+   op =>    op,
+   shift => dshift,
+   data =>  incDist);
 
  jogBacklashReg: ShiftOp
-  generic map(opVal => opBase + F_Ld_Jog_Back,
+  generic map(opVal =>  opBase + F_Ld_Jog_Back,
               opBits => opBits,
-              n => DistBits)
-  port map ( clk => clk,
-             din => din,
-             op => op,
-             shift => dshift,
-             data => backlashDist);
+              n =>      DistBits)
+  port map (
+   clk =>   clk,
+   din =>   din,
+   op =>    op,
+   shift => dshift,
+   data =>  backlashDist);
 
  -- dout <= posDout;
 
