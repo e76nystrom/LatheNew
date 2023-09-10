@@ -38,7 +38,7 @@
 set_global_assignment -name FAMILY "Cyclone IV E"
 set_global_assignment -name DEVICE EP4CE22F17C6
 set_global_assignment -name TOP_LEVEL_ENTITY LatheNew
-set_global_assignment -name ORIGINAL_QUARTUS_VERSION "22.1std"
+set_global_assignment -name ORIGINAL_QUARTUS_VERSION 22.1STD
 set_global_assignment -name PROJECT_CREATION_TIME_DATE "05:58:23  DECEMBER 06, 2019"
 set_global_assignment -name LAST_QUARTUS_VERSION "22.1std.1 Lite Edition"
 set_global_assignment -name PROJECT_OUTPUT_DIRECTORY output_files
@@ -131,6 +131,8 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to led[7]
 
 # gpio 0
 
+# spi
+
 set_location_assignment PIN_A8 -to dsel
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dsel
 
@@ -143,6 +145,8 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to din
 set_location_assignment PIN_C3 -to dout
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dout
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to dout
+
+# status and interrupt
 
 set_location_assignment PIN_A2 -to zDoneInt
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to zDoneInt
@@ -160,6 +164,8 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to xDoneInt
 #set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to reserved_GPIO_0-8[5]
 #set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to reserved_GPIO_0-8[5]
 
+# spindle inputs
+
 set_location_assignment PIN_A4 -to bIn
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bIn
 
@@ -172,6 +178,8 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to syncIn
 #set_location_assignment PIN_D5 -to reserved_GPIO_0-14[9]
 #set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to reserved_GPIO_0-14[9]
 #set_instance_assignment -name RESERVE_PIN AS_INPUT_TRI_STATED -to reserved_GPIO_0-14[9]
+
+# buffered output
 
 set_location_assignment PIN_B6 -to bufOut[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bufOut[0]
@@ -188,6 +196,8 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to bufOut[2]
 set_location_assignment PIN_D6 -to bufOut[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to bufOut[3]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to bufOut[3]
+
+# debug outputs
 
 set_location_assignment PIN_A7 -to dbg[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dbg[1]
@@ -221,6 +231,8 @@ set_location_assignment PIN_F8 -to dbg[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to dbg[6]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to dbg[6]
 
+# led segments
+
 set_location_assignment PIN_F9 -to seg[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to seg[2]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to seg[2]
@@ -252,6 +264,8 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to seg[5]
 set_location_assignment PIN_B11 -to seg[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to seg[0]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to seg[0]
+
+# led anodes
 
 set_location_assignment PIN_A12 -to anode[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to anode[3]
@@ -295,6 +309,8 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to xMpg[0]
 set_location_assignment PIN_T12 -to xMpg[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to xMpg[1]
 
+# external output
+
 set_location_assignment PIN_R12 -to extOut[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to extOut[0]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to extOut[0]
@@ -302,6 +318,12 @@ set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to extOut[0]
 set_location_assignment PIN_T11 -to extOut[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to extOut[1]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to extOut[1]
+
+set_location_assignment PIN_P15 -to extOut[2]
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to extOut[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to extOut[2]
+
+# pin outputs
 
 set_location_assignment PIN_T10 -to pinOut[8]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pinOut[8]
@@ -351,9 +373,7 @@ set_location_assignment PIN_L15 -to pinOut[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pinOut[7]
 set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to pinOut[7]
 
-set_location_assignment PIN_P15 -to extOut[2]
-set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to extOut[2]
-set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to extOut[2]
+# pin inputs
 
 set_location_assignment PIN_P16 -to pinIn[4]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pinIn[4]
@@ -370,29 +390,39 @@ set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pinIn[2]
 set_location_assignment PIN_P14 -to pinIn[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to pinIn[3]
 
+# aux outputs
+
 set_location_assignment PIN_L14 -to aux[7]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[7]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[7]
 
 set_location_assignment PIN_N14 -to aux[6]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[6]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[6]
 
 set_location_assignment PIN_M10 -to aux[5]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[5]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[5]
 
 set_location_assignment PIN_L13 -to aux[4]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[4]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[4]
 
 set_location_assignment PIN_J16 -to aux[3]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[3]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[3]
 
 set_location_assignment PIN_K15 -to aux[2]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[2]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[2]
 
 set_location_assignment PIN_J13 -to aux[1]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[1]
 
 set_location_assignment PIN_J14 -to aux[0]
 set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to aux[0]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 8MA -to aux[0]
 
 # gpio 2 2x13 gpio header
 
@@ -678,47 +708,6 @@ set_global_assignment -name TIMING_ANALYZER_MULTICORNER_ANALYSIS ON
 set_global_assignment -name NUM_PARALLEL_PROCESSORS ALL
 set_global_assignment -name VHDL_INPUT_VERSION VHDL_2008
 set_global_assignment -name VHDL_SHOW_LMF_MAPPING_MESSAGES OFF
-set_global_assignment -name VHDL_FILE ../VHDL/DebugRecord.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Jog.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Common.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/SyncAccelDistJog.vhd
-set_global_assignment -name QSYS_FILE SystemClk.qsys
-set_global_assignment -name VHDL_FILE ../VHDL/SyncAccelNew.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Axis.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOpLoad.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Spindle.vhd
-set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/IntTmrNew.vhd
-set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmrNewMem.vhd
-set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmrNew.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Reader.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Controller.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Conversion.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOpSel.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/PWM.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/IndexClocks.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOutNS.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOp.vhd
-set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/Display.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/DisplayCtl.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOutN.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/Encoder.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ClockEnaN.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/SPI.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/PulseGen.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/CtlReg.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/FreqGen.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/QuadEncoder.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/FreqGenCtr.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/LatheNew.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/ShiftOut.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/PhaseCounter.vhd
-set_global_assignment -name VHDL_FILE ../VHDL/RegDef.vhd
-set_global_assignment -name QIP_FILE Multiplier.qip
-set_global_assignment -name QIP_FILE CMem.qip
-set_global_assignment -name QIP_FILE RdMem.qip
-set_global_assignment -name QIP_FILE CmpTmrMem2.qip
-set_global_assignment -name SDC_FILE output_files/LatheNew.sdc
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
 set_global_assignment -name SLD_NODE_CREATOR_ID 110 -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_ENTITY_NAME sld_signaltap -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to sysClk -section_id auto_signaltap_0
@@ -782,5 +771,46 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[28] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[30] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
+set_global_assignment -name SDC_FILE LatheNew.sdc
+set_global_assignment -name VHDL_FILE ../VHDL/LatheNew.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/DebugRecord.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Jog.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Common.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/SyncAccelDistJog.vhd
+set_global_assignment -name QSYS_FILE SystemClk.qsys
+set_global_assignment -name VHDL_FILE ../VHDL/SyncAccelNew.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Axis.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOpLoad.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Spindle.vhd
+set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/IntTmrNew.vhd
+set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmrNewMem.vhd
+set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/CmpTmrNew.vhd
+set_global_assignment -name VHDL_FILE ../../Encoder/VHDL/Display.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Reader.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Controller.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Conversion.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOpSel.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/PWM.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/IndexClocks.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOutNS.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOp.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/DisplayCtl.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOutN.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/Encoder.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ClockEnaN.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/SPI.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/PulseGen.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/CtlReg.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/FreqGen.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/QuadEncoder.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/FreqGenCtr.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/ShiftOut.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/PhaseCounter.vhd
+set_global_assignment -name VHDL_FILE ../VHDL/RegDef.vhd
+set_global_assignment -name QIP_FILE Multiplier.qip
+set_global_assignment -name QIP_FILE CMem.qip
+set_global_assignment -name QIP_FILE RdMem.qip
+set_global_assignment -name QIP_FILE CmpTmrMem2.qip
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp

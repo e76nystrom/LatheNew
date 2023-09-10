@@ -7,11 +7,13 @@ use work.conversion.all;
 -- use work.DebugRecord.All;
 
 entity LatheNew is
- port(
+ generic (ledPins : positive := 8;
+          dbgPins : positive := 8);
+ port (
   sysClk : in std_logic;
   
-  led      : out std_logic_vector(7 downto 0) := (others => '0');
-  dbg      : out std_logic_vector(7 downto 0) := (others => '0');
+  led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
+  dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -738,12 +740,14 @@ begin
  queNotEmpty <= to_std_logic(ctlNotEmpty);
  syncActive <= intActive;
 
- led(7) <= div(divBits);
- led(6) <= div(divBits-1);
- led(5) <= div(divBits-2);
- led(4) <= div(divBits-3);
- led(3) <= op(3);
- led(2) <= clkCtlReg(2);
+ ledConfig : if ledPins > 2 generate
+  led(7) <= div(divBits);
+  led(6) <= div(divBits-1);
+  led(5) <= div(divBits-2);
+  led(4) <= div(divBits-3);
+  led(3) <= op(3);
+  led(2) <= clkCtlReg(2);
+ end generate ledConfig;
  led(1) <= clkCtlReg(1);
  led(0) <= clkCtlReg(0);
 
@@ -787,7 +791,12 @@ begin
  dbg(3) <= intXDoneInt;
  dbg(7 downto 4) <= std_logic_vector(zDbg);
 
- aux <= xSynDbg & zSynDbg;
+ dbgConfig : if dbgPins > 8 generate
+  dbg(11 downto 8)  <= zSynDbg;
+  dbg(15 downto 12) <= xSynDbg;
+ else generate
+  aux <= xSynDbg & zSynDbg;
+ end generate dbgConfig;
 
  -- dbg(4) = dbgOUt(0) <= runEna;
  -- dbg(5) = dbgOut(1) <= distDecel;
