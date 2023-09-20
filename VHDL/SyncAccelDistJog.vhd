@@ -5,7 +5,6 @@ use IEEE.NUMERIC_STD.ALL;
 use IEEE.MATH_REAL.ALL;
 
 use work.RegDef.ALL;
--- use work.DebugRecord.All;
 
 entity SyncAccelDistJog is
  generic (opBase     : unsigned := x"00";

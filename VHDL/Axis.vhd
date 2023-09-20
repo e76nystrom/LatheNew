@@ -4,7 +4,6 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.numeric_std.ALL;
 
 use work.RegDef.ALL;
--- use work.DebugRecord.All;
 
 entity Axis is
  generic (

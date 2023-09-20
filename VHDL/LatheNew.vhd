@@ -4,7 +4,6 @@ use ieee.numeric_std.all;
 
 use work.regDef.all;
 use work.conversion.all;
--- use work.DebugRecord.All;
 
 entity LatheNew is
  generic (ledPins : positive := 8;
