@@ -38,19 +38,13 @@ end PulseGen;
 
 architecture Behavioral of PulseGen is
 
- component ClockEnableN is
-  Port ( clk : in  std_logic;
-         ena : in  std_logic;
-         clkena : out std_logic);
- end component;
-
  signal counter : integer range 0 to pulseWidth-1 := 0; --z step width counter
 
  signal clkena : std_logic;
 
 begin
 
- clk_ena: ClockEnableN
+ clk_ena : entity work.ClockEnableN
   port map (
    clk => clk,
    ena => pulseIn,

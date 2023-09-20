@@ -62,91 +62,6 @@ end Axis;
 
 architecture Behavioral of Axis is
 
- component CtlReg is
-  generic(opVal : unsigned;
-          opb   : positive;
-          n     : positive);
-  port (
-   clk   : in std_logic;                --clock
-   din   : in std_logic;                --data in
-   op    : in unsigned(opb-1 downto 0); --current reg address
-   shift : in boolean;                  --shift data
-   load  : in boolean;                  --load to data register
-   data  : inout  unsigned (n-1 downto 0)); --data register
- end Component;
-
- component ShiftOutN is
-  generic(opVal   : unsigned;
-          opBits  : positive;
-          n       : positive;
-          outBits : positive);
-  port (
-   clk    : in std_logic;
-   dshift : in boolean;
-   op     : in unsigned (opBits-1 downto 0);
-   copy   : in boolean;
-   data   : in unsigned(n-1 downto 0);
-   dout   : out std_logic
-   );
- end Component;
-
- component SyncAccelDistJog is
-  
-  generic (opBase    : unsigned := x"00";
-          opBits     : positive := 8;
-          synBits    : positive := 32;
-          posBits    : positive := 18;
-          countBits  : positive := 18;
-          distBits   : positive := 18;
-          droBits    : positive := 18;
-          locBits    : positive := 18;
-          outBits    : positive := 32;
-          synDbgBits : positive := 4);
-  port (
-   clk        : in std_logic;
-
-   din        : in std_logic;
-   dshift     : in boolean;
-   op         : in unsigned (opBits-1 downto 0);
-   load       : in boolean;
-
-   dshiftR    : in boolean;
-   opR        : in unsigned (opBits-1 downto 0);
-   copyR      : in boolean;
-
-   init       : in std_logic;            --reset
-   ena        : in std_logic;            --enable operation
-   extDone    : in std_logic;            --external done input
-   ch         : in std_logic;
-   cmdDir     : in std_logic;            --direction in
-   curDir     : in std_logic;
-   locDisable : in std_logic;            --disable location update
-
-   mpgQuad    : in std_logic_vector(1 downto 0);
-   jogInvert  : in std_logic;
-   jogMode    : in std_logic_vector(1 downto 0);
-
-   droQuad    : in std_logic_vector(1 downto 0);
-   droInvert  : in std_logic;
-   droEndChk  : in std_logic;
-
-   -- dbg        : out SyncAccelDbg;
-   synDbg     : out std_logic_vector(synDbgBits-1 downto 0);
-   movDone    : out std_logic;
-   droDone    : out std_logic;
-   dout       : out std_logic;
-   dirOut     : out std_logic;          --direction out
-   synStep    : out std_logic
-   );
- end Component;
-
- component PulseGen is
-  generic(pulseWidth : positive);
-  port ( clk : in std_logic;
-         pulseIn : in std_logic;
-         pulseOut : out std_logic);
- end Component;
-
 --(++ axisCtl
 -- axis status register
 
@@ -247,7 +162,7 @@ architecture Behavioral of Axis is
 
 begin
 
- AxStatReg: ShiftOutN
+ AxStatReg : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Axis_Status,
               opBits => opBits,
               n => axisStatusSize,
@@ -261,7 +176,7 @@ begin
    dout => doutStatus
    );
 
- AxCtlReg : CtlReg
+ AxCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Axis_Ctl,
               opb => opBits,
               n => axisCtlSize)
@@ -273,7 +188,7 @@ begin
    load => load,
    data => axisCtlReg);
 
- AxCtlRegRd: ShiftOutN
+ AxCtlRegRd : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Axis_Ctl,
               opBits => opBits,
               n => axisCtlSize,
@@ -295,7 +210,7 @@ begin
  dirOut  <= synDirOut;
  synDbg  <= synDbgData;
 
- AxisSyncAccel: SyncAccelDistJog
+ AxisSyncAccel : entity work.SyncAccelDistJog
   generic map (opBase     => opBase + F_Sync_Base,
                opBits     => opBits,
                synBits    => synBits,
@@ -343,7 +258,7 @@ begin
    synStep    => synStepOut
    );
 
- dbgPulse : PulseGen
+ dbgPulse  : entity work.PulseGen
   generic map (pulseWidth => 25)
   port map (
    clk => clk,

@@ -62,33 +62,6 @@ end SyncAccel;
 
 architecture Behavioral of SyncAccel is
 
- component ShiftOp is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port (
-   clk : in std_logic;
-   shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   din : in std_logic;
-   data : inout  unsigned (n-1 downto 0));
- end component;
-
- component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
-          outBits : positive);
-  port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
-   );
- end Component;
-
  type fsm is (idle, enabled, updAccel, doneWait);
  signal state : fsm := idle;
 
@@ -124,7 +97,7 @@ begin
 
  dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout;
  
- dreg: ShiftOp
+ dreg : entity work.ShiftOp
   generic map(opVal => opBase + opD,
               opBits => opBits,
               n => synBits)
@@ -135,7 +108,7 @@ begin
    din => din,
    data => d);
 
- incr1reg: ShiftOp
+ incr1reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr1,
               opBits => opBits,
               n => synBits)
@@ -146,7 +119,7 @@ begin
    din => din,
    data => incr1);
 
- incr2reg: ShiftOp
+ incr2reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr2,
               opBits => opBits,
               n => synBits)
@@ -157,7 +130,7 @@ begin
    din => din,
    data => incr2);
 
- accelreg: ShiftOp
+ accelreg : entity work.ShiftOp
   generic map(opVal => opBase + opAccel,
               opBits => opBits,
               n => synBits)
@@ -168,7 +141,7 @@ begin
    din => din,
    data => accel);
 
- accelCountReg: ShiftOp
+ accelCountReg : entity work.ShiftOp
   generic map(opVal => opBase + opAccelCount,
               opBits => opBits,
               n => countBits)
@@ -179,7 +152,7 @@ begin
    din => din,
    data => accelCount);
 
- sum_out : ShiftOutN
+ sum_out : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Sum,
               opBits => opBits,
               n => synBits,
@@ -193,7 +166,7 @@ begin
    dout => sumDout
    );
 
- accelSum_Out: ShiftOutN
+ accelSum_Out : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Accel_Sum,
               opBits => opBits,
               n => synBits,
@@ -207,7 +180,7 @@ begin
    dout => accelSumDout
    );
 
- accelCtr_out : ShiftOutN
+ accelCtr_out : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Accel_Ctr,
               opBits => opBits,
               n => countBits,
@@ -221,7 +194,7 @@ begin
    dout => accelCtrDout
    );
 
- xPos_Shift : ShiftOutN
+ xPos_Shift : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_XPos,
               opBits => opBits,
               n => posBits,
@@ -235,7 +208,7 @@ begin
    dout => xPosDout
    );
 
- yPos_Shift : ShiftOutN
+ yPos_Shift : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_YPos,
               opBits => opBits,
               n => posBits,

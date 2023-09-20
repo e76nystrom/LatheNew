@@ -33,71 +33,6 @@ end Spindle;
 
 architecture Behavioral of Spindle is
 
- component CtlReg is
-  generic(opVal : unsigned;
-          opb : positive;
-          n : positive);
-  port (
-   clk : in std_logic;                   --clock
-   din : in std_logic;                   --data in
-   op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in boolean;                   --shift data
-   load : in boolean;                    --load to data register
-   data : inout  unsigned (n-1 downto 0)); --data register
- end Component;
-
- component SyncAccel is
-  generic (opBase : unsigned;
-           opBits : positive;
-           synBits : positive;
-           posBits : positive;
-           countBits : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned (opBits-1 downto 0);
-   copyR : in boolean;
-   init : in std_logic;                  --reset
-   ena : in std_logic;                   --enable operation
-   decel : in std_logic;
-   decelDisable : in boolean;
-   ch : in std_logic;
-   dir : in std_logic;
-   dout : out std_logic;
-   accelActive : out std_logic;
-   decelDone : out boolean;
-   synStep : out std_logic
-   );
- end Component;
-
- component Jog is
-  generic (opBase : unsigned;
-           opBits : positive;
-           outBits : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits - 1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned(opBits-1 downto 0);
-   copyR : in boolean;
-   quad : in std_logic_vector(1 downto 0);
-   enable : in std_logic;
-   jogInvert : in std_logic;
-   currentDir : in std_logic;
-   jogStep : out std_logic;
-   jogDir : out std_logic;
-   jogUpdLoc: out std_logic;
-   dout : out std_logic
-   );
- end Component;
-
  type fsm is (idle, run, done);
  signal state : fsm;
 
@@ -128,7 +63,7 @@ begin
  
  dOut <= doutSync or doutJog;
  
- spindleCtlReg : CtlReg
+ spindleCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Sp_Ctl,
               opb => opBits,
               n => spCtlSize)
@@ -140,7 +75,7 @@ begin
    load => load,
    data => spCtlReg);
 
- AxisSyncAccel: SyncAccel
+ AxisSyncAccel : entity work.SyncAccel
   generic map (opBase => opBase + F_Sp_Sync_Base,
                opBits => opBits,
                synBits => synBits,
@@ -167,7 +102,7 @@ begin
    synStep => synStep
    );
 
- AxisJog :  Jog
+ AxisJog : entity work.Jog
   generic map (opBase => opBase + F_Sp_Jog_Base,
                opBits => opBits,
                outBits => outBits)

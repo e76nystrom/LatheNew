@@ -22,21 +22,6 @@ end IndexClocks;
 
 architecture behavioral of  IndexClocks is
 
- component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
-          outBits : positive);
-  port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
-   );
- end Component;
-
  constant chCtrBits : positive := n-10;
 
  signal lastIndex : std_logic := '0';
@@ -48,7 +33,7 @@ architecture behavioral of  IndexClocks is
 
 begin
 
- dataOut: ShiftOutN
+ dataOut : entity work.ShiftOutN
   generic map(opVal => opVal,
               opBits => opBits,
               n => n,

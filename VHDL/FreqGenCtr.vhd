@@ -49,18 +49,6 @@ end FreqGenCtr;
 
 architecture Behavioral of FreqGenCtr is
 
- component ShiftOp is
-  generic(opVal : unsigned;
-         opBits : positive;
-         n : positive);
-  port (
-   clk : in std_logic;
-   shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   din : in std_logic;
-   data : inout unsigned (n-1 downto 0));
- end component;
-
  type fsm is (idle, run, updCount, chkCount, done);
  signal state : fsm := idle;
  
@@ -74,7 +62,7 @@ architecture Behavioral of FreqGenCtr is
 
 begin
 
- freqReg: ShiftOp
+ freqReg : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_Dbg_Freq,
               opBits => opBits,
               n => freqBits)
@@ -85,7 +73,7 @@ begin
    din => din,
    data => freqVal);
 
- countReg: ShiftOp
+ countReg : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_Dbg_Count,
               opBits => opBits,
               n => countBits)

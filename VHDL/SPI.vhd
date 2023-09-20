@@ -32,29 +32,21 @@ use IEEE.NUMERIC_STD.ALL;
 entity SPI is
  generic (opBits : positive := 8);
  port (
-  clk : in std_logic;                   --system clock
-  dclk : in std_logic;                  --spi clk
-  dsel : in std_logic;                  --spi select
-  din : in std_logic;                   --spi data in
-  op : out unsigned(opBits-1 downto 0) := (others => '0'); --op code
-  copy : out boolean := false;          --copy data to be shifted out
+  clk   : in std_logic;                 --system clock
+  dclk  : in std_logic;                 --spi clk
+  dsel  : in std_logic;                 --spi select
+  din   : in std_logic;                 --spi data in
+  op    : out unsigned(opBits-1 downto 0) := (others => '0'); --op code
+  copy  : out boolean := false;         --copy data to be shifted out
   shift : out boolean := false;         --shift data
-  load : out boolean := false;          --load data shifted in
-  header : out boolean := true;         --receiving header
+  load  : out boolean := false;         --load data shifted in
+  -- header : out boolean := true;         --receiving header
   spiActive : out boolean := false
   --info : out std_logic_vector(2 downto 0) --state info
   );
 end SPI;
 
 architecture Behavioral of SPI is
-
- component ClockEnableN is
- generic (n : positive);
-  Port (
-   clk : in  std_logic;
-   ena : in  std_logic;
-   clkena : out std_logic);
- end component;
 
  type spi_fsm is (start, idle, read_hdr, chk_count, upd_count, copy_data,
                   active, dclk_wait, load_reg);
@@ -90,7 +82,7 @@ begin
 
  --info <= convert(state);
 
- clk_ena: ClockEnableN
+ clk_ena : entity work.ClockEnableN
   generic map(n => 4)
   port map (
    clk => clk,
@@ -116,7 +108,7 @@ begin
      load <= false;
      copy <= false;
      if (dselEna) then
-      header <= true;
+      -- header <= true;
       spiActive <= true;
       msgData <= false;
       opReg <= (opBits-1 downto 0 => '0');
@@ -143,7 +135,7 @@ begin
     when chk_count =>
      if (count = 0) then
       op <= opReg;
-      header <= false;
+      -- header <= false;
       state <= copy_data;
      else
       state <= read_hdr;

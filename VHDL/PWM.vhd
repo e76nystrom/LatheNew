@@ -20,33 +20,6 @@ end PWM;
 
 architecture behavioral of  PWM is
 
- component ShiftOp is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port(
-   clk : in std_logic;
-   din : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
-   shift : in boolean;
-   data : inout unsigned (n-1 downto 0)
-   );
- end Component;
-
- component ShiftOpSel is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port(
-   clk : in std_logic;
-   din : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
-   shift : in boolean;
-   sel : out boolean;
-   data : inout unsigned (n-1 downto 0)
-   );
- end Component;
-
  signal pwmMax : unsigned(n-1 downto 0);
  signal pwmCounter : unsigned(n-1 downto 0);
  signal pwmTrigIn : unsigned(n-1 downto 0);
@@ -57,7 +30,7 @@ architecture behavioral of  PWM is
 
 begin
 
- pwmMaxShift : ShiftOp
+ pwmMaxShift : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_PWM_Max,
               opBits => opBits,
               n => n)
@@ -69,7 +42,7 @@ begin
    data => pwmMax
    );
 
- pwmTrigShift : ShiftOpSel
+ pwmTrigShift : entity work.ShiftOpSel
   generic map(opVal => opBase + F_Ld_PWM_Trig,
               opBits => opBits,
               n => n)

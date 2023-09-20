@@ -57,42 +57,6 @@ end PhaseCounter;
 
 architecture Behavioral of PhaseCounter is
 
- component ShiftOp is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port (
-   clk : in std_logic;
-   shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   din : in std_logic;
-   data : inout unsigned (n-1 downto 0));
- end component;
-
- component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
-          outBits : positive);
-  port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
-   );
- end Component;
-
- --component UpCounter is
- -- generic(n : positive);
- -- port (
- --  clk : in std_logic;
- --  ena : in std_logic;
- --  clr : in std_logic;
- --  counter : inout  unsigned (n-1 downto 0));
- --end component;
-
  type fsm is (idle, updPhase);
  signal state : fsm := idle;
 
@@ -111,7 +75,7 @@ begin
 
  dout <= dOutPhaseSyn;
 
- phaseReg : ShiftOp
+ phaseReg : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_Phase_len,
               opBits => opBits,
               n => phaseBits)
@@ -122,7 +86,7 @@ begin
    shift => dshift,
    data => phaseVal);
 
- phaseSynOut : ShiftOutN
+ phaseSynOut : entity work.ShiftOutN
   generic map(opVal => opBase + F_Rd_Phase_Syn,
               opBits => opBits,
               n => phaseBits,

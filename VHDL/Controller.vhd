@@ -36,47 +36,6 @@ end Controller;
 
 architecture behavioral of  Controller is
 
- component ShiftOpSel is
-  generic(opVal  : unsigned;
-          opBits : positive;
-          n      : positive);
-  port(
-   clk   : in std_logic;
-   din   : in std_logic;
-   op    : in unsigned (opBits-1 downto 0);
-   shift : in boolean;
-   sel   : out boolean;
-   data  : inout unsigned (n-1 downto 0)
-   );
- end Component;
-
- component CMem IS
-  port
-   (
-    clock     : in std_logic;
-    data      : in std_logic_vector (7 downto 0);
-    rdaddress : in std_logic_vector (7 downto 0);
-    wraddress : in std_logic_vector (7 downto 0);
-    wren      : in std_logic;
-    q         : out std_logic_vector (7 downto 0)
-    );
- end component;
-
- component ShiftOutN is
-  generic(opVal   : unsigned;
-          opBits  : positive;
-          n       : positive;
-          outBits : positive);
-  port (
-   clk    : in std_logic;
-   dshift : in boolean;
-   op     : in unsigned (opBits-1 downto 0);
-   copy   : in boolean;
-   data   : in unsigned(n-1 downto 0);
-   dout   : out std_logic
-   );
- end Component;
-
  constant byteBits : positive := 8;
 
  type ctlFsm is (cIdle, cShift, cWrite, cUpdAdr);
@@ -146,7 +105,7 @@ architecture behavioral of  Controller is
 
 begin
 
- shiftProc : ShiftOpSel
+ shiftProc : entity work.ShiftOpSel
   generic map(opVal  => opBase + F_Ld_Ctrl_Data,
               opBits => opBits,
               n      => byteBits)
@@ -159,7 +118,7 @@ begin
    data  => dataReg
    );
 
- memProc : CMem
+ memProc : entity work.CMem
   port map
   (
    clock     => clk,
@@ -172,7 +131,7 @@ begin
 
  dout <= seqDout or countDout;
 
- rdSeq : ShiftOutN
+ rdSeq : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Seq,
               opBits  => opBits,
               n       => seqBits,
@@ -188,7 +147,7 @@ begin
 
  tmp <= to_unsigned(dataCount, addrBits);
 
- rdCount : ShiftOutN
+ rdCount : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Ctr,
               opBits  => opBits,
               n       => addrBits,

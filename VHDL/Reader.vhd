@@ -26,32 +26,6 @@ end Reader;
 
 architecture behavioral of  Reader is
 
- component ShiftOpSel is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port(
-   clk : in std_logic;
-   din : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
-   shift : in boolean;
-   sel : out boolean;
-   data : inout unsigned (n-1 downto 0)
-   );
- end Component;
-
- component RdMem IS
-  port
-   (
-    clock : in std_logic;
-    data  : in std_logic_vector (7 downto 0);
-    rdaddress : in std_logic_vector (4 downto 0);
-    wraddress : in std_logic_vector (4 downto 0);
-    wren : in std_logic;
-    q : out std_logic_vector (7 downto 0)
-    );
- end component;
-
  constant byteBits : positive := 8;
 
  type ctlFsm is (cIdle, cShift, cWrite, cUpdAdr);
@@ -78,7 +52,7 @@ architecture behavioral of  Reader is
 
 begin
 
- shiftProc : ShiftOpSel
+ shiftProc : entity work.ShiftOpSel
   generic map(opVal => opBase + F_Ld_Ctrl_Data,
               opBits => opBits,
               n => byteBits)
@@ -91,7 +65,7 @@ begin
    data => dataReg
    );
 
- memProc : rdMem
+ memProc : entity work.rdMem
   port map
   (
    clock => clk,

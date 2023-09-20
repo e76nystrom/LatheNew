@@ -4,37 +4,39 @@ use ieee.numeric_std.all;
 
 use work.regDef.all;
 use work.conversion.all;
+-- use work.DebugRecord.All;
 
 entity LatheNew is
- port(
+ generic (ledPins : positive := 8;
+          dbgPins : positive := 8);
+ port (
   sysClk : in std_logic;
   
-  led : out std_logic_vector(7 downto 0) := (others => '0');
-  dbg : out std_logic_vector(7 downto 0) := (others => '0');
-  anode : out std_logic_vector(3 downto 0) := (others => '1');
-  seg : out std_logic_vector(6 downto 0) := (others => '1');
+  led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
+  dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
+  anode    : out std_logic_vector(3 downto 0) := (others => '1');
+  seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
-  dclk : in std_logic;
-  dout : out std_logic := '0';
-  din  : in std_logic;
-  dsel : in std_logic;
+  dclk     : in std_logic;
+  dout     : out std_logic := '0';
+  din      : in std_logic;
+  dsel     : in std_logic;
 
-  aIn : in std_logic;
-  bIn : in std_logic;
-  syncIn : in std_logic;
+  aIn      : in std_logic;
+  bIn      : in std_logic;
+  syncIn   : in std_logic;
 
-  zDro : in std_logic_vector(1 downto 0);
-  xDro : in std_logic_vector(1 downto 0);
-  zMpg : in std_logic_vector(1 downto 0);
-  xMpg : in std_logic_vector(1 downto 0);
+  zDro     : in std_logic_vector(1 downto 0);
+  xDro     : in std_logic_vector(1 downto 0);
+  zMpg     : in std_logic_vector(1 downto 0);
+  xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn : in std_logic_vector(4 downto 0);
-  aux : in std_logic_vector(7 downto 0);
+  pinIn    : in std_logic_vector(4 downto 0);
 
-  pinOut : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut : out std_logic_vector(2 downto 0) := (others => '0');
-  
-  bufOut : out std_logic_vector(3 downto 0) := (others => '0');
+  aux      : out std_logic_vector(7 downto 0);
+  pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
+  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -43,365 +45,86 @@ end LatheNew;
 
 architecture Behavioral of LatheNew is
 
- component Clock is
-  port(
-   clockIn : in std_logic;
-   clockOut : out std_logic
-   );
- end Component;
-
- component SPI is
-  generic (opBits : positive);
-  port (
-   clk : in std_logic;                   --system clock
-   dclk : in std_logic;                  --spi clk
-   dsel : in std_logic;                  --spi select
-   din : in std_logic;                   --spi data in
-   shift : out boolean;                  --shift data
-   op : out unsigned(opBits-1 downto 0);  --op code
-   copy : out boolean;                   --copy data to be shifted out
-   load : out boolean;                   --load data shifted in
-   header : out boolean;
-   spiActive : out boolean
-   );
- end Component;
-
- component Controller is
-  generic (opBase : unsigned;
-           opBits : positive;
-           addrBits : positive;
-           statusBits : positive;
-           seqBits : positive;
-           outBits : positive
-           );
-  port (
-   clk : in std_logic;
-   -- init : in boolean;
-   init : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   copy : in boolean;
-   load : in boolean;
-   -- ena : in boolean;
-   ena : in std_logic;
-   statusReg : in unsigned(statusBits-1 downto 0);
-
-   dout : out std_logic;
-   dinOut : out std_logic;
-   dshiftOut : out boolean;
-   opOut : out unsigned(opBits-1 downto 0);
-   loadOut : out boolean;
-   empty : out boolean
-   );
- end Component;
-
- component Reader is
-  generic(opBase : unsigned;
-          opBits : positive;
-          rdAddrBits : positive;
-          outBits : positive
-          );
-  port (
-   clk : in std_logic;
-   init : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   copy : in boolean;
-   load : in boolean;
-   copyOut : out boolean;
-   opOut : out unsigned(opBits-1 downto 0);
-   active : out boolean
-   );
- end Component;
-
- component Display is
-  port (
-   clk : in std_logic;
-   dspreg : in unsigned(15 downto 0);
-   digSel : in unsigned(1 downto 0);
-   anode : out std_logic_vector(3 downto 0);
-   seg : out std_logic_vector(6 downto 0)
-   );
- end Component;
-
- component DisplayCtl is
-  generic (opVal : unsigned;
-           opBits : positive;
-           displayBits : positive;
-           outBits : positive);
-  port (
-   clk : in std_logic;
-   dsel : in Std_logic;
-   din : in std_logic;
-   shift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   dout : in std_logic;
-   dspCopy : out boolean;
-   dspShift : out boolean;
-   dspOp : inout unsigned (opBits-1 downto 0);
-   dspreg : inout unsigned (displayBits-1 downto 0)
-   );
- end Component;
-
- component ShiftOutN is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive;
-          outBits : positive);
-  port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   data : in unsigned(n-1 downto 0);
-   dout : out std_logic
-   );
- end Component;
-
- component QuadEncoder is
-  port (
-   clk : in std_logic;
-   a : in std_logic;
-   b : in std_logic;
-   ch : inout std_logic;
-   dir : out std_logic
-   )
- end Component;
-
- component Encoder is
-  generic(opBase : unsigned;
-          opBits : positive;
-          cycleLenBits : positive;
-          encClkBits : positive;
-          cycleClkbits : positive);
-  port(
-   clk : in std_logic;                  --system clock
-   din : in std_logic;                  --spi data in
-   dshift : in boolean;                 --spi shift signal
-   op : in unsigned (opBits-1 downto 0); --current operation
-   load : in boolean;                   --load value
-   dshiftR : in boolean;                --spi shift signal
-   opR : in unsigned (opBits-1 downto 0); --current operation
-   copyR : in boolean;                  --copy for output
-   init : in std_logic;                 --init signal
-   ena : in std_logic;                  --enable input
-   ch : in std_logic;                   --input clock
-   dout : out std_logic;                --data out
-   active : out std_logic;              --active
-   intclk : out std_logic
-   );
- end Component;
-
- component DataSel2_1 is
-  port (
-   sel : in std_logic;
-   a : in std_logic;
-   b : in std_logic;
-   y : out std_logic
-   );
- end component;
-
- component CtlReg is
-  generic(opVal : unsigned;
-          opb : positive;
-          n : positive);
-  port (
-   clk : in std_logic;                   --clock
-   din : in std_logic;                   --data in
-   op : in unsigned(opb-1 downto 0);     --current reg address
-   shift : in boolean;                   --shift data
-   load : in boolean;                    --load to data register
-   data : inout  unsigned (n-1 downto 0));
- end Component;
-
- component PhaseCounter is
-  generic (opBase : unsigned;
-           opBits : positive;
-           phaseBits : positive;
-           totalBits : positive;
-           outBits : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned (opBits-1 downto 0);
-   copyR : in boolean;
-   init : in std_logic;
-   genSync : in std_logic;
-   ch : in std_logic;
-   sync : in std_logic;
-   dir : in std_logic;
-   dout : out std_logic;
-   syncOut : out std_logic);
- end Component;
-
- component IndexClocks is
-  generic (opval : unsigned;
-           opBits : positive;
-           n : positive;
-           outBits : positive);
-  port (
-   clk : in std_logic;
-   dshift : in boolean;
-   op : in unsigned (opBits-1 downto 0);
-   copy : in boolean;
-   ch : in std_logic;
-   index : in std_logic;
-   dout : out std_logic
-   );
- end Component;
-
- component FreqGen is
-  generic(opVal : unsigned;
-          opBits : positive;
-          freqBits : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   load : in boolean;
-   ena : in std_logic;
-   pulseOut : out std_logic
-   );
- end Component;
-
- component FreqGenCtr is
-  generic(opBase : unsigned;
-          opBits : positive;
-          freqBits : positive;
-          countBits: positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   load : in boolean;
-   ena : in std_logic;
-   pulseOut : out std_logic
-   );
- end Component;
-
- component DataSelSyn8_1 is
-  port (
-   clk : in std_logic;
-   sel : in unsigned (2 downto 0);
-   d0 : in std_logic;
-   d1 : in std_logic;
-   d2 : in std_logic;
-   d3 : in std_logic;
-   d4 : in std_logic;
-   d5 : in std_logic;
-   d6 : in std_logic;
-   d7 : in std_logic;
-   dout : out std_logic
-   );
- end Component;
-
- component Axis is
-  generic (opBase : unsigned;
-           opBits : positive;
-           synBits : positive;
-           posBits : positive;
-           countBits : positive;
-           distBits : positive;
-           locBits : positive;
-           outBits : positive;
-           dbgBits : positive);
-  port (
-   clk : in std_logic;
-   din : in std_logic;
-   dshift : in boolean;
-   op : in unsigned(opBits-1 downto 0);
-   load : in boolean;
-   dshiftR : in boolean;
-   opR : in unsigned(opBits-1 downto 0);
-   copyR : in boolean;
-   extInit : in std_logic;               --reset
-   extEna : in std_logic;                --enable operation
-   extUpdLoc : in std_logic;
-   ch : in std_logic;
-   encDir : in std_logic;
-   sync : in std_logic;
-   droQuad : in std_logic_vector(1 downto 0);
-   droInvert : in std_logic;
-   mpgQuad : in std_logic_vector(1 downto 0);
-   currentDir : in std_logic;
-   dbgOut : out unsigned(dbgBits-1 downto 0);
-   initOut : out std_logic;
-   enaOut : out std_logic;
-   updLocOut : out std_logic;
-   dout : out std_logic;
-   stepOut : out std_logic;
-   dirOut : inout std_logic;
-   doneInt : out std_logic
-   );
- end Component;
-
- component PulseGen is
-  generic(pulseWidth : positive);
-  port ( clk : in std_logic;
-         pulseIn : in std_logic;
-         pulseOut : out std_logic);
- end Component;
-
- -- clock divider
+component SystemClk is
+ port (
+  inclk  : in  std_logic := 'X'; -- inclk
+  outclk : out std_logic         -- outclk
+  );
+end component SystemClk;
 
  constant divBits : integer := 26;
  signal div : unsigned (divBits downto 0) := (others => '0');
  alias digSel: unsigned(1 downto 0) is div(19 downto 18);
  -- alias digSel: unsigned(1 downto 0) is div(8 downto 7);
 
- constant synBits : positive := 32;
- constant posBits : positive := 24;
- constant countBits : positive := 18;
- constant distBits : positive := 18;
- constant locBits : positive := 18;
+ constant synBits       : positive := 32;
+ constant posBits       : positive := 24;
+ constant countBits     : positive := 18;
+ constant distBits      : positive := 18;
+ constant locBits       : positive := 18;
 
- constant dbgBits : positive := 4;
+ constant dbgBits       : positive := 4;
+ constant synDbgBits    : positive := 4;
 
- constant rdAddrBits : positive := 5;
- constant outBits : positive := 32;
+ constant rdAddrBits    : positive := 5;
+ constant outBits       : positive := 32;
  
- constant opBits : positive := 8;
- constant addrBits : positive := 8;
- constant seqBits : positive := 8;
+ constant opBits        : positive := 8;
+ constant addrBits      : positive := 8;
+ constant seqBits       : positive := 8;
 
- constant phaseBits : positive := 16;
- constant totalBits : positive := 32;
+ constant phaseBits     : positive := 16;
+ constant totalBits     : positive := 32;
 
- constant idxClkBits : positive := 28;
+ constant idxClkBits    : positive := 28;
  -- constant idxClkBits : positive := 16; 
 
- constant freqBits : positive := 16;
+ constant freqBits      : positive := 16;
  constant freqCountBits : positive := 32;
 
- constant cycleLenBits : positive := 11;
- constant encClkBits : positive := 24;
- constant cycleClkBits : positive := 32;
+ constant cycleLenBits  : positive := 11;
+ constant encClkBits    : positive := 24;
+ constant cycleClkBits  : positive := 32;
 
- constant stepWidth : positive :=  25;
+ constant pwmBits       : positive := 16;
 
--- status register
+ constant stepWidth     : positive :=  25;
 
- constant statusSize : integer := 9;
+ -- status register
+
+ constant statusSize : integer := 11;
  signal statusReg : unsigned(statusSize-1 downto 0);
  alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
  alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
  alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
- alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
- alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
+ alias xAxisEna     : std_logic is statusreg(3); -- x10 x axis enable flag
+ alias xAxisDone    : std_logic is statusreg(4); -- x08 x axis done
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
- alias queEmpty     : std_logic is statusreg(6); -- x40 controller queue empty
- alias ctlIdle      : std_logic is statusreg(7); -- x80 controller idle
- alias syncActive   : std_logic is statusreg(8); -- x100 sync active
+ alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
+ alias spindleActive : std_logic is statusreg(7); -- x80 x axis current dir
+ alias queNotEmpty  : std_logic is statusreg(8); -- x100 ctl queue not empty
+ alias ctlBusy      : std_logic is statusreg(9); -- x200 controller busy
+ alias syncActive   : std_logic is statusreg(10); -- x400 sync active
 
--- run control register
+ -- inputs register
+
+ constant inputsSize : integer := 13;
+ signal inputsReg : unsigned(inputsSize-1 downto 0);
+ alias inZHome      : std_logic is inputsreg(0); -- x01 z home switch
+ alias inZMinus     : std_logic is inputsreg(1); -- x02 z limit minus
+ alias inZPlus      : std_logic is inputsreg(2); -- x04 z Limit Plus
+ alias inXHome      : std_logic is inputsreg(3); -- x08 x home switch
+ alias inXMinus     : std_logic is inputsreg(4); -- x10 x limit minus
+ alias inXPlus      : std_logic is inputsreg(5); -- x20 x Limit Plus
+ alias inSpare      : std_logic is inputsreg(6); -- x40 spare input
+ alias inProbe      : std_logic is inputsreg(7); -- x80 probe input
+ alias inPin10      : std_logic is inputsreg(8); -- x100 pin 10
+ alias inPin11      : std_logic is inputsreg(9); -- x200 pin 11
+ alias inPin12      : std_logic is inputsreg(10); -- x400 pin 12
+ alias inPin13      : std_logic is inputsreg(11); -- x800 pin 13
+ alias inPin15      : std_logic is inputsreg(12); -- x1000 pin 15
+
+ -- run control register
 
  constant runSize : integer := 3;
  signal runReg : unsigned(runSize-1 downto 0);
@@ -411,16 +134,49 @@ architecture Behavioral of LatheNew is
 
  -- configuration control register
 
- constant cfgCtlSize : integer := 8;
+ constant cfgCtlSize : integer := 20;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
- alias cfgZDir    : std_logic is cfgCtlreg(0); -- x01 z direction inverted
- alias cfgXDir    : std_logic is cfgCtlreg(1); -- x02 x direction inverted
- alias cfgZDro    : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
- alias cfgXDro    : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
- alias cfgSpDir   : std_logic is cfgCtlreg(4); -- x10 spindle directiion inverted
- alias cfgEncDir  : std_logic is cfgCtlreg(5); -- x20 invert encoder direction
- alias cfgEnaEncDir : std_logic is cfgCtlreg(6); -- x40 enable encoder direction
- alias cfgGenSync : std_logic is cfgCtlreg(7); -- x80 no encoder generate sync
+ alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z direction inverted
+ alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x direction inverted
+ alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro direction inverted
+ alias cfgXDroInv   : std_logic is cfgCtlreg(3); -- x08 x dro direction inverted
+ alias cfgZJogInv   : std_logic is cfgCtlreg(4); -- x10 z jog direction inverted
+ alias cfgXJogInv   : std_logic is cfgCtlreg(5); -- x20 x jog direction inverted
+ alias cfgSpDirInv  : std_logic is cfgCtlreg(6); -- x40 spindle directiion inverted
+ alias cfgZHomeInv  : std_logic is cfgCtlreg(7); -- x80 z home inverted
+ alias cfgZMinusInv : std_logic is cfgCtlreg(8); -- x100 z minus inverted
+ alias cfgZPlusInv  : std_logic is cfgCtlreg(9); -- x200 z plus inverted
+ alias cfgXHomeInv  : std_logic is cfgCtlreg(10); -- x400 x home inverted
+ alias cfgXMinusInv : std_logic is cfgCtlreg(11); -- x800 x minus inverted
+ alias cfgXPlusInv  : std_logic is cfgCtlreg(12); -- x1000 x plus inverted
+ alias cfgProbeInv  : std_logic is cfgCtlreg(13); -- x2000 probe inverted
+ alias cfgEncDirInv : std_logic is cfgCtlreg(14); -- x4000 invert encoder direction
+ alias cfgEStopEna  : std_logic is cfgCtlreg(15); -- x8000 estop enable
+ alias cfgEStopInv  : std_logic is cfgCtlreg(16); -- x10000 estop invert
+ alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder direction
+ alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 no encoder generate sync pulse
+ alias cfgPWMEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
+
+ constant c_cfgZDirInv   : integer :=  0; -- x01 z direction inverted
+ constant c_cfgXDirInv   : integer :=  1; -- x02 x direction inverted
+ constant c_cfgZDroInv   : integer :=  2; -- x04 z dro direction inverted
+ constant c_cfgXDroInv   : integer :=  3; -- x08 x dro direction inverted
+ constant c_cfgZJogInv   : integer :=  4; -- x10 z jog direction inverted
+ constant c_cfgXJogInv   : integer :=  5; -- x20 x jog direction inverted
+ constant c_cfgSpDirInv  : integer :=  6; -- x40 spindle directiion inverted
+ constant c_cfgZHomeInv  : integer :=  7; -- x80 z home inverted
+ constant c_cfgZMinusInv : integer :=  8; -- x100 z minus inverted
+ constant c_cfgZPlusInv  : integer :=  9; -- x200 z plus inverted
+ constant c_cfgXHomeInv  : integer := 10; -- x400 x home inverted
+ constant c_cfgXMinusInv : integer := 11; -- x800 x minus inverted
+ constant c_cfgXPlusInv  : integer := 12; -- x1000 x plus inverted
+ constant c_cfgProbeInv  : integer := 13; -- x2000 probe inverted
+ constant c_cfgEncDirInv : integer := 14; -- x4000 invert encoder direction
+ constant c_cfgEStopEna  : integer := 15; -- x8000 estop enable
+ constant c_cfgEStopInv  : integer := 16; -- x10000 estop invert
+ constant c_cfgEnaEncDir : integer := 17; -- x20000 enable encoder direction
+ constant c_cfgGenSync   : integer := 18; -- x40000 no encoder generate sync pulse
+ constant c_cfgPWMEna    : integer := 19; -- x80000 pwm enable
 
  -- clock control register
 
@@ -428,6 +184,15 @@ architecture Behavioral of LatheNew is
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel   : unsigned is clkCtlreg(2 downto 0); -- x01 z Frequency select
  alias xFreqSel   : unsigned is clkCtlreg(5 downto 3); -- x08 x Frequency select
+ constant clkNone      : unsigned (2 downto 0) := "000"; -- 
+ constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
+ constant clkCh        : unsigned (2 downto 0) := "010"; -- 
+ constant clkIntClk    : unsigned (2 downto 0) := "011"; -- 
+ constant clkSlvFreq   : unsigned (2 downto 0) := "100"; -- 
+ constant clkSlvCh     : unsigned (2 downto 0) := "101"; -- 
+ constant clkSpindle   : unsigned (2 downto 0) := "110"; -- 
+ constant clkDbgFreq   : unsigned (2 downto 0) := "111"; -- 
+
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
  -- sync control register
@@ -435,8 +200,8 @@ architecture Behavioral of LatheNew is
  constant synCtlSize : integer := 3;
  signal synCtlReg : unsigned(synCtlSize-1 downto 0);
  alias synPhaseInit : std_logic is synCtlreg(0); -- x01 init phase counter
- alias synEncInit : std_logic is synCtlreg(1); -- x02 init encoder
- alias synEncEna  : std_logic is synCtlreg(2); -- x04 enable encoder
+ alias synEncInit   : std_logic is synCtlreg(1); -- x02 init encoder
+ alias synEncEna    : std_logic is synCtlreg(2); -- x04 enable encoder
 
  -- system clock
 
@@ -446,8 +211,6 @@ architecture Behavioral of LatheNew is
 
  signal ch : std_logic;
  signal encDir : std_logic;
- signal encDirXor : std_logic;
- signal cfgEncDirNot : std_logic;
  signal direction : std_logic;
 
  -- spi interface
@@ -459,6 +222,9 @@ architecture Behavioral of LatheNew is
  signal spiActive : boolean := false;
 
  signal internalDout : std_logic;
+ signal dout0 : std_logic;
+ signal dout1 : std_logic;
+ signal dout2 : std_logic;
 
  signal dinW : std_logic := '0';
 
@@ -479,7 +245,8 @@ architecture Behavioral of LatheNew is
  signal ctlShift : boolean;
  signal ctlOp : unsigned (opBits-1 downto 0); --operation code
  signal ctlLoad : boolean;
- signal ctlEmpty : boolean;
+ signal controllerBusy : boolean;
+ signal ctlNotEmpty : boolean;
  signal ctlDout : std_logic;
 
  -- reader
@@ -500,6 +267,7 @@ architecture Behavioral of LatheNew is
  -- signal locked : std_logic;
 
  signal statusDout : std_logic;
+ signal inputsDout : std_logic;
  signal phaseDOut : std_logic;
  signal encDOut : std_logic;
  signal zDOut : std_logic;
@@ -509,6 +277,7 @@ architecture Behavioral of LatheNew is
  signal zFreqGen : std_logic;
  signal xFreqGen : std_logic;
  signal dbgFreqGen : std_logic;
+ signal spFreqGen : std_logic;
 
  signal sync : std_logic;
 
@@ -517,9 +286,9 @@ architecture Behavioral of LatheNew is
  signal xCh : std_logic;
  signal zCh : std_logic;
  signal xInit : std_logic;
- signal xUpdLoc : std_logic;
+ -- signal xUpdLoc : std_logic;
  signal zInit : std_logic;
- signal zUpdLoc : std_logic;
+ -- signal zUpdLoc : std_logic;
 
  signal zAxisStep : std_logic;
  signal xAxisStep : std_logic;
@@ -530,15 +299,21 @@ architecture Behavioral of LatheNew is
  signal zExtEna : std_logic;
  signal xExtEna : std_logic;
 
+ -- signal zDbgRec : AxisDbg;
+ -- signal xDbgRec : AxisDbg;
+
  signal zDelayStep : std_logic;
  signal xDelayStep : std_logic;
 
+ signal test0 : std_logic;
  signal test1 : std_logic;
  signal test2 : std_logic;
- signal test3 : std_logic;
 
- signal zDbg : unsigned(3 downto 0);
- signal xDbg : unsigned(3 downto 0);
+ signal zDbg : unsigned(dbgBits-1 downto 0);
+ signal xDbg : unsigned(dbgBits-1 downto 0);
+
+ signal zSynDbg : std_logic_vector(synDbgBits-1 downto 0);
+ signal xSynDbg : std_logic_vector(synDbgBits-1 downto 0);
 
  signal zFreqGenEna : std_logic;
  signal xFreqGenEna : std_logic;
@@ -554,22 +329,56 @@ architecture Behavioral of LatheNew is
  signal zCurrentDir : std_logic := '0';
  signal xCurrentDir : std_logic := '0';
 
+ signal spEna : std_logic;
+ signal spindleDout : std_logic;
+ signal spindleStep : std_logic;
+ signal spindleDir : std_logic;
+ signal spindleStepOUt : std_logic;
+ signal spindleDirOut : std_logic;
+
+ signal zSwitches : std_logic_vector(3 downto 0);
+ signal xSwitches : std_logic_vector(3 downto 0);
+
+ alias eStopIn : std_logic is pinIn(0);
+ alias pwmOut : std_logic is pinOut(10);
+ alias chgPump : std_logic is pinOut(11);
+
+ signal lastDsel : std_logic := '0';
+ signal chgPumpOut : std_logic := '0';
+
+ signal eStop : std_logic;
+ signal pwmEna : std_logic;
+ 
 begin
+
+ eStop <= cfgEStopEna and (eStopIn xor cfgEStopInv);
+ stEStop <= eStop;
 
  pinOut(0) <= zDir;
  pinOut(1) <= zStep;
- pinOut(2) <= xStep;
- pinOut(3) <= xDir;
- 
- pinOut(5 downto 4) <= zMpg;
- pinout(7 downto 6) <= xMpg;
+ pinOut(2) <= xDir;
+ pinOut(3) <= xStep;
+
+ pinOut(7 downto 4) <= std_logic_vector(xDbg);
+
+ -- alias digSel: unsigned(1 downto 0) is div(19 downto 18);
+ -- pinOut(5 downto 4) <= zMpg;
+ -- pinout(7 downto 6) <= xMpg;
  pinOut(9 downto 8) <= zDro;
- pinOut(11 downto 10) <= xDro;
+
+ -- pinOut(9 downto 4) <= std_logic_vector(div(19 downto 14));
+
+ zSwitches <= std_logic_vector(cfgProbeInv &
+                               cfgCtlReg(c_cfgZPlusInv downto c_cfgzHomeInv));
+ xSwitches <= std_logic_vector(cfgProbeInv &
+                               cfgCtlReg(c_cfgXPlusInv downto c_cfgxHomeInv));
+
+ inputsReg <= unsigned(pinIn) & "00000000";
 
  bufOut <= pinIn(3 downto 0);
- extOut(0) <= pinIn(4);
- extOut(1) <= aux(7) xor aux(6) xor aux(5) xor aux(4);
- extOut(2) <= aux(3) xor aux(2) xor aux(1) xor aux(0);
+ extOut(0) <= spindleDirOut;
+ extOut(1) <= spindleStepOut;
+ extOut(2) <= pinIn(4);
 
  zAxisEna <= zExtEna;
  zDoneInt <= intZDoneInt;
@@ -579,16 +388,17 @@ begin
  zAxisDone <= intZDoneInt;
  xAxisDone <= intXDoneInt;
 
- queEmpty <= to_std_logic(ctlEmpty);
- ctlIdle <= '0';
+ queNotEmpty <= to_std_logic(ctlNotEmpty);
  syncActive <= intActive;
 
- led(7) <= div(divBits);
- led(6) <= div(divBits-1);
- led(5) <= div(divBits-2);
- led(4) <= div(divBits-3);
- led(3) <= op(3);
- led(2) <= clkCtlReg(2);
+ ledConfig : if ledPins > 2 generate
+  led(7) <= div(divBits);
+  led(6) <= div(divBits-1);
+  led(5) <= div(divBits-2);
+  led(4) <= div(divBits-3);
+  led(3) <= op(3);
+  led(2) <= clkCtlReg(2);
+ end generate ledConfig;
  led(1) <= clkCtlReg(1);
  led(0) <= clkCtlReg(0);
 
@@ -596,42 +406,48 @@ begin
  dspData(7 downto 4) <= xDbg;
  dspData(15 downto 8) <= op;
 
- -- test 1 output pulse
+ -- test 0 output pulse
 
- testOut1 : PulseGen
-  generic map (pulseWidth => 25)
+ testOut0 : entity work.PulseGen
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
    pulseIn => xCh,
-   PulseOut => test1
+   PulseOut => test0
    );
 
--- test 2 output pulse
+-- test 1 output pulse
 
- testOut2 : PulseGen
-  generic map (pulseWidth => 25)
+ testOut1 : entity work.PulseGen
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
    pulseIn => zCh,
-   pulseOut => test2
+   pulseOut => test1
    );
 
- testOut3 : PulseGen
-  generic map (pulseWidth => 25)
+ testOut2 : entity work.PulseGen
+  generic map (pulseWidth => 50)
   port map (
    clk => clk,
    pulseIn => sync,
-   pulseOut => test3
+   pulseOut => test2
    );
 
- dbg(0) <= test1;
- dbg(1) <= test2;
- dbg(2) <= clkDbgFreqEna;
+ dbg(0) <= test0;
+ dbg(1) <= test1;
+ dbg(2) <= test2;
 
- -- dbg(2) <= intZDoneInt;
- -- dbg(3) <= intXDoneInt;
- dbg(3) <= test3;
+ -- dbg(3) <= intZDoneInt;
+ dbg(3) <= intXDoneInt;
  dbg(7 downto 4) <= std_logic_vector(zDbg);
+
+ -- dbgConfig : if dbgPins > 8 generate
+ --  dbg(11 downto 8)  <= zSynDbg;
+ --  dbg(15 downto 12) <= xSynDbg;
+ -- else generate
+  aux <= xSynDbg & zSynDbg;
+ -- end generate dbgConfig;
 
  -- dbg(4) = dbgOUt(0) <= runEna;
  -- dbg(5) = dbgOut(1) <= distDecel;
@@ -649,11 +465,28 @@ begin
 
  -- system clock
 
- sys_Clk : Clock
-  port map(
-   clockIn => sysClk,
-   clockOut => clk
+ -- sys_Clk : Clock
+ --  port map(
+ --   clockIn => sysClk,
+ --   clockOut => clk
+ --   );
+
+
+ -- sys_Clk : SystemClk
+ --  port map(
+ --   areset => '0',
+ --   inclk0 => sysClk,
+ --   c0     => clk, 
+ --   locked => open
+ --   );
+
+ sys_clk : component SystemClk
+  port map (
+   inclk  => sysclk,                    --  altclkctrl_input.inclk
+   outclk => clk                        --  altclkctrl_output.outclk
    );
+
+ -- clk <= sysClk;
 
  -- clock divider
 
@@ -666,7 +499,7 @@ begin
 
  -- led display
 
- led_display : Display
+ led_display : entity work.Display
   port map (
    clk => clk,
    dspReg => dspData,
@@ -677,7 +510,7 @@ begin
 
  -- quadrature encoder
 
- quad_encoder : QuadEncoder
+ quad_encoder : entity work.QuadEncoder
   port map (
    clk => clk,
    a => aIn,
@@ -686,15 +519,13 @@ begin
    dir => encDir
    );
 
- -- encDout <= '0';
- -- intClk <= '0';
-
- encoderProc : Encoder
+ encoderProc : entity work.Encoder
   generic map(opBase => F_Enc_Base,
               opBits => opBits,
               cycleLenBits => cycleLenBits,
               encClkBits => encClkBits,
-              cycleClkbits => cycleClkBits)
+              cycleClkbits => cycleClkBits,
+              outBits => outBits)
   port map (
    clk => clk,
    din => curDin,
@@ -712,20 +543,23 @@ begin
    intclk => intClk
    );
 
- encDirXor <= encDir xor cfgEncDir;
- cfgEncDirNot <= not cfgEncDir;
+ direction <= (not cfgEncDirInv) when (cfgEnaEncDir = '0') else
+              (encDir xor cfgEncDirInv);
 
- EncoderDir: DataSel2_1
-  port map (
-   sel => cfgEnaEncDir,
-   a => cfgEncDirNot,
-   b => encDirXor,
-   y => direction
-   );
-
- internalDout <= statusDout or ctlDout or phaseDout or idxClkDout or
-                 EncDout or zDOut or xDOut;
  dout <= internalDout;
+
+ doutProcess : process(clk)
+ begin
+  if rising_edge(clk) then
+   dout0 <= statusDout or inputsDout or ctlDout;
+   dout1 <= phaseDout or idxClkDout or EncDout;
+   dout2 <= zDOut or xDOut or spindleDout;
+   internalDout <= dout0 or dout1 or dout2;
+  end if;
+ end process;
+
+ -- internalDout <= statusDout or inputs or ctlDout or phaseDout or idxClkDout or
+ --                 EncDout or zDOut or xDOut or spindleDout;
 
  -- curDin <= din;
  -- dshift <= spiShift;
@@ -765,7 +599,8 @@ begin
  -- op <= spiOp;
  -- copy <= spiCopy;
 
- spi_int : SPI
+ -- spi_int : SPI
+ spi_int : entity work.SPI
   generic map (opBits => opBits)
   port map (
    clk => clk,
@@ -776,11 +611,11 @@ begin
    op => spiOp,
    copy => spiCopy,
    load => spiLoad,
-   header => open,
+   -- header => open,
    spiActive => spiActive
    );
 
- ctrlProc : Controller
+ ctrlProc : entity work.Controller
   generic map (opBase => F_Ctrl_Base,
                opBits => opBits,
                addrBits => addrBits,
@@ -805,29 +640,32 @@ begin
    dshiftOut => ctlShift,
    opOut => ctlOp,
    loadOut => ctlLoad,
-   empty => ctlEmpty
+   busy => controllerBusy,
+   notEmpty => ctlNotEmpty
    );
 
- dataReader: Reader
-  generic map(opBase => F_Read_Base,
-         opBits => opBits,
-         rdAddrBits => rdAddrBits,
-         outBits => outBits
-)
-  port map (
-  clk => clk,
-  init => readerInit,
-  din => din,
-  dshift => spiShift,
-  op => spiOp,
-  copy => spiCopy,
-  load => load,
-  copyOut => rdCopy,
-  opOut => rdOp,
-  active => rdActive
-  );
+ ctlBusy <= '1' when controllerBusy else '0';
 
- dispalyCtlProc : DisplayCtl
+ dataReader : entity work.Reader
+  generic map(opBase => F_Read_Base,
+              opBits => opBits,
+              rdAddrBits => rdAddrBits,
+              outBits => outBits
+              )
+  port map (
+   clk => clk,
+   init => readerInit,
+   din => din,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
+   load => load,
+   copyOut => rdCopy,
+   opOut => rdOp,
+   active => rdActive
+   );
+
+ dispalyCtlProc : entity work.DisplayCtl
   generic map (opVal => F_Ld_Dsp_Reg,
                opBits => opBits,
                displayBits => displayBits,
@@ -847,7 +685,7 @@ begin
    dspReg => open
    );
 
- status: ShiftOutN
+ status : entity work.ShiftOutN
   generic map(opVal => F_Rd_Status,
               opBits => opBits,
               n => statusSize,
@@ -861,7 +699,21 @@ begin
    dout => statusDout
    );
 
- run_reg: CtlReg
+ inputs : entity work.ShiftOutN
+  generic map(opVal => F_Rd_Inputs,
+              opBits => opBits,
+              n => inputsSize,
+              outBits => outBits)
+  port map (
+   clk => clk,
+   dshift => spiShift,
+   op => spiOp,
+   copy => spiCopy,
+   data => inputsReg,
+   dout => inputsDout
+   );
+
+ run_reg : entity work.CtlReg
   generic map(opVal => F_Ld_Run_Ctl,
               opb => opBits,
               n => runSize)
@@ -873,7 +725,7 @@ begin
    load => spiLoad,
    data => runReg);
 
- sync_reg: CtlReg
+ sync_reg : entity work.CtlReg
   generic map(opVal => F_Ld_Sync_Ctl,
               opb => opBits,
               n => synCtlSize)
@@ -885,7 +737,7 @@ begin
    load => load,
    data => synCtlReg);
 
- clk_reg: CtlReg
+ clk_reg : entity work.CtlReg
   generic map(opVal => F_Ld_Clk_Ctl,
               opb => opBits,
               n => clkCtlSize)
@@ -897,7 +749,7 @@ begin
    load => load,
    data => clkCtlReg);
 
- cfg_reg : CtlReg
+ cfg_reg : entity work.CtlReg
   generic map(opVal => F_Ld_Cfg_Ctl,
               opb => opBits,
               n => cfgCtlSize)
@@ -909,7 +761,7 @@ begin
    load => spiLoad,
    data => cfgCtlReg);
 
- phase_counter : PhaseCounter
+ phase_counter : entity work.PhaseCounter
   generic map (opBase => F_Phase_Base,
                opBits => opBits,
                phaseBits => phaseBits,
@@ -932,7 +784,7 @@ begin
    dout => phaseDOut,
    syncOut => sync);
 
- index_clocks: IndexClocks
+ index_clocks : entity work.IndexClocks
   generic map (opval => F_Rd_Idx_Clks,
                opBits => opBits,
                n => idxClkBits,
@@ -947,9 +799,9 @@ begin
    dout => idxClkDout
    );
 
- zFreqGenEna <= '1' when ((zFreqSel = "001") and (zExtEna = '1')) else '0';
+ zFreqGenEna <= '1' when ((zFreqSel = clkFreq) and (zExtEna = '1')) else '0';
 
- zFreq_Gen : FreqGen
+ zFreq_Gen : entity work.FreqGen
   generic map(opVal => F_ZAxis_Base + F_Ld_Freq,
               opBits => opBits,
               freqBits => freqBits)
@@ -963,9 +815,9 @@ begin
    pulseOut => zFreqGen
    );
 
- xFreqGenEna <= '1' when ((xFreqSel = "001") and (xExtEna = '1')) else '0';
+ xFreqGenEna <= '1' when ((xFreqSel = clkFreq) and (xExtEna = '1')) else '0';
 
- xFreq_Gen : FreqGen
+ xFreq_Gen : entity work.FreqGen
   generic map(opVal => F_XAxis_Base + F_Ld_Freq,
               opBits => opBits,
               freqBits => freqBits)
@@ -979,7 +831,21 @@ begin
    pulseOut => xFreqGen
    );
 
- dbgFreq_gen : FreqGenCtr
+ spFreq_Gen : entity work.FreqGen
+  generic map(opVal => F_XAxis_Base + F_Ld_Freq,
+              opBits => opBits,
+              freqBits => freqBits)
+  port map (
+   clk => clk,
+   din => curDin,
+   dshift => dshift,
+   op => op,
+   load => load,
+   ena => spEna,
+   pulseOut => spFreqGen
+   );
+
+ dbgFreq_gen : entity work.FreqGenCtr
   generic map(opBase => F_Dbg_Freq_Base,
               opBits => opBits,
               freqBits => freqBits,
@@ -1001,64 +867,76 @@ begin
    xDelayStep <= xAxisStep;
   end if;
  end process;
- 
- zCh_Data : DataSelSyn8_1
-  port map (
-   clk => clk,
-   sel => zFreqSel,
-   d0 => '0',
-   d1 => zFreqGen,
-   d2 => ch,
-   d3 => intClk,
-   d4 => xFreqGen,
-   d5 => xCh,
-   d6 => '0',
-   d7 => dbgFreqGen,
-   dout => zCh
-   );
 
- z_Axis : Axis
+ zCh_Data : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   case zFreqSel is
+    when clkFreq    => zCh <= zFreqGen;
+    when clkCh      => zCh <= ch;
+    when clkIntClk  => zCh <= intClk;
+    when clkSlvFreq => zCh <= xFreqGen;
+    when clkSlvCh   => zCh <= xCh;
+    when clkSpindle => zCh <= spFreqGen;
+    when clkDbgFreq => zCh <= dbgFreqGen;
+    when others => zCh <= '0';
+   end case;
+  end if;
+ end process;
+
+ z_Axis : entity work.Axis
   generic map (
-   opBase => F_ZAxis_Base,
-   opBits => opBits,
-   synBits => synBits,
-   posBits => posBits,
-   countBits => countBits,
-   distBits => distBits,
-   locBits => locBits,
-   outBits => outBits,
-   dbgBits => dbgBits
+   opBase     => F_ZAxis_Base,
+   opBits     => opBits,
+   synBits    => synBits,
+   posBits    => posBits,
+   countBits  => countBits,
+   distBits   => distBits,
+   locBits    => locBits,
+   outBits    => outBits,
+   dbgBits    => dbgBits,
+   synDbgBits => synDbgBits
    )
   port map (
-   clk => clk,
-   din => curDin,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   extInit => xExtInit,
-   extEna => xExtEna,
-   extUpdLoc => xUpdLoc,
-   ch => zCh,
-   encDir => direction,
-   sync => sync,
-   droQuad => zDro,
-   droInvert => cfgZDro,
-   mpgQuad => zMpg,
+   clk        => clk,
+
+   din        => curDin,
+   dshift     => dshift,
+   op         => op,
+   load       => load,
+
+   dshiftR    => dshiftR,
+   opR        => opR,
+   copyR      => copyR,
+
+   extInit    => xExtInit,
+   extEna     => xExtEna,
+
+   ch         => zCh,
+   encDir     => direction,
+   sync       => sync,
+
+   droQuad    => zDro,
+   droInvert  => cfgZDroInv,
+   mpgQuad    => zMpg,
+   jogInvert  => cfgZJogInv,
+
    currentDir => zCurrentDir,
-   dbgOut => zDbg,
-   initOut => zExtInit,
-   enaOut => zExtEna,
-   updLocOut => zUpdLoc,
-   dout => zDOut,
-   stepOut => zAxisStep,
-   dirOut => zAxisDir,
-   doneInt => intZDoneInt
+   switches   => zSwitches,
+   eStop      => eStop,
+
+   -- dbg        => zDbgRec,
+   dbgOut     => zDbg,
+   synDbg     => zSynDbg,
+   initOut    => zExtInit,
+   enaOut     => zExtEna,
+   dout       => zDOut,
+   stepOut    => zAxisStep,
+   dirOut     => zAxisDir,
+   doneInt    => intZDoneInt
    );
 
- zStep_Pulse: PulseGen
+ zStep_Pulse : work.PulseGen
   generic map(pulseWidth => stepWidth)
   port map (
    clk => clk,
@@ -1066,62 +944,75 @@ begin
    pulseOut => zStep
    );
 
- xCh_Data : DataSelSyn8_1
-  port map (
-   clk => clk,
-   sel => xFreqSel,
-   d0 => '0',
-   d1 => xFreqGen,
-   d2 => ch,
-   d3 => intClk,
-   d4 => zFreqGen,
-   d5 => zCh,
-   d6 => '0',
-   d7 => dbgFreqGen,
-   dout => xCh);
+ xCh_Data : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   case xFreqSel is
+    when clkFreq    => xCh <= xFreqGen;
+    when clkCh      => xCh <= ch;
+    when clkIntClk  => xCh <= intClk;
+    when clkSlvFreq => xCh <= zFreqGen;
+    when clkSlvCh   => xCh <= zCh;
+    when clkSpindle => xCh <= spFreqGen;
+    when clkDbgFreq => xCh <= dbgFreqGen;
+    when others => xCh <= '0';
+   end case;
+  end if;
+ end process;
 
- x_Axis : Axis
+ x_Axis : entity work.Axis
   generic map (
-   opBase => F_XAxis_Base,
-   opBits => opBits,
-   synBits => synBits,
-   posBits => posBits,
-   countBits => countBits,
-   distBits => distBits,
-   locBits => locBits,
-   outBits => outBits,
-   dbgBits => dbgBits
+   opBase     => F_XAxis_Base,
+   opBits     => opBits,
+   synBits    => synBits,
+   posBits    => posBits,
+   countBits  => countBits,
+   distBits   => distBits,
+   locBits    => locBits,
+   outBits    => outBits,
+   dbgBits    => dbgBits,
+   synDbgBits => synDbgBits
    )
   port map (
-   clk => clk,
-   din => curDin,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   extInit => zExtInit,
-   extEna => zExtEna,
-   extUpdLoc => zUpdLoc,
-   ch => xCh,
-   encDir => direction,
-   sync => sync,
-   droQuad => xDro,
-   droInvert => cfgXDro,
-   mpgQuad => xMpg,
+   clk        => clk,
+
+   din        => curDin,
+   dshift     => dshift,
+   op         => op,
+   load       => load,
+
+   dshiftR    => dshiftR,
+   opR        => opR,
+   copyR      => copyR,
+
+   extInit    => zExtInit,
+   extEna     => zExtEna,
+
+   ch         => xCh,
+   encDir     => direction,
+   sync       => sync,
+
+   droQuad    => xDro,
+   droInvert  => cfgXDroInv,
+   mpgQuad    => xMpg,
+   jogInvert  => cfgXJogInv,
+
    currentDir => xCurrentDir,
-   dbgOut => xDbg,
-   initOut => xExtInit,
-   enaOut => xExtEna,
-   updLocOut => xUpdLoc,
-   dout => xDOut,
-   stepOut => xAxisStep,
-   dirOut => xAxisDir,
-   doneInt => intXDoneInt
+   switches   => xSwitches,
+   eStop      => eStop,
+
+   -- dbg        => xDbgRec,
+   dbgOut     => xDbg,
+   synDbg     => xSynDbg,
+   initOut    => xExtInit,
+   enaOut     => xExtEna,
+   dout       => xDOut,
+   stepOut    => xAxisStep,
+   dirOut     => xAxisDir,
+   doneInt    => intXDoneInt
    );
 
- xStep_Pulse : PulseGen
+ xStep_Pulse : entity work.PulseGen
   generic map(pulseWidth => stepWidth)
   port map (
    clk => clk,
@@ -1131,19 +1022,84 @@ begin
 
  zAxisCurDir <= zCurrentDir;
  xAxisCurDir <= xCurrentDir;
+
+ chgPump <= chgPumpOut;
  
  dirProcess: process(clk)
  begin
   if (rising_edge(clk)) then
    if (zStep = '1') then
     zCurrentDir <= zAxisDir;
-    zDir <= zAxisDir xor cfgZDir;
+    zDir <= zAxisDir xor cfgZDirInv;
    end if;
    if (xStep = '1') then
     xCurrentDir <= xAxisDir;
-    xDir <= xAxisDir xor cfgxDir;
+    xDir <= xAxisDir xor cfgxDirInv;
+   end if;
+
+   if ((dsel = '0') and (lastDsel = '1')) then
+    if (op = F_Rd_Status) then
+     chgPumpOut <= not chgPumpOut;
+     lastDsel <= '0';
+    end if;
+   else
+    lastDsel <= '1';
    end if;
   end if;
  end process;
+
+ spindleProc : entity work.Spindle
+  generic map (opBase => F_Spindle_Base,
+               opBits => opBits,
+               synBits => synBits,
+               
+               posBits => posBits,
+               countBits => countBits,
+               outBits => outBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   load => load,
+   dshiftR => dshiftR,
+   opR => opR,
+   copyR => copyR,
+   ch => spFreqGen,
+   mpgQuad => zMpg,
+   jogInvert => cfgZJogInv,
+   eStop => eStop,
+   spActive => spEna,
+   stepOut => spindleStep,
+   dirOut => spindleDir,
+   dout => spindleDout
+   );
+
+ spindleActive <= spEna;
+
+ spStep_Pulse : entity work.PulseGen
+  generic map(pulseWidth => stepWidth)
+  port map (
+   clk => clk,
+   pulseIn => spindleStep,
+   pulseOut => spindleStepOut
+   );
+
+ spindleDirOut <= spindleDir xor cfgSpDirInv;
+
+ pwmEna <= '1' when (eStop = '0') and (cfgPWMEna = '1') else '0';
+ 
+ pwmProc : entity work.PWM
+  generic map (opBase => F_PWM_Base,
+               opBits => opBits,
+               n => pwmBits)
+  port map (
+   clk => clk,
+   din => din,
+   dshift => dshift,
+   op => op,
+   ena => pwmEna,
+   pwmOut => pwmOut
+   );
 
 end Behavioral;
