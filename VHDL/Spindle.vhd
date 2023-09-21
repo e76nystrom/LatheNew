@@ -1,33 +1,40 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
 
-use work.regdef.all;
+library ieee;
+
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.RegDef.all;
+use work.IORecord.all;
 
 entity Spindle is
- generic (opBase : unsigned;
-          opBits : positive;
-          synBits : positive;
-          posBits : positive;
+ generic (opBase    : unsigned;
+          synBits   : positive;
+          posBits   : positive;
           countBits : positive;
-          outBits : positive);
+          outBits   : positive);
  port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned(opBits - 1 downto 0);
-  load : in boolean;
-  dshiftR : in boolean;
-  opR : in unsigned(opBits-1 downto 0);
-  copyR : in boolean;
+  clk       : in std_logic;
+
+  inp       : in  DataInp;
+  -- din : in std_logic;
+  -- dshift : in boolean;
+  -- op : in unsigned(opBits - 1 downto 0);
+  -- load : in boolean;
+
+  oRec      : in  DataOut;
+  -- dshiftR : in boolean;
+  -- opR : in unsigned(opBits-1 downto 0);
+  -- copyR : in boolean;
+
   ch : in std_logic;
-  mpgQuad : in std_logic_vector(1 downto 0);
-  jogInvert : in std_logic;
-  eStop : in std_logic;
-  spActive : out std_logic := '0';
-  stepOut : out std_logic := '0';
-  dirOut : out std_logic := '0';
-  dout : out std_logic := '0'
+  mpgQuad   : in  std_logic_vector(1 downto 0);
+  jogInvert : in  std_logic;
+  eStop     : in  std_logic;
+  spActive  : out std_logic := '0';
+  stepOut   : out std_logic := '0';
+  dirOut    : out std_logic := '0';
+  dout      : out std_logic := '0'
   );
 end Spindle;
 
@@ -65,64 +72,72 @@ begin
  
  spindleCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Sp_Ctl,
-              opb => opBits,
               n => spCtlSize)
   port map (
-   clk => clk,
-   din => din,
-   op => op,
-   shift => dshift,
-   load => load,
+   clk  => clk,
+   inp  => inp,
+   -- din => din,
+   -- op => op,
+   -- shift => dshift,
+   -- load => load,
    data => spCtlReg);
 
- AxisSyncAccel : entity work.SyncAccel
-  generic map (opBase => opBase + F_Sp_Sync_Base,
-               opBits => opBits,
-               synBits => synBits,
-               posBits => posBits,
+ SpindleSyncAccel : entity work.SyncAccelNew
+  generic map (opBase    => opBase + F_Sp_Sync_Base,
+               synBits   => synBits,
+               posBits   => posBits,
                countBits => countBits)
   port map (
    clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   init => syncInit,
-   ena => syncEna,
-   decel => decel,
+
+   inp          => inp,
+   -- din => din,
+   -- dshift => dshift,
+   -- op => op,
+   -- load => load,
+
+   oRec         => oRec,
+   -- dshiftR => dshiftR,
+   -- opR => opR,
+   -- copyR => copyR,
+
+   init         => syncInit,
+   ena          => syncEna,
+   decel        => decel,
    decelDisable => false,
-   ch => ch,
-   dir => '0',
-   dout => doutSync,
-   accelActive => open,
-   decelDone => decelDone,
-   synStep => synStep
+   ch           => ch,
+   dir          => '0',
+   dout         => doutSync,
+   accelActive  => open,
+   decelDone    => decelDone,
+   synStep      => synStep
    );
 
- AxisJog : entity work.Jog
-  generic map (opBase => opBase + F_Sp_Jog_Base,
-               opBits => opBits,
+ SpindleJog : entity work.Jog
+  generic map (opBase  => opBase + F_Sp_Jog_Base,
                outBits => outBits)
   port map (
-   clk => clk,
-   din => din,
-   dshift => dshift,
-   op => op,
-   load => load,
-   dshiftR => dshiftR,
-   opR => opR,
-   copyR => copyR,
-   quad => mpgQuad,
-   enable => jogEnable,
-   jogInvert => jogInvert,
+   clk        => clk,
+
+   inp        => inp,
+   -- din => din,
+   -- dshift => dshift,
+   -- op => op,
+   -- load => load,
+
+   oRec       => oRec,
+   -- dshiftR => dshiftR,
+   -- opR => opR,
+   -- copyR => copyR,
+
+   quad       => mpgQuad,
+   enable     => jogEnable,
+   jogInvert  => jogInvert,
    currentDir => jogDir,
-   jogStep => jogStep,
-   jogDir => jogDir,
-   jogUpdLoc => open,
-   dout => doutJog
+   jogStep    => jogStep,
+   jogDir     => jogDir,
+   jogUpdLoc  => open,
+   dout       => doutJog
    );
 
  jogEnable <= '1' when (eStop = '0') and (spJogEnable = '1') else '0';
@@ -174,31 +189,3 @@ begin
  end process;
 
 end Behavioral;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

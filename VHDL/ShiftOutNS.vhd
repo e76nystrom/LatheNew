@@ -1,44 +1,20 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    17:02:29 01/24/2015 
--- Design Name: 
--- Module Name:    ShiftOutNS - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.ALL;
+
+use work.RegDef.opb;
+use work.IORecord.DataOut;
 
 entity ShiftOutNS is
- generic(opVal : unsigned;
-         opBits : positive;
-         n : positive;
+ generic(opVal   : unsigned (opb-1 downto 0);
+         n       : positive;
          outBits : positive);
  port (
-  clk : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  copy : in boolean;
+  clk  : in std_logic;
+  oRec : in DataOut;
   data : in unsigned(n-1 downto 0);
   dout : out std_logic := '0'
   );
@@ -48,27 +24,26 @@ architecture Behavioral of ShiftOutNS is
 
  signal shiftSel : boolean := false;
  signal shiftReg : unsigned(n-1 downto 0) := (n-1 downto 0 => '0');
- signal padding : integer range 0 to outBits-n;
+ signal padding  : integer range 0 to outBits-n;
 
 begin
 
- -- shiftSel <= '1' when op = opVal else '0';
  dout <= shiftReg(n-1) when shiftSel else '0';
 
  shiftout: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (op = opVal) then
+   if (oRec.op = opVal) then
     shiftSel <= true;
    else
     shiftSel <= false;
    end if;
 
-   if (shiftSel and copy) then
+   if (shiftSel and (oRec.copy = '1')) then
     shiftReg <= data;
     padding <= 32-n;
    else 
-    if (shiftSel and dShift) then
+    if (shiftSel and (oRec.shift = '1')) then
      if (padding = 0) then
       shiftReg <= shiftReg(n-2 downto 0) & shiftReg(n-1);
      else

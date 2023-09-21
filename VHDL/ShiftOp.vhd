@@ -1,39 +1,19 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    17:02:29 01/24/2015 
--- Design Name: 
--- Module Name:    ShiftOp - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
+
 library ieee;
 
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
-use work.RegDef.ALL;
+use work.RegDef.opb;
+use work.IORecord.DataInp;
 
 entity ShiftOp is
- generic(opVal  : unsigned (opb-1 downto 0) := x"00";
-         opBits : positive := 8;
-         n      : positive := 8);
+ generic(opVal : unsigned (opb-1 downto 0);
+         n     : positive);
  port(
-  clk   : in    std_logic;
-  din   : in    std_logic;
-  op    : in    unsigned (opBits-1 downto 0);
-  shift : in    boolean;
-
+  clk   : in std_logic;
+  inp   : in DataInp;
   data  : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end ShiftOp;
@@ -45,8 +25,8 @@ begin
  shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
-   if ((op = opVal) and shift) then
-    data <= data(n-2 downto 0) & din;
+   if ((inp.op = opVal) and (inp.shift = '1')) then
+    data <= data(n-2 downto 0) & inp.dIn;
    end if;
   end if;
  end process shift_reg;

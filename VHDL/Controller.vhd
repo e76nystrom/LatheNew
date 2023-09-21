@@ -3,11 +3,11 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.IORecord.all;
 use work.conversion.all;
 
 entity Controller is
  generic (opBase     : unsigned;
-          opBits     : positive;
           addrBits   : positive := 8;
           statusBits : positive;
           seqBits    : positive;
@@ -16,21 +16,27 @@ entity Controller is
  port (
   clk       : in std_logic;
   init      : in std_logic;
-  din       : in std_logic;
-  dshift    : in boolean;
-  op        : in unsigned(opBits-1 downto 0);
-  copy      : in boolean;
-  load      : in boolean;
+
+  dInp      : in DataInp;
+  -- din       : in std_logic;
+  -- dshift    : in std_logic;
+  -- op        : in unsigned(opb-1 downto 0);
+  -- load      : in std_logic;
+
+  copy      : in std_logic;
+
   ena       : in std_logic;
   statusReg : in unsigned(statusBits-1 downto 0);
-  
+
   dout      : out std_logic := '0';
-  dinOut    : out std_logic := '0';
-  dshiftOut : out boolean := false;
-  opOut     : out unsigned(opBits-1 downto 0) := (others => '0');
-  loadOut   : out boolean := false;
-  busy      : out boolean := false;
-  notEmpty  : out boolean := false
+
+  ctlDIn    : out std_logic := '0';
+  ctlShift  : out std_logic := '0';
+  ctlOp     : out unsigned(opb-1 downto 0) := (others => '0');
+  ctlLoad   : out std_logic := '0';
+
+  busy      : out std_logic := '0';
+  notEmpty  : out std_logic := '0'
   );
 end Controller;
 
@@ -64,7 +70,7 @@ architecture behavioral of  Controller is
  signal rdAddress : unsigned (addrBits-1 downto 0) := (others => '0');
  signal wrAddress : unsigned (addrBits-1 downto 0) := (others => '0');
  signal dataCount : integer range 0 to (2 ** addrBits) - 1 := 0;
- signal notEmptyFlag : boolean := false;
+ signal notEmptyFlag : std_logic := '0';
 
  signal tmp : unsigned (addrBits-1 downto 0);
 
@@ -73,11 +79,13 @@ architecture behavioral of  Controller is
  signal countDout : std_logic;
 
  signal writeEna : std_logic := '0';
- signal opSel : boolean;
+ signal opSel : std_logic;
 
  signal outData : std_logic_vector (byteBits-1 downto 0) := (others => '0');
 
  signal data : unsigned (byteBits-1 downto 0) := (others => '0');
+
+ signal dRead : DataOut;
 
  signal count : integer range 0 to 7;
 
@@ -107,13 +115,13 @@ begin
 
  shiftProc : entity work.ShiftOpSel
   generic map(opVal  => opBase + F_Ld_Ctrl_Data,
-              opBits => opBits,
               n      => byteBits)
   port map(
    clk   => clk,
-   din   => din,
-   op    => op,
-   shift => dshift,
+   inp   => dInp,
+   -- din   => din,
+   -- op    => op,
+   -- shift => dshift,
    sel   => opSel,
    data  => dataReg
    );
@@ -131,16 +139,18 @@ begin
 
  dout <= seqDout or countDout;
 
+ dRead <= (shift => dInp.shift, op => dInp.op, copy => copy);
+
  rdSeq : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Seq,
-              opBits  => opBits,
               n       => seqBits,
               outBits => outBits)
   port map (
    clk    => clk,
-   dshift => dshift,
-   op     => op,
-   copy   => copy,
+   oRec   => dRead,
+   -- dshift => dshift,
+   -- op     => op,
+   -- copy   => copy,
    data   => seqReg,
    dout   => seqDout
    );
@@ -149,23 +159,24 @@ begin
 
  rdCount : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Ctr,
-              opBits  => opBits,
               n       => addrBits,
               outBits => outBits)
   port map (
    clk    => clk,
-   dshift => dshift,
-   op     => op,
-   copy   => copy,
+   oRec   => dRead,
+   -- dshift => dshift,
+   -- op     => op,
+   -- copy   => copy,
    data   => tmp,
    dout   => countDout
    );
 
- dinOut <= data(byteBits-1);
+ ctlDIn <= data(byteBits-1);
+ ctlDIn <= data(byteBits-1);
  notEmpty <= notEmptyFlag;
 
  Proc : process(clk)
-  variable rdOp : unsigned (opBits-1 downto 0) := (others => '0'); 
+  variable rdOp : unsigned (opb-1 downto 0) := (others => '0'); 
  begin
   if (rising_edge(clk)) then
    if (init = '1') then                 --if initialize
@@ -175,22 +186,22 @@ begin
     rdAddress <= (others => '0');
     wrAddress <= (others => '0');
     dataCount <= 0;
-    notEmptyFlag <= false;
+    notEmptyFlag <= '0';
    else                                 --if not initializing
 
     -- control fsm
 
     case ctlState is
      when cIdle =>                      --idle
-      if (opSel and copy) then
+      if ((opSel = '1') and (copy = '1')) then
        count <= 7;
        ctlState <= cShift;              --next state
       end if;
 
      when cShift =>                     --shift data in
-      if ((not opSel) or load) then
+      if ((opSel = '0') or (dInp.load = '1')) then
        ctlState <= cIdle;               --next state
-      elsif (dshift) then
+      elsif (dInp.shift = '1') then
        if (count /= 0) then
         count <= count - 1;
        else
@@ -207,7 +218,7 @@ begin
      when cUpdAdr =>                    --update address
       wrAddress    <= wrAddress + 1;
       dataCount    <= dataCount + 1;
-      notEmptyFlag <= true;
+      notEmptyFlag <= '1';
       ctlState     <= cShift;           --next state
 
      when others => null;
@@ -219,22 +230,22 @@ begin
 
      case runState is
       when rIdle =>                     --idle
-       loadOut <= false;
-       if (notEmptyFlag) then
+       ctlLoad <= '0';
+       if (notEmptyFlag = '1') then
         rdOp := unsigned(outData);
         if (rdOp = opBase + F_Ctrl_Cmd) then
          dlyNxt <= rCmd;
         elsif (rdOp = opBase + F_Ld_seq) then
          dlyNxt <= rSeq;
         else
-         opOut  <= rdOp;
+         ctlOp  <= rdOp;
          dlyNxt <= rLen;
         end if;
         runState <= rAddr;              --next state
        end if;
 
       when rAddr =>                     --update address
-       if (not notEmptyFlag) then
+       if (notEmptyFlag = '0') then
         rdAddress <= rdAddress + 1;
         dataCount <= dataCount - 1;
         delay     <= readDelay;
@@ -253,7 +264,7 @@ begin
       when rCmd =>                      --get command
        cmd <= unsigned(outData);
        -- cmd <= to_cmdRec(outData);
-       busy <= true;
+       busy <= '1';
        runState <= rWait;
 
       when rWait =>                     --wait for axis done
@@ -266,7 +277,7 @@ begin
          cmd(1) <= '0';
         end if;
        else
-        busy     <= false;
+        busy     <= '0';
         dlyNxt   <= rIdle;
         runState <= rAddr;              --next state
        end if;
@@ -283,10 +294,10 @@ begin
        
       when rData =>                     --read data
        if (len /= 0) then
-        if (notEmptyFlag) then
+        if (notEmptyFlag = '1') then
          data <= unsigned(outData);
          count     <= 7;
-         dshiftOut <= true;
+         ctlShift <= '1';
          rdAddress <= rdAddress + 1;
          dataCount <= dataCount - 1;
          runState  <= rShift;           --next state
@@ -294,7 +305,7 @@ begin
          null;
         end if;
        else
-        loadOut  <= true;
+        ctlLoad  <= '1';
         runState <= rDone;              --next state
        end if;
 
@@ -303,17 +314,17 @@ begin
         count <= count - 1;
         data <= shift_left(data, 1);
        else
-        dshiftOut <= false;
+        ctlShift <= '0';
         len <= len - 1;
         if (dataCount = 0) then
-         notEmptyFlag <= false;
+         notEmptyFlag <= '0';
         end if;
         runState <= rData;              --next state
        end if;
 
       when rDone =>                     --done
-       loadOut  <= false;
-       opOut    <= (others => '0');
+       ctlLoad  <= '0';
+       ctlOp    <= (others => '0');
        runState <= rIdle;               --next state
 
       when others => null;
@@ -323,7 +334,7 @@ begin
      len   <= (others => '0');
      data  <= (others => '0');
      cmd   <= (others => '0');
-     opOut <= (others => '0');
+     ctlOp <= (others => '0');
     end if;                             --enabled
    end if;                              --initialize
   end if;                               --clock

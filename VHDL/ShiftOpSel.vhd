@@ -1,44 +1,20 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    17:02:29 01/24/2015 
--- Design Name: 
--- Module Name:    ShiftOpSel - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use ieee.std_logic_1164.ALL;
+use ieee.numeric_std.ALL;
+
+use work.RegDef.opb;
+use work.IORecord.DataInp;
 
 entity ShiftOpSel is
- generic(opVal : unsigned;
-         opBits : positive;
-         n : positive);
+ generic(opVal : unsigned (opb-1 downto 0);
+         n :    positive);
  port(
-  clk : in std_logic;
-  din : in std_logic;
-  op : in unsigned (opBits-1 downto 0);
-  shift : in boolean;
-  sel : out boolean := false;
+  clk  : in   std_logic;
+  inp  : in   DataInp;
+  sel  : out  std_logic := '0';
   data : inout unsigned (n-1 downto 0) := (others => '0')
   );
 end ShiftOpSel;
@@ -48,19 +24,19 @@ architecture Behavioral of ShiftOpSel is
 begin
 
  shift_reg: process (clk)
-  variable opSel : boolean;
+  variable opSel : std_logic;
  begin
   if (rising_edge(clk)) then
-   if (op = opVal) then
-    opSel := true;
+   if (inp.op = opVal) then
+    opSel := '1';
    else
-    opSel := false;
+    opSel := '0';
    end if;
 
    sel <= opSel;
 
-   if (opSel and shift) then
-    data <= data(n-2 downto 0) & din;
+   if ((opSel = '1') and (inp.shift = '1')) then
+    data <= data(n-2 downto 0) & inp.din;
    end if;
   end if;
  end process shift_reg;

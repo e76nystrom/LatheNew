@@ -3,41 +3,26 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.IORecord.DataInp;
 
 entity DisplayCtl is
- generic (opVal : unsigned;
-          opBits : positive;
+ generic (opVal       : unsigned(opb-1 downto 0);
           displayBits : positive;
-          outBits : positive
+          outBits     : positive
           );
  port (
-  clk : in std_logic;
-  dsel : in Std_logic;
-  din : in std_logic;
-  shift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  dout : in std_logic;
-  dspCopy : out boolean := false;
-  dspShift : out boolean := false;
-  dspOp : inout unsigned (opBits-1 downto 0) := (others => '0');
-  dspreg : inout unsigned (displayBits-1 downto 0) := (others => '0')
+  clk      : in std_logic;
+  dsel     : in Std_logic;
+  inp      : DataInp;
+  dout     : in std_logic;
+  dspCopy  : out std_logic := '0';
+  dspShift : out std_logic := '0';
+  dspOp    : inout unsigned (opb-1 downto 0) := (others => '0');
+  dspreg   : inout unsigned (displayBits-1 downto 0) := (others => '0')
   );
 end DisplayCtl;
 
 architecture behavioral of  DisplayCtl is
-
- component ShiftOp is
-  generic(opVal : unsigned;
-          opBits : positive;
-          n : positive);
-  port(
-   clk : in std_logic;
-   din : in std_logic;
-   op : in unsigned (opBits-1 downto 0);
-   shift : in boolean;
-   data : inout unsigned (n-1 downto 0)
-   );
- end Component;
 
  type ctlFSM is (idle, shiftVal);
  signal state : ctlFSM := idle;
@@ -47,16 +32,13 @@ architecture behavioral of  DisplayCtl is
 
 begin
 
- opReg : ShiftOp
+ opReg : entity work.ShiftOp
   generic map(opVal => opVal,
-              opBits => opBits,
-              n => opBits)
+              n     => opb)
   port map(
-   clk => clk,
-   din => din,
-   op => op,
-   shift => shift,
-   data => dspOp
+   clk   => clk,
+   inp   => inp,
+   data  => dspOp
    );
 
  dspProc: process(clk)
@@ -66,19 +48,19 @@ begin
    case state is
     when idle =>
      if ((dspOp /= x"00") and (lastDsel = '0') and (dsel = '1')) then
-      dspCopy <= true;
+      dspCopy <= '1';
       count <= 32;
       state <= shiftVal;
      end if;
 
     when shiftVal =>
      dspReg <= dspReg(displayBits-2 downto 0) & dout;
-     dspCopy <= false;
+     dspCopy <= '0';
      if (count = 0) then
-      dspShift <= false;
+      dspShift <= '0';
       state <= idle;
      else
-      dspShift <= true;
+      dspShift <= '1';
       count <= count - 1;
      end if;
    end case;

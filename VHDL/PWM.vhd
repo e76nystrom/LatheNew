@@ -3,17 +3,18 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.IORecord.all;
 
 entity PWM is
  generic (opBase : unsigned;
-          opBits : positive;
-          n : positive);
+          n      : positive);
  port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned(opBits-1 downto 0);
-  ena : in std_logic;
+  clk    : in  std_logic;
+  inp    : in  DataInp;  
+  -- din : in std_logic;
+  -- dshift : in boolean;
+  -- op : in unsigned(opBits-1 downto 0);
+  ena    : in  std_logic;
   pwmOut : out std_logic := '0'
   );
 end PWM;
@@ -26,31 +27,31 @@ architecture behavioral of  PWM is
  signal pwmTrig : unsigned(n-1 downto 0);
 
  signal lastEna : std_logic;
- signal trigSel : boolean;
+ signal trigSel : std_logic;
 
 begin
 
  pwmMaxShift : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_PWM_Max,
-              opBits => opBits,
               n => n)
   port map(
-   clk => clk,
-   din => din,
-   op => op,
-   shift => dshift,
+   clk  => clk,
+   inp  => inp,
+   -- din => din,
+   -- op => op,
+   -- shift => dshift,
    data => pwmMax
    );
 
  pwmTrigShift : entity work.ShiftOpSel
   generic map(opVal => opBase + F_Ld_PWM_Trig,
-              opBits => opBits,
-              n => n)
+              n     => n)
   port map(
-   clk => clk,
-   din => din,
-   op => op,
-   shift => dshift,
+   clk  => clk,
+   inp  => inp,
+   -- din => din,
+   -- op => op,
+   -- shift => dshift,
    sel => trigSel,
    data => pwmTrigIn
    );
@@ -72,7 +73,7 @@ begin
      if (pwmCounter = 0) then
       pwmCounter <= pwmMax;
       pwmOut <= '0';
-      if (trigSel) then
+      if (trigSel = '1') then
        pwmTrig <= PwmTrigIn;
       end if;
      else

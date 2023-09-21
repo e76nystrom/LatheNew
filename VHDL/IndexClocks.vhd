@@ -1,22 +1,24 @@
 library ieee;
+
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.regDef.all;
+use work.IORecord.all;
 
 entity IndexClocks is
- generic (opval : unsigned;
-          opBits : positive;
-          n : positive;
+ generic (opval    : unsigned;
+          n       : positive;
           outBits : positive);
  port (
-  clk : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  copy : in boolean;
-  ch : in std_logic;
+  clk   : in std_logic;
+  oRec  : DataOut;
+  -- dshift : in boolean;
+  -- op : in unsigned (opBits-1 downto 0);
+  -- copy : in boolean;
+  ch    : in std_logic;
   index : in std_logic;
-  dout : out std_logic := '0'
+  dout  : out std_logic := '0'
   );
 end IndexClocks;
 
@@ -34,15 +36,15 @@ architecture behavioral of  IndexClocks is
 begin
 
  dataOut : entity work.ShiftOutN
-  generic map(opVal => opVal,
-              opBits => opBits,
-              n => n,
+  generic map(opVal   => opVal,
+              n       => n,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshift,
-   op => op,
-   copy => copy,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshift,
+   -- op => op,
+   -- copy => copy,
    data => clockReg,
    dout => dout
    );

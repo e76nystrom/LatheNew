@@ -1,39 +1,19 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    17:02:29 01/24/2015 
--- Design Name: 
--- Module Name:    ShiftOpLoad - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
+
 library ieee;
 
 use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
-use work.RegDef.ALL;
+use work.RegDef.opb;
+use work.IORecord.DataInp;
 
 entity ShiftOpLoad is
- generic(opVal  : unsigned (opb-1 downto 0) := x"00";
-         opBits : positive := 8;
-         n      : positive := 8);
+ generic(opVal  : unsigned (opb-1 downto 0);
+         n      : positive);
  port(
   clk   : in    std_logic;
-  din   : in    std_logic;
-  op    : in    unsigned (opBits-1 downto 0);
-  shift : in    boolean;
-
+  inp   : in    DataInp;
   load  : out   std_logic := '0';
   data  : inout unsigned (n-1 downto 0) := (others => '0')
   );
@@ -47,10 +27,10 @@ begin
  shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (op = opVal) then                 --if selected
+   if (inp.op = opVal) then             --if selected
     lastSel <= true;                    --update last value
-    if (shift) then                     --if time to shift
-     data <= data(n-2 downto 0) & din;  --shift
+    if (inp.shift = '1') then           --if time to shift
+     data <= data(n-2 downto 0) & inp.din; --shift
     end if;
    else                                 --if not selected
     if (lastSel) then                   --if was selected

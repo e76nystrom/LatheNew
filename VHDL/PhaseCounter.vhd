@@ -1,57 +1,38 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    19:16:04 01/29/2015 
--- Design Name: 
--- Module Name:    PhaseCounter - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
+library ieee;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
-
-use work.regdef.all;
+use work.regDef.all;
+use work.IORecord.all;
 
 entity PhaseCounter is
  generic (opBase : unsigned;
-          opBits : positive := 8;
+
           phaseBits : positive := 16;
           totalBits : positive := 32;
           outBits : positive);
  port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  load : in boolean;
-  dshiftR : in boolean;
-  opR : in unsigned (opBits-1 downto 0);
-  copyR : in boolean;
-  init : in std_logic;
-  genSync : in std_logic;
-  ch : in std_logic;
-  sync : in std_logic;
-  dir : in std_logic;
-  dout : out std_logic  := '0';
+  clk    : in std_logic;
+
+  inp    : DataInp;
+  -- din : in std_logic;
+  -- dshift : in boolean;
+  -- op : in unsigned (opBits-1 downto 0);
+  -- load : in boolean;
+
+  oRec   : DataOut;
+  -- dshiftR : in boolean;
+  -- opR : in unsigned (opBits-1 downto 0);
+  -- copyR : in boolean;
+
+  init    : in  std_logic;
+  genSync : in  std_logic;
+  ch      : in  std_logic;
+  sync    : in  std_logic;
+  dir     : in  std_logic;
+  dout    : out std_logic := '0';
   syncOut : out std_logic := '0');
 end PhaseCounter;
 
@@ -77,25 +58,25 @@ begin
 
  phaseReg : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_Phase_len,
-              opBits => opBits,
-              n => phaseBits)
+              n     => phaseBits)
   port map (
-   clk => clk,
-   din => din,
-   op => op,
-   shift => dshift,
+   clk  => clk,
+   inp  => inp,
+   -- din => din,
+   -- op => op,
+   -- shift => dshift,
    data => phaseVal);
 
  phaseSynOut : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Phase_Syn,
-              opBits => opBits,
-              n => phaseBits,
+  generic map(opVal   => opBase + F_Rd_Phase_Syn,
+              n       => phaseBits,
               outBits => outBits)
   port map (
    clk => clk,
-   dshift => dShiftR,
-   op => opR,
-   copy => copyR,
+   oRec    => oRec,
+   -- dshift => dShiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => phaseSyn,
    dout => doutPhaseSyn
    );

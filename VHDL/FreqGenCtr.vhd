@@ -1,48 +1,27 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    09:00:00 12/12/2019
--- Design Name: 
--- Module Name:    FreqGenCtr - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-use work.regdef.all;
+use work.RegDef.all;
+use work.IORecord.DataInp;
 
 entity FreqGenCtr is
- generic(opBase : unsigned;
-         opBits : positive := 8;
+ generic(opBase   : unsigned;
          freqBits : positive;
          countBits: positive);
  port (
-  clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  load : in boolean;
-  ena : in std_logic;
+  clk     : in  std_logic;
+  inp     : in  DataInp;
+
+  -- din : in std_logic;
+  -- dshift : in boolean;
+  -- op : in unsigned (opBits-1 downto 0);
+  -- load : in boolean;
+
+  ena      : in  std_logic;
   pulseOut : out std_logic := '0'
   );
 end FreqGenCtr;
@@ -64,30 +43,30 @@ begin
 
  freqReg : entity work.ShiftOp
   generic map(opVal => opBase + F_Ld_Dbg_Freq,
-              opBits => opBits,
-              n => freqBits)
+              n     => freqBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => freqVal);
 
  countReg : entity work.ShiftOp
-  generic map(opVal => opBase + F_Ld_Dbg_Count,
-              opBits => opBits,
-              n => countBits)
+  generic map(opVal  => opBase + F_Ld_Dbg_Count,
+              n      => countBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => countVal);
 
  freqCtr: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   if (op = opBase + F_Ld_Dbg_Freq) then --if changing frequency
+   if (inp.op = opBase + F_Ld_Dbg_Freq) then --if changing frequency
     state <= idle;                      --return to idle state
    else
     case state is
@@ -134,7 +113,7 @@ begin
       if (ena = '0') then               --if enable cleared
        state <= idle;                   --return to idle state
       end if;
-      if ((op = opBase + F_Ld_Dbg_Count) and load) then
+      if ((inp.op = opBase + F_Ld_Dbg_Count) and (inp.load = '1')) then
        outputCounter <= countVal;
        freqCounter <= freqVal;          --reload counter
        state <= run;

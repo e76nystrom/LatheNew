@@ -1,82 +1,85 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
 
-use work.regdef.all;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+use work.RegDef.all;
+use work.IORecord.all;
 
 entity Jog is
- generic (opBase :  unsigned (opb-1 downto 0) := x"00";
-          opBits :  positive := 8;
+ generic (opBase  : unsigned (opb-1 downto 0) := x"00";
           outBits : positive := 32);
  port (
-  clk :        in std_logic;
+  clk        : in std_logic;
 
-  din :        in std_logic;
-  dshift :     in boolean;
-  op :         in unsigned(opBits - 1 downto 0);
+  inp        : DataInp;
+  -- din :        in std_logic;
+  -- dshift :     in boolean;
+  -- op :         in unsigned(opBits - 1 downto 0);
 
-  load :       in boolean;
-  dshiftR :    in boolean;
-  opR :        in unsigned(opBits-1 downto 0);
-  copyR :      in boolean;
+  oRec       : DataOut;
+  -- load :       in boolean;
+  -- dshiftR :    in boolean;
+  -- opR :        in unsigned(opBits-1 downto 0);
+  -- copyR :      in boolean;
 
-  quad :       in std_logic_vector(1 downto 0);
-  enable :     in std_logic;
-  jogInvert :  in std_logic;
+  quad       : in std_logic_vector(1 downto 0);
+  enable     : in std_logic;
+  jogInvert  : in std_logic;
   currentDir : in std_logic;
 
-  jogStep :    out std_logic := '0';
-  jogDir :     out std_logic := '0';
-  jogUpdLoc :  out std_logic := '1';
-  dout :       out std_logic
+  jogStep    : out std_logic := '0';
+  jogDir     : out std_logic := '0';
+  jogUpdLoc  : out std_logic := '1';
+  dout       : out std_logic
   );
 end Jog;
 
 architecture Behavioral of Jog is
 
- component CtlReg is
-  generic(opVal : unsigned;
-          opb :   positive;
-          n :     positive);
-  port (
-   clk :   in std_logic;                --clock
-   din :   in std_logic;                --data in
-   op :    in unsigned(opb-1 downto 0); --current reg address
-   shift : in boolean;                   --shift data
-   load :  in boolean;                   --load to data register
+ -- component CtlReg is
+ --  generic(opVal : unsigned;
+ --          opb :   positive;
+ --          n :     positive);
+ --  port (
+ --   clk :   in std_logic;                --clock
+ --   din :   in std_logic;                --data in
+ --   op :    in unsigned(opb-1 downto 0); --current reg address
+ --   shift : in boolean;                   --shift data
+ --   load :  in boolean;                   --load to data register
 
-   data :  inout  unsigned (n-1 downto 0)); --data register
- end Component;
+ --   data :  inout  unsigned (n-1 downto 0)); --data register
+ -- end Component;
 
- component ShiftOp is
-  generic(opVal :  unsigned;
-          opBits : positive;
-          n :      positive);
-  port(
-   clk :   in std_logic;
-   din :   in std_logic;
-   op :    in unsigned (opBits-1 downto 0);
-   shift : in boolean;
+ -- component ShiftOp is
+ --  generic(opVal :  unsigned;
+ --          opBits : positive;
+ --          n :      positive);
+ --  port(
+ --   clk :   in std_logic;
+ --   din :   in std_logic;
+ --   op :    in unsigned (opBits-1 downto 0);
+ --   shift : in boolean;
    
-   data :  inout unsigned (n-1 downto 0)
-   );
- end Component;
+ --   data :  inout unsigned (n-1 downto 0)
+ --   );
+ -- end Component;
 
- component ShiftOutNS is
-  generic(opVal :   unsigned;
-          opBits :  positive;
-          n :       positive;
-          outBits : positive);
-  port (
-   clk :    in std_logic;
-   dshift : in boolean;
-   op :     in unsigned (opBits-1 downto 0);
-   copy :   in boolean;
-   data :   in unsigned(n-1 downto 0);
+ -- component ShiftOutNS is
+ --  generic(opVal :   unsigned;
+ --          opBits :  positive;
+ --          n :       positive;
+ --          outBits : positive);
+ --  port (
+ --   clk :    in std_logic;
+ --   dshift : in boolean;
+ --   op :     in unsigned (opBits-1 downto 0);
+ --   copy :   in boolean;
+ --   data :   in unsigned(n-1 downto 0);
 
-   dout :   out std_logic
-   );
- end Component;
+ --   dout :   out std_logic
+ --   );
+ -- end Component;
 
  alias a : std_logic is quad(0);
  alias b : std_logic is quad(1);
@@ -122,39 +125,39 @@ begin
 
  dout <= '0';
 
- jogCtlReg : ctlReg 
+ jogCtlReg : entity work.ctlReg 
   generic map(opVal => opBase + F_Ld_Jog_ctl,
-              opb =>   opBits,
               n =>     jogSize)
   port map (
-   clk =>   clk,
-   din =>   din,
-   op =>    op,
-   shift => dshift,
-   load =>  load,
+   clk  => clk,
+   inp  => inp,
+   -- din =>   din,
+   -- op =>    op,
+   -- shift => dshift,
+   -- load =>  load,
    data =>  jogReg);
 
- jogIncReg: ShiftOp
+ jogIncReg: entity work.ShiftOp
   generic map(opVal =>  opBase + F_Ld_Jog_Inc,
-              opBits => opBits,
               n =>      distBits)
   port map (
-   clk =>   clk,
-   din =>   din,
-   op =>    op,
-   shift => dshift,
+   clk  => clk,
+   inp  => inp,
+   -- din =>   din,
+   -- op =>    op,
+   -- shift => dshift,
    data =>  incDist);
 
- jogBacklashReg: ShiftOp
+ jogBacklashReg: entity work.ShiftOp
   generic map(opVal =>  opBase + F_Ld_Jog_Back,
-              opBits => opBits,
               n =>      DistBits)
   port map (
-   clk =>   clk,
-   din =>   din,
-   op =>    op,
-   shift => dshift,
-   data =>  backlashDist);
+   clk  => clk,
+   -- din =>   din,
+   -- op =>    op,
+   -- shift => dshift,
+   inp  => inp,
+   data => backlashDist);
 
  -- dout <= posDout;
 

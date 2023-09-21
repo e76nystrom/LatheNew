@@ -1,66 +1,46 @@
---------------------------------------------------------------------------------
--- Company: 
--- Engineer: 
--- 
 -- Create Date:    09:25:00 01/25/2015 
--- Design Name: 
--- Module Name:    SyncAccel - Behavioral 
--- Project Name: 
--- Target Devices: 
--- Tool versions: 
--- Description: 
---
--- Dependencies: 
---
--- Revision: 
--- Revision 0.01 - File Created
--- Additional Comments: 
---
---------------------------------------------------------------------------------
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
 
--- Uncomment the following library declaration if using
--- arithmetic functions with Signed or Unsigned values
-use IEEE.NUMERIC_STD.ALL;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
--- Uncomment the following library declaration if instantiating
--- any Xilinx primitives in this code.
---library UNISIM;
---use UNISIM.VComponents.all;
+use work.regDef.all;
+use work.IORecord.all;
 
-use work.RegDef.ALL;
-
-entity SyncAccel is
- generic (opBase : unsigned := x"00";
-          opBits : positive := 8;
-          synBits : positive := 32;
-          posBits : positive := 18;
+entity SyncAccelNew is
+ generic (opBase    : unsigned := x"00";
+          synBits   : positive := 32;
+          posBits   : positive := 18;
           countBits : positive := 18;
-          outBits : positive := 32);
+          outBits   : positive := 32);
  port (
   clk : in std_logic;
-  din : in std_logic;
-  dshift : in boolean;
-  op : in unsigned (opBits-1 downto 0);
-  load : in boolean;
-  dshiftR : in boolean;
-  opR : in unsigned (opBits-1 downto 0);
-  copyR : in boolean;
-  init : in std_logic;                  --reset
-  ena : in std_logic;                   --enable operation
-  decel : in std_logic;
-  decelDisable : in boolean;
-  ch : in std_logic;
-  dir : in std_logic;
-  dout : out std_logic := '0';
-  accelActive : out std_logic := '0';
-  decelDone : out boolean := false;
-  synStep : out std_logic := '0'
-  );
-end SyncAccel;
 
-architecture Behavioral of SyncAccel is
+  inp         : in DataInp;
+  -- din : in std_logic;
+  -- dshift : in boolean;
+  -- op : in unsigned (opBits-1 downto 0);
+  -- load : in boolean;
+
+  oRec        : in DataOut;
+  -- dshiftR : in boolean;
+  -- opR : in unsigned (opBits-1 downto 0);
+  -- copyR : in boolean;
+
+  init         : in std_logic;          --reset
+  ena          : in std_logic;          --enable operation
+  decel        : in std_logic;
+  decelDisable : in boolean;
+  ch           : in std_logic;
+  dir          : in std_logic;
+  dout         : out std_logic := '0';
+  accelActive  : out std_logic := '0';
+  decelDone    : out boolean := false;
+  synStep      : out std_logic := '0'
+  );
+end SyncAccelNew;
+
+architecture Behavioral of SyncAccelNew is
 
  type fsm is (idle, enabled, updAccel, doneWait);
  signal state : fsm := idle;
@@ -99,125 +79,125 @@ begin
  
  dreg : entity work.ShiftOp
   generic map(opVal => opBase + opD,
-              opBits => opBits,
-              n => synBits)
+              n =>     synBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => d);
 
  incr1reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr1,
-              opBits => opBits,
-              n => synBits)
+              n     => synBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => incr1);
 
  incr2reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr2,
-              opBits => opBits,
-              n => synBits)
+              n     => synBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => incr2);
 
  accelreg : entity work.ShiftOp
   generic map(opVal => opBase + opAccel,
-              opBits => opBits,
-              n => synBits)
+              n     => synBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => accel);
 
  accelCountReg : entity work.ShiftOp
   generic map(opVal => opBase + opAccelCount,
-              opBits => opBits,
-              n => countBits)
+              n     => countBits)
   port map (
-   clk => clk,
-   shift => dshift,
-   op => op,
-   din => din,
+   clk  => clk,
+   inp  => inp,
+   -- shift => dshift,
+   -- op => op,
+   -- din => din,
    data => accelCount);
 
  sum_out : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Sum,
-              opBits => opBits,
-              n => synBits,
+  generic map(opVal   => opBase + F_Rd_Sum,
+              n       => synBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => sum,
    dout => sumDout
    );
 
  accelSum_Out : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Accel_Sum,
-              opBits => opBits,
-              n => synBits,
+  generic map(opVal   => opBase + F_Rd_Accel_Sum,
+              n       => synBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => accelSUm,
    dout => accelSumDout
    );
 
  accelCtr_out : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Accel_Ctr,
-              opBits => opBits,
-              n => countBits,
+  generic map(opVal   => opBase + F_Rd_Accel_Ctr,
+              n       => countBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => accelCounter,
    dout => accelCtrDout
    );
 
  xPos_Shift : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_XPos,
-              opBits => opBits,
-              n => posBits,
+  generic map(opVal   => opBase + F_Rd_XPos,
+              n       => posBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => xPos,
    dout => xPosDout
    );
 
  yPos_Shift : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_YPos,
-              opBits => opBits,
-              n => posBits,
+  generic map(opVal   => opBase + F_Rd_YPos,
+              n       => posBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftR,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftR,
+   -- op => opR,
+   -- copy => copyR,
    data => yPos,
    dout => yPosDout
    );

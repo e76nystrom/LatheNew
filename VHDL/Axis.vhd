@@ -1,14 +1,16 @@
 --******************************************************************************
-LIBRARY ieee;
-USE ieee.std_logic_1164.ALL;
-USE ieee.numeric_std.ALL;
 
-use work.RegDef.ALL;
+LIBRARY ieee;
+
+USE ieee.std_logic_1164.all;
+USE ieee.numeric_std.all;
+
+use work.RegDef.all;
+use work.IORecord.all;
 
 entity Axis is
  generic (
   opBase     : unsigned (opb-1 downto 0) := x"00";
-  opBits     : positive := 8;
   synBits    : positive := 32;
   posBits    : positive := 24;
   countBits  : positive := 18;
@@ -21,14 +23,16 @@ entity Axis is
  port (
   clk        : in std_logic;
 
-  din        : in std_logic;
-  dshift     : in boolean;
-  op         : in unsigned(opBits-1 downto 0);
-  load       : in boolean;
+  inp        : in DataInp;
+  -- din        : in std_logic;
+  -- dshift     : in boolean;
+  -- op         : in unsigned(opBits-1 downto 0);
+  -- load       : in boolean;
 
-  dshiftR    : in boolean;
-  opR        : in unsigned(opBits-1 downto 0);
-  copyR      : in boolean;
+  oRec       : in DataOut;
+  -- dshiftR    : in boolean;
+  -- opR        : in unsigned(opBits-1 downto 0);
+  -- copyR      : in boolean;
 
   extInit    : in std_logic;            --reset
   extEna     : in std_logic;            --enable operation
@@ -162,41 +166,41 @@ architecture Behavioral of Axis is
 begin
 
  AxStatReg : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Axis_Status,
-              opBits => opBits,
-              n => axisStatusSize,
+  generic map(opVal   => opBase + F_Rd_Axis_Status,
+              n       => axisStatusSize,
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftr,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftr,
+   -- op => opR,
+   -- copy => copyR,
    data => axisStatusReg,
    dout => doutStatus
    );
 
  AxCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Axis_Ctl,
-              opb => opBits,
-              n => axisCtlSize)
+              n     => axisCtlSize)
   port map (
-   clk => clk,
-   din => din,
-   op => op,
-   shift => dshift,
-   load => load,
+   clk  => clk,
+   inp  => inp,
+   -- din => din,
+   -- op => op,
+   -- shift => dshift,
+   -- load => load,
    data => axisCtlReg);
 
  AxCtlRegRd : entity work.ShiftOutN
-  generic map(opVal => opBase + F_Rd_Axis_Ctl,
-              opBits => opBits,
-              n => axisCtlSize,
+  generic map(opVal   => opBase + F_Rd_Axis_Ctl,
+              n       => axisCtlSize,              
               outBits => outBits)
   port map (
-   clk => clk,
-   dshift => dshiftr,
-   op => opR,
-   copy => copyR,
+   clk  => clk,
+   oRec => oRec,
+   -- dshift => dshiftr,
+   -- op => opR,
+   -- copy => copyR,
    data => axisCtlReg,
    dout => doutCtl
    );
@@ -211,7 +215,6 @@ begin
 
  AxisSyncAccel : entity work.SyncAccelDistJog
   generic map (opBase     => opBase + F_Sync_Base,
-               opBits     => opBits,
                synBits    => synBits,
                posBits    => posBits,
                countBits  => countBits,
@@ -223,14 +226,16 @@ begin
   port map (
    clk        => clk,
 
-   din        => din,
-   dshift     => dshift,
-   op         => op,
-   load       => load,
+   inp        => inp,
+   -- din        => din,
+   -- dshift     => dshift,
+   -- op         => op,
+   -- load       => load,
 
-   dshiftR    => dshiftR,
-   opR        => opR,
-   copyR      => copyR,
+   oRec       => oRec,
+   -- dshiftR    => dshiftR,
+   -- opR        => opR,
+   -- copyR      => copyR,
 
    init       => runInit,
    ena        => syncAccelEna,
