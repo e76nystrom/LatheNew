@@ -6,7 +6,7 @@ use IEEE.MATH_REAL.ALL;
 
 use work.SimProc.all;
 use work.RegDef.all;
-use work.Common.all;
+--use work.Common.all;
 
 entity A_LatheNewTest is
 end A_LatheNewTest;

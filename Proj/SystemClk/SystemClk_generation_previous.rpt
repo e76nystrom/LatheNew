@@ -1,5 +1,5 @@
 Info: Starting: Create simulation model
-Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --simulation=VHDL --allow-mixed-language-simulation --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk\simulation --family="Cyclone IV GX" --part=EP4CGX150DF27I7
+Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --simulation=VHDL --allow-mixed-language-simulation --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk\simulation --family="Cyclone IV E" --part=EP4CE22F17C6
 Progress: Loading Proj/SystemClk.qsys
 Progress: Reading input file
 Progress: Adding altclkctrl_0 [altclkctrl 22.1]
@@ -8,7 +8,7 @@ Progress: Building connections
 Progress: Parameterizing connections
 Progress: Validating
 Progress: Done reading input file
-: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV GX.
+: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV E.
 : SystemClk.altclkctrl_0: Global clock network allows a clock signal to reach all parts of the chip with the same amount of skew. Input port 'clkselect' can be used to switch between four clock inputs.
 Info: SystemClk: Generating SystemClk "SystemClk" for SIM_VHDL
 Info: altclkctrl_0: Generating top-level entity SystemClk_altclkctrl_0.
@@ -27,7 +27,7 @@ Info: For information on how to simulate your IP, see the explanatory comments i
 Info: Regenerate these scripts whenever you make any change to any Quartus-generated IP in your project.
 Info: Finished: Create Modelsim Project.
 Info: Starting: Create block symbol file (.bsf)
-Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --block-symbol-file --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk --family="Cyclone IV GX" --part=EP4CGX150DF27I7
+Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --block-symbol-file --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk --family="Cyclone IV E" --part=EP4CE22F17C6
 Progress: Loading Proj/SystemClk.qsys
 Progress: Reading input file
 Progress: Adding altclkctrl_0 [altclkctrl 22.1]
@@ -36,13 +36,13 @@ Progress: Building connections
 Progress: Parameterizing connections
 Progress: Validating
 Progress: Done reading input file
-: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV GX.
+: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV E.
 : SystemClk.altclkctrl_0: Global clock network allows a clock signal to reach all parts of the chip with the same amount of skew. Input port 'clkselect' can be used to switch between four clock inputs.
 Info: qsys-generate succeeded.
 Info: Finished: Create block symbol file (.bsf)
 Info: 
 Info: Starting: Create HDL design files for synthesis
-Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --synthesis=VHDL --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk\synthesis --family="Cyclone IV GX" --part=EP4CGX150DF27I7
+Info: qsys-generate C:\Development\Altera\LatheNew\Proj\SystemClk.qsys --synthesis=VHDL --output-directory=C:\Development\Altera\LatheNew\Proj\SystemClk\synthesis --family="Cyclone IV E" --part=EP4CE22F17C6
 Progress: Loading Proj/SystemClk.qsys
 Progress: Reading input file
 Progress: Adding altclkctrl_0 [altclkctrl 22.1]
@@ -51,7 +51,7 @@ Progress: Building connections
 Progress: Parameterizing connections
 Progress: Validating
 Progress: Done reading input file
-: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV GX.
+: SystemClk.altclkctrl_0: Targeting device family: Cyclone IV E.
 : SystemClk.altclkctrl_0: Global clock network allows a clock signal to reach all parts of the chip with the same amount of skew. Input port 'clkselect' can be used to switch between four clock inputs.
 Info: SystemClk: Generating SystemClk "SystemClk" for QUARTUS_SYNTH
 Info: altclkctrl_0: Generating top-level entity SystemClk_altclkctrl_0.

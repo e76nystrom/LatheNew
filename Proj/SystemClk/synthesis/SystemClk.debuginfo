@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <EnsembleReport name="SystemClk" kind="system" version="22.1" fabric="QSYS">
- <!-- Format version 22.1 917 (Future versions may contain additional information.) -->
- <!-- 2023.06.12.19:20:14 -->
+ <!-- Format version 22.1 922 (Future versions may contain additional information.) -->
+ <!-- 2023.09.22.04:22:34 -->
  <!-- A collection of modules and connections -->
  <parameter name="clockCrossingAdapter">
   <type>com.altera.sopcmodel.ensemble.EClockAdapter</type>
@@ -13,7 +13,7 @@
  </parameter>
  <parameter name="device">
   <type>java.lang.String</type>
-  <value>EP4CE22F17C6</value>
+  <value>EP4CGX150DF27I7</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>true</visible>
@@ -21,7 +21,7 @@
  </parameter>
  <parameter name="deviceFamily">
   <type>java.lang.String</type>
-  <value>CYCLONEIVE</value>
+  <value>STINGRAY</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>true</visible>
@@ -29,7 +29,7 @@
  </parameter>
  <parameter name="deviceSpeedGrade">
   <type>java.lang.String</type>
-  <value>6</value>
+  <value>7</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>false</visible>
@@ -53,7 +53,7 @@
  </parameter>
  <parameter name="generationId">
   <type>int</type>
-  <value>1686612014</value>
+  <value>1695370953</value>
   <derived>false</derived>
   <enabled>true</enabled>
   <visible>true</visible>
@@ -156,7 +156,7 @@
 the requested settings for a module instance. -->
   <parameter name="DEVICE_FAMILY">
    <type>java.lang.String</type>
-   <value>CYCLONEIVE</value>
+   <value>STINGRAY</value>
    <derived>false</derived>
    <enabled>true</enabled>
    <visible>false</visible>
@@ -334,6 +334,6 @@ parameters are a RESULT of the module parameters. -->
   <displayName>Conduit</displayName>
   <version>22.1</version>
  </plugin>
- <reportVersion>22.1 917</reportVersion>
- <uniqueIdentifier>1C99571B56A600000188B1E8F58C</uniqueIdentifier>
+ <reportVersion>22.1 922</reportVersion>
+ <uniqueIdentifier>1C99571B56A60000018ABBFBC5DA</uniqueIdentifier>
 </EnsembleReport>

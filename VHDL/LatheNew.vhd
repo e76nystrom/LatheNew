@@ -40,6 +40,7 @@ entity LatheNew is
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
+  
   );
 end LatheNew;
 

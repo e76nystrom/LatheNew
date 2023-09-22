@@ -1,12 +1,12 @@
-# system info SystemClk on 2023.06.12.19:20:11
+# system info SystemClk on 2023.09.22.04:22:29
 system_info:
 name,value
-DEVICE,EP4CE22F17C6
-DEVICE_FAMILY,Cyclone IV E
-GENERATION_ID,1686612010
+DEVICE,EP4CGX150DF27I7
+DEVICE_FAMILY,Cyclone IV GX
+GENERATION_ID,1695370949
 #
 #
-# Files generated for SystemClk on 2023.06.12.19:20:11
+# Files generated for SystemClk on 2023.09.22.04:22:29
 files:
 filepath,kind,attributes,module,is_top
 simulation/SystemClk.vhd,VHDL,,SystemClk,true

@@ -6,5 +6,5 @@
    library="altclkctrl_0" />
  <file path="simulation/SystemClk.vhd" type="VHDL" />
  <topLevel name="SystemClk" />
- <deviceFamily name="cycloneive" />
+ <deviceFamily name="cycloneivgx" />
 </simPackage>

@@ -1,5 +1,5 @@
-//altclkctrl CBX_SINGLE_OUTPUT_FILE="ON" CLOCK_TYPE="Global Clock" DEVICE_FAMILY="Cyclone IV E" ENA_REGISTER_MODE="falling edge" USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION="OFF" ena inclk outclk
-//VERSION_BEGIN 22.1 cbx_altclkbuf 2023:02:14:18:07:10:SC cbx_cycloneii 2023:02:14:18:07:11:SC cbx_lpm_add_sub 2023:02:14:18:07:10:SC cbx_lpm_compare 2023:02:14:18:07:10:SC cbx_lpm_decode 2023:02:14:18:07:10:SC cbx_lpm_mux 2023:02:14:18:07:11:SC cbx_mgl 2023:02:14:18:07:18:SC cbx_nadder 2023:02:14:18:07:11:SC cbx_stratix 2023:02:14:18:07:11:SC cbx_stratixii 2023:02:14:18:07:11:SC cbx_stratixiii 2023:02:14:18:07:11:SC cbx_stratixv 2023:02:14:18:07:11:SC  VERSION_END
+//altclkctrl CBX_SINGLE_OUTPUT_FILE="ON" CLOCK_TYPE="Global Clock" DEVICE_FAMILY="Cyclone IV GX" ENA_REGISTER_MODE="falling edge" USE_GLITCH_FREE_SWITCH_OVER_IMPLEMENTATION="OFF" ena inclk outclk
+//VERSION_BEGIN 22.1 cbx_altclkbuf 2023:07:21:07:12:20:SC cbx_cycloneii 2023:07:21:07:12:21:SC cbx_lpm_add_sub 2023:07:21:07:12:21:SC cbx_lpm_compare 2023:07:21:07:12:21:SC cbx_lpm_decode 2023:07:21:07:12:20:SC cbx_lpm_mux 2023:07:21:07:12:21:SC cbx_mgl 2023:07:21:07:12:36:SC cbx_nadder 2023:07:21:07:12:21:SC cbx_stratix 2023:07:21:07:12:21:SC cbx_stratixii 2023:07:21:07:12:21:SC cbx_stratixiii 2023:07:21:07:12:21:SC cbx_stratixv 2023:07:21:07:12:21:SC  VERSION_END
 // synthesis VERILOG_INPUT_VERSION VERILOG_2001
 // altera message_off 10463
 
@@ -48,7 +48,7 @@ module  SystemClk_altclkctrl_0_sub
 	wire  [1:0]  clkselect_wire;
 	wire  [3:0]  inclk_wire;
 
-	cycloneive_clkctrl   clkctrl1
+	cycloneiv_clkctrl   clkctrl1
 	( 
 	.clkselect(clkselect_wire),
 	.ena(ena),
@@ -63,7 +63,7 @@ module  SystemClk_altclkctrl_0_sub
 	defparam
 		clkctrl1.clock_type = "Global Clock",
 		clkctrl1.ena_register_mode = "falling edge",
-		clkctrl1.lpm_type = "cycloneive_clkctrl";
+		clkctrl1.lpm_type = "cycloneiv_clkctrl";
 	assign
 		clkselect = {2{1'b0}},
 		clkselect_wire = {clkselect},
