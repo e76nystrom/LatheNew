@@ -14,26 +14,24 @@ entity Controller is
           outBits    : positive
           );
  port (
-  clk       : in std_logic;
-  init      : in std_logic;
+  clk      : in std_logic;
+  init     : in std_logic;
 
-  dInp      : in DataInp;
-  -- din       : in std_logic;
-  -- dshift    : in std_logic;
-  -- op        : in unsigned(opb-1 downto 0);
-  -- load      : in std_logic;
+  dInp     : in DataInp;
 
-  copy      : in std_logic;
+  copy     : in std_logic;
 
-  ena       : in std_logic;
-  statusReg : in unsigned(statusBits-1 downto 0);
+  ena      : in std_logic;
 
-  dout      : out std_logic := '0';
+  zDoneInt : in std_logic;
+  xDoneInt : in std_logic;
 
-  ctlDIn    : out std_logic := '0';
-  ctlShift  : out std_logic := '0';
-  ctlOp     : out unsigned(opb-1 downto 0) := (others => '0');
-  ctlLoad   : out std_logic := '0';
+  dout     : out std_logic := '0';
+
+  ctlDIn   : out std_logic := '0';
+  ctlShift : out std_logic := '0';
+  ctlOp    : out unsigned(opb-1 downto 0) := (others => '0');
+  ctlLoad  : out std_logic := '0';
 
   busy      : out std_logic := '0';
   notEmpty  : out std_logic := '0'
@@ -99,23 +97,11 @@ architecture behavioral of  Controller is
  signal dlyNxt : runFsm := rIdle;
  signal delay : integer range 0 to readDelay := 0;
 
- constant statusSize : integer := 10;
- alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
- alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
- alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
- alias xAxisDone    : std_logic is statusreg(3); -- x08 x axis done
- alias xAxisEna     : std_logic is statusreg(4); -- x10 x axis enable flag
- alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
- alias spindleActive : std_logic is statusreg(6); -- x40 x axis current dir
- alias queEmpty     : std_logic is statusreg(7); -- x80 controller queue empty
- alias ctlIdle      : std_logic is statusreg(8); -- x100 controller idle
- alias syncActive   : std_logic is statusreg(9); -- x200 sync active
-
 begin
 
  shiftProc : entity work.ShiftOpSel
-  generic map(opVal  => opBase + F_Ld_Ctrl_Data,
-              n      => byteBits)
+  generic map (opVal  => opBase + F_Ld_Ctrl_Data,
+               n      => byteBits)
   port map(
    clk   => clk,
    inp   => dInp,
@@ -142,9 +128,9 @@ begin
  dRead <= (shift => dInp.shift, op => dInp.op, copy => copy);
 
  rdSeq : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Seq,
-              n       => seqBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Seq,
+               n       => seqBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => dRead,
@@ -158,9 +144,9 @@ begin
  tmp <= to_unsigned(dataCount, addrBits);
 
  rdCount : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Ctr,
-              n       => addrBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Ctr,
+               n       => addrBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => dRead,
@@ -269,11 +255,11 @@ begin
 
       when rWait =>                     --wait for axis done
        if (cmd(0) = '1') then
-        if (zAxisDone = '1') then
+        if (zDoneInt = '1') then
          cmd(0) <= '0';
         end if;
        elsif (cmd(1) = '1') then
-        if (xAxisDone = '1') then
+        if (xDoneInt = '1') then
          cmd(1) <= '0';
         end if;
        else

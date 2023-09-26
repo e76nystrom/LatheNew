@@ -1,4 +1,5 @@
 library ieee;
+
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
@@ -11,10 +12,9 @@ entity DisplayCtl is
           outBits     : positive
           );
  port (
-  clk      : in std_logic;
-  dsel     : in Std_logic;
-  inp      : DataInp;
-  dout     : in std_logic;
+  clk      : in  std_logic;
+  dsel     : in  std_logic;
+  inp      : in  DataInp;
   dspCopy  : out std_logic := '0';
   dspShift : out std_logic := '0';
   dspOp    : inout unsigned (opb-1 downto 0) := (others => '0');
@@ -54,7 +54,7 @@ begin
      end if;
 
     when shiftVal =>
-     dspReg <= dspReg(displayBits-2 downto 0) & dout;
+     dspReg <= dspReg(displayBits-2 downto 0) & inp.dIn;
      dspCopy <= '0';
      if (count = 0) then
       dspShift <= '0';

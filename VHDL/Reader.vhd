@@ -34,25 +34,25 @@ architecture behavioral of Reader is
 
  constant byteBits : positive := 8;
 
- type ctlFsm is (cIdle, cShift, cWrite, cUpdAdr);
- signal ctlState : ctlFsm := cIdle;
+ type ctlFsm      is (cIdle, cShift, cWrite, cUpdAdr);
+ signal ctlState  : ctlFsm := cIdle;
 
- type runFsm is (rIdle, raddr, rCopy, rData, rShift, rDone);
- signal runState : runFsm := rIdle;
+ type runFsm      is (rIdle, raddr, rCopy, rData, rShift, rDone);
+ signal runState  : runFsm := rIdle;
 
- signal dataReg : unsigned (byteBits-1 downto 0);
+ signal dataReg   : unsigned (byteBits-1 downto 0);
 
  signal rdAddress : unsigned (rdAddrBits-1 downto 0) := (others => '0');
  signal wrAddress : unsigned (rdAddrBits-1 downto 0) := (others => '0');
 
- signal writeEna : std_logic := '0';
- signal opSel : std_logic;
+ signal writeEna  : std_logic := '0';
+ signal opSel     : std_logic;
 
- signal outData : std_logic_vector (byteBits-1 downto 0);
+ signal outData   : std_logic_vector (byteBits-1 downto 0);
 
- signal data : unsigned (byteBits-1 downto 0) := (others => '0');
+ signal data      : unsigned (byteBits-1 downto 0) := (others => '0');
 
- signal count : integer range 0 to outBits := 0;
+ signal count     : integer range 0 to outBits := 0;
 
 begin
 
@@ -60,13 +60,9 @@ begin
   generic map(opVal => opBase + F_Ld_Ctrl_Data,
               n =>     byteBits)
   port map(
-   clk => clk,
-
-   inp => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
-   sel => opSel,
+   clk  => clk,
+   inp  => inp,
+   sel  => opSel,
    data => dataReg
    );
 

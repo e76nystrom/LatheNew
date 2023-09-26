@@ -5,6 +5,8 @@ use ieee.numeric_std.all;
 
 use work.RegDef.all;
 use work.IORecord.all;
+use work.FpgaLatheBitsRec.all;
+use work.FpgaLatheBitsFunc.all;
 
 entity Jog is
  generic (opBase  : unsigned (opb-1 downto 0) := x"00";
@@ -13,15 +15,7 @@ entity Jog is
   clk        : in std_logic;
 
   inp        : DataInp;
-  -- din :        in std_logic;
-  -- dshift :     in boolean;
-  -- op :         in unsigned(opBits - 1 downto 0);
-
   oRec       : DataOut;
-  -- load :       in boolean;
-  -- dshiftR :    in boolean;
-  -- opR :        in unsigned(opBits-1 downto 0);
-  -- copyR :      in boolean;
 
   quad       : in std_logic_vector(1 downto 0);
   enable     : in std_logic;
@@ -37,50 +31,6 @@ end Jog;
 
 architecture Behavioral of Jog is
 
- -- component CtlReg is
- --  generic(opVal : unsigned;
- --          opb :   positive;
- --          n :     positive);
- --  port (
- --   clk :   in std_logic;                --clock
- --   din :   in std_logic;                --data in
- --   op :    in unsigned(opb-1 downto 0); --current reg address
- --   shift : in boolean;                   --shift data
- --   load :  in boolean;                   --load to data register
-
- --   data :  inout  unsigned (n-1 downto 0)); --data register
- -- end Component;
-
- -- component ShiftOp is
- --  generic(opVal :  unsigned;
- --          opBits : positive;
- --          n :      positive);
- --  port(
- --   clk :   in std_logic;
- --   din :   in std_logic;
- --   op :    in unsigned (opBits-1 downto 0);
- --   shift : in boolean;
-   
- --   data :  inout unsigned (n-1 downto 0)
- --   );
- -- end Component;
-
- -- component ShiftOutNS is
- --  generic(opVal :   unsigned;
- --          opBits :  positive;
- --          n :       positive;
- --          outBits : positive);
- --  port (
- --   clk :    in std_logic;
- --   dshift : in boolean;
- --   op :     in unsigned (opBits-1 downto 0);
- --   copy :   in boolean;
- --   data :   in unsigned(n-1 downto 0);
-
- --   dout :   out std_logic
- --   );
- -- end Component;
-
  alias a : std_logic is quad(0);
  alias b : std_logic is quad(1);
 
@@ -91,35 +41,31 @@ architecture Behavioral of Jog is
  signal update : std_logic := '0';
 
  constant timerMax : natural := 10;
- signal timer :      natural range 0 to timerMax-1 := timerMax-1;
- signal uSec :       std_logic := '0';
+ signal timer      : natural range 0 to timerMax-1 := timerMax-1;
+ signal uSec       : std_logic := '0';
 
  constant deltaBits : positive := 16;
  constant distBits :  positive := 12;
 
- constant deltaMax :  natural := 50000;
- constant slowJog :   natural := 20000;
+ constant deltaMax  : natural := 50000;
+ constant slowJog   : natural := 20000;
  constant fastSteps : natural := 14;
 
  signal deltaTimer : unsigned(deltaBits-1 downto 0) := (others => '0');
- signal jogTimer :   unsigned(deltaBits-1 downto 0) := (others => '0');
- signal deltaJog :   unsigned(deltaBits-1 downto 0) := (others => '0');
+ signal jogTimer   : unsigned(deltaBits-1 downto 0) := (others => '0');
+ signal deltaJog   : unsigned(deltaBits-1 downto 0) := (others => '0');
 
- signal jogDist :    unsigned(distBits-1 downto 0) := (others => '0');
- signal jogInc :     unsigned(distBits-1 downto 0) := (others => '0');
+ signal jogDist    : unsigned(distBits-1 downto 0) := (others => '0');
+ signal jogInc     : unsigned(distBits-1 downto 0) := (others => '0');
 
  signal jogActive : boolean := False;
  signal activeDir : std_logic := '0';
 
- signal incDist :      unsigned(distBits-1 downto 0);
+ signal incDist      : unsigned(distBits-1 downto 0);
  signal backlashDist : unsigned(distBits-1 downto 0);
 
- -- jog control register
-
- constant jogSize :    integer := 2;
- signal jogReg :       unsigned(jogSize-1 downto 0);
- alias jogContinuous : std_logic is jogreg(0); -- x01 jog continuous mode
- alias jogBacklash :   std_logic is jogreg(1); -- x02 jog backlash present
+ signal jogReg : jogVec;
+ signal jogR   : jogRec;
 
 begin
 
@@ -131,11 +77,9 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- din =>   din,
-   -- op =>    op,
-   -- shift => dshift,
-   -- load =>  load,
    data =>  jogReg);
+
+  jogR <= jogToRec(jogReg);
 
  jogIncReg: entity work.ShiftOp
   generic map(opVal =>  opBase + F_Ld_Jog_Inc,
@@ -143,9 +87,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- din =>   din,
-   -- op =>    op,
-   -- shift => dshift,
    data =>  incDist);
 
  jogBacklashReg: entity work.ShiftOp
@@ -240,7 +181,7 @@ begin
      
      if (dir = currentDir) then         --if direction same
 
-      if (jogContinuous = '1') then     --if continuous jog
+      if (jogR.jogContinuous = '1') then --if continuous jog
        if (deltaJog <= slowJog) then    --if fast jog
         jogInc <= to_unsigned(fastSteps, distBits); --set number of jog pulses
         jogDist <= jogDist + fastSteps; --add to distance
@@ -264,7 +205,7 @@ begin
       if (jogActive) then               --if active
        jogActive <= false;              --stop
       else                              --if not active
-       if (jogBacklash = '1') then      --if backlash
+       if (jogR.jogBacklash = '1') then --if backlash
         jogInc <= to_unsigned(fastSteps, distBits); --set speed
         jogDist <= backlashDist;        --set distance
         jogUpdLoc <= '0';               --disable location update

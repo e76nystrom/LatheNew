@@ -13,12 +13,12 @@ entity CtlReg is
  port (
   clk  : in std_logic;                  --clock
   inp : DataInp;
-  data : inout unsigned (n-1 downto 0) := (others => '0')); --data register
+  data : out std_logic_vector (n-1 downto 0) := (others => '0')); --data reg
 end CtlReg;
 
 architecture Behavioral of CtlReg is
 
-signal sreg : unsigned (n-1 downto 0) := (others => '0');
+signal sreg : std_logic_vector (n-1 downto 0) := (others => '0');
 
 begin
 

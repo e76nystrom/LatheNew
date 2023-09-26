@@ -6,6 +6,8 @@ use ieee.numeric_std.all;
 
 use work.RegDef.all;
 use work.IORecord.all;
+use work.FpgaLatheBitsRec.all;
+use work.FpgaLatheBitsFunc.all;
 
 entity Spindle is
  generic (opBase    : unsigned;
@@ -17,17 +19,9 @@ entity Spindle is
   clk       : in std_logic;
 
   inp       : in  DataInp;
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- op : in unsigned(opBits - 1 downto 0);
-  -- load : in boolean;
-
   oRec      : in  DataOut;
-  -- dshiftR : in boolean;
-  -- opR : in unsigned(opBits-1 downto 0);
-  -- copyR : in boolean;
 
-  ch : in std_logic;
+  ch        : in  std_logic;
   mpgQuad   : in  std_logic_vector(1 downto 0);
   jogInvert : in  std_logic;
   eStop     : in  std_logic;
@@ -59,12 +53,8 @@ architecture Behavioral of Spindle is
  signal doutSync : std_logic;
  signal doutJog : std_logic;
 
- constant spCtlSize : integer := 4;
- signal spCtlReg : unsigned(spCtlSize-1 downto 0);
- alias spInit       : std_logic is spCtlreg(0); -- x01 spindle init
- alias spEna        : std_logic is spCtlreg(1); -- x02 spindle enable
- alias spDir        : std_logic is spCtlreg(2); -- x04 spindle direction
- alias spJogEnable  : std_logic is spCtlreg(3); -- x08 spindle jog enable
+ signal spCtlReg : spCtlVec;
+ signal spCtlR   : spCtlRec;
 
 begin
  
@@ -76,11 +66,9 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
-   -- load => load,
    data => spCtlReg);
+
+   spCtlR <= spCtlToRec(spCtlReg);
 
  SpindleSyncAccel : entity work.SyncAccelNew
   generic map (opBase    => opBase + F_Sp_Sync_Base,
@@ -88,18 +76,10 @@ begin
                posBits   => posBits,
                countBits => countBits)
   port map (
-   clk => clk,
+   clk          => clk,
 
    inp          => inp,
-   -- din => din,
-   -- dshift => dshift,
-   -- op => op,
-   -- load => load,
-
    oRec         => oRec,
-   -- dshiftR => dshiftR,
-   -- opR => opR,
-   -- copyR => copyR,
 
    init         => syncInit,
    ena          => syncEna,
@@ -120,15 +100,7 @@ begin
    clk        => clk,
 
    inp        => inp,
-   -- din => din,
-   -- dshift => dshift,
-   -- op => op,
-   -- load => load,
-
    oRec       => oRec,
-   -- dshiftR => dshiftR,
-   -- opR => opR,
-   -- copyR => copyR,
 
    quad       => mpgQuad,
    enable     => jogEnable,
@@ -140,10 +112,10 @@ begin
    dout       => doutJog
    );
 
- jogEnable <= '1' when (eStop = '0') and (spJogEnable = '1') else '0';
- spActive <= '1' when state /= idle else '0';
- stepOut <= jogStep when spJogEnable = '1' else synstep;
- dirOut <= jogDir when spJogEnable = '1' else spDir;
+ jogEnable <= '1' when (eStop = '0') and (spCtlR.spJogEnable = '1') else '0';
+ spActive  <= '1' when state /= idle else '0';
+ stepOut   <= jogStep when spCtlR.spJogEnable = '1' else synstep;
+ dirOut    <= jogDir  when spCtlR.spJogEnable = '1' else spCtlR.spDir;
 
  spindleRun: process(clk)
  begin
@@ -153,7 +125,7 @@ begin
     syncInit <= '0';
     syncEna <= '0';
     state <= idle;
-   elsif (spInit = '1') then
+   elsif (spCtlR.spInit = '1') then
     syncInit <= '1';
     state <= idle;
    else
@@ -161,7 +133,7 @@ begin
     case state is
      when idle =>
       syncInit <= '0';
-      if (spEna = '1') then
+      if (spCtlR.spEna = '1') then
        syncInit <= '1';
        state <= run;
       end if;
@@ -169,7 +141,7 @@ begin
      when run =>
       syncInit <= '0';
       syncEna <= '1';
-      if (spEna = '0') then
+      if (spCtlR.spEna = '0') then
        decel <= '1';
        state <= done;
       end if;

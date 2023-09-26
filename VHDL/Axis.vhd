@@ -7,6 +7,8 @@ USE ieee.numeric_std.all;
 
 use work.RegDef.all;
 use work.IORecord.all;
+use work.FpgaLatheBitsRec.all;
+use work.FpgaLatheBitsFunc.all;
 
 entity Axis is
  generic (
@@ -24,19 +26,10 @@ entity Axis is
   clk        : in std_logic;
 
   inp        : in DataInp;
-  -- din        : in std_logic;
-  -- dshift     : in boolean;
-  -- op         : in unsigned(opBits-1 downto 0);
-  -- load       : in boolean;
-
   oRec       : in DataOut;
-  -- dshiftR    : in boolean;
-  -- opR        : in unsigned(opBits-1 downto 0);
-  -- copyR      : in boolean;
 
   extInit    : in std_logic;            --reset
   extEna     : in std_logic;            --enable operation
-  -- extUpdLoc  : in std_logic;
 
   ch         : in std_logic;
   encDir     : in std_logic;
@@ -65,50 +58,21 @@ end Axis;
 
 architecture Behavioral of Axis is
 
---(++ axisCtl
--- axis status register
-
- constant axisStatusSize : integer := 4;
+ signal axisStatusR   : axisStatusRec;
  signal axisStatusReg : unsigned(axisStatusSize-1 downto 0);
- alias axDoneDist   : std_logic is axisStatusreg(0); -- x01 axis done distance
- alias axDoneDro    : std_logic is axisStatusreg(1); -- x02 axis done dro
- alias axDoneHome   : std_logic is axisStatusreg(2); -- x04 axis done home
- alias axDoneLimit  : std_logic is axisStatusreg(3); -- x08 axis done limit
 
- constant c_axDoneDist   : integer :=  0; -- x01 axis done distance
- constant c_axDoneDro    : integer :=  1; -- x02 axis done dro
- constant c_axDoneHome   : integer :=  2; -- x04 axis done home
- constant c_axDoneLimit  : integer :=  3; -- x08 axis done limit
+ signal axisCtlReg : axisCtlVec;
+ signal axisCtlR   : axisCtlRec;
 
--- axis control register
-
- constant axisCtlSize : integer := 13;
- signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
- alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
- alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
- alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
- alias ctlWaitSync  : std_logic is axisCtlreg(3); -- x08 wait for sync to start
- alias ctlDir       : std_logic is axisCtlreg(4); -- x10 direction
- alias ctlDirPos    : std_logic is axisCtlreg(4); -- x10 move in positive dir
- alias ctlDirNeg    : std_logic is axisCtlreg(4); -- x10 move in negative dir
- alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
- alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
- alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave controlled by other axis
- alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
- alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
- alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
- alias ctlHome      : std_logic is axisCtlreg(11); -- x800 homing axis
- alias ctlIgnoreLim : std_logic is axisCtlreg(12); -- x1000 ignore limits
-
---++)
+ signal axisCtlRdReg : unsigned(axisctlSize-1 downto 0);
 
  -- signal dbgRec : AxisDbg := AxisDbgInit;
 
  signal axisEna    : std_logic := '0';
  signal axisInit   : std_logic := '0';
 
- signal runInit : std_logic;
- signal runEna  : std_logic;
+ signal runInit    : std_logic;
+ signal runEna     : std_logic;
  signal locDisable : std_logic := '0';
  
  -- signal doneInt : std_logic;
@@ -172,12 +136,11 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftr,
-   -- op => opR,
-   -- copy => copyR,
    data => axisStatusReg,
    dout => doutStatus
    );
+
+  axisStatusReg <= unsigned(axisStatusToVec(axisStatusR));
 
  AxCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Axis_Ctl,
@@ -185,11 +148,9 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
-   -- load => load,
    data => axisCtlReg);
+
+  axisCtlR <= axisCtlToRec(axisCtlReg);
 
  AxCtlRegRd : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Axis_Ctl,
@@ -198,16 +159,15 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftr,
-   -- op => opR,
-   -- copy => copyR,
-   data => axisCtlReg,
+   data => axisCtlRdReg,
    dout => doutCtl
    );
 
- syncAccelEna <= runEna when ctlChDirect = '0' else '0';
+ axisCtlRdReg <= unsigned(axisCtlToVec(axisCtlR));
 
- jogMode <= ctlJogMpg & ctlJogCmd;
+ syncAccelEna <= runEna when axisCtlR.ctlChDirect = '0' else '0';
+
+ jogMode <= axisCtlR.ctlJogMpg & axisCtlR.ctlJogCmd;
 
  curDir <= currentDir;
  dirOut  <= synDirOut;
@@ -241,7 +201,7 @@ begin
    ena        => syncAccelEna,
    extDone    => doneMove,
    ch         => ch,
-   cmdDir     => ctlDir,
+   cmdDir     => axisCtlR.ctlDir,
    curDir     => curDir,
    locDisable => locDisable,
 
@@ -251,7 +211,7 @@ begin
 
    droQuad    => droQuad,
    droInvert  => droInvert,
-   droEndChk  => ctlDroEnd,
+   droEndChk  => axisCtlR.ctlDroEnd,
 
    -- dbg        => dbgRec.sync,
    synDbg     => synDbgData,
@@ -273,16 +233,16 @@ begin
  -- dbgRec.dbg(0) <= ctlStart;
  -- dbg <= dbgRec;
 
- dbgOut(0) <= ctlStart;  --updLoc;
+ dbgOut(0) <= axisCtlR.ctlStart;  --updLoc;
  dbgOut(1) <= doneDist;
  -- dbgOut(1) <= distDecel; --distZero;
  dbgOut(2) <= axisEna;
  dbgOut(3) <= dbgStep;
 
- runInit <= extInit when ctlSlave = '1' else axisInit;
- runEna  <= extEna when ctlSlave = '1' else axisEna;
+ runInit <= extInit when axisCtlR.ctlSlave = '1' else axisInit;
+ runEna  <= extEna  when axisCtlR.ctlSlave = '1' else axisEna;
 
- step    <= synStepOut when ctlChDirect = '0' else enaCh;
+ step    <= synStepOut when axisCtlR.ctlChDirect = '0' else enaCh;
 
  initOut   <= axisInit;
  enaOut    <= axisEna;
@@ -291,10 +251,10 @@ begin
  enaCh   <= runEna and ch;
  stepOut <= step;
 
- axDoneDist  <= doneDist;
- axDoneDro   <= doneDro;
- axDoneHome  <= '1' when doneHome else '0';
- axDoneLimit <= '1' when doneLimit else '0';
+ axisStatusR.axDoneDist  <= doneDist;
+ axisStatusR.axDoneDro   <= doneDro;
+ axisStatusR.axDoneHome  <= '1' when doneHome else '0';
+ axisStatusR.axDoneLimit <= '1' when doneLimit else '0';
 
  z_run: process(clk)
  begin
@@ -302,11 +262,11 @@ begin
 
    dout <= doutSync or doutStatus or doutCtl;
 
-   doneDist  <= distZero and  not ctlDroEnd;
-   doneDro   <= droDone and ctlDroEnd;
-   doneHome  <= (swHome = '1') and (ctlHome = '1');
+   doneDist  <= distZero and not axisCtlR.ctlDroEnd;
+   doneDro   <= droDone and axisCtlR.ctlDroEnd;
+   doneHome  <= (swHome = '1') and (axisCtlR.ctlHome = '1');
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
-                (ctlIgnoreLim = '0');
+                (axisCtlR.ctlIgnoreLim = '0');
 
    if (doneLimit or doneHome) then
     doneMove <= '1';
@@ -317,7 +277,7 @@ begin
    if (eStop = '1') then                --if emergency stop
     axisEna  <= '0';                    --stop axis
     runState <= idle;                   --set idle state
-   elsif (ctlInit = '1') then           --if time to set new locaton
+   elsif (axisCtlR.ctlInit = '1') then  --if time to set new locaton
     runState <= idle;                   --clear state
     doneInt    <= '0';                  --clear interrupt
     axisEna    <= '0';                  --clear run flag
@@ -327,23 +287,23 @@ begin
     case runState is                    --check state
      when idle =>                       --idle state
       axisInit <= '0';                  --clear load flag
-      if (ctlStart = '1') then          --if start requested
+      if (axisCtlR.ctlStart = '1') then    --if start requested
        runState <= loadReg;             --advance to load state
       end if;
 
      when loadReg =>                    --load state
-      if (ctlWaitSync = '1') then       --if wating for sync
+      if (axisCtlR.ctlWaitSync = '1') then --if wating for sync
        runState <= synWait;             --advance to wait for sync state
       else                              --if not synchronous move
        axisEna  <= '1';                 --set run flag
        runState <= run;                 --advance to run state
-       if (ctlBacklash = '1') then      --if backlash move
+       if (axisCtlR.ctlBacklash = '1') then --if backlash move
         locDisable <= '1';              --disable location update
        end if;
       end if;
 
      when synWait =>                    --sync wait state
-      if (ctlStart = '0') then          --if start flag cleared
+      if (axisCtlR.ctlStart = '0') then --if start flag cleared
        runState <= idle;                --return to idle
       else                              --if start flag set
        if (sync = '1') then             --if time to sync
@@ -355,7 +315,7 @@ begin
       
      when run =>                        --run state
       if ((doneDist = '1') or (doneDro = '1') or
-          (ctlStart = '0')) then        --if done
+          (axisCtlR.ctlStart = '0')) then  --if done
        doneInt    <= '1';               --set done interrupt
        locDisable <= '0';               --enable loc updates
        axisEna    <= '0';               --clear run flag
@@ -363,7 +323,7 @@ begin
       end if;
 
      when done =>                       --done state
-      if (ctlStart = '0') then          --wait for start flag to clear
+      if (axisCtlR.ctlStart = '0') then --wait for start flag to clear
        doneInt   <= '0';                --clear done intterrupt
        runState  <= idle;               --to return to idle state
       end if;

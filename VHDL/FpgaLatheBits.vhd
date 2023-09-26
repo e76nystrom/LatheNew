@@ -1,4 +1,5 @@
 library ieee;
+
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
@@ -16,7 +17,7 @@ package FpgaLatheBits is
  alias xAxisDone    : std_logic is statusreg(4); -- x10 x axis done
  alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
  alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
- alias spindleActive : std_logic is statusreg(7); -- x80 spindle activer
+ alias spindleActive : std_logic is statusreg(7); -- x80 spindle active
  alias queNotEmpty  : std_logic is statusreg(8); -- x100 ctl queue not empty
  alias ctlBusy      : std_logic is statusreg(9); -- x200 controller busy
  alias syncActive   : std_logic is statusreg(10); -- x400 sync active
@@ -28,7 +29,7 @@ package FpgaLatheBits is
  constant c_xAxisDone    : integer :=  4; -- x10 x axis done
  constant c_xAxisCurDir  : integer :=  5; -- x20 x axis current dir
  constant c_stEStop      : integer :=  6; -- x40 emergency stop
- constant c_spindleActive : integer :=  7; -- x80 spindle activer
+ constant c_spindleActive : integer :=  7; -- x80 spindle active
  constant c_queNotEmpty  : integer :=  8; -- x100 ctl queue not empty
  constant c_ctlBusy      : integer :=  9; -- x200 controller busy
  constant c_syncActive   : integer := 10; -- x400 sync active
@@ -100,8 +101,6 @@ package FpgaLatheBits is
  alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
  alias ctlWaitSync  : std_logic is axisCtlreg(3); -- x08 wait for sync to start
  alias ctlDir       : std_logic is axisCtlreg(4); -- x10 direction
- alias ctlDirPos    : std_logic is axisCtlreg(4); -- x10 move in positive dir
- alias ctlDirNeg    : std_logic is axisCtlreg(4); -- x10 move in negative dir
  alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
  alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave ctl by other axis
@@ -116,8 +115,6 @@ package FpgaLatheBits is
  constant c_ctlBacklash  : integer :=  2; -- x04 backlash move no pos upd
  constant c_ctlWaitSync  : integer :=  3; -- x08 wait for sync to start
  constant c_ctlDir       : integer :=  4; -- x10 direction
- constant c_ctlDirPos    : integer :=  4; -- x10 move in positive dir
- constant c_ctlDirNeg    : integer :=  4; -- x10 move in negative dir
  constant c_ctlSetLoc    : integer :=  5; -- x20 set location
  constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
  constant c_ctlSlave     : integer :=  7; -- x80 slave ctl by other axis
@@ -212,14 +209,14 @@ package FpgaLatheBits is
  constant zClkXCh      : unsigned (2 downto 0) := "101"; -- 
  constant zClkSpindle  : unsigned (2 downto 0) := "110"; -- 
  constant zClkDbgFreq  : unsigned (2 downto 0) := "111"; -- 
- constant xClkNone     : unsigned (5 downto 3) := "000"; -- 
- constant xClkXFreq    : unsigned (5 downto 3) := "001"; -- 
- constant xClkCh       : unsigned (5 downto 3) := "010"; -- 
- constant xClkIntClk   : unsigned (5 downto 3) := "011"; -- 
- constant xClkZFreq    : unsigned (5 downto 3) := "100"; -- 
- constant xClkZCh      : unsigned (5 downto 3) := "101"; -- 
- constant xClkSpindle  : unsigned (5 downto 3) := "110"; -- 
- constant xClkDbgFreq  : unsigned (5 downto 3) := "111"; -- 
+ constant xClkNone     : unsigned (2 downto 0) := "000"; -- 
+ constant xClkXFreq    : unsigned (2 downto 0) := "001"; -- 
+ constant xClkCh       : unsigned (2 downto 0) := "010"; -- 
+ constant xClkIntClk   : unsigned (2 downto 0) := "011"; -- 
+ constant xClkZFreq    : unsigned (2 downto 0) := "100"; -- 
+ constant xClkZCh      : unsigned (2 downto 0) := "101"; -- 
+ constant xClkSpindle  : unsigned (2 downto 0) := "110"; -- 
+ constant xClkDbgFreq  : unsigned (2 downto 0) := "111"; -- 
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
  constant c_clkDbgFreqEna : integer :=  6; -- x40 enable debug frequency

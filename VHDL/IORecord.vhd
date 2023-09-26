@@ -20,12 +20,4 @@ package IORecord is
   copy  : std_logic;
  end record DataOut;
 
- type ExtData is record
-  op    : unsigned(opb-1 downto 0);  --register number
-  shift : std_logic;                    --shift data
-  copy  : std_logic;                    --copy input data
-  load  : std_logic;                    --load output data
-  dSnd  : std_logic;                    --output data
- end record ExtData;
-
 end package IORecord;
