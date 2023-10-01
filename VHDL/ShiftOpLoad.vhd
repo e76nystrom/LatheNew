@@ -19,6 +19,16 @@ entity ShiftOpLoad is
   );
 end ShiftOpLoad;
 
+  -- regX : entity work.ShiftOpLoad
+  -- generic map (opVal => ,
+  --              n     => )
+  -- port map (
+  --  clk  => ,
+  --  inp  => ,
+  --  load => ,
+  --  data =>
+  --  );
+
 architecture Behavioral of ShiftOpLoad is
 
  signal lastSel : boolean := false;

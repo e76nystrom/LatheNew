@@ -14,10 +14,14 @@ package IORecord is
   load  : std_logic;
  end record DataInp;
 
+ constant dataInpInit : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
+
  type DataOut is record
   shift : std_logic;
   op    : unsigned(opb-1 downto 0);
   copy  : std_logic;
  end record DataOut;
+
+ constant dataOutInit : DataOut := (shift => '0', op => (others => '0'), copy => '0');
 
 end package IORecord;

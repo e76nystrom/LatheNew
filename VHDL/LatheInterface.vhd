@@ -104,18 +104,18 @@ architecture Behavioral of LatheInterface is
  signal ctlOp    : unsigned (opb-1 downto 0); --operation code
  signal ctlLoad  : std_logic;
 
- signal spiW   : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
- signal ctlW   : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
- signal extW   : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
+ signal spiW   : DataInp := dataInpInit;
+ signal ctlW   : DataInp := dataInpInit;
+ signal extW   : DataInp := dataInpInit;
 
- signal curW   : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
+ signal curW   : DataInp := dataInpInit;
 
- signal spiR   : DataOut := (shift => '0', op => (others => '0'), copy => '0');
- signal readR  : DataOut := (shift => '0', op => (others => '0'), copy => '0');
- signal extR   : DataOut := (shift => '0', op => (others => '0'), copy => '0');
- signal dspR   : DataOut := (shift => '0', op => (others => '0'), copy => '0');
+ signal spiR   : DataOut := dataOutInit;
+ signal readR  : DataOut := dataOutInit;
+ signal extR   : DataOut := dataOutInit;
+ signal dspR   : DataOut := dataOutInit;
 
- signal curR   : DataOut := (shift => '0', op => (others => '0'), copy => '0');
+ signal curR   : DataOut := dataOutInit;
 
  -- reader
 

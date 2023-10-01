@@ -13,12 +13,18 @@ add wave -noupdate -radix decimal -childformat {{/a_lathetoptest/uut/latheInt/la
 add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/z_Axis/synStepOut
 add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/zStep
 add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/spiW
-add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/spiR
+add wave -noupdate -expand /a_lathetoptest/uut/latheInt/latheCtlProc/spiR
 add wave -noupdate /a_lathetoptest/uut/latheInt/spiActive
 add wave -noupdate /a_lathetoptest/uut/latheInt/zDoneInt
 add wave -noupdate /a_lathetoptest/uut/latheInt/statusR
+add wave -noupdate -radix binary /a_lathetoptest/uut/latheInt/statusReg
+add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/z_Axis/axisCtlReg
+add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/z_Axis/axisCtlR.ctlStart
+add wave -noupdate /a_lathetoptest/uut/latheInt/latheCtlProc/z_Axis/axisCtlR.ctlInit
+add wave -noupdate /a_lathetoptest/uut/latheInt/statusR.zAxisEna
+add wave -noupdate /a_lathetoptest/uut/latheInt/statusR.zAxisDone
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 1} {31845000 ps} 0}
+WaveRestoreCursors {{Cursor 1} {9706362 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 413
 configure wave -valuecolwidth 100
@@ -34,4 +40,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {210005250 ps}
+WaveRestoreZoom {0 ps} {210 us}

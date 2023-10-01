@@ -158,7 +158,6 @@ begin
    );
 
  ctlDIn <= data(byteBits-1);
- ctlDIn <= data(byteBits-1);
  notEmpty <= notEmptyFlag;
 
  Proc : process(clk)

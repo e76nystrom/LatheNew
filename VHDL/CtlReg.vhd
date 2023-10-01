@@ -12,7 +12,7 @@ entity CtlReg is
          n :     positive);
  port (
   clk  : in std_logic;                  --clock
-  inp : DataInp;
+  inp  : DataInp;
   data : out std_logic_vector (n-1 downto 0) := (others => '0')); --data reg
 end CtlReg;
 

@@ -26,7 +26,6 @@ architecture behavior OF A_LatheTopTest is
  constant freqBits      : positive := 16;
  constant freqCountBits : positive := 16;
 
-
  signal sysClk : std_logic := '0';
 
  signal led   : std_logic_vector(7 downto 0) := (7 downto 0 => '0');
@@ -64,7 +63,7 @@ architecture behavior OF A_LatheTopTest is
 begin
 
  uut : entity work.LatheTop
-  port map(
+  port map (
    sysClk => sysClk,
    
    led   => led,
@@ -321,7 +320,7 @@ begin
     dclk <= '0';
     delay(6);
     dclk <= '1';
-    tmp := tmp(31-1 downto 0) & dout;
+    tmp := tmp(bits-2 downto 0) & dout;
     delay(6);
    end loop;
    report "readValue " & integer'image(to_integer(tmp));
