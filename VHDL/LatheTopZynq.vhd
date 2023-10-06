@@ -116,7 +116,6 @@ architecture Behavioral of LatheTop is
  signal cfs_in_i   : std_ulogic_vector(32-1 downto 0) := (others => '0');
  signal cfs_out_o  : std_ulogic_vector(32-1 downto 0) := (others => '0');
 
- signal cfs_re_o   : std_ulogic := '0';
  signal cfs_we_o   : std_ulogic := '0';
  signal cfs_reg_o  : std_ulogic_vector(1 downto 0) := (others => '0');
 
@@ -149,6 +148,7 @@ begin
    -- Internal Data memory --
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
+   IO_CFS_EN                    => true,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -161,7 +161,6 @@ begin
    cfs_in_i    => cfs_in_i,
    cfs_out_o   => cfs_out_o,
 
-   cfs_re_o    => cfs_re_o,
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
    
@@ -185,7 +184,6 @@ begin
               dataBits => 32)
  port map (
   clk        => sysClkOut,
-  re         => cfs_re_o,
   we         => cfs_we_o,
   reg        => cfs_reg_o,
   

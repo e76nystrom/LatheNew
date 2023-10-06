@@ -24,7 +24,6 @@ architecture Behavioral of A_InterfaceTest is
  signal sysClk : std_logic := '0';
 
  -- signal reset   : std_logic := '0';
- signal re      : std_ulogic := '0';
  signal we      : std_ulogic := '0'; 
  signal reg     : std_ulogic_vector(1 downto 0) := (others => '0');
 
@@ -49,7 +48,6 @@ begin
   port map (
    clk     => sysClk,
    -- reset   => reset,
-   re      => re,
    we      => we,
    reg     => reg,
 
@@ -137,7 +135,7 @@ begin
   function hexToString(val : std_logic_vector;
                        n   : integer) return string is
    variable inp    : std_logic_vector(32-1 downto 0) := (others => '0');
-   variable rtnVal : string(0 to 7);
+   variable rtnVal : string(1 to 8);
    variable txt    : character;
    variable index  : integer range 0 to 32;
    variable i      : integer range 0 to 8;
@@ -167,7 +165,7 @@ begin
      when "1111" => txt := 'f';
      when others => txt := 'x';
     end case;
-    rtnVal(i) := txt;
+    rtnVal(i+1) := txt;
     i := i + 1;
     index := index + 4;
    end loop;

@@ -92,11 +92,6 @@ architecture Behavioral of LatheInterface is
 
  signal dinW : std_logic := '0';
 
- -- signal curDin   : std_logic := '0';    --current din
- -- signal curShift : std_logic := '0';    --shift data
- -- signal curOp    : unsigned (opb-1 downto 0); --operation code
- -- signal curLoad  : std_logic := '0';    --load to register
-
  -- controller
 
  signal ctlDin   : std_logic;
@@ -135,15 +130,19 @@ architecture Behavioral of LatheInterface is
  signal statusRL  : statusRec := statusToRec(statusZero);
  signal statusReg : unsigned(statusSize-1 downto 0);
 
- signal runReg : runVec;
- signal runR   : runRec;
+ signal runReg   : runVec;
+ signal runR     : runRec;
+ signal runRdReg : unsigned(runSize-1 downto 0);
 
  signal zDone : std_logic;
  signal xDone : std_logic;
 
- signal ctlDout    : std_logic;
+ signal CtlDout    : std_logic;
+ signal runRDout   : std_logic;
  signal statusDout : std_logic;
  signal latheDout  : std_logic;
+ constant delay : positive := 3;
+ signal delayDout  : std_logic_vector(delay-1 downto 0) := (others => '0');
 
 begin
 
@@ -175,18 +174,19 @@ begin
  -- dspData(3 downto 0) <= zDbg;
  -- dspData(7 downto 4) <= xDbg;
  dspData(7  downto 0) <= spiW.op;
- dspData(15 downto 8) <= spiW.op;
 
- dOut <= ctlDout or latheDout or statusDout;
+ delayProc : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   delayDout <= delayDout(delay-2 downto 0) & (ctlDout or runRDout or statusDout);
+  end if;
+ end process;
+
+ dOut <= latheDout or delayDout(delay-1);
 
  extData0 : if extData /= 0 generate
-  latheData.data <= ctlDout or latheDout or statusDout;
+  latheData.data <= delayDout(delay-1) or latheDout;
  end generate extData0;
-
- -- curDin   <= ctlDin   when runR.runEna = '1' else din;
- -- curshift <= ctlShift when runR.runEna = '1' else spiShift;
- -- curOp    <= ctlOp    when runR.runEna = '1' else spiOp;
- -- curLoad  <= ctlLoad  when runR.runEna = '1' else spiLoad;
 
  spiW <= (din => din,    shift => spiShift, op => spiOp, load => spiLoad);
  ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
@@ -245,22 +245,35 @@ begin
                outBits => outBits)
   port map (
    clk  => clk,
-   oRec => spiR,
+   oRec => curR,
    data => statusReg,
    dout => statusDout
    );
 
  statusReg <= unsigned(statusToVec(statusR));
 
- run_reg : entity work.CtlReg
+ runCtl : entity work.CtlReg
   generic map (opVal => F_Ld_Run_Ctl,
                n     => runSize)
   port map (
    clk  => clk,
-   inp  => spiW,
+   inp  => extW,
    data => runReg);
 
  runR <= runToRec(runReg);
+
+  runCtlRd : entity work.ShiftOutN
+  generic map(opVal   => F_Rd_Run_Ctl,
+              n       => runSize,              
+              outBits => outBits)
+  port map (
+   clk  => clk,
+   oRec => extR,
+   data => runRdReg,
+   dout => runRDout
+   );
+
+  runRdReg <= unsigned(runToVec(runR));
 
  ctrlProc : entity work.Controller
   generic map (opBase     => F_Ctrl_Base,

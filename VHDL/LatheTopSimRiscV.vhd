@@ -9,7 +9,7 @@ use neorv32.neorv32_package.all;
 use work.ExtDataRec.all;
 use work.IORecord.all;
 
-entity LatheTop is
+entity LatheTopSimRiscV is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
           MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
@@ -41,8 +41,8 @@ entity LatheTop is
 
   pinIn    : in std_logic_vector(4 downto 0);
 
-  -- aux      : out std_logic_vector(7 downto 0);
-  aux      : out std_ulogic_vector(7 downto 0);
+  aux      : out std_logic_vector(7 downto 0);
+  -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
@@ -50,26 +50,26 @@ entity LatheTop is
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
-  xDoneInt : out std_logic := '0';
+  xDoneInt : out std_logic := '0'
 
   -- JTAG on-chip debugger interface --
-  jtag_trst_i : in  std_ulogic; -- low-active TAP reset (optional)
-  jtag_tck_i  : in  std_ulogic; -- serial clock
-  jtag_tdi_i  : in  std_ulogic; -- serial data input
-  jtag_tdo_o  : out std_ulogic; -- serial data output
-  jtag_tms_i  : in  std_ulogic; -- mode select
+  -- jtag_trst_i : in  std_ulogic; -- low-active TAP reset (optional)
+  -- jtag_tck_i  : in  std_ulogic; -- serial clock
+  -- jtag_tdi_i  : in  std_ulogic; -- serial data input
+  -- jtag_tdo_o  : out std_ulogic; -- serial data output
+  -- jtag_tms_i  : in  std_ulogic; -- mode select
 
   -- GPIO --
   -- gpio_o      : out std_ulogic_vector(7 downto 0); -- parallel output
   
   -- UART0 --
-  dbg_txd_o : out std_ulogic; -- UART0 send data
-  dbg_rxd_i : in  std_ulogic  -- UART0 receive data
+  -- dbg_txd_o : out std_ulogic; -- UART0 send data
+  -- dbg_rxd_i : in  std_ulogic  -- UART0 receive data
 
   );
-end LatheTop;
+end LatheTopSimRiscV;
 
-architecture Behavioral of LatheTop is
+architecture Behavioral of LatheTopSimRiscV is
 
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
@@ -100,14 +100,14 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of zDoneInt : signal is true;
  attribute syn_keep of xDoneInt : signal is true;
 
- attribute syn_keep of jtag_trst_i : signal is true;
- attribute syn_keep of jtag_tck_i  : signal is true;
- attribute syn_keep of jtag_tdo_o  : signal is true;
- attribute syn_keep of jtag_tms_i  : signal is true;
- attribute syn_keep of jtag_tdi_i  : signal is true;
+ -- attribute syn_keep of jtag_trst_i : signal is true;
+ -- attribute syn_keep of jtag_tck_i  : signal is true;
+ -- attribute syn_keep of jtag_tdo_o  : signal is true;
+ -- attribute syn_keep of jtag_tms_i  : signal is true;
+ -- attribute syn_keep of jtag_tdi_i  : signal is true;
 
- attribute syn_keep of dbg_txd_o : signal is true;
- attribute syn_keep of dbg_rxd_i : signal is true;
+ -- attribute syn_keep of dbg_txd_o : signal is true;
+ -- attribute syn_keep of dbg_rxd_i : signal is true;
 
  signal sysClkOut  : std_logic;
 
@@ -134,9 +134,9 @@ begin
   generic map (
    -- General --
    CLOCK_FREQUENCY              => 50000000,
-   INT_BOOTLOADER_EN            => true,
+   INT_BOOTLOADER_EN            => false,
    -- On-Chip Debugger (OCD) --
-   ON_CHIP_DEBUGGER_EN          => true,
+   ON_CHIP_DEBUGGER_EN          => false,
    -- RISC-V CPU Extensions --
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
@@ -152,7 +152,7 @@ begin
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
-   IO_UART0_EN                  => true
+   IO_UART0_EN                  => false
    )
   port map (
    clk_i       => sysClkOut,
@@ -164,23 +164,23 @@ begin
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
    
-   jtag_trst_i => jtag_trst_i,
-   jtag_tck_i  => jtag_tck_i,
-   jtag_tdi_i  => jtag_tdi_i,
-   jtag_tdo_o  => jtag_tdo_o,
-   jtag_tms_i  => jtag_tms_i,
+   -- jtag_trst_i => jtag_trst_i,
+   -- jtag_tck_i  => jtag_tck_i,
+   -- jtag_tdi_i  => jtag_tdi_i,
+   -- jtag_tdo_o  => jtag_tdo_o,
+   -- jtag_tms_i  => jtag_tms_i,
 
-   gpio_o      => con_gpio_o,
+   gpio_o      => con_gpio_o
 
-   uart0_txd_o => dbg_txd_o,
-   uart0_rxd_i => dbg_rxd_i
+   -- uart0_txd_o => dbg_txd_o,
+   -- uart0_rxd_i => dbg_rxd_i
    );
 
  -- GPIO output --
  -- aux <= con_gpio_o(7 downto 0);
  aux(7) <= latheCtl.active;
  aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_ulogic_vector(latheCtl.op(5 downto 0));
+ aux(5 downto 0) <= std_logic_vector(latheCtl.op(5 downto 0));
            
 
  interfaceProc : entity work.CFSInterface
