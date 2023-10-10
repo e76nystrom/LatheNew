@@ -5,6 +5,17 @@ use ieee.numeric_std.all;
 
 package FpgaLatheBits is
 
+-- RiscV control register
+
+ constant riscvCtlSize : integer := 2;
+ signal riscvCtlReg : unsigned(riscvCtlSize-1 downto 0);
+ --variable riscvCtlReg : unsigned(riscvCtlSize-1 downto 0);
+ alias riscvData    : std_logic is riscvCtlreg(0); -- x01 riscv data active
+ alias riscvSPI     : std_logic is riscvCtlreg(1); -- x02 riscv spi active
+
+ constant c_riscvData    : integer :=  0; -- x01 riscv data active
+ constant c_riscvSPI     : integer :=  1; -- x02 riscv spi active
+
 -- status register
 
  constant statusSize : integer := 11;
@@ -163,7 +174,7 @@ package FpgaLatheBits is
  alias cfgEStopInv  : std_logic is cfgCtlreg(16); -- x10000 estop invert
  alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder dir
  alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 generate sync pulse
- alias cfgPWMEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
+ alias cfgPwmEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
 
  constant c_cfgZDirInv   : integer :=  0; -- x01 z dir inverted
  constant c_cfgXDirInv   : integer :=  1; -- x02 x dir inverted
@@ -184,15 +195,15 @@ package FpgaLatheBits is
  constant c_cfgEStopInv  : integer := 16; -- x10000 estop invert
  constant c_cfgEnaEncDir : integer := 17; -- x20000 enable encoder dir
  constant c_cfgGenSync   : integer := 18; -- x40000 generate sync pulse
- constant c_cfgPWMEna    : integer := 19; -- x80000 pwm enable
+ constant c_cfgPwmEna    : integer := 19; -- x80000 pwm enable
 
 -- clock control register
 
  constant clkCtlSize : integer := 7;
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  --variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
- alias zFreqSel     : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
- alias xFreqSel     : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
+ alias zFreqSel       : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
+ alias xFreqSel       : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
  constant clkNone      : unsigned (2 downto 0) := "000"; -- 
  constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
  constant clkCh        : unsigned (2 downto 0) := "010"; -- 

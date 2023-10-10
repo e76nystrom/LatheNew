@@ -5,6 +5,11 @@ use ieee.numeric_std.all;
 
 package FpgaLatheBitsRec is
 
+type riscvCtlRec is record
+ riscvSPI  : std_logic;         --  1 0x2 riscv spi active
+ riscvData : std_logic;         --  0 0x1 riscv data active
+end record riscvCtlRec;
+
 type statusRec is record
  syncActive    : std_logic;     -- 10 0x400 sync active
  ctlBusy       : std_logic;     --  9 0x200 controller busy
@@ -70,7 +75,7 @@ type axisStatusRec is record
 end record axisStatusRec;
 
 type cfgCtlRec is record
- cfgPWMEna    : std_logic;      -- 19 0x80000 pwm enable
+ cfgPwmEna    : std_logic;      -- 19 0x80000 pwm enable
  cfgGenSync   : std_logic;      -- 18 0x40000 generate sync pulse
  cfgEnaEncDir : std_logic;      -- 17 0x20000 enable encoder dir
  cfgEStopInv  : std_logic;      -- 16 0x10000 estop invert

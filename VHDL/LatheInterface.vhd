@@ -45,7 +45,8 @@ entity LatheInterface is
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
   dclk     : in std_logic;
-  dout     : out std_logic := '0';
+  dout     : out LatheInterfaceData;
+  -- dout     : out std_logic := '0';
   din      : in std_logic;
   dsel     : in std_logic;
 
@@ -65,7 +66,6 @@ entity LatheInterface is
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
-  latheData : out ExtDataRcv := extDataRcvInit;
   latheCtl  : in  ExtDataCtl;
 
   zDoneInt : out std_logic := '0';
@@ -137,10 +137,10 @@ architecture Behavioral of LatheInterface is
  signal zDone : std_logic;
  signal xDone : std_logic;
 
- signal CtlDout    : std_logic;
- signal runRDout   : std_logic;
- signal statusDout : std_logic;
- signal latheDout  : std_logic;
+ -- signal CtlDout    : std_logic;
+ -- signal runRDout   : std_logic;
+ -- signal statusDout : std_logic;
+ -- signal latheDout  : std_logic;
  constant delay : positive := 3;
  signal delayDout  : std_logic_vector(delay-1 downto 0) := (others => '0');
 
@@ -175,18 +175,18 @@ begin
  -- dspData(7 downto 4) <= xDbg;
  dspData(7  downto 0) <= spiW.op;
 
- delayProc : process(clk)
- begin
-  if (rising_edge(clk)) then
-   delayDout <= delayDout(delay-2 downto 0) & (ctlDout or runRDout or statusDout);
-  end if;
- end process;
+ -- delayProc : process(clk)
+ -- begin
+ --  if (rising_edge(clk)) then
+ --   delayDout <= delayDout(delay-2 downto 0) & (ctlDout or runRDout or statusDout);
+ --  end if;
+ -- end process;
 
- dOut <= latheDout or delayDout(delay-1);
+ -- dOut <= latheDout or delayDout(delay-1);
 
- extData0 : if extData /= 0 generate
-  latheData.data <= delayDout(delay-1) or latheDout;
- end generate extData0;
+ -- extData0 : if extData /= 0 generate
+ --  latheData.data <= delayDout(delay-1) or latheDout;
+ -- end generate extData0;
 
  spiW <= (din => din,    shift => spiShift, op => spiOp, load => spiLoad);
  ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
@@ -247,7 +247,7 @@ begin
    clk  => clk,
    oRec => curR,
    data => statusReg,
-   dout => statusDout
+   dout => dout.status                  --statusDout
    );
 
  statusReg <= unsigned(statusToVec(statusR));
@@ -258,7 +258,8 @@ begin
   port map (
    clk  => clk,
    inp  => extW,
-   data => runReg);
+   data => runReg
+   );
 
  runR <= runToRec(runReg);
 
@@ -270,7 +271,7 @@ begin
    clk  => clk,
    oRec => extR,
    data => runRdReg,
-   dout => runRDout
+   dout => dout.runR                    --runRDout
    );
 
   runRdReg <= unsigned(runToVec(runR));
@@ -293,7 +294,7 @@ begin
    zDoneInt  => zDone,
    xDoneInt  => xDone,
 
-   dout      => ctlDout,
+   dout      => dout.ctl,               --ctlDout,
 
    ctlDIn    => ctlDin,
    ctlShift  => ctlShift,
@@ -364,7 +365,7 @@ begin
    spiW     => spiW,
    curW     => curW,
 
-   dOut     => latheDOut,
+   dOut     => dout.latheCtl,           --latheDOut,
 
    spiR     => spiR,
    curR     => curR,

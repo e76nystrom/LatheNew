@@ -17,23 +17,15 @@ entity SyncAccelNew is
   clk : in std_logic;
 
   inp         : in DataInp;
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- op : in unsigned (opBits-1 downto 0);
-  -- load : in boolean;
-
   oRec        : in DataOut;
-  -- dshiftR : in boolean;
-  -- opR : in unsigned (opBits-1 downto 0);
-  -- copyR : in boolean;
-
   init         : in std_logic;          --reset
   ena          : in std_logic;          --enable operation
   decel        : in std_logic;
   decelDisable : in boolean;
   ch           : in std_logic;
   dir          : in std_logic;
-  dout         : out std_logic := '0';
+  -- dout         : out std_logic := '0';
+  dout         : out SpindleData;
   accelActive  : out std_logic := '0';
   decelDone    : out boolean := false;
   synStep      : out std_logic := '0'
@@ -65,17 +57,17 @@ architecture Behavioral of SyncAccelNew is
  alias sumNeg : std_logic is sum(synBits-1);
  signal accelSum : unsigned(synBits-1 downto 0) := (others => '0');
 
- signal xPosDout : std_logic;
- signal yPosDout : std_logic;
- signal sumDout : std_logic;
- signal accelSumDout : std_logic;
- signal accelCtrDout : std_logic;
+ -- signal xPosDout : std_logic;
+ -- signal yPosDout : std_logic;
+ -- signal sumDout : std_logic;
+ -- signal accelSumDout : std_logic;
+ -- signal accelCtrDout : std_logic;
 
  signal synStepTmp : std_logic := '0';
 
 begin
 
- dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout;
+ -- dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout;
  
  dreg : entity work.ShiftOp
   generic map(opVal => opBase + opD,
@@ -83,10 +75,8 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
-   data => d);
+   data => d
+   );
 
  incr1reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr1,
@@ -94,10 +84,8 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
-   data => incr1);
+   data => incr1
+   );
 
  incr2reg : entity work.ShiftOp
   generic map(opVal => opBase + opIncr2,
@@ -105,10 +93,8 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
-   data => incr2);
+   data => incr2
+   );
 
  accelreg : entity work.ShiftOp
   generic map(opVal => opBase + opAccel,
@@ -116,10 +102,8 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
-   data => accel);
+   data => accel
+   );
 
  accelCountReg : entity work.ShiftOp
   generic map(opVal => opBase + opAccelCount,
@@ -127,9 +111,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
    data => accelCount);
 
  sum_out : entity work.ShiftOutN
@@ -139,11 +120,8 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => sum,
-   dout => sumDout
+   dout => dout.sum                     --sumDout
    );
 
  accelSum_Out : entity work.ShiftOutN
@@ -153,11 +131,8 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => accelSUm,
-   dout => accelSumDout
+   dout => dout.accelSum                --accelSumDout
    );
 
  accelCtr_out : entity work.ShiftOutN
@@ -167,11 +142,8 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => accelCounter,
-   dout => accelCtrDout
+   dout => dout.accelCtr                --accelCtrDout
    );
 
  xPos_Shift : entity work.ShiftOutN
@@ -181,11 +153,8 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => xPos,
-   dout => xPosDout
+   dout => dout.xPos                    --xPosDout
    );
 
  yPos_Shift : entity work.ShiftOutN
@@ -195,11 +164,8 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => yPos,
-   dout => yPosDout
+   dout => dout.yPos                    --yPosDout
    );
 
  syn_process: process(clk)

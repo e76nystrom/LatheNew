@@ -49,7 +49,8 @@ entity Axis is
   synDbg     : out std_logic_vector(synDbgBits-1 downto 0) := (others => '0');
   initOut    : out std_logic := '0';
   enaOut     : out std_logic := '0';
-  dout       : out std_logic := '0';
+  -- dout       : out std_logic := '0';
+  dout       : out AxisData;
   dirOut     : inout std_logic := '0';
   stepOut    : out std_logic := '0';
   doneInt    : out std_logic := '0'
@@ -77,9 +78,9 @@ architecture Behavioral of Axis is
  
  -- signal doneInt : std_logic;
 
- signal doutSync   : std_logic;
- signal doutStatus : std_logic;
- signal doutCtl    : std_logic;
+ -- signal doutSync   : std_logic;
+ -- signal doutStatus : std_logic;
+ -- signal doutCtl    : std_logic;
 
  signal distZero : std_logic;
 
@@ -137,7 +138,7 @@ begin
    clk  => clk,
    oRec => oRec,
    data => axisStatusReg,
-   dout => doutStatus
+   dout => dout.status                  --doutStatus
    );
 
   axisStatusReg <= unsigned(axisStatusToVec(axisStatusR));
@@ -160,7 +161,7 @@ begin
    clk  => clk,
    oRec => oRec,
    data => axisCtlRdReg,
-   dout => doutCtl
+   dout => dout.ctl                     --doutCtl
    );
 
  axisCtlRdReg <= unsigned(axisCtlToVec(axisCtlR));
@@ -187,15 +188,7 @@ begin
    clk        => clk,
 
    inp        => inp,
-   -- din        => din,
-   -- dshift     => dshift,
-   -- op         => op,
-   -- load       => load,
-
    oRec       => oRec,
-   -- dshiftR    => dshiftR,
-   -- opR        => opR,
-   -- copyR      => copyR,
 
    init       => runInit,
    ena        => syncAccelEna,
@@ -217,7 +210,7 @@ begin
    synDbg     => synDbgData,
    movDone    => distZero,
    droDone    => droDone,
-   dout       => doutSync,
+   dout       => dout.sync,                  --doutSync,
    dirOut     => synDirOut,
    synStep    => synStepOut
    );
@@ -260,7 +253,7 @@ begin
  begin
   if (rising_edge(clk)) then            --if clock active
 
-   dout <= doutSync or doutStatus or doutCtl;
+   -- dout <= doutSync or doutStatus or doutCtl;
 
    doneDist  <= distZero and not axisCtlR.ctlDroEnd;
    doneDro   <= droDone and axisCtlR.ctlDroEnd;

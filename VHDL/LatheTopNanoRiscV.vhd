@@ -6,9 +6,10 @@ use ieee.numeric_std.all;
 library neorv32;
 use neorv32.neorv32_package.all;
 
-use work.ExtDataRec.all;
 use work.IORecord.all;
-
+use work.ExtDataRec.all;
+use work.FpgaLatheBitsRec.all;
+use work.FpgaLatheBitsFunc.all;
 entity LatheTop is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
           MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
@@ -24,10 +25,11 @@ entity LatheTop is
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
-  dclk     : in std_logic;
-  dout     : out std_logic := '0';
-  din      : in std_logic;
   dsel     : in std_logic;
+  dclk     : in std_logic;
+  din      : in std_logic;
+
+  dout     : out std_logic := '0';
 
   aIn      : in std_logic;
   bIn      : in std_logic;
@@ -41,8 +43,8 @@ entity LatheTop is
 
   pinIn    : in std_logic_vector(4 downto 0);
 
-  -- aux      : out std_logic_vector(7 downto 0);
-  aux      : out std_ulogic_vector(7 downto 0);
+  aux      : out std_logic_vector(7 downto 0);
+  -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
@@ -119,8 +121,23 @@ architecture Behavioral of LatheTop is
  signal cfs_we_o   : std_ulogic := '0';
  signal cfs_reg_o  : std_ulogic_vector(1 downto 0) := (others => '0');
 
+ signal spiDClk : std_ulogic;
+ signal spiDin  : std_ulogic;
+ signal spiCS   : std_uLogic_vector(7 downto 0);
+
+ signal data    : LatheInterfaceData;
+ signal a       : std_logic_vector(8 downto 0);
+ signal b       : std_logic_vector(2 downto 0);
+ signal extDout : std_logic;
+
+ signal latheDClk : std_logic;
+ signal latheDin  : std_logic;
+ signal latheDSel : std_Logic;
+
  signal latheData  : ExtDataRcv;
  signal latheCtl   : ExtDataCtl;
+
+ signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
 
 begin
 
@@ -152,7 +169,9 @@ begin
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
-   IO_UART0_EN                  => true
+   IO_UART0_EN                  => true,
+   IO_SPI_EN                    => true, -- implement serial peripheral interface (SPI)?
+   IO_SPI_FIFO                  => 1     -- RTX fifo depth, has to be a power of two, min 1
    )
   port map (
    clk_i       => sysClkOut,
@@ -169,19 +188,90 @@ begin
    jtag_tdi_i  => jtag_tdi_i,
    jtag_tdo_o  => jtag_tdo_o,
    jtag_tms_i  => jtag_tms_i,
+ -- SPI (available if IO_SPI_EN = true) --
 
-   gpio_o      => con_gpio_o,
+   spi_csn_o => spiCS,      -- chip-select
+   spi_clk_o => spiDClk,    -- SPI serial clock
+   spi_dat_o => spiDin,     -- controller data out, peripheral data in
+   spi_dat_i => extDout,    -- controller data in, peripheral data out
 
    uart0_txd_o => dbg_txd_o,
-   uart0_rxd_i => dbg_rxd_i
+   uart0_rxd_i => dbg_rxd_i,
+
+   gpio_o      => con_gpio_o
    );
 
  -- GPIO output --
  -- aux <= con_gpio_o(7 downto 0);
- aux(7) <= latheCtl.active;
+ aux(7) <= riscVCtlReg.riscVData;
  aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_ulogic_vector(latheCtl.op(5 downto 0));
-           
+ aux(5 downto 0) <= std_logic_vector(latheCtl.op(5 downto 0));
+
+ -- latheCtl.active <= riscVCtlReg.riscvData;
+
+ latheDSel <=  spiCS(0) when riscVCtlReg.riscVSPI = '1' else dsel;
+ latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
+ latheDin  <=  spiDin   when riscVCtlReg.riscVSPI = '1' else din;
+
+ doutProc : process(sysClkOut)
+ begin
+  if (rising_edge(sysClkOut)) then
+   a(0) <= data.ctl or
+       data.runR or
+       data.status or
+       data.latheCtl.inputs;
+
+   a(1) <= data.latheCtl.phase or
+       data.latheCtl.index or
+       data.latheCtl.encoder.cmpTmr or
+       data.latheCtl.encoder.intTmr;
+
+   a(2) <= data.latheCtl.z.status or
+       data.latheCtl.z.ctl or
+       data.latheCtl.z.sync.dist or
+       data.latheCtl.z.sync.loc;
+
+   b(0) <= a(0) or a(1) or a(2);
+
+   a(3) <= data.latheCtl.z.sync.xPos or
+       data.latheCtl.z.sync.yPos or
+       data.latheCtl.z.sync.sum or
+       data.latheCtl.z.sync.accelSum;
+
+   a(4) <= data.latheCtl.z.sync.accelCtr or
+       data.latheCtl.z.sync.accelSteps or
+       data.latheCtl.z.sync.dro;
+
+   a(5) <= data.latheCtl.x.status or
+       data.latheCtl.x.ctl or
+       data.latheCtl.x.sync.dist or
+       data.latheCtl.x.sync.loc;
+
+   b(1) <= a(3) or a(4) or a(5);
+
+   a(6) <= data.latheCtl.x.sync.xPos or
+       data.latheCtl.x.sync.yPos or
+       data.latheCtl.x.sync.sum or
+       data.latheCtl.x.sync.accelSum;
+
+   a(7) <= data.latheCtl.x.sync.accelCtr or
+       data.latheCtl.x.sync.accelSteps or
+       data.latheCtl.x.sync.dro or
+       data.latheCtl.spindle.xPos;
+
+   a(8) <= data.latheCtl.spindle.yPos or
+       data.latheCtl.spindle.sum or
+       data.latheCtl.spindle.accelSum or
+       data.latheCtl.spindle.accelCtr;
+ 
+   b(2) <= a(6) or a(7) or a(8);
+
+   extDout <= b(0) or b(1) or b(2);
+  end if;
+ end process;
+
+ dOut <= extDout;
+ latheData.data <= extDout;
 
  interfaceProc : entity work.CFSInterface
  generic map (lenBits  => 8,
@@ -193,6 +283,8 @@ begin
   
   CFSDataIn  => cfs_out_o,
   CFSDataOut => cfs_in_i,
+
+  riscVCtl   => riscVCtlReg,
 
   latheData  => latheData,
   latheCtl   => latheCtl
@@ -210,10 +302,10 @@ begin
    anode    => anode,
    seg      => seg,
 
-   dclk     => dclk,
-   dout     => dout,
-   din      => din,
-   dsel     => dsel,
+   dsel     => latheDSel,
+   dclk     => latheDclk,
+   din      => latheDin,
+   dout     => data,                    --extDout,
 
    aIn      => aIn,
    bIn      => bIn,
@@ -233,7 +325,6 @@ begin
 
    bufOut   => bufOut,
 
-   latheData => latheData,
    latheCtl  => latheCtl,
 
    zDoneInt => zDoneInt,

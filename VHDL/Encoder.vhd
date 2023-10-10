@@ -20,7 +20,8 @@ entity Encoder is
   init   : in std_logic;                --init signal
   ena    : in std_logic;                --enable input
   ch     : in std_logic;                --input clock
-  dout   : out std_logic := '0';        --data out
+  -- dout   : out std_logic := '0';        --data out
+  dout   : out EncoderData;
   active : out std_logic := '0';        --active
   intclk : out std_logic := '0'         --output clock
   );
@@ -28,8 +29,8 @@ end Encoder;
 
 architecture Behavioral of Encoder is
 
- signal cmpTmrDout : std_logic;
- signal intTmrDout : std_logic;
+ -- signal cmpTmrDout : std_logic;
+ -- signal intTmrDout : std_logic;
 
  signal encCycleDone : std_logic;
  signal cycleClocks : unsigned (cycleClkBits-1 downto 0);
@@ -39,7 +40,7 @@ architecture Behavioral of Encoder is
 
 begin
 
- dout <= cmpTmrDout or intTmrDout;
+ -- dout <= cmpTmrDout or intTmrDout;
 
  cmp_tmr : entity work.CmpTmrNewMem
   generic map (opBase       => opBase + 0,
@@ -51,7 +52,7 @@ begin
    clk          => clk,
    inp          => inp,
    init         => init,
-   dout         => cmpTmrDout,
+   dout         => dout.cmpTmr,         --cmpTmrDout,
    oRec         => oRec,
    ena          => ena,
    encClk       => ch,
@@ -71,7 +72,7 @@ begin
    clk         => clk,
    inp         => inp,
    init         => init,
-   dout         => intTmrDout,
+   dout         => dout.intTmr,         --intTmrDout,
    intClk       => intClkOut,
    Active       => intActive,
    encCycleDone => encCycleDone,

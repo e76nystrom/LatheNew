@@ -24,8 +24,8 @@ entity Jog is
 
   jogStep    : out std_logic := '0';
   jogDir     : out std_logic := '0';
-  jogUpdLoc  : out std_logic := '1';
-  dout       : out std_logic
+  jogUpdLoc  : out std_logic := '1'
+  -- dout       : out std_logic
   );
 end Jog;
 
@@ -69,7 +69,7 @@ architecture Behavioral of Jog is
 
 begin
 
- dout <= '0';
+ -- dout <= '0';
 
  jogCtlReg : entity work.ctlReg 
   generic map(opVal => opBase + F_Ld_Jog_ctl,

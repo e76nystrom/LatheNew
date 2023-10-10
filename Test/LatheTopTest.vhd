@@ -62,9 +62,10 @@ architecture behavior OF A_LatheTopTest is
 
 begin
 
- uut : entity work.LatheTop
+ uut : entity work.LatheTopSimRiscV
   port map (
    sysClk => sysClk,
+   rstn_i => '1',
    
    led   => led,
    dbg   => dbg,
@@ -514,7 +515,7 @@ begin
   
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_A_Dist);
+  loadParm(base + F_Sync_Base + F_Ld_Dist);
   loadValue(dist, distBits);
 
   delay(1);
@@ -529,7 +530,7 @@ begin
 
   delay(1);
   
-  loadParm(base + F_Sync_Base + F_Ld_X_Loc);
+  loadParm(base + F_Sync_Base + F_Ld_Loc);
   loadValue(loc, locBits);
 
   delay(1);
@@ -563,20 +564,20 @@ begin
 
   delay(5);
 
-  loadParm(base + F_Sync_Base + F_Rd_A_Dist);
-  report "F_Rd_A_Dist";
+  loadParm(base + F_Sync_Base + F_Rd_Dist);
+  report "F_Rd_Dist";
   readValue(readBits);
 
   delay(5);
 
   dist := 15;
-  loadParm(base + F_Sync_Base + F_Ld_A_Dist);
+  loadParm(base + F_Sync_Base + F_Ld_Dist);
   loadValue(dist, distBits);
 
   delay(5);
   
-  loadParm(base + F_Sync_Base + F_Rd_A_Dist);
-  report "F_Rd_A_Dist";
+  loadParm(base + F_Sync_Base + F_Rd_Dist);
+  report "F_Rd_Dist";
   readValue(readBits);
 
   delay(5);
@@ -645,7 +646,7 @@ begin
 
   -- delay(3600);
   dist := 10;
-  loadParm(base + F_Sync_Base + F_Ld_A_Dist);
+  loadParm(base + F_Sync_Base + F_Ld_Dist);
   loadValue(dist, distBits);
   -- delayQuad(500);
   delay(1000);
@@ -672,8 +673,8 @@ begin
   report "F_Rd_Status";
   readValue(readBits);
 
-  loadParm(base + F_Sync_Base + F_Rd_X_Loc);
-  report "F_Rd_X_loc";
+  loadParm(base + F_Sync_Base + F_Rd_Loc);
+  report "F_Rd_loc";
   readValue(readBits);
 
   delay(20);

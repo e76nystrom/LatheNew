@@ -42,7 +42,8 @@ entity LatheCtl is
   spiW     : in  DataInp;
   curW     : in  DataInp;
 
-  dout     : out std_logic := '0';
+  dout     : out latheCtlData;
+  -- dout     : out std_logic := '0';
 
   spiR     : in  DataOut;
   curR     : in  DataOut;
@@ -95,20 +96,19 @@ architecture Behavioral of LatheCtl is
 
  -- data out signals
 
- signal internalDout : std_logic;
+ -- signal internalDout : std_logic := '0';
 
- signal dout0        : std_logic;
- signal inputsDout   : std_logic;
+ -- signal dout0        : std_logic := '0';
+ -- signal dout1        : std_logic := '0';
+ -- signal inputsDout   : std_logic := '0';
+ -- signal phaseDOut    : std_logic := '0';
+ -- signal idxClkDout   : std_logic := '0';
+ -- signal encDOut      : std_logic := '0';
 
- signal dout1        : std_logic;
- signal phaseDOut    : std_logic;
- signal idxClkDout   : std_logic;
- signal encDOut      : std_logic;
-
- signal dout2        : std_logic;
- signal zDOut        : std_logic;
- signal xDOut        : std_logic;
- signal spindleDout  : std_logic;
+ -- signal dout2        : std_logic := '0';
+ -- signal zDOut        : std_logic := '0';
+ -- signal xDOut        : std_logic := '0';
+ -- signal spindleDout  : std_logic := '0';
 
  -- quadrature encoder
 
@@ -329,17 +329,17 @@ begin
  direction <= (not cfgCtlR.cfgEncDirInv) when (cfgCtlR.cfgEnaEncDir = '0') else
               (encDir xor cfgCtlR.cfgEncDirInv);
 
- dout <= internalDout;
+ -- dout <= internalDout;
 
- doutProcess : process(clk)
- begin
-  if rising_edge(clk) then
-   dout0 <= inputsDout;
-   dout1 <= phaseDout or idxClkDout or EncDout;
-   dout2 <= zDOut or xDOut or spindleDout;
-   internalDout <= dout0 or dout1 or dout2;
-  end if;
- end process;
+ -- doutProcess : process(clk)
+ -- begin
+ --  if rising_edge(clk) then
+ --   dout0 <= inputsDout;
+ --   dout1 <= phaseDout or idxClkDout or EncDout;
+ --   dout2 <= zDOut or xDOut or spindleDout;
+ --   internalDout <= dout0 or dout1 or dout2;
+ --  end if;
+ -- end process;
 
  inputs : entity work.ShiftOutN
   generic map (opVal   => F_Rd_Inputs,
@@ -349,7 +349,7 @@ begin
    clk  => clk,
    oRec => spiR,
    data => inputsReg,
-   dout => inputsDout
+   dout => dout.inputs                  --inputsDout
    );
 
  inputsReg <= unsigned(inputsToVec(inputsR));
@@ -360,7 +360,8 @@ begin
   port map (
    clk  => clk,
    inp  => curW,
-   data => synCtlReg);
+   data => synCtlReg
+   );
 
  synCtlR <= synCtlToRec(synCtlReg);
 
@@ -370,7 +371,8 @@ begin
   port map (
    clk  => clk,
    inp  => curW,
-   data => clkCtlReg);
+   data => clkCtlReg
+   );
 
  clkCtlR <= clkCtlToRec(clkCtlReg);
 
@@ -380,7 +382,8 @@ begin
   port map (
    clk  => clk,
    inp  => spiW,
-   data => cfgCtlReg);
+   data => cfgCtlReg
+   );
 
  cfgCtlR <= cfgCtlToRec(cfgCtlReg);
 
@@ -390,7 +393,8 @@ begin
   port map (
    clk  => clk,
    inp  => spiW,
-   data => spCtlReg);
+   data => spCtlReg
+   );
 
  spCtlR <= spCtlToRec(spCtlReg);
  
@@ -416,7 +420,8 @@ begin
 
    inp     => curW,
    oRec    => curR,
-   dout    => encDout,
+   dout    => dout.encoder,
+   -- dout    => encDout,
 
    init    => synCtlR.synEncInit,
    ena     => synCtlR.synEncEna,
@@ -435,7 +440,8 @@ begin
 
    inp     => curW,
    oRec    => curR,
-   dout    => phaseDOut,
+   dout    => dout.phase,
+   -- dout    => phaseDOut,
 
    init    => synCtlR.synPhaseInit,
    genSync => cfgCtlR.cfgGenSync,
@@ -451,7 +457,8 @@ begin
   port map (
    clk   => clk,
    oRec  => spiR,
-   dout  => idxClkDout,
+   dout  => dout.index,
+   -- dout  => idxClkDout,
    ch    => ch,
    index => sync
    );
@@ -544,7 +551,7 @@ begin
 
    inp        => curW,
    oRec       => curR,
-   dout       => zDOut,
+   dout       => dout.z,                --zDOut,
 
    extInit    => xExtInit,
    extEna     => xExtEna,
@@ -614,7 +621,7 @@ begin
 
    inp        => spiW,
    oRec       => curR,
-   dout       => xDOut,
+   dout       => dout.x,                --xDOut,
 
    extInit    => zExtInit,
    extEna     => zExtEna,
@@ -684,7 +691,7 @@ begin
 
    inp       => curW,
    oRec      => curR,
-   dout      => spindleDout,
+   dout      => dout.spindle,           --spindleDout,
 
    ch        => spFreqGen,
    mpgQuad   => zMpg,

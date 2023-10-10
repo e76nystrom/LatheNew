@@ -281,12 +281,12 @@ uut : Axis
   
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_A_Dist;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Dist;
   loadShift(dist, distBits);
 
   delay(1);
 
-  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_X_Loc;
+  op <= F_ZAxis_Base + F_Sync_Base + F_Ld_Loc;
   loadShift(loc, locBits);
 
   op <= F_ZAxis_Base + F_Ld_Axis_Ctl;

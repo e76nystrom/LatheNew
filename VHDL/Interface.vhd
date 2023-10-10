@@ -7,6 +7,8 @@ use ieee.std_logic_arith;
 use work.RegDef.all;
 use work.IORecord.all;
 use work.ExtDataRec.all;
+use work.FpgaLatheBitsRec.all;
+use work.FpgaLatheBitsFunc.all;
 
 entity CFSInterface is
  generic (lenBits  : positive := 8;
@@ -17,10 +19,12 @@ entity CFSInterface is
   reg     : in std_ulogic_vector(1 downto 0); --register number
 
   CFSdataIn  : in  std_ulogic_vector(31 downto 0); --cfs data in
-  CFSdataOut : out std_ulogic_vector(31 downto 0) := (others => '0'); --cfs ddata out
+  CFSdataOut : out std_ulogic_vector(31 downto 0) :=  (others => '0'); --cfs data out
 
-  latheData  : in  ExtDataRcv;          --input data
-  latheCtl   : out ExtDataCtl := extDataCtlInit --control data
+  riscVCtl   : out riscVCtlRec;
+
+  latheData  : in  ExtDataRcv;          --incoming read data
+  latheCtl   : out ExtDataCtl := extDataCtlInit --outgoing control and data
   );
 end CFSInterface;
 
@@ -42,10 +46,15 @@ architecture Behavorial of CFSInterface is
  signal send    : std_logic := '0';
  signal recv    : std_logic := '0';
 
+ signal riscVCtlR : riscvCtlRec := riscVCtlToRec(riscVCtlZero);
+
 begin
 
  latheCtl.dSnd <= shiftOut(dataBits-1);
  CFSDataOut <= std_ulogic_vector(dataIn);
+
+ riscVCtl <= riscVCtlR;
+ latheCtl.active <= riscVCtlR.riscvData;
 
  data: process(clk)
   begin
@@ -53,7 +62,8 @@ begin
    if (we = '1') then                   --if write
     case reg  is                        --select operatin
      when "01" =>
-      latheCtl.active <= cfsDataIn(0);
+      riscVCtlR <= riscVCtlToRecS(
+       std_logic_vector(cfsDataIn(riscVCtlSize-1 downto 0)));
 
      when "10" =>                       --if data out
       shiftOut <= std_logic_vector(CFSDataIn); --load data out register
@@ -81,7 +91,7 @@ begin
     when sSend =>                       --send data
      if (sCount /= 0) then
       sCount <= sCount - 1;
-      shiftOut <= shiftOut(dataBits-2 downto 0) & '0';
+      shiftOut <= shiftOut(dataBits-2 downto 0) & shiftOut(databits-1);
      else
       latheCtl.shift <= '0';
       latheCtl.load <= '1';

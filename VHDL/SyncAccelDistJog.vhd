@@ -52,7 +52,8 @@ entity SyncAccelDistJog is
   synDbg     : out std_logic_vector(synDbgBits-1 downto 0) := (others => '0');  
   movDone    : out std_logic := '0';    --done move
   droDone    : out std_logic := '0';    --dro move done
-  dout       : out std_logic := '0';    --read data out
+  -- dout       : out std_logic := '0';    --read data out
+  dout       : out SyncData;
   dirOut     : out std_logic := '0';    --direction out
   synStep    : out std_logic := '0'     --output step pulse
   );
@@ -121,14 +122,14 @@ architecture Behavioral of SyncAccelDistJog is
 
  -- read output signals
 
- signal xPosDout       : std_logic;     --xPos read output
- signal yPosDout       : std_logic;     --yPos read output
- signal sumDout        : std_logic;     --sum read output
- signal accelSumDout   : std_logic;     --accel sum read output
- signal accelCtrDout   : std_logic;     --accel ctr read output
- signal distDout       : std_logic;     --distance read output
- signal accelStepsDout : std_logic;     --accel stesp read output
- signal locDOut        : std_logic;     --location output
+ -- signal xPosDout       : std_logic;     --xPos read output
+ -- signal yPosDout       : std_logic;     --yPos read output
+ -- signal sumDout        : std_logic;     --sum read output
+ -- signal accelSumDout   : std_logic;     --accel sum read output
+ -- signal accelCtrDout   : std_logic;     --accel ctr read output
+ -- signal distDout       : std_logic;     --distance read output
+ -- signal accelStepsDout : std_logic;     --accel stesp read output
+ -- signal locDOut        : std_logic;     --location output
 
  signal synStepTmp     : std_logic := '0';
  signal synStepLast    : std_logic := '0';
@@ -158,7 +159,7 @@ architecture Behavioral of SyncAccelDistJog is
  signal decelLimit   : unsigned(droBits-1 downto 0);
  signal droDecelStop : std_logic := '0';
  signal droDoneInt   : std_logic := '0';
- signal droDout      : std_logic := '0';
+ -- signal droDout      : std_logic := '0';
  signal droLoad      : std_logic := '0';
  signal droLoadVal   : std_logic := '0';
 
@@ -359,8 +360,8 @@ architecture Behavioral of SyncAccelDistJog is
 
 begin
 
- dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout or
-         distDout or accelStepsDout or locDout or droDout;
+ -- dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout or
+ --         distDout or accelStepsDout or locDout or droDout;
 
  dreg : entity work.ShiftOp
   generic map(opVal  => opBase + F_Ld_D,
@@ -368,9 +369,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- shift => dshift,
-   -- op    => op,
-   -- din   => din,
    data  => d);
 
  incr1reg : entity work.ShiftOp
@@ -379,9 +377,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- shift => dshift,
-   -- op    => op,
-   -- din   => din,
    data  => incr1);
 
  incr2reg : entity work.ShiftOp
@@ -390,9 +385,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- shift => dshift,
-   -- op    => op,
-   -- din   => din,
    data  => incr2);
 
  accelreg : entity work.ShiftOp
@@ -401,9 +393,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- shift => dshift,
-   -- op    => op,
-   -- din   => din,
    data  => accel);
 
  accelCountReg : entity work.ShiftOp
@@ -412,20 +401,14 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- shift => dshift,
-   -- op    => op,
-   -- din   => din,
    data  => accelCount);
 
   distShiftOp : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_A_Dist,
+  generic map(opVal  => opBase + F_Ld_Dist,
               n      => distBits)
   port map(
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    load  => loadDist,
    data  => distVal
    );
@@ -436,9 +419,6 @@ begin
   port map(
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => maxDist
    );
 
@@ -448,9 +428,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    load  => droLoad,
    data  => droInput);
 
@@ -460,9 +437,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => droEnd);
 
  droLimitReg : entity work.ShiftOp
@@ -471,9 +445,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => decelLimit);
 
   BacklashShiftOp : entity work.ShiftOp
@@ -482,21 +453,15 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => backlash
    );
 
  LocValReg : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_X_Loc,
+  generic map(opVal  => opBase + F_Ld_Loc,
               n      => locBits)
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    load  => locLoad,
    data  => locVal);
 
@@ -506,9 +471,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => mpgRegDelta
    );
 
@@ -518,9 +480,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => mpgRegDiv
    );
 
@@ -530,9 +489,6 @@ begin
   port map (
    clk   => clk,
    inp   => inp,
-   -- din   => din,
-   -- op    => op,
-   -- shift => dshift,
    data  => mpgRegDist
    );
 
@@ -545,11 +501,8 @@ begin
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => sum,
-   dout   => sumDout
+   dout   => dout.sum                   --sumDout
    );
 
  accelSum_Out : entity work.ShiftOutN
@@ -559,11 +512,8 @@ begin
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => accelSUm,
-   dout   => accelSumDout
+   dout   => dout.accelSum              --accelSumDout
    );
 
  accelCtr_out : entity work.ShiftOutN
@@ -573,11 +523,8 @@ begin
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => accelCounter,
-   dout   => accelCtrDout
+   dout   => dout.accelCtr              --accelCtrDout
    );
 
  xPos_Shift : entity work.ShiftOutN
@@ -587,11 +534,8 @@ begin
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => xPos,
-   dout   => xPosDout
+   dout   => dout.xPos                  --xPosDout
    );
 
  yPos_Shift : entity work.ShiftOutN
@@ -601,38 +545,30 @@ begin
   port map (
    clk => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => yPos,
-   dout => yPosDout
+   dout => dout.yPos                    --yPosDout
    );
 
  DistShiftOut : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_A_Dist,
+  generic map(opVal   => opBase + F_Rd_Dist,
               n       => distBits,
               outBits => outBits)
   port map (
    clk => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => distCtr,
-   dout => distDout);
-
+   dout => dout.dist                    --distDout
+   );
+ 
  LocShiftOut : entity work.ShiftOutNS
-  generic map(opVal   => opBase + F_Rd_X_Loc,
+  generic map(opVal   => opBase + F_Rd_Loc,
               n       => locBits,
               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => loc,
-   dout   => locDout
+   dout   => dout.loc                   --locDout
    );
 
  droShiftOut : entity work.ShiftOutNS
@@ -642,27 +578,22 @@ begin
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => unsigned(droVal),
-   dout   => droDout
+   dout   => dout.dro                   --droDout
    );
 
  dirOut <= cmdDir when (jogMode(1) = '0') else jogDir;
 
  AccelShiftOut : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_A_Acl_Steps,
+  generic map(opVal   => opBase + F_Rd_Accel_Steps,
               n       => distBits,
               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
-   -- dshift => dshiftR,
-   -- op     => opR,
-   -- copy   => copyR,
    data   => accelSteps,
-   dout   => accelStepsDout);
+   dout   => dout.accelSteps            --accelStepsDout
+   );
 
  -- dbg.dbg(3 downto 0) <= syncConv(syncState);
 
@@ -698,6 +629,12 @@ begin
    if (init = '1') then                 --if initialization
     movDoneInt <= '0';                  --clear done
     droDone <= '0';                     --clear dro done
+    xPos <= (others => '0');            --clear input count
+    yPos <= (others => '0');            --clear output count
+    sum <= d;                           --initialize sum
+    accelCounter <= (others => '0');    --clear accel clock counter
+    accelSum <= (others => '0');        --clear accel sum
+    accelSteps <= (others => '0');      --clear accel steps
     syncState <= syncInit;              --set sync to init state
    end if;
 
@@ -705,20 +642,12 @@ begin
 
     -- initialization
     when syncInit =>
-     -- movDone <= '0';                    --clear move done
-     xPos <= (others => '0');           --clear input count
-     yPos <= (others => '0');           --clear output count
-     sum <= d;                          --initialize sum
-     accelCounter <= (others => '0');   --clear accel clock counter
-     accelSum <= (others => '0');       --clear accel sum
-     accelSteps <= (others => '0');     --clear accel steps
+     -- movDone <= '0';                 --clear move done
      accelState <= accelInactive;       --set to inactive state
-     -- distCtr <= distVal;                --initialize distance counter
-
      synStep <= '0';                    --clear output step
      synStepTmp <= '0';                 --clear step
      distUpdate <= false;               --clear distance update
-     if (ena = '0') then                --if enable cleared
+     if (ena = '0') and  (init = '0') then --if enable cleared
       syncState <= syncIdle;            --set to yncIdle state
      end if;
 
@@ -729,10 +658,8 @@ begin
 
      if (((ena = '1')    and (jogMode = "00")) or
          ((mpgEna = '1') and (jogMode = "10"))) then
-      accelState <= accelActive;        --start acceleration
-      -- if (distLoad = '1') then
       distCtr <= distVal;
-      -- end if;
+      accelState <= accelActive;        --start acceleration
       syncState <= enabled;             --go to enabled state
      elsif ((mpgEna = '1') and (jogMode = "11")) then --if mpg jog
 

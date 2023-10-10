@@ -28,7 +28,8 @@ entity Spindle is
   spActive  : out std_logic := '0';
   stepOut   : out std_logic := '0';
   dirOut    : out std_logic := '0';
-  dout      : out std_logic := '0'
+  dout      : out SpindleData
+  -- dout      : out std_logic := '0'
   );
 end Spindle;
 
@@ -50,15 +51,15 @@ architecture Behavioral of Spindle is
 
  signal decel : std_logic;
 
- signal doutSync : std_logic;
- signal doutJog : std_logic;
+ -- signal doutSync : std_logic;
+ -- signal doutJog : std_logic;
 
  signal spCtlReg : spCtlVec;
  signal spCtlR   : spCtlRec;
 
 begin
  
- dOut <= doutSync or doutJog;
+ -- dOut <= doutSync or doutJog;
  
  spindleCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Sp_Ctl,
@@ -66,7 +67,8 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   data => spCtlReg);
+   data => spCtlReg
+   );
 
    spCtlR <= spCtlToRec(spCtlReg);
 
@@ -87,7 +89,8 @@ begin
    decelDisable => false,
    ch           => ch,
    dir          => '0',
-   dout         => doutSync,
+   -- dout         => doutSync,
+   dout         => dout,
    accelActive  => open,
    decelDone    => decelDone,
    synStep      => synStep
@@ -108,8 +111,8 @@ begin
    currentDir => jogDir,
    jogStep    => jogStep,
    jogDir     => jogDir,
-   jogUpdLoc  => open,
-   dout       => doutJog
+   jogUpdLoc  => open
+   -- dout       => doutJog
    );
 
  jogEnable <= '1' when (eStop = '0') and (spCtlR.spJogEnable = '1') else '0';
