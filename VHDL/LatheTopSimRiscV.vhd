@@ -7,6 +7,7 @@ library neorv32;
 use neorv32.neorv32_package.all;
 
 use work.IORecord.all;
+use work.DbgRecord.all;
 use work.ExtDataRec.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
@@ -72,7 +73,7 @@ entity LatheTopSimRiscV is
   );
 end LatheTopSimRiscV;
 
-architecture Behavioral of LatheTopSimRiscV is
+architecture Behavorial of LatheTopSimRiscV is
 
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
@@ -127,9 +128,6 @@ architecture Behavioral of LatheTopSimRiscV is
  signal spiCS   : std_uLogic_vector(7 downto 0);
 
  signal data    : LatheInterfaceData;
- signal a       : std_logic_vector(8 downto 0);
- signal b       : std_logic_vector(2 downto 0);
- signal extDout : std_logic;
 
  signal latheDClk : std_logic;
  signal latheDin  : std_logic;
@@ -140,7 +138,17 @@ architecture Behavioral of LatheTopSimRiscV is
 
  signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
 
+ signal debug      : InterfaceDbg;
+ signal extDout    : std_logic;
+
 begin
+
+ dbgsetup : entity work.DbgMap
+  port map (
+   clk   => sysClkOut,
+   debug => debug,
+   dbg   => dbg
+   );
 
  pllClock : entity work.Clock
   port map (
@@ -170,7 +178,7 @@ begin
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
-   IO_UART0_EN                  => true,
+   IO_UART0_EN                  => false,
    IO_SPI_EN                    => true, -- implement serial peripheral interface (SPI)?
    IO_SPI_FIFO                  => 1     -- RTX fifo depth, has to be a power of two, min 1
    )
@@ -215,62 +223,12 @@ begin
  latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
  latheDin  <=  spiDin   when riscVCtlReg.riscVSPI = '1' else din;
 
- doutProc : process(sysClkOut)
- begin
-  if (rising_edge(sysClkOut)) then
-   a(0) <= data.ctl or
-           data.runR or
-           data.status or
-           data.latheCtl.inputs;
-
-   a(1) <= data.latheCtl.phase or
-           data.latheCtl.index or
-           data.latheCtl.encoder.cmpTmr or
-           data.latheCtl.encoder.intTmr;
-
-   a(2) <= data.latheCtl.z.status or
-           data.latheCtl.z.ctl or
-           data.latheCtl.z.sync.dist or
-           data.latheCtl.z.sync.loc;
-
-   b(0) <= a(0) or a(1) or a(2);
-
-   a(3) <= data.latheCtl.z.sync.xPos or
-           data.latheCtl.z.sync.yPos or
-           data.latheCtl.z.sync.sum or
-           data.latheCtl.z.sync.accelSum;
-
-   a(4) <= data.latheCtl.z.sync.accelCtr or
-           data.latheCtl.z.sync.accelSteps or
-           data.latheCtl.z.sync.dro;
-
-   a(5) <= data.latheCtl.x.status or
-           data.latheCtl.x.ctl or
-           data.latheCtl.x.sync.dist or
-           data.latheCtl.x.sync.loc;
-
-   b(1) <= a(3) or a(4) or a(5);
-
-   a(6) <= data.latheCtl.x.sync.xPos or
-           data.latheCtl.x.sync.yPos or
-           data.latheCtl.x.sync.sum or
-           data.latheCtl.x.sync.accelSum;
-
-   a(7) <= data.latheCtl.x.sync.accelCtr or
-           data.latheCtl.x.sync.accelSteps or
-           data.latheCtl.x.sync.dro or
-           data.latheCtl.spindle.xPos;
-
-   a(8) <= data.latheCtl.spindle.yPos or
-           data.latheCtl.spindle.sum or
-           data.latheCtl.spindle.accelSum or
-           data.latheCtl.spindle.accelCtr;
-   
-   b(2) <= a(6) or a(7) or a(8);
-
-   extDout <= b(0) or b(1) or b(2);
-  end if;
- end process;
+ dOutProc : entity work.DoutDelay
+  port map (
+   clk  => sysClkOut,
+   data => data,
+   dout => extDout
+   );
 
  dOut <= extDout;
  latheData.data <= extDout;
@@ -300,7 +258,7 @@ begin
    sysClk   => sysClkOut,
 
    led      => led,
-   dbg      => dbg,
+   dbg      => debug,
    anode    => anode,
    seg      => seg,
 
@@ -333,4 +291,4 @@ begin
    xDoneInt => xDoneInt
    );
 
-end Behavioral;
+end Behavorial;

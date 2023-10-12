@@ -15,12 +15,6 @@ entity FreqGenCtr is
  port (
   clk     : in  std_logic;
   inp     : in  DataInp;
-
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- op : in unsigned (opBits-1 downto 0);
-  -- load : in boolean;
-
   ena      : in  std_logic;
   pulseOut : out std_logic := '0'
   );
@@ -47,9 +41,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
    data => freqVal);
 
  countReg : entity work.ShiftOp
@@ -58,9 +49,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
    data => countVal);
 
  freqCtr: process(clk)

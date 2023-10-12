@@ -7,9 +7,11 @@ library neorv32;
 use neorv32.neorv32_package.all;
 
 use work.IORecord.all;
+use work.DbgRecord.all;
 use work.ExtDataRec.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
+
 entity LatheTop is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
           MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
@@ -126,9 +128,6 @@ architecture Behavioral of LatheTop is
  signal spiCS   : std_uLogic_vector(7 downto 0);
 
  signal data    : LatheInterfaceData;
- signal a       : std_logic_vector(8 downto 0);
- signal b       : std_logic_vector(2 downto 0);
- signal extDout : std_logic;
 
  signal latheDClk : std_logic;
  signal latheDin  : std_logic;
@@ -139,7 +138,17 @@ architecture Behavioral of LatheTop is
 
  signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
 
+ signal debug      : InterfaceDbg;
+ signal extDout    : std_logic;
+
 begin
+
+ dbgsetup : entity work.DbgMap
+  port map (
+   clk   => sysClkOut,
+   debug => debug,
+   dbg   => dbg
+   );
 
  pllClock : entity work.Clock
   port map ( 
@@ -155,6 +164,7 @@ begin
    -- On-Chip Debugger (OCD) --
    ON_CHIP_DEBUGGER_EN          => true,
    -- RISC-V CPU Extensions --
+   CPU_EXTENSION_RISCV_B        => true,
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
    CPU_EXTENSION_RISCV_Zicntr   => true,
@@ -202,7 +212,7 @@ begin
    );
 
  -- GPIO output --
- -- aux <= con_gpio_o(7 downto 0);
+  -- aux <= con_gpio_o(7 downto 0);
  aux(7) <= riscVCtlReg.riscVData;
  aux(6) <= con_gpio_o(0);
  aux(5 downto 0) <= std_logic_vector(latheCtl.op(5 downto 0));
@@ -213,65 +223,16 @@ begin
  latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
  latheDin  <=  spiDin   when riscVCtlReg.riscVSPI = '1' else din;
 
- doutProc : process(sysClkOut)
- begin
-  if (rising_edge(sysClkOut)) then
-   a(0) <= data.ctl or
-       data.runR or
-       data.status or
-       data.latheCtl.inputs;
+ dOutProc : entity work.DoutDelay
+  port map (
+   clk  => sysClkOut,
+   data => data,
+   dout => extDout
+   );
 
-   a(1) <= data.latheCtl.phase or
-       data.latheCtl.index or
-       data.latheCtl.encoder.cmpTmr or
-       data.latheCtl.encoder.intTmr;
-
-   a(2) <= data.latheCtl.z.status or
-       data.latheCtl.z.ctl or
-       data.latheCtl.z.sync.dist or
-       data.latheCtl.z.sync.loc;
-
-   b(0) <= a(0) or a(1) or a(2);
-
-   a(3) <= data.latheCtl.z.sync.xPos or
-       data.latheCtl.z.sync.yPos or
-       data.latheCtl.z.sync.sum or
-       data.latheCtl.z.sync.accelSum;
-
-   a(4) <= data.latheCtl.z.sync.accelCtr or
-       data.latheCtl.z.sync.accelSteps or
-       data.latheCtl.z.sync.dro;
-
-   a(5) <= data.latheCtl.x.status or
-       data.latheCtl.x.ctl or
-       data.latheCtl.x.sync.dist or
-       data.latheCtl.x.sync.loc;
-
-   b(1) <= a(3) or a(4) or a(5);
-
-   a(6) <= data.latheCtl.x.sync.xPos or
-       data.latheCtl.x.sync.yPos or
-       data.latheCtl.x.sync.sum or
-       data.latheCtl.x.sync.accelSum;
-
-   a(7) <= data.latheCtl.x.sync.accelCtr or
-       data.latheCtl.x.sync.accelSteps or
-       data.latheCtl.x.sync.dro or
-       data.latheCtl.spindle.xPos;
-
-   a(8) <= data.latheCtl.spindle.yPos or
-       data.latheCtl.spindle.sum or
-       data.latheCtl.spindle.accelSum or
-       data.latheCtl.spindle.accelCtr;
- 
-   b(2) <= a(6) or a(7) or a(8);
-
-   extDout <= b(0) or b(1) or b(2);
-  end if;
- end process;
-
- dOut <= extDout;
- latheData.data <= extDout;
+ dOut <= extDout when ((riscVCtlReg.riscVSPI = '0') and
+                       (riscVCtlReg.riscVData = '0')) else '0';
+ latheData.data <= extDout when riscVCtlReg.riscVData = '1' else '0';
 
  interfaceProc : entity work.CFSInterface
  generic map (lenBits  => 8,
@@ -298,7 +259,7 @@ begin
    sysClk   => sysClkOut,
 
    led      => led,
-   dbg      => dbg,
+   dbg      => debug,
    anode    => anode,
    seg      => seg,
 

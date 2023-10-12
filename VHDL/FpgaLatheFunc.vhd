@@ -335,7 +335,7 @@ end function;
 function axisCtlToVec(val : axisCtlRec) return axisCtlVec is
  variable rtnVec : axisCtlVec;
 begin
- rtnVec := val.ctlIgnoreLim & val.ctlHome      & val.ctlJogMpg    &
+ rtnVec := val.ctlUseLimits & val.ctlHome      & val.ctlJogMpg    &
            val.ctlJogCmd    & val.ctlDroEnd    & val.ctlSlave     &
            val.ctlChDirect  & val.ctlSetLoc    & val.ctlDir       &
            val.ctlWaitSync  & val.ctlBacklash  & val.ctlStart     &
@@ -346,7 +346,7 @@ end function;
 function axisCtlToRec(val : axisCtlVec) return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlIgnoreLim := val(12);
+ rtnRec.ctlUseLimits := val(12);
  rtnRec.ctlHome      := val(11);
  rtnRec.ctlJogMpg    := val(10);
  rtnRec.ctlJogCmd    := val(9);
@@ -367,7 +367,7 @@ function axisCtlToRecS(val : std_logic_vector(axisCtlSize-1 downto 0))
  return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlIgnoreLim := val(12);
+ rtnRec.ctlUseLimits := val(12);
  rtnRec.ctlHome      := val(11);
  rtnRec.ctlJogMpg    := val(10);
  rtnRec.ctlJogCmd    := val(9);

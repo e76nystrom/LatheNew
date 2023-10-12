@@ -7,6 +7,8 @@ USE ieee.numeric_std.all;
 
 use work.RegDef.all;
 use work.IORecord.all;
+
+use work.DbgRecord.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
@@ -44,12 +46,9 @@ entity Axis is
   switches   : in std_logic_vector(3 downto 0);
   eStop      : in std_logic;
 
-  -- dbg        : out AxisDbg;
-  dbgOut     : out unsigned(dbgBits-1 downto 0) := (others => '0');
-  synDbg     : out std_logic_vector(synDbgBits-1 downto 0) := (others => '0');
+  dbg        : out AxisDbg;
   initOut    : out std_logic := '0';
   enaOut     : out std_logic := '0';
-  -- dout       : out std_logic := '0';
   dout       : out AxisData;
   dirOut     : inout std_logic := '0';
   stepOut    : out std_logic := '0';
@@ -67,8 +66,6 @@ architecture Behavioral of Axis is
 
  signal axisCtlRdReg : unsigned(axisctlSize-1 downto 0);
 
- -- signal dbgRec : AxisDbg := AxisDbgInit;
-
  signal axisEna    : std_logic := '0';
  signal axisInit   : std_logic := '0';
 
@@ -77,10 +74,6 @@ architecture Behavioral of Axis is
  signal locDisable : std_logic := '0';
  
  -- signal doneInt : std_logic;
-
- -- signal doutSync   : std_logic;
- -- signal doutStatus : std_logic;
- -- signal doutCtl    : std_logic;
 
  signal distZero : std_logic;
 
@@ -108,9 +101,9 @@ architecture Behavioral of Axis is
  alias swLimMinus : std_logic is switches(1);
  alias swLimPlus  : std_logic is switches(2);
 
- signal dbgStep : std_logic;
+ signal pulseOut  : std_logic;
 
- signal jogMode : std_logic_vector(1 downto 0);
+ signal jogMode  : std_logic_vector(1 downto 0);
 
  type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -172,7 +165,6 @@ begin
 
  curDir <= currentDir;
  dirOut  <= synDirOut;
- synDbg  <= synDbgData;
 
  AxisSyncAccel : entity work.SyncAccelDistJog
   generic map (opBase     => opBase + F_Sync_Base,
@@ -206,31 +198,26 @@ begin
    droInvert  => droInvert,
    droEndChk  => axisCtlR.ctlDroEnd,
 
-   -- dbg        => dbgRec.sync,
-   synDbg     => synDbgData,
+   dbg        => dbg.sync,
    movDone    => distZero,
    droDone    => droDone,
-   dout       => dout.sync,                  --doutSync,
+   dout       => dout.sync,
    dirOut     => synDirOut,
    synStep    => synStepOut
    );
 
- dbgPulse  : entity work.PulseGen
+ dbgPulse : entity work.PulseGen
   generic map (pulseWidth => 25)
   port map (
    clk => clk,
-   pulseIn => step,
-   PulseOut => dbgStep
+   pulseIn => ch,
+   PulseOut => pulseOut
    );
 
- -- dbgRec.dbg(0) <= ctlStart;
- -- dbg <= dbgRec;
-
- dbgOut(0) <= axisCtlR.ctlStart;  --updLoc;
- dbgOut(1) <= doneDist;
- -- dbgOut(1) <= distDecel; --distZero;
- dbgOut(2) <= axisEna;
- dbgOut(3) <= dbgStep;
+ dbg.ctlStart <= axisCtlR.ctlStart;
+ dbg.axisEna  <= axisEna;
+ dbg.doneDist <= doneDist;
+ dbg.pulseOut <= pulseOut;
 
  runInit <= extInit when axisCtlR.ctlSlave = '1' else axisInit;
  runEna  <= extEna  when axisCtlR.ctlSlave = '1' else axisEna;
@@ -239,7 +226,6 @@ begin
 
  initOut   <= axisInit;
  enaOut    <= axisEna;
- -- updLocOut <= axisUpdLoc;
  
  enaCh   <= runEna and ch;
  stepOut <= step;
@@ -252,14 +238,11 @@ begin
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-
-   -- dout <= doutSync or doutStatus or doutCtl;
-
    doneDist  <= distZero and not axisCtlR.ctlDroEnd;
    doneDro   <= droDone and axisCtlR.ctlDroEnd;
    doneHome  <= (swHome = '1') and (axisCtlR.ctlHome = '1');
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
-                (axisCtlR.ctlIgnoreLim = '0');
+                (axisCtlR.ctlUseLimits = '1');
 
    if (doneLimit or doneHome) then
     doneMove <= '1';

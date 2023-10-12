@@ -65,10 +65,10 @@ architecture neorv32_dmem_rtl of neorv32_dmem is
   -- -------------------------------------------------------------------------------------------------------------- --
 
   -- RAM - not initialized at all --
-  signal mem_ram_b0 : mem8_t(0 to DMEM_SIZE/4-1);
-  signal mem_ram_b1 : mem8_t(0 to DMEM_SIZE/4-1);
-  signal mem_ram_b2 : mem8_t(0 to DMEM_SIZE/4-1);
-  signal mem_ram_b3 : mem8_t(0 to DMEM_SIZE/4-1);
+  signal mem_ram_b0 : mem8_t(0 to DMEM_SIZE/4-1) := (others => (others => '0'));
+  signal mem_ram_b1 : mem8_t(0 to DMEM_SIZE/4-1) := (others => (others => '0'));
+  signal mem_ram_b2 : mem8_t(0 to DMEM_SIZE/4-1) := (others => (others => '0'));
+  signal mem_ram_b3 : mem8_t(0 to DMEM_SIZE/4-1) := (others => (others => '0'));
 
   -- read data --
   signal mem_ram_b0_rd, mem_ram_b1_rd, mem_ram_b2_rd, mem_ram_b3_rd : std_ulogic_vector(7 downto 0);

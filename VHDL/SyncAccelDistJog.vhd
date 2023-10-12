@@ -7,6 +7,7 @@ use ieee.math_real.all;
 
 use work.RegDef.all;
 use work.IORecord.all;
+use work.DbgRecord.all;
 
 entity SyncAccelDistJog is
  generic (opBase     : unsigned := x"00";
@@ -20,18 +21,8 @@ entity SyncAccelDistJog is
           synDbgBits : positive := 4);
  port (
   clk        : in std_logic;
-
   inp        : DataInp;
-  -- din        : in std_logic;
-  -- dshift     : in boolean;
-  -- op         : in unsigned (opBits-1 downto 0);
-  -- load       : in boolean;
-
   oRec       : DataOut;
-  -- dshiftR    : in boolean;
-  -- opR        : in unsigned (opBits-1 downto 0);
-  -- copyR      : in boolean;
-
   init       : in std_logic;            --reset
   ena        : in std_logic;            --enable operation
   extDone    : in std_logic;            --external done input
@@ -48,11 +39,9 @@ entity SyncAccelDistJog is
   droInvert  : in std_logic;
   droEndChk  : in std_logic;
 
-  -- dbg        : out SyncAccelDbg := SyncAccelDbgInit; --debug
-  synDbg     : out std_logic_vector(synDbgBits-1 downto 0) := (others => '0');  
+  dbg        : out SyncAccelDbg;
   movDone    : out std_logic := '0';    --done move
   droDone    : out std_logic := '0';    --dro move done
-  -- dout       : out std_logic := '0';    --read data out
   dout       : out SyncData;
   dirOut     : out std_logic := '0';    --direction out
   synStep    : out std_logic := '0'     --output step pulse
@@ -120,17 +109,6 @@ architecture Behavioral of SyncAccelDistJog is
 
  signal movDoneInt : std_logic := '0';
 
- -- read output signals
-
- -- signal xPosDout       : std_logic;     --xPos read output
- -- signal yPosDout       : std_logic;     --yPos read output
- -- signal sumDout        : std_logic;     --sum read output
- -- signal accelSumDout   : std_logic;     --accel sum read output
- -- signal accelCtrDout   : std_logic;     --accel ctr read output
- -- signal distDout       : std_logic;     --distance read output
- -- signal accelStepsDout : std_logic;     --accel stesp read output
- -- signal locDOut        : std_logic;     --location output
-
  signal synStepTmp     : std_logic := '0';
  signal synStepLast    : std_logic := '0';
 
@@ -159,7 +137,6 @@ architecture Behavioral of SyncAccelDistJog is
  signal decelLimit   : unsigned(droBits-1 downto 0);
  signal droDecelStop : std_logic := '0';
  signal droDoneInt   : std_logic := '0';
- -- signal droDout      : std_logic := '0';
  signal droLoad      : std_logic := '0';
  signal droLoadVal   : std_logic := '0';
 
@@ -359,9 +336,6 @@ architecture Behavioral of SyncAccelDistJog is
   mpgRegDist(24 + mpgDistBits-1 downto 24);
 
 begin
-
- -- dout <= xPosDout or yPosDout or sumDout or accelSumDout or accelCtrDout or
- --         distDout or accelStepsDout or locDout or droDout;
 
  dreg : entity work.ShiftOp
   generic map(opVal  => opBase + F_Ld_D,
@@ -595,14 +569,12 @@ begin
    dout   => dout.accelSteps            --accelStepsDout
    );
 
- -- dbg.dbg(3 downto 0) <= syncConv(syncState);
-
  movDone <= movDoneInt;
 
- synDbg(0) <= ena;
- synDbg(1) <= movDoneInt;
- synDbg(2) <= std_logic(distCtr(0));
- synDbg(3) <= std_logic(loc(0));
+ dbg.ena     <= ena;
+ dbg.done    <= movDoneInt;
+ dbg.distCtr <= std_logic(distCtr(0));
+ dbg.loc     <= std_logic(loc(0));
 
  syn_process: process(clk)
 
@@ -705,7 +677,7 @@ begin
         accelSteps <= accelSteps - 1;   --subtract an accel step
        end if;
 
-      end if;                          --sumNeg
+      end if;                           --sumNeg
       syncState <= updAccel;
 
      end if;                            --ch
@@ -851,7 +823,7 @@ begin
     when others =>                      --others
      syncState <= syncInit;             --set to init
 
-   end case;                            --state
+   end case;                            --end case sync state
 
    -- ********** dro  **********
 
@@ -868,7 +840,7 @@ begin
      when "1101" => droUpdate <= '1'; droDir <= not droInvert; 
      when "0100" => droUpdate <= '1'; droDir <= not droInvert; 
      when others => droUpdate <= '0';
-    end case;
+    end case;                           --end case droQuadChange
    end if;                              --end change
 
    droQuadState <= droQuadState(1 downto 0) & droQuad(1) & droQuad(0);
@@ -930,7 +902,7 @@ begin
 
     when others =>
      droState <= droIdle;
-   end case;
+   end case;                            --end case droState
   
    -- ********** jog and mpg **********
 
@@ -1069,7 +1041,7 @@ begin
       end if;
 
      when others => null;
-    end case;
+    end case;                           --end case jog
 
    -- else                                 --if not mpg mode
    --  lastMpgDir <= dirIn;                --update last direction

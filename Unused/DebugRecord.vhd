@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
  
-package DebugRecord is
+package DbgRecord is
 
  constant nSyn : positive := 4;
 
@@ -21,4 +21,4 @@ package DebugRecord is
  constant AxisDbgInit : AxisDbg := (sync => SyncAccelDbgInit,
                                     dbg => (others => '0'));
 
-end package DebugRecord;
+end package DbgRecord;

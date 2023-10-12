@@ -52,7 +52,7 @@ type jogRec is record
 end record jogRec;
 
 type axisCtlRec is record
- ctlIgnoreLim : std_logic;      -- 12 0x1000 ignore limits
+ ctlUseLimits : std_logic;      -- 12 0x1000 use limits
  ctlHome      : std_logic;      -- 11 0x0800 homing axis
  ctlJogMpg    : std_logic;      -- 10 0x0400 jog with mpg
  ctlJogCmd    : std_logic;      --  9 0x0200 jog with commands

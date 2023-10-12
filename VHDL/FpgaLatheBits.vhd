@@ -119,7 +119,7 @@ package FpgaLatheBits is
  alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
  alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
  alias ctlHome      : std_logic is axisCtlreg(11); -- x800 homing axis
- alias ctlIgnoreLim : std_logic is axisCtlreg(12); -- x1000 ignore limits
+ alias ctlUseLimits : std_logic is axisCtlreg(12); -- x1000 use limits
 
  constant c_ctlInit      : integer :=  0; -- x01 reset flag
  constant c_ctlStart     : integer :=  1; -- x02 start
@@ -133,7 +133,7 @@ package FpgaLatheBits is
  constant c_ctlJogCmd    : integer :=  9; -- x200 jog with commands
  constant c_ctlJogMpg    : integer := 10; -- x400 jog with mpg
  constant c_ctlHome      : integer := 11; -- x800 homing axis
- constant c_ctlIgnoreLim : integer := 12; -- x1000 ignore limits
+ constant c_ctlUseLimits : integer := 12; -- x1000 use limits
 
 -- axis status register
 

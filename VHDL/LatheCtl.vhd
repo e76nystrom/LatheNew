@@ -6,6 +6,7 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 
 use work.regDef.all;
 use work.IORecord.all;
+use work.DbgRecord.all;
 use work.conversion.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
@@ -33,17 +34,14 @@ entity LatheCtl is
           encClkBits    : positive := 24;
           cycleClkBits  : positive := 32;
           pwmBits       : positive := 16;
-          stepWidth     : positive := 25);
+          stepWidth     : positive := 50);
  port (
   clk      : in  std_logic;
   
-  dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
-
   spiW     : in  DataInp;
   curW     : in  DataInp;
 
   dout     : out latheCtlData;
-  -- dout     : out std_logic := '0';
 
   spiR     : in  DataOut;
   curR     : in  DataOut;
@@ -61,7 +59,8 @@ entity LatheCtl is
 
   statusR  : out statusRec := statusToRec(statusZero);
 
-  aux      : out std_logic_vector(7 downto 0);
+  dbg      : out controlDbg;
+  -- aux      : out std_logic_vector(7 downto 0) := (others => '0');
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
@@ -93,22 +92,6 @@ architecture Behavioral of LatheCtl is
 
  signal spCtlReg : spCtlVec;
  signal spCtlR   : spCtlRec;
-
- -- data out signals
-
- -- signal internalDout : std_logic := '0';
-
- -- signal dout0        : std_logic := '0';
- -- signal dout1        : std_logic := '0';
- -- signal inputsDout   : std_logic := '0';
- -- signal phaseDOut    : std_logic := '0';
- -- signal idxClkDout   : std_logic := '0';
- -- signal encDOut      : std_logic := '0';
-
- -- signal dout2        : std_logic := '0';
- -- signal zDOut        : std_logic := '0';
- -- signal xDOut        : std_logic := '0';
- -- signal spindleDout  : std_logic := '0';
 
  -- quadrature encoder
 
@@ -143,16 +126,6 @@ architecture Behavioral of LatheCtl is
 
  signal zDelayStep : std_logic;
  signal xDelayStep : std_logic;
-
- signal test0 : std_logic;
- signal test1 : std_logic;
- signal test2 : std_logic;
-
- signal zDbg : unsigned(dbgBits-1 downto 0);
- signal xDbg : unsigned(dbgBits-1 downto 0);
-
- signal zSynDbg : std_logic_vector(synDbgBits-1 downto 0);
- signal xSynDbg : std_logic_vector(synDbgBits-1 downto 0);
 
  signal zFreqGenEna : std_logic;
  signal xFreqGenEna : std_logic;
@@ -197,7 +170,7 @@ begin
  pinOut(2) <= xDir;
  pinOut(3) <= xStep;
 
- pinOut(7 downto 4) <= std_logic_vector(xDbg);
+ pinOut(7 downto 4) <= (others => '0');
 
  -- alias digSel: unsigned(1 downto 0) is div(19 downto 18);
  -- pinOut(5 downto 4) <= zMpg;
@@ -241,105 +214,17 @@ begin
  zDoneInt <= intZDoneInt;
  xDoneInt <= intXDoneInt;
 
- -- test 0 output pulse
-
- testOut0 : entity work.PulseGen
-  generic map (pulseWidth => 50)
-  port map (
-   clk => clk,
-   pulseIn => xCh,
-   PulseOut => test0
-   );
-
--- test 1 output pulse
-
- testOut1 : entity work.PulseGen
-  generic map (pulseWidth => 50)
-  port map (
-   clk => clk,
-   pulseIn => zCh,
-   pulseOut => test1
-   );
-
--- test 2 output pulse
-
- testOut2 : entity work.PulseGen
-  generic map (pulseWidth => 50)
-  port map (
-   clk => clk,
-   pulseIn => sync,
-   pulseOut => test2
-   );
-
- dbg(0) <= test0;
- dbg(1) <= test1;
- dbg(2) <= test2;
-
- -- dbg(3) <= intZDoneInt;
- dbg(3) <= intXDoneInt;
- dbg(7 downto 4) <= std_logic_vector(zDbg);
-
- -- dbgConfig : if dbgPins > 8 generate
- --  dbg(11 downto 8)  <= zSynDbg;
- --  dbg(15 downto 12) <= xSynDbg;
- -- else generate
- aux <= xSynDbg & zSynDbg;
- -- end generate dbgConfig;
-
- -- dbg(4) = dbgOUt(0) <= runEna;
- -- dbg(5) = dbgOut(1) <= distDecel;
- -- dbg(6) = dbgOut(2) <= distZero;
- -- dbg(7) = dbgOut(3) <= syncAccelActive;
-
- -- dbg(2) <= zDbg(0);
- -- dbg(3) <= intZDoneInt;
- -- dbg(7 downto 4) <= std_logic_vector(zDbg);
-
- -- dbg(4) <= div(divBits-4);
- -- dbg(5) <= div(divBits-5);
- -- dbg(6) <= div(divBits-6);
- -- dbg(7) <= div(divBits-7);
-
- -- system clock
-
- -- sys_Clk : Clock
- --  port map(
- --   clockIn => sysClk,
- --   clockOut => clk
- --   );
-
- -- sys_Clk : SystemClk
- --  port map(
- --   areset => '0',
- --   inclk0 => sysClk,
- --   c0     => clk, 
- --   locked => open
- --   );
-
- -- sys_clk : component SystemClk
- --  port map (
- --   inclk  => sysclk,                    --  altclkctrl_input.inclk
- --   outclk => clk                        --  altclkctrl_output.outclk
- --   );
-
- -- clk <= sysClk;
+ dbg.xCh     <= xCh;
+ dbg.zCh     <= zCh;
+ dbg.sync    <= ch;
+ dbg.xDone   <= intXDoneInt;
+ dbg.zDone   <= intZDoneInt;
+ dbg.dbgFreq <= dbgFreqGen;
 
  -- clock divider
 
  direction <= (not cfgCtlR.cfgEncDirInv) when (cfgCtlR.cfgEnaEncDir = '0') else
               (encDir xor cfgCtlR.cfgEncDirInv);
-
- -- dout <= internalDout;
-
- -- doutProcess : process(clk)
- -- begin
- --  if rising_edge(clk) then
- --   dout0 <= inputsDout;
- --   dout1 <= phaseDout or idxClkDout or EncDout;
- --   dout2 <= zDOut or xDOut or spindleDout;
- --   internalDout <= dout0 or dout1 or dout2;
- --  end if;
- -- end process;
 
  inputs : entity work.ShiftOutN
   generic map (opVal   => F_Rd_Inputs,
@@ -569,9 +454,7 @@ begin
    switches   => zSwitches,
    eStop      => eStop,
 
-   -- dbg        => zDbgRec,
-   dbgOut     => zDbg,
-   synDbg     => zSynDbg,
+   dbg        => dbg.z,
    initOut    => zExtInit,
    enaOut     => zExtEna,
 
@@ -639,9 +522,7 @@ begin
    switches   => xSwitches,
    eStop      => eStop,
 
-   -- dbg        => xDbgRec,
-   dbgOut     => xDbg,
-   synDbg     => xSynDbg,
+   dbg        => dbg.x,
    initOut    => xExtInit,
    enaOut     => xExtEna,
    stepOut    => xAxisStep,

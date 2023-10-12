@@ -6,6 +6,7 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 
 use work.regDef.all;
 use work.IORecord.all;
+use work.DbgRecord.all;
 use work.ExtDataRec.all;
 use work.conversion.all;
 use work.FpgaLatheBitsRec.all;
@@ -35,12 +36,11 @@ entity LatheInterface is
           encClkBits    : positive := 24;
           cycleClkBits  : positive := 32;
           pwmBits       : positive := 16;
-          stepWidth     : positive := 25);
+          stepWidth     : positive := 50);
  port (
   sysClk : in std_logic;
   
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
-  dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -61,12 +61,13 @@ entity LatheInterface is
 
   pinIn    : in std_logic_vector(4 downto 0);
 
-  aux      : out std_logic_vector(7 downto 0);
+  dbg      : out InterfaceDbg;
+  -- aux      : out std_logic_vector(7 downto 0);
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
-  latheCtl  : in  ExtDataCtl;
+  latheCtl : in  ExtDataCtl;
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -137,10 +138,6 @@ architecture Behavioral of LatheInterface is
  signal zDone : std_logic;
  signal xDone : std_logic;
 
- -- signal CtlDout    : std_logic;
- -- signal runRDout   : std_logic;
- -- signal statusDout : std_logic;
- -- signal latheDout  : std_logic;
  constant delay : positive := 3;
  signal delayDout  : std_logic_vector(delay-1 downto 0) := (others => '0');
 
@@ -174,19 +171,6 @@ begin
  -- dspData(3 downto 0) <= zDbg;
  -- dspData(7 downto 4) <= xDbg;
  dspData(7  downto 0) <= spiW.op;
-
- -- delayProc : process(clk)
- -- begin
- --  if (rising_edge(clk)) then
- --   delayDout <= delayDout(delay-2 downto 0) & (ctlDout or runRDout or statusDout);
- --  end if;
- -- end process;
-
- -- dOut <= latheDout or delayDout(delay-1);
-
- -- extData0 : if extData /= 0 generate
- --  latheData.data <= delayDout(delay-1) or latheDout;
- -- end generate extData0;
 
  spiW <= (din => din,    shift => spiShift, op => spiOp, load => spiLoad);
  ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
@@ -370,7 +354,7 @@ begin
    spiR     => spiR,
    curR     => curR,
 
-   dbg      => dbg,
+   dbg      => dbg.ctl,
 
    aIn      => aIn,
    bIn      => bIn,
@@ -384,7 +368,7 @@ begin
 
    pinIn    => pinIn,
 
-   aux      => aux,
+   -- aux      => aux,
    pinOut   => pinOut,
    extOut   => extOut,
 

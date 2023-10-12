@@ -4,6 +4,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.ExtDataRec.all;
+use work.dbgRecord.all;
 use work.IORecord.all;
 
 entity LatheTop is
@@ -89,10 +90,22 @@ architecture Behavioral of LatheTop is
  signal cfs_we_o   : std_ulogic := '0';
  signal cfs_reg_o  : std_ulogic_vector(1 downto 0) := (others => '0');
 
+ signal data    : LatheInterfaceData;
+
  signal latheData  : ExtDataRcv := extDataRcvInit;
  signal latheCtl   : ExtDataCtl := extDataCtlInit;
 
+ signal debug      : InterfaceDbg;
+ signal extDout    : std_logic;
+  
 begin
+
+ dbgsetup : entity work.DbgMap
+  port map (
+   clk   => sysClkOut,
+   debug => debug,
+   dbg   => dbg
+   );
 
  pllClock : entity work.Clock
   port map ( 
@@ -100,7 +113,16 @@ begin
    clockOut => sysClkOut
    ); 
 
- -- interfaceProc : entity work.CFSInterface
+ dOutProc : entity work.DoutDelay
+  port map (
+   clk  => sysClkOut,
+   data => data,
+   dout => extDout
+   );
+
+ dOut <= extDout;
+ 
+-- interfaceProc : entity work.CFSInterface
  -- generic map (lenBits  => 8,
  --              dataBits => 32)
  -- port map (
@@ -123,12 +145,11 @@ begin
    sysClk   => sysClkOut,
 
    led      => led,
-   dbg      => dbg,
    anode    => anode,
    seg      => seg,
 
    dclk     => dclk,
-   dout     => dout,
+   dout     => data,
    din      => din,
    dsel     => dsel,
 
@@ -144,13 +165,13 @@ begin
 
    pinIn    => pinIn,
 
-   aux      => aux,
+   dbg      => debug,
+   -- aux      => aux,
    pinOut   => pinOut,
    extOut   => extOut,
 
    bufOut   => bufOut,
 
-   latheData => latheData,
    latheCtl  => latheCtl,
 
    zDoneInt => zDoneInt,
