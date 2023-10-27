@@ -8,7 +8,7 @@ use neorv32.neorv32_package.all;
 
 use work.IORecord.all;
 use work.DbgRecord.all;
-use work.ExtDataRec.all;
+use work.RiscvDataRec.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
@@ -121,7 +121,8 @@ architecture Behavorial of LatheTopSimRiscV is
  signal cfs_out_o  : std_ulogic_vector(32-1 downto 0) := (others => '0');
 
  signal cfs_we_o   : std_ulogic := '0';
- signal cfs_reg_o  : std_ulogic_vector(1 downto 0) := (others => '0');
+ signal cfs_re_o   : std_ulogic := '0';
+ signal cfs_reg_o  : std_ulogic_vector(2 downto 0) := (others => '0');
 
  signal spiDClk : std_ulogic;
  signal spiDin  : std_ulogic;
@@ -133,8 +134,8 @@ architecture Behavorial of LatheTopSimRiscV is
  signal latheDin  : std_logic;
  signal latheDSel : std_Logic;
 
- signal latheData  : ExtDataRcv;
- signal latheCtl   : ExtDataCtl;
+ signal riscvData  : RiscvDataRcv;
+ signal riscvCtl   : RiscvDataCtl;
 
  signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
 
@@ -214,10 +215,11 @@ begin
  -- GPIO output --
  -- aux <= con_gpio_o(7 downto 0);
  aux(7) <= riscVCtlReg.riscVData;
- aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_logic_vector(latheCtl.op(5 downto 0));
+ aux(6) <= con_gpio_o(7);
+ aux(5) <= con_gpio_o(6);
+ aux(4 downto 0) <= std_logic_vector(riscvCtl.op(4 downto 0));
 
- latheCtl.active <= riscVCtlReg.riscvData;
+ riscvCtl.active <= riscvCtlReg.riscvData;
 
  latheDSel <=  spiCS(0) when riscVCtlReg.riscVSPI = '1' else dsel;
  latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
@@ -231,7 +233,7 @@ begin
    );
 
  dOut <= extDout;
- latheData.data <= extDout;
+ riscvData.data <= extDout;
 
  interfaceProc : entity work.CFSInterface
  generic map (lenBits  => 8,
@@ -246,8 +248,8 @@ begin
 
   riscVCtl   => riscVCtlReg,
 
-  latheData  => latheData,
-  latheCtl   => latheCtl
+  latheData  => riscvData,
+  latheCtl   => riscvCtl
   );
 
  latheInt: entity work.LatheInterface
@@ -267,9 +269,9 @@ begin
    din      => latheDin,
    dout     => data,                    --extDout,
 
-   aIn      => aIn,
-   bIn      => bIn,
-   syncIn   => syncIn,
+   aIn      => con_gpio_o(0),--aIn,
+   bIn      => con_gpio_o(1),--bIn,
+   syncIn   => con_gpio_o(2),--syncIn,
 
    zDro     => zDro,
    xDro     => xDro,
@@ -285,7 +287,7 @@ begin
 
    bufOut   => bufOut,
 
-   latheCtl  => latheCtl,
+   riscvCtl  => riscvCtl,
 
    zDoneInt => zDoneInt,
    xDoneInt => xDoneInt

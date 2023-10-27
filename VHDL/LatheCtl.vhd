@@ -38,12 +38,12 @@ entity LatheCtl is
  port (
   clk      : in  std_logic;
   
-  spiW     : in  DataInp;
+  -- spiW     : in  DataInp;
   curW     : in  DataInp;
 
   dout     : out latheCtlData;
 
-  spiR     : in  DataOut;
+  -- spiR     : in  DataOut;
   curR     : in  DataOut;
 
   aIn      : in  std_logic;
@@ -157,6 +157,12 @@ architecture Behavioral of LatheCtl is
  signal eStop  : std_logic;
  signal pwmEna : std_logic;
  
+ signal zDroPhase : std_logic_vector(1 downto 0) := (others => '0');
+ signal xDroPhase : std_logic_vector(1 downto 0) := (others => '0');
+
+ signal zAxisDro : std_logic_vector(1 downto 0) := (others => '0');
+ signal xAxisDro : std_logic_vector(1 downto 0) := (others => '0');
+
 begin
 
  eStop <= cfgCtlR.cfgEStopEna and (eStopIn xor cfgCtlR.cfgEStopInv);
@@ -232,7 +238,7 @@ begin
                outBits => outBits)
   port map (
    clk  => clk,
-   oRec => spiR,
+   oRec => curR,
    data => inputsReg,
    dout => dout.inputs                  --inputsDout
    );
@@ -266,7 +272,7 @@ begin
                n     => cfgCtlSize)
   port map (
    clk  => clk,
-   inp  => spiW,
+   inp  => curW,
    data => cfgCtlReg
    );
 
@@ -277,7 +283,7 @@ begin
                n     => spCtlSize)
   port map (
    clk  => clk,
-   inp  => spiW,
+   inp  => curW,
    data => spCtlReg
    );
 
@@ -341,7 +347,7 @@ begin
                outBits => outBits)
   port map (
    clk   => clk,
-   oRec  => spiR,
+   oRec  => curR,
    dout  => dout.index,
    -- dout  => idxClkDout,
    ch    => ch,
@@ -403,6 +409,33 @@ begin
   end if;
  end process;
 
+ zDro_Sim : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   if (zAxisStep = '1') then
+    if (zAxisDir = '1') then
+     case zDroPhase is
+      when "00"   => zDroPhase <= "01";
+      when "01"   => zDroPhase <= "11";
+      when "11"   => zDroPhase <= "10";
+      when "10"   => zDroPhase <= "00";
+      when others => zDroPhase <= "00";
+     end case;
+    else
+     case zDroPhase is
+      when "00"   => zDroPhase <= "10";
+      when "10"   => zDroPhase <= "11";
+      when "11"   => zDroPhase <= "01";
+      when "01"   => zDroPhase <= "00";
+      when others => zDroPhase <= "00";
+     end case;
+    end if;
+   end if;
+  end if;
+ end process;
+
+ zAxisDro <= zDro when (cfgCtlR.cfgDroStep = '0') else zDroPhase;
+
  zCh_Data : process(clk)
  begin
   if (rising_edge(clk)) then
@@ -445,7 +478,7 @@ begin
    encDir     => direction,
    sync       => sync,
 
-   droQuad    => zDro,
+   droQuad    => zAxisDro,
    droInvert  => cfgCtlR.cfgZDroInv,
    mpgQuad    => zMpg,
    jogInvert  => cfgctlR.cfgZJogInv,
@@ -471,6 +504,33 @@ begin
    pulseOut => zStep
    );
 
+ xAxisDro <= xDro when (cfgCtlR.cfgDroStep = '0') else xDroPhase;
+
+ xDro_Sim : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   if (xAxisStep = '1') then
+    if (xAxisDir = '1') then
+     case xDroPhase is
+      when "00"   => xDroPhase <= "01";
+      when "01"   => xDroPhase <= "11";
+      when "11"   => xDroPhase <= "10";
+      when "10"   => xDroPhase <= "00";
+      when others => xDroPhase <= "00";
+     end case;
+    else
+     case xDroPhase is
+      when "00"   => xDroPhase <= "10";
+      when "10"   => xDroPhase <= "11";
+      when "11"   => xDroPhase <= "01";
+      when "01"   => xDroPhase <= "00";
+      when others => xDroPhase <= "00";
+     end case;
+    end if;
+   end if;
+  end if;
+ end process;
+
  xCh_Data : process(clk)
  begin
   if (rising_edge(clk)) then
@@ -482,7 +542,7 @@ begin
     when clkSlvCh   => xCh <= zCh;
     when clkSpindle => xCh <= spFreqGen;
     when clkDbgFreq => xCh <= dbgFreqGen;
-    when others => xCh <= '0';
+    when others     => xCh <= '0';
    end case;
   end if;
  end process;
@@ -502,7 +562,7 @@ begin
   port map (
    clk        => clk,
 
-   inp        => spiW,
+   inp        => curW,
    oRec       => curR,
    dout       => dout.x,                --xDOut,
 
@@ -513,7 +573,7 @@ begin
    encDir     => direction,
    sync       => sync,
 
-   droQuad    => xDro,
+   droQuad    => xAxisDro,
    droInvert  => cfgCtlR.cfgXDroInv,
    mpgQuad    => xMpg,
    jogInvert  => cfgCtlR.cfgXJogInv,
@@ -553,7 +613,7 @@ begin
     xDir <= xAxisDir xor cfgCtlR.cfgxDirInv;
    end if;
 
-   if (spiR.Op = F_Rd_Status) then
+   if (curR.Op = F_Rd_Status) then
     chgPump <= '1';
    else
     chgPump <= '0';
@@ -600,7 +660,7 @@ begin
                n      => pwmBits)
   port map (
    clk    => clk,
-   inp    => spiW,
+   inp    => curW,
    ena    => pwmEna,
    pwmOut => pwmOut
    );

@@ -23,29 +23,33 @@ end ShiftOutN;
 
 architecture Behavioral of ShiftOutN is
 
- signal shiftSel : boolean := false;
+ signal shiftSel : std_logic := '0';
  signal shiftReg : unsigned(n-1 downto 0) := (n-1 downto 0 => '0');
  signal padding :  integer range 0 to outBits-n;
 
 begin
 
- dout <= shiftReg(n-1) when (shiftSel and (padding = 0)) else
+ shiftSel <= '1' when (oRec.op = opVal) else '0';
+
+ dout <= shiftReg(n-1) when ((shiftSel = '1') and (padding = 0)) else
          '0';
 
  shiftout: process (clk)
  begin
   if (rising_edge(clk)) then
-   if (oRec.op = opVal) then
-    shiftSel <= true;
-   else
-    shiftSel <= false;
-   end if;
+   -- if  then
+   --  shiftSel <= true;
+   -- else
+   --  shiftSel <= false;
+   -- end if;
    
-   if (shiftSel and (oRec.copy = '1')) then
-    shiftReg <= data;
-    padding <= 32-n;
-   else 
-    if (shiftSel and (oRec.shift = '1')) then
+   if (shiftSel = '1') then
+    if (oRec.copy = '1') then
+     shiftReg <= data;
+     padding <= 32-n;
+    end if;
+
+    if (oRec.shift = '1') then
      if (padding = 0) then
       shiftReg <= shiftReg(n-2 downto 0) & shiftReg(n-1);
      else

@@ -6,7 +6,7 @@ use ieee.std_logic_arith;
 
 use work.RegDef.all;
 use work.IORecord.all;
-use work.ExtDataRec.all;
+use work.RiscvDataRec.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
@@ -16,15 +16,15 @@ entity CFSInterface is
  port (
   clk     : in std_logic;               --clock
   we      : in std_ulogic;              --write request
-  reg     : in std_ulogic_vector(1 downto 0); --register number
+  reg     : in std_ulogic_vector(2 downto 0); --register number
 
   CFSdataIn  : in  std_ulogic_vector(31 downto 0); --cfs data in
   CFSdataOut : out std_ulogic_vector(31 downto 0) :=  (others => '0'); --cfs data out
 
   riscVCtl   : out riscVCtlRec;
 
-  latheData  : in  ExtDataRcv;          --incoming read data
-  latheCtl   : out ExtDataCtl := extDataCtlInit --outgoing control and data
+  latheData  : in  RiscvDataRcv;          --incoming read data
+  latheCtl   : out RiscvDataCtl := riscvDataCtlInit --outgoing control and data
   );
 end CFSInterface;
 
@@ -48,10 +48,31 @@ architecture Behavorial of CFSInterface is
 
  signal riscVCtlR : riscvCtlRec := riscVCtlToRec(riscVCtlZero);
 
+ -- constant divRange : integer := 50-1;--50000-1;
+
+ -- signal divider : integer range 0 to divRange := divRange;
+ -- signal millis  : unsigned(32-1 downto 0) := (others => '0');
+
 begin
+
+ -- divProcess : process(clk)
+ -- begin
+ --  if (rising_edge(clk)) then            --if clock active
+ --   if (divider = 0) then
+ --    divider <= divRange;
+ --    millis <= millis + 1;
+ --   else
+ --    divider <= divider - 1;
+ --   end if;
+ --  end if;
+ -- end process;
 
  latheCtl.dSnd <= shiftOut(dataBits-1);
  CFSDataOut <= std_ulogic_vector(dataIn);
+
+ -- CFSDataOut <= std_ulogic_vector(dataIn) when reg(2) = '0' else
+ --               std_ulogic_vector(millis);
+
 
  riscVCtl <= riscVCtlR;
  latheCtl.active <= riscVCtlR.riscvData;
@@ -61,14 +82,14 @@ begin
   if (rising_edge(clk)) then            --if clock active
    if (we = '1') then                   --if write
     case reg  is                        --select operatin
-     when "01" =>
+     when "001" =>
       riscVCtlR <= riscVCtlToRecS(
        std_logic_vector(cfsDataIn(riscVCtlSize-1 downto 0)));
 
-     when "10" =>                       --if data out
+     when "010" =>                       --if data out
       shiftOut <= std_logic_vector(CFSDataIn); --load data out register
 
-     when "11" =>                       --if load op register
+     when "011" =>                       --if load op register
       latheCtl.op <= unsigned(CFSDataIn(opb-1 downto 0)); --set op register
       if (CFSDataIn(opb) = '0') then
        send <= '1';

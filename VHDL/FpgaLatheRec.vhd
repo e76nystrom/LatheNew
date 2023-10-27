@@ -11,17 +11,17 @@ type riscvCtlRec is record
 end record riscvCtlRec;
 
 type statusRec is record
- syncActive    : std_logic;     -- 10 0x400 sync active
- ctlBusy       : std_logic;     --  9 0x200 controller busy
- queNotEmpty   : std_logic;     --  8 0x100 ctl queue not empty
- spindleActive : std_logic;     --  7 0x080 spindle active
- stEStop       : std_logic;     --  6 0x040 emergency stop
- xAxisCurDir   : std_logic;     --  5 0x020 x axis current dir
- xAxisDone     : std_logic;     --  4 0x010 x axis done
- xAxisEna      : std_logic;     --  3 0x008 x axis enable flag
- zAxisCurDir   : std_logic;     --  2 0x004 z axis current dir
- zAxisDone     : std_logic;     --  1 0x002 z axis done
- zAxisEna      : std_logic;     --  0 0x001 z axis enable flag
+ syncActive    : std_logic;     -- 10 0x400 'SA' sync active
+ ctlBusy       : std_logic;     --  9 0x200 'CB' controller busy
+ queNotEmpty   : std_logic;     --  8 0x100 'Q+' ctl queue not empty
+ spindleActive : std_logic;     --  7 0x080 'S+' spindle active
+ stEStop       : std_logic;     --  6 0x040 'ES' emergency stop
+ xAxisCurDir   : std_logic;     --  5 0x020 'Xd' x axis current dir
+ xAxisDone     : std_logic;     --  4 0x010 'XD' x axis done
+ xAxisEna      : std_logic;     --  3 0x008 'XE' x axis enable flag
+ zAxisCurDir   : std_logic;     --  2 0x004 'Zd' z axis current dir
+ zAxisDone     : std_logic;     --  1 0x002 'ZD' z axis done
+ zAxisEna      : std_logic;     --  0 0x001 'ZE' z axis enable flag
 end record statusRec;
 
 type inputsRec is record
@@ -75,30 +75,33 @@ type axisStatusRec is record
 end record axisStatusRec;
 
 type cfgCtlRec is record
- cfgPwmEna    : std_logic;      -- 19 0x80000 pwm enable
- cfgGenSync   : std_logic;      -- 18 0x40000 generate sync pulse
- cfgEnaEncDir : std_logic;      -- 17 0x20000 enable encoder dir
- cfgEStopInv  : std_logic;      -- 16 0x10000 estop invert
- cfgEStopEna  : std_logic;      -- 15 0x08000 estop enable
- cfgEncDirInv : std_logic;      -- 14 0x04000 invert encoder dir
- cfgProbeInv  : std_logic;      -- 13 0x02000 probe inverted
- cfgXPlusInv  : std_logic;      -- 12 0x01000 x plus inverted
- cfgXMinusInv : std_logic;      -- 11 0x00800 x minus inverted
- cfgXHomeInv  : std_logic;      -- 10 0x00400 x home inverted
- cfgZPlusInv  : std_logic;      --  9 0x00200 z plus inverted
- cfgZMinusInv : std_logic;      --  8 0x00100 z minus inverted
- cfgZHomeInv  : std_logic;      --  7 0x00080 z home inverted
- cfgSpDirInv  : std_logic;      --  6 0x00040 spindle dir inverted
- cfgXJogInv   : std_logic;      --  5 0x00020 x jog dir inverted
- cfgZJogInv   : std_logic;      --  4 0x00010 z jog dir inverted
- cfgXDroInv   : std_logic;      --  3 0x00008 x dro dir inverted
- cfgZDroInv   : std_logic;      --  2 0x00004 z dro dir inverted
- cfgXDirInv   : std_logic;      --  1 0x00002 x dir inverted
- cfgZDirInv   : std_logic;      --  0 0x00001 z dir inverted
+ cfgDroStep   : std_logic;      -- 20 0x100000 step pulse to dro
+ cfgPwmEna    : std_logic;      -- 19 0x080000 pwm enable
+ cfgGenSync   : std_logic;      -- 18 0x040000 generate sync pulse
+ cfgEnaEncDir : std_logic;      -- 17 0x020000 enable encoder dir
+ cfgEStopInv  : std_logic;      -- 16 0x010000 estop invert
+ cfgEStopEna  : std_logic;      -- 15 0x008000 estop enable
+ cfgEncDirInv : std_logic;      -- 14 0x004000 invert encoder dir
+ cfgProbeInv  : std_logic;      -- 13 0x002000 probe inverted
+ cfgXPlusInv  : std_logic;      -- 12 0x001000 x plus inverted
+ cfgXMinusInv : std_logic;      -- 11 0x000800 x minus inverted
+ cfgXHomeInv  : std_logic;      -- 10 0x000400 x home inverted
+ cfgZPlusInv  : std_logic;      --  9 0x000200 z plus inverted
+ cfgZMinusInv : std_logic;      --  8 0x000100 z minus inverted
+ cfgZHomeInv  : std_logic;      --  7 0x000080 z home inverted
+ cfgSpDirInv  : std_logic;      --  6 0x000040 spindle dir inverted
+ cfgXJogInv   : std_logic;      --  5 0x000020 x jog dir inverted
+ cfgZJogInv   : std_logic;      --  4 0x000010 z jog dir inverted
+ cfgXDroInv   : std_logic;      --  3 0x000008 x dro dir inverted
+ cfgZDroInv   : std_logic;      --  2 0x000004 z dro dir inverted
+ cfgXDirInv   : std_logic;      --  1 0x000002 x dir inverted
+ cfgZDirInv   : std_logic;      --  0 0x000001 z dir inverted
 end record cfgCtlRec;
 
 type clkCtlRec is record
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
+ xFreqShift    : std_logic;     --  0 0x01 x Frequency shift
+ zFreqShift    : std_logic;     --  0 0x01 z Frequency shift
  xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x Frequency select
  zFreqSel      : std_logic_vector(2 downto 0);-- 2-0 z Frequency select
 end record clkCtlRec;

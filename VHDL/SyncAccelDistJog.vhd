@@ -127,6 +127,8 @@ architecture Behavioral of SyncAccelDistJog is
  signal droState : droFSM := droIdle;
 
  signal droQuadState : std_logic_vector(3 downto 0) := (others => '0');
+ signal droA         : std_logic_vector(1 downto 0) := (others => '0');
+ signal droB         : std_logic_vector(1 downto 0) := (others => '0');
  signal droUpdate    : std_logic := '0';
  signal droDir       : std_logic := '0';
 
@@ -579,7 +581,6 @@ begin
  syn_process: process(clk)
 
   variable mpgQuadChange : std_logic;
-  variable droQuadChange : std_logic;
 
  begin
   
@@ -827,23 +828,22 @@ begin
 
    -- ********** dro  **********
 
-   droQuadChange := ((droQuadState(3) xor droQuadState(1)) or
-                     (droQuadState(2) xor droQuadState(0))); --input change   
-   if (droQuadChange = '1') then
-    case (droQuadState) is
-     when "0001" => droUpdate <= '1'; droDir <= droInvert;
-     when "0111" => droUpdate <= '1'; droDir <= droInvert;
-     when "1110" => droUpdate <= '1'; droDir <= droInvert;
-     when "1000" => droUpdate <= '1'; droDir <= droInvert;
-     when "0010" => droUpdate <= '1'; droDir <= not droInvert; 
-     when "1011" => droUpdate <= '1'; droDir <= not droInvert; 
-     when "1101" => droUpdate <= '1'; droDir <= not droInvert; 
-     when "0100" => droUpdate <= '1'; droDir <= not droInvert; 
-     when others => droUpdate <= '0';
-    end case;                           --end case droQuadChange
-   end if;                              --end change
+   droA <= droA(0) & droQuad(0);
+   droB <= droB(0) & droQuad(1);
 
-   droQuadState <= droQuadState(1 downto 0) & droQuad(1) & droQuad(0);
+   droQuadState <= droB(1) & droA(1) & droB(0) & droA(0);
+   
+   case (droQuadState) is
+    when "0001" => droUpdate <= '1'; droDir <= droInvert;
+    when "0111" => droUpdate <= '1'; droDir <= droInvert;
+    when "1110" => droUpdate <= '1'; droDir <= droInvert;
+    when "1000" => droUpdate <= '1'; droDir <= droInvert;
+    when "0010" => droUpdate <= '1'; droDir <= not droInvert; 
+    when "1011" => droUpdate <= '1'; droDir <= not droInvert; 
+    when "1101" => droUpdate <= '1'; droDir <= not droInvert; 
+    when "0100" => droUpdate <= '1'; droDir <= not droInvert; 
+    when others => droUpdate <= '0';
+   end case;                            --end case droQuadChange
 
    if (droLoad = '1') then              --if new value
     droLoadVal <= '1';                  --set load value flag

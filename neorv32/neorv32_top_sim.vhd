@@ -238,7 +238,7 @@ entity neorv32_top is
     cfs_out_o      : out std_ulogic_vector(IO_CFS_OUT_SIZE-1 downto 0); -- custom CFS outputs conduit
 
     cfs_we_o       : out std_ulogic := '0';
-    cfs_reg_o      : out std_ulogic_vector(1 downto 0) := (others => '0');
+    cfs_reg_o      : out std_ulogic_vector(2 downto 0) := (others => '0');
 
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line

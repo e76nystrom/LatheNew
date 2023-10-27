@@ -21,29 +21,29 @@ package FpgaLatheBits is
  constant statusSize : integer := 11;
  signal statusReg : unsigned(statusSize-1 downto 0);
  --variable statusReg : unsigned(statusSize-1 downto 0);
- alias zAxisEna     : std_logic is statusreg(0); -- x01 z axis enable flag
- alias zAxisDone    : std_logic is statusreg(1); -- x02 z axis done
- alias zAxisCurDir  : std_logic is statusreg(2); -- x04 z axis current dir
- alias xAxisEna     : std_logic is statusreg(3); -- x08 x axis enable flag
- alias xAxisDone    : std_logic is statusreg(4); -- x10 x axis done
- alias xAxisCurDir  : std_logic is statusreg(5); -- x20 x axis current dir
- alias stEStop      : std_logic is statusreg(6); -- x40 emergency stop
- alias spindleActive : std_logic is statusreg(7); -- x80 spindle active
- alias queNotEmpty  : std_logic is statusreg(8); -- x100 ctl queue not empty
- alias ctlBusy      : std_logic is statusreg(9); -- x200 controller busy
- alias syncActive   : std_logic is statusreg(10); -- x400 sync active
+ alias zAxisEna     : std_logic is statusreg(0); -- x01 'ZE' z axis enable flag
+ alias zAxisDone    : std_logic is statusreg(1); -- x02 'ZD' z axis done
+ alias zAxisCurDir  : std_logic is statusreg(2); -- x04 'Zd' z axis current dir
+ alias xAxisEna     : std_logic is statusreg(3); -- x08 'XE' x axis enable flag
+ alias xAxisDone    : std_logic is statusreg(4); -- x10 'XD' x axis done
+ alias xAxisCurDir  : std_logic is statusreg(5); -- x20 'Xd' x axis current dir
+ alias stEStop      : std_logic is statusreg(6); -- x40 'ES' emergency stop
+ alias spindleActive : std_logic is statusreg(7); -- x80 'S+' spindle active
+ alias queNotEmpty  : std_logic is statusreg(8); -- x100 'Q+' ctl queue not empty
+ alias ctlBusy      : std_logic is statusreg(9); -- x200 'CB' controller busy
+ alias syncActive   : std_logic is statusreg(10); -- x400 'SA' sync active
 
- constant c_zAxisEna     : integer :=  0; -- x01 z axis enable flag
- constant c_zAxisDone    : integer :=  1; -- x02 z axis done
- constant c_zAxisCurDir  : integer :=  2; -- x04 z axis current dir
- constant c_xAxisEna     : integer :=  3; -- x08 x axis enable flag
- constant c_xAxisDone    : integer :=  4; -- x10 x axis done
- constant c_xAxisCurDir  : integer :=  5; -- x20 x axis current dir
- constant c_stEStop      : integer :=  6; -- x40 emergency stop
- constant c_spindleActive : integer :=  7; -- x80 spindle active
- constant c_queNotEmpty  : integer :=  8; -- x100 ctl queue not empty
- constant c_ctlBusy      : integer :=  9; -- x200 controller busy
- constant c_syncActive   : integer := 10; -- x400 sync active
+ constant c_zAxisEna     : integer :=  0; -- x01 'ZE' z axis enable flag
+ constant c_zAxisDone    : integer :=  1; -- x02 'ZD' z axis done
+ constant c_zAxisCurDir  : integer :=  2; -- x04 'Zd' z axis current dir
+ constant c_xAxisEna     : integer :=  3; -- x08 'XE' x axis enable flag
+ constant c_xAxisDone    : integer :=  4; -- x10 'XD' x axis done
+ constant c_xAxisCurDir  : integer :=  5; -- x20 'Xd' x axis current dir
+ constant c_stEStop      : integer :=  6; -- x40 'ES' emergency stop
+ constant c_spindleActive : integer :=  7; -- x80 'S+' spindle active
+ constant c_queNotEmpty  : integer :=  8; -- x100 'Q+' ctl queue not empty
+ constant c_ctlBusy      : integer :=  9; -- x200 'CB' controller busy
+ constant c_syncActive   : integer := 10; -- x400 'SA' sync active
 
 -- inputs register
 
@@ -152,7 +152,7 @@ package FpgaLatheBits is
 
 -- configuration control register
 
- constant cfgCtlSize : integer := 20;
+ constant cfgCtlSize : integer := 21;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  --variable cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z dir inverted
@@ -175,6 +175,7 @@ package FpgaLatheBits is
  alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder dir
  alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 generate sync pulse
  alias cfgPwmEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
+ alias cfgDroStep   : std_logic is cfgCtlreg(20); -- x100000 step pulse to dro
 
  constant c_cfgZDirInv   : integer :=  0; -- x01 z dir inverted
  constant c_cfgXDirInv   : integer :=  1; -- x02 x dir inverted
@@ -196,6 +197,7 @@ package FpgaLatheBits is
  constant c_cfgEnaEncDir : integer := 17; -- x20000 enable encoder dir
  constant c_cfgGenSync   : integer := 18; -- x40000 generate sync pulse
  constant c_cfgPwmEna    : integer := 19; -- x80000 pwm enable
+ constant c_cfgDroStep   : integer := 20; -- x100000 step pulse to dro
 
 -- clock control register
 
@@ -204,6 +206,8 @@ package FpgaLatheBits is
  --variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel       : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
  alias xFreqSel       : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
+ alias zFreqShift   : std_logic is clkCtlreg(0); -- x01 z Frequency shift
+ alias xFreqShift   : std_logic is clkCtlreg(0); -- x01 x Frequency shift
  constant clkNone      : unsigned (2 downto 0) := "000"; -- 
  constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
  constant clkCh        : unsigned (2 downto 0) := "010"; -- 
@@ -230,6 +234,8 @@ package FpgaLatheBits is
  constant xClkDbgFreq  : unsigned (2 downto 0) := "111"; -- 
  alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
 
+ constant c_zFreqShift   : integer :=  0; -- x01 z Frequency shift
+ constant c_xFreqShift   : integer :=  0; -- x01 x Frequency shift
  constant c_clkDbgFreqEna : integer :=  6; -- x40 enable debug frequency
 
 -- sync control register

@@ -14,7 +14,7 @@ use work.SimProc.all;
 use work.RegDef.all;
 use work.Conversion.all;
 use work.IORecord.all;
-use work.ExtDataRec.all;
+use work.RiscvDataRec.all;
 
 entity A_InterfaceTest is
 end A_InterfaceTest;
@@ -25,13 +25,13 @@ architecture Behavioral of A_InterfaceTest is
 
  -- signal reset   : std_logic := '0';
  signal we      : std_ulogic := '0'; 
- signal reg     : std_ulogic_vector(1 downto 0) := (others => '0');
+ signal reg     : std_ulogic_vector(2 downto 0) := (others => '0');
 
  signal cfsDataIn  : std_ulogic_vector(31 downto 0) := (others => '0');
  signal cfsDataOut : std_ulogic_vector(31 downto 0) := (others => '0');
 
- signal latheData  : ExtDataRcv := extDataRcvInit;
- signal latheCtl   : ExtDataCtl := extDataCtlInit;
+ signal latheData  : RiscvDataRcv := riscvDataRcvInit;
+ signal latheCtl   : RiscvDataCtl := riscvDataCtlInit;
 
  constant datalen : positive := 32;
  signal testReg   : std_logic_vector(dataLen-1 downto 0) := (others => '0');
@@ -173,7 +173,7 @@ begin
   end function;
   
   variable tmp : std_logic_vector(31 downto 0);
-  variable tmp1 : std_logic_vector(ExtDataCtlLen-1 downto 0);
+  variable tmp1 : std_logic_vector(RiscvDataCtlLen-1 downto 0);
 
   variable r : std_logic_vector(1 downto 0);
   variable d : integer;
@@ -212,7 +212,7 @@ begin
   
   report "cfsDataOut 0x" & hexToString(std_logic_vector(cfsDataOut), cfsDataOut'length);
 
-  -- tmp1 := extDataToVec(latheCtl);
+  -- tmp1 := riscvDataToVec(latheCtl);
   -- report "latheCtl" & integer'image(to_integer(unsigned(tmp1)));
   delay(1000);
   wait;

@@ -98,7 +98,7 @@ return axisStatusRec;
 function axisStatusToRecS(val : std_logic_vector(axisStatusSize-1 downto 0))
 return axisStatusRec;
 
-constant cfgCtlSize : integer := 20;
+constant cfgCtlSize : integer := 21;
 subType cfgCtlVec is std_logic_vector(cfgCtlSize-1 downto 0);
 constant cfgCtlZero : cfgCtlVec := (others => '0');
 
@@ -418,19 +418,20 @@ end function;
 function cfgCtlToVec(val : cfgCtlRec) return cfgCtlVec is
  variable rtnVec : cfgCtlVec;
 begin
- rtnVec := val.cfgPwmEna    & val.cfgGenSync   & val.cfgEnaEncDir &
-           val.cfgEStopInv  & val.cfgEStopEna  & val.cfgEncDirInv &
-           val.cfgProbeInv  & val.cfgXPlusInv  & val.cfgXMinusInv &
-           val.cfgXHomeInv  & val.cfgZPlusInv  & val.cfgZMinusInv &
-           val.cfgZHomeInv  & val.cfgSpDirInv  & val.cfgXJogInv   &
-           val.cfgZJogInv   & val.cfgXDroInv   & val.cfgZDroInv   &
-           val.cfgXDirInv   & val.cfgZDirInv;
+ rtnVec := val.cfgDroStep   & val.cfgPwmEna    & val.cfgGenSync   &
+           val.cfgEnaEncDir & val.cfgEStopInv  & val.cfgEStopEna  &
+           val.cfgEncDirInv & val.cfgProbeInv  & val.cfgXPlusInv  &
+           val.cfgXMinusInv & val.cfgXHomeInv  & val.cfgZPlusInv  &
+           val.cfgZMinusInv & val.cfgZHomeInv  & val.cfgSpDirInv  &
+           val.cfgXJogInv   & val.cfgZJogInv   & val.cfgXDroInv   &
+           val.cfgZDroInv   & val.cfgXDirInv   & val.cfgZDirInv;
  return rtnVec;
 end function;
 
 function cfgCtlToRec(val : cfgCtlVec) return cfgCtlRec is
  variable rtnRec : cfgCtlRec;
 begin
+ rtnRec.cfgDroStep   := val(20);
  rtnRec.cfgPwmEna    := val(19);
  rtnRec.cfgGenSync   := val(18);
  rtnRec.cfgEnaEncDir := val(17);
@@ -459,6 +460,7 @@ function cfgCtlToRecS(val : std_logic_vector(cfgCtlSize-1 downto 0))
  return cfgCtlRec is
  variable rtnRec : cfgCtlRec;
 begin
+ rtnRec.cfgDroStep   := val(20);
  rtnRec.cfgPwmEna    := val(19);
  rtnRec.cfgGenSync   := val(18);
  rtnRec.cfgEnaEncDir := val(17);
@@ -486,7 +488,8 @@ end function;
 function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
  variable rtnVec : clkCtlVec;
 begin
- rtnVec := val.clkDbgFreqEna & val.xFreqSel      & val.zFreqSel;
+ rtnVec := val.clkDbgFreqEna & val.xFreqShift    & val.zFreqShift    &
+           val.xFreqSel      & val.zFreqSel;
  return rtnVec;
 end function;
 
@@ -494,6 +497,8 @@ function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.xFreqShift    := val(0);
+ rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);
 
@@ -505,6 +510,8 @@ function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.xFreqShift    := val(0);
+ rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);
 

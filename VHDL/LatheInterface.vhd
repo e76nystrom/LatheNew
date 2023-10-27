@@ -7,7 +7,7 @@ use ieee.std_logic_arith.conv_std_logic_vector;
 use work.regDef.all;
 use work.IORecord.all;
 use work.DbgRecord.all;
-use work.ExtDataRec.all;
+use work.RiscvDataRec.all;
 use work.conversion.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
@@ -67,7 +67,7 @@ entity LatheInterface is
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
-  latheCtl : in  ExtDataCtl;
+  riscvCtl : in  RiscvDataCtl;
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -176,11 +176,11 @@ begin
  ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
 
  extData1T : if extData /= 0 generate
-  extW <= (din => latheCtl.dSnd, shift => latheCtl.shift, op => latheCtl.op,
-           load => latheCtl.load);
+  extW <= (din => riscvCtl.dSnd, shift => riscvCtl.shift, op => riscvCtl.op,
+           load => riscvCtl.load);
 
   curW <= ctlW when (runR.runEna     = '1') else
-          extW when (latheCtl.active = '1') else
+          extW when (riscvCtl.active = '1') else
           spiW;
  end generate extData1T;
 
@@ -194,10 +194,10 @@ begin
  dspR  <= (shift => dspShift, op => dspOp, copy => dspCopy);
 
  extData2T : if extData /= 0 generate
-  extR  <= (shift => latheCtl.shift, op => latheCtl.op, copy => latheCtl.copy);
+  extR  <= (shift => riscvCtl.shift, op => riscvCtl.op, copy => riscvCtl.copy);
 
   curR <= readR  when (rdActive        = '1') else
-          extR   when (latheCtl.active = '1') else
+          extR   when (riscvCtl.active = '1') else
           spiR   when (spiActive       = '1') else
           dspR;
  end generate extData2T;
@@ -241,7 +241,7 @@ begin
                n     => runSize)
   port map (
    clk  => clk,
-   inp  => extW,
+   inp  => curW,
    data => runReg
    );
 
@@ -253,7 +253,7 @@ begin
               outBits => outBits)
   port map (
    clk  => clk,
-   oRec => extR,
+   oRec => curR,
    data => runRdReg,
    dout => dout.runR                    --runRDout
    );
@@ -346,12 +346,12 @@ begin
   port map (
    clk      => clk,
 
-   spiW     => spiW,
+   -- spiW     => spiW,
    curW     => curW,
 
    dOut     => dout.latheCtl,           --latheDOut,
 
-   spiR     => spiR,
+   -- spiR     => spiR,
    curR     => curR,
 
    dbg      => dbg.ctl,

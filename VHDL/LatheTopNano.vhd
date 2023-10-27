@@ -3,7 +3,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-use work.ExtDataRec.all;
+use work.RiscvDataRec.all;
 use work.dbgRecord.all;
 use work.IORecord.all;
 
@@ -92,8 +92,8 @@ architecture Behavioral of LatheTop is
 
  signal data    : LatheInterfaceData;
 
- signal latheData  : ExtDataRcv := extDataRcvInit;
- signal latheCtl   : ExtDataCtl := extDataCtlInit;
+ signal latheData  : RiscvDataRcv := riscvDataRcvInit;
+ signal latheCtl   : RiscvDataCtl := riscvDataCtlInit;
 
  signal debug      : InterfaceDbg;
  signal extDout    : std_logic;
@@ -172,7 +172,7 @@ begin
 
    bufOut   => bufOut,
 
-   latheCtl  => latheCtl,
+   riscvCtl  => latheCtl,
 
    zDoneInt => zDoneInt,
    xDoneInt => xDoneInt

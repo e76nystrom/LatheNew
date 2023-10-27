@@ -7,15 +7,12 @@ use work.regDef.all;
 use work.IORecord.all;
 
 entity IndexClocks is
- generic (opval    : unsigned;
+ generic (opval   : unsigned;
           n       : positive;
           outBits : positive);
  port (
   clk   : in std_logic;
   oRec  : DataOut;
-  -- dshift : in boolean;
-  -- op : in unsigned (opBits-1 downto 0);
-  -- copy : in boolean;
   ch    : in std_logic;
   index : in std_logic;
   dout  : out std_logic := '0'
@@ -26,12 +23,12 @@ architecture behavioral of  IndexClocks is
 
  constant chCtrBits : positive := n-10;
 
- signal lastIndex : std_logic := '0';
- signal lastCh : std_logic := '0';
- signal active : std_logic := '0';
+ signal lastIndex    : std_logic := '0';
+ signal lastCh       : std_logic := '0';
+ signal active       : std_logic := '0';
  signal clockCounter : unsigned(n-1 downto 0) := (others => '0');
- signal clockReg : unsigned(n-1 downto 0) := (others => '0');
- signal chCounter : unsigned(chCtrBits-1 downto 0) := (others => '0');
+ signal clockReg     : unsigned(n-1 downto 0) := (others => '0');
+ signal chCounter    : unsigned(chCtrBits-1 downto 0) := (others => '0');
 
 begin
 
@@ -42,9 +39,6 @@ begin
   port map (
    clk  => clk,
    oRec => oRec,
-   -- dshift => dshift,
-   -- op => op,
-   -- copy => copy,
    data => clockReg,
    dout => dout
    );
