@@ -8,29 +8,29 @@ add wave -noupdate /a_interfacetest/re
 add wave -noupdate /a_interfacetest/reg
 add wave -noupdate /a_interfacetest/reset
 add wave -noupdate /a_interfacetest/sysClk
-add wave -noupdate /a_interfacetest/uut/dataIn
-add wave -noupdate -expand /a_interfacetest/uut/latheCtl
-add wave -noupdate /a_interfacetest/uut/recv
-add wave -noupdate /a_interfacetest/uut/send
+add wave -noupdate /a_interfacetest/interface/dataIn
+add wave -noupdate -expand /a_interfacetest/interface/latheCtl
+add wave -noupdate /a_interfacetest/interface/recv
+add wave -noupdate /a_interfacetest/interface/send
 add wave -noupdate /a_interfacetest/regY/shiftReg
 add wave -noupdate -expand /a_interfacetest/intR
-add wave -noupdate /a_interfacetest/uut/sCount
+add wave -noupdate /a_interfacetest/interface/sCount
 add wave -noupdate -expand /a_interfacetest/intW
 add wave -noupdate /a_interfacetest/we
-add wave -noupdate /a_interfacetest/uut/sCount
-add wave -noupdate /a_interfacetest/uut/dataOut
-add wave -noupdate /a_interfacetest/uut/dataOut(31)
-add wave -noupdate /a_interfacetest/uut/latheCtl.shift
+add wave -noupdate /a_interfacetest/interface/sCount
+add wave -noupdate /a_interfacetest/interface/dataOut
+add wave -noupdate /a_interfacetest/interface/dataOut(31)
+add wave -noupdate /a_interfacetest/interface/latheCtl.shift
 add wave -noupdate /a_interfacetest/regX/sreg
 add wave -noupdate /a_interfacetest/testReg
-add wave -noupdate /a_interfacetest/uut/latheCtl.load
-add wave -noupdate /a_interfacetest/uut/latheCtl.copy
-add wave -noupdate /a_interfacetest/uut/rCount
+add wave -noupdate /a_interfacetest/interface/latheCtl.load
+add wave -noupdate /a_interfacetest/interface/latheCtl.copy
+add wave -noupdate /a_interfacetest/interface/rCount
 add wave -noupdate /a_interfacetest/regY/shiftReg
 add wave -noupdate /a_interfacetest/regY/shiftSel
-add wave -noupdate /a_interfacetest/uut/latheCtl.op
-add wave -noupdate /a_interfacetest/uut/recvState
-add wave -noupdate /a_interfacetest/uut/sendState
+add wave -noupdate /a_interfacetest/interface/latheCtl.op
+add wave -noupdate /a_interfacetest/interface/recvState
+add wave -noupdate /a_interfacetest/interface/sendState
 TreeUpdate [SetDefaultTree]
 WaveRestoreCursors {{Cursor 1} {2073949 ps} 0}
 quietly wave cursor active 1

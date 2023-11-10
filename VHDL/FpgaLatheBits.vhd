@@ -104,7 +104,7 @@ package FpgaLatheBits is
 
 -- axis control register
 
- constant axisCtlSize : integer := 13;
+ constant axisCtlSize : integer := 14;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  --variable axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
@@ -116,10 +116,11 @@ package FpgaLatheBits is
  alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
  alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave ctl by other axis
  alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
- alias ctlJogCmd    : std_logic is axisCtlreg(9); -- x200 jog with commands
- alias ctlJogMpg    : std_logic is axisCtlreg(10); -- x400 jog with mpg
- alias ctlHome      : std_logic is axisCtlreg(11); -- x800 homing axis
- alias ctlUseLimits : std_logic is axisCtlreg(12); -- x1000 use limits
+ alias ctlDistMode  : std_logic is axisCtlreg(9); -- x200 distance udpdate mode
+ alias ctlJogCmd    : std_logic is axisCtlreg(10); -- x400 jog with commands
+ alias ctlJogMpg    : std_logic is axisCtlreg(11); -- x800 jog with mpg
+ alias ctlHome      : std_logic is axisCtlreg(12); -- x1000 homing axis
+ alias ctlUseLimits : std_logic is axisCtlreg(13); -- x2000 use limits
 
  constant c_ctlInit      : integer :=  0; -- x01 reset flag
  constant c_ctlStart     : integer :=  1; -- x02 start
@@ -130,10 +131,11 @@ package FpgaLatheBits is
  constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
  constant c_ctlSlave     : integer :=  7; -- x80 slave ctl by other axis
  constant c_ctlDroEnd    : integer :=  8; -- x100 use dro to end move
- constant c_ctlJogCmd    : integer :=  9; -- x200 jog with commands
- constant c_ctlJogMpg    : integer := 10; -- x400 jog with mpg
- constant c_ctlHome      : integer := 11; -- x800 homing axis
- constant c_ctlUseLimits : integer := 12; -- x1000 use limits
+ constant c_ctlDistMode  : integer :=  9; -- x200 distance udpdate mode
+ constant c_ctlJogCmd    : integer := 10; -- x400 jog with commands
+ constant c_ctlJogMpg    : integer := 11; -- x800 jog with mpg
+ constant c_ctlHome      : integer := 12; -- x1000 homing axis
+ constant c_ctlUseLimits : integer := 13; -- x2000 use limits
 
 -- axis status register
 

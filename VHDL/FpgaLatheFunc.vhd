@@ -72,7 +72,7 @@ return jogRec;
 function jogToRecS(val : std_logic_vector(jogSize-1 downto 0))
 return jogRec;
 
-constant axisCtlSize : integer := 13;
+constant axisCtlSize : integer := 14;
 subType axisCtlVec is std_logic_vector(axisCtlSize-1 downto 0);
 constant axisCtlZero : axisCtlVec := (others => '0');
 
@@ -336,20 +336,21 @@ function axisCtlToVec(val : axisCtlRec) return axisCtlVec is
  variable rtnVec : axisCtlVec;
 begin
  rtnVec := val.ctlUseLimits & val.ctlHome      & val.ctlJogMpg    &
-           val.ctlJogCmd    & val.ctlDroEnd    & val.ctlSlave     &
-           val.ctlChDirect  & val.ctlSetLoc    & val.ctlDir       &
-           val.ctlWaitSync  & val.ctlBacklash  & val.ctlStart     &
-           val.ctlInit;
+           val.ctlJogCmd    & val.ctlDistMode  & val.ctlDroEnd    &
+           val.ctlSlave     & val.ctlChDirect  & val.ctlSetLoc    &
+           val.ctlDir       & val.ctlWaitSync  & val.ctlBacklash  &
+           val.ctlStart     & val.ctlInit;
  return rtnVec;
 end function;
 
 function axisCtlToRec(val : axisCtlVec) return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlUseLimits := val(12);
- rtnRec.ctlHome      := val(11);
- rtnRec.ctlJogMpg    := val(10);
- rtnRec.ctlJogCmd    := val(9);
+ rtnRec.ctlUseLimits := val(13);
+ rtnRec.ctlHome      := val(12);
+ rtnRec.ctlJogMpg    := val(11);
+ rtnRec.ctlJogCmd    := val(10);
+ rtnRec.ctlDistMode  := val(9);
  rtnRec.ctlDroEnd    := val(8);
  rtnRec.ctlSlave     := val(7);
  rtnRec.ctlChDirect  := val(6);
@@ -367,10 +368,11 @@ function axisCtlToRecS(val : std_logic_vector(axisCtlSize-1 downto 0))
  return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlUseLimits := val(12);
- rtnRec.ctlHome      := val(11);
- rtnRec.ctlJogMpg    := val(10);
- rtnRec.ctlJogCmd    := val(9);
+ rtnRec.ctlUseLimits := val(13);
+ rtnRec.ctlHome      := val(12);
+ rtnRec.ctlJogMpg    := val(11);
+ rtnRec.ctlJogCmd    := val(10);
+ rtnRec.ctlDistMode  := val(9);
  rtnRec.ctlDroEnd    := val(8);
  rtnRec.ctlSlave     := val(7);
  rtnRec.ctlChDirect  := val(6);

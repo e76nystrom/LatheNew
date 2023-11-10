@@ -189,6 +189,7 @@ begin
    cmdDir     => axisCtlR.ctlDir,
    curDir     => curDir,
    locDisable => locDisable,
+   distMode   => axisCtlR.ctlDistMode,
 
    mpgQuad    => mpgQuad,
    jogInvert  => jogInvert,

@@ -30,6 +30,7 @@ entity SyncAccelDistJog is
   cmdDir     : in std_logic;            --direction in
   curDir     : in std_logic;            --current directin
   locDisable : in std_logic;            --disable location update
+  distMode   : in std_logic;            --distance update mode
 
   mpgQuad    : in std_logic_vector(1 downto 0);
   jogInvert  : in std_logic;
@@ -53,7 +54,7 @@ architecture Behavioral of SyncAccelDistJog is
  -- state machine
 
  type SyncFsm is (syncInit, syncIdle, enabled, updAccel, checkAccel, clkWait,
-                  doneWait, mpgEnabled, mpgEnabled1);
+                  distWait, doneWait, mpgEnabled, mpgEnabled1);
  signal syncState : syncFsm := syncInit;
 
  function syncConv(a: Syncfsm) return std_logic_vector is
@@ -65,9 +66,10 @@ architecture Behavioral of SyncAccelDistJog is
    when updAccel    => return("0100");
    when checkAccel  => return("0101");
    when clkWait     => return("0110");
-   when doneWait    => return("0111");
-   when mpgEnabled  => return("1000");
-   when mpgEnabled1 => return("1001");
+   when distWait    => return("0111");
+   when doneWait    => return("1000");
+   when mpgEnabled  => return("1001");
+   when mpgEnabled1 => return("1010");
    when others      => return("0000");
   end case;
   return("0000");
@@ -105,7 +107,8 @@ architecture Behavioral of SyncAccelDistJog is
  signal backlash : unsigned(distBits-1 downto 0) := (others => '0');
 
  signal loadDist   : std_logic := '0';
- signal distUpdate : boolean   := false;
+ signal distUpdate : std_logic := '0';
+ signal distReLoad : std_logic := '0';
 
  signal movDoneInt : std_logic := '0';
 
@@ -589,15 +592,16 @@ begin
    droDone <= droDoneInt;
 
    if ((jogMode = "01") and (loadDist = '1')) then --jog and dist update
-    distUpdate <= true;                 --set distance update flag
+    distUpdate <= '1';                  --set distance update flag
+   end if;
+
+   if ((distMode = '1') and (loadDist = '1')) then --dist upd mode and update
+    distReLoad <= '1';                  --set distance reload flag
    end if;
 
    if (locLoad = '1') then              --if new location
     locUpdate <= true;                  --set to load
    end if;
-
-   -- varSynEna := (ena = '1')    and (varJogMode = jogNone);
-   -- varMpgEna := (mpgEna = '1') and (varJogMode = jogMpg);
 
    if (init = '1') then                 --if initialization
     movDoneInt <= '0';                  --clear done
@@ -614,18 +618,19 @@ begin
    case syncState is                    --select syncState
 
     -- initialization
-    when syncInit =>
+    when syncInit => --***********************************************
      -- movDone <= '0';                 --clear move done
      accelState <= accelInactive;       --set to inactive state
      synStep <= '0';                    --clear output step
      synStepTmp <= '0';                 --clear step
-     distUpdate <= false;               --clear distance update
+     distUpdate <= '0';                 --clear distance update
+     distReload <= '0';                 --clear reload flag
      if (ena = '0') and  (init = '0') then --if enable cleared
       syncState <= syncIdle;            --set to yncIdle state
      end if;
 
     --idle
-    when syncIdle =>
+    when syncIdle => --***********************************************
 
      synStep <= '0';                    --clear output step
 
@@ -645,11 +650,10 @@ begin
        chCtr <= to_unsigned(0, chCtr'length); --initialize clock divider
        syncState <= mpgEnabled;          --advance to mpg jog state
       end if;
-
      end if;
 
     --enabled
-    when enabled =>
+    when enabled => --************************************************
 
      if (stop = '1') then               --if stop for mpg
       syncState <= syncInit;            --go to init state
@@ -680,23 +684,30 @@ begin
 
       end if;                           --sumNeg
       syncState <= updAccel;
-
      end if;                            --ch
 
     --update acceleration
-    when updAccel =>
+    when updAccel => --***********************************************
 
-     if (distUpdate) then               --if distance update
+     if (distUpdate = '1') then         --if distance update
       distCtr <= distCtr + distVal;     --add to current distance
+     end if;
+
+     if (distReload = '1') then         --if reload distance
+      distReload <= '0';                --clear reload flag
+      distCtr <= distVal;               --reload register
      end if;
 
      sum <= sum + accelSum;             --update sum value with accel
 
      case accelState is                 --select accelState
-      when accelInactive =>             --inactive
+      
+      --inactive
+      when accelInactive => --##########
        null;
 
-      when accelActive =>               --acceleration
+      --acceleration
+      when accelActive => --############
        if (accelCounter < accelCount) then
         accelSum <= accelSum + accel;
         accelCounter <= accelCounter + 1;
@@ -706,43 +717,50 @@ begin
         accelState <= decelActive;      --start decelerate
        end if;
 
-      when atSpeed =>                   --at speed
+     --at speed
+      when atSpeed => --################
        if (accelSteps >= distCtr) then  --if steps ge dist
         accelState <= decelActive;      --start decelerate
        end if;
 
-      when decelActive =>               --deceleration
+     --deceleration
+      when decelActive => --############
        if (droDecelStop = '0') then     --if not stopped by dro
         accelSum <= accelSum - accel;
         accelCounter <= accelCounter - 1;
        end if;
 
-      when others =>                    --others
+      --others
+      when others => --#################
        accelState <= accelInactive;
      end case;                          --accelState
 
      syncState <= checkAccel;           --check acclerations
 
     -- check acceleration
-    when checkAccel =>
+    when checkAccel => --*********************************************
 
-     if (distUpdate) then               --if distance update
-      distUpdate <= false;              --clear update flag
+     if (distUpdate = '1') then         --if distance update
+      distUpdate <= '0';                --clear update flag
       if (distCtr > maxDist) then       --if distance out of range
        distCtr <= maxDist;              --set to maximum
       end if;
      end if;
 
      case accelState is                 --select accelState
-      when accelActive =>               --acceleration
+
+      --acceleration
+      when accelActive =>  --###########
        if (accelCounter >= accelCount) then
         accelState <= atSpeed;
        end if;
 
-      when atSpeed =>                   --at speed
+      --at speed
+      when atSpeed => --################
        null;
 
-      when decelActive =>               --deceleration
+      --deceleration
+      when decelActive => --############
        if (distCtr > accelSteps) then
         accelState <= accelActive;
        end if;
@@ -751,39 +769,70 @@ begin
         accelState <= accelInactive;
        end if;
 
-      when others =>                    --others
+      --others
+      when others => --#################
        accelState <= accelInactive;
      end case;                          --accelState
+
      syncState <= clkWait;
 
     -- wait for clock to clear
-    when clkWait =>
+    when clkWait => --************************************************
+
      synStep <= synStepTmp;             --output step
      synStepTmp <= '0';                 --clear tmp value
+
      if (ch = '0') then                 --if change flag cleared
+
       if (droEndChk = '0') then         --if not using dro for end
+
        if (distCtr /= 0) then           --if not to distance
         syncState <= enabled;           --return to enabled state
-       else
+       else                             --if distance 0
+
         if (jogMode = "00") then        --if not jogging
-         movDoneInt <= '1';             --set done flag
-         syncState <= syncInit;         --return to init state
+         if (distMode = '0') then       --if in distance mode
+          movDoneInt <= '1';            --set done flag
+          syncState <= syncInit;        --return to init state
+         else                           --if distance update mode
+          syncState <= distWait;        --wait for distance update
+         end if;          
         else                            --if jog mode
          syncState <= doneWait;         --wait to jog again
         end if;
+
        end if;
+
       else                              --if using dro for end
+
        if (droDoneInt = '0') then       --if not done
         syncState <= enabled;           --return to enabled
        else                             --if dro done
         droDone <= '1';                 --set done flag
         syncState <= syncInit;          --return to init state
        end if;
+
       end if;       
+
      end if;
 
-    --wait for ch inactive
-    when doneWait =>
+    --wait for distance update
+    when distWait => --***********************************************
+
+     if (ena = '0') then                --if enable cleared
+      syncState <= syncInit;            --return to init state
+     end if;
+
+     if (distReLoad = '1') then         --if distance reloaded
+      distReload <= '0';                --clear reload flag
+      distCtr <= distVal;               --reload distance
+      accelState <= accelInactive;      --set accel to inactive state
+      syncState <= enabled;             --return to enabled
+     end if;      
+
+    --wait for mpg
+    when doneWait => --***********************************************
+
      if (jogMode = "00") then           --if out of jog mode
       syncState <= syncInit;            --return to init state
      else                               --if jog mode
@@ -793,7 +842,8 @@ begin
      end if;
 
     -- mpg updates
-    when mpgEnabled =>
+    when mpgEnabled => --*********************************************
+
      synStep <= '0';                    --clear step output
      if (ch = '1') then                 --if clock
       if (chCtr = chDiv) then           --if time to step
@@ -810,7 +860,9 @@ begin
       end if;
      end if;
 
-    when mpgEnabled1 =>
+    -- mpg updates
+    when mpgEnabled1 => --********************************************
+
      synStep <= synStepTmp;             --output step pulse
      synStepTmp <= '0';                 --clear step pulse
      if (mpgDistUpd = '1') then         --if time for a distance update
@@ -821,7 +873,8 @@ begin
 
      syncState <= mpgEnabled;           --return to enable state
 
-    when others =>                      --others
+    -- others
+    when others => --*************************************************
      syncState <= syncInit;             --set to init
 
    end case;                            --end case sync state
