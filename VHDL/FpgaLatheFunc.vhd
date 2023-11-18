@@ -85,7 +85,7 @@ return axisCtlRec;
 function axisCtlToRecS(val : std_logic_vector(axisCtlSize-1 downto 0))
 return axisCtlRec;
 
-constant axisStatusSize : integer := 4;
+constant axisStatusSize : integer := 5;
 subType axisStatusVec is std_logic_vector(axisStatusSize-1 downto 0);
 constant axisStatusZero : axisStatusVec := (others => '0');
 
@@ -389,14 +389,15 @@ end function;
 function axisStatusToVec(val : axisStatusRec) return axisStatusVec is
  variable rtnVec : axisStatusVec;
 begin
- rtnVec := val.axDoneLimit & val.axDoneHome  & val.axDoneDro   &
-           val.axDoneDist;
+ rtnVec := val.axDistZero  & val.axDoneLimit & val.axDoneHome  &
+           val.axDoneDro   & val.axDoneDist;
  return rtnVec;
 end function;
 
 function axisStatusToRec(val : axisStatusVec) return axisStatusRec is
  variable rtnRec : axisStatusRec;
 begin
+ rtnRec.axDistZero  := val(4);
  rtnRec.axDoneLimit := val(3);
  rtnRec.axDoneHome  := val(2);
  rtnRec.axDoneDro   := val(1);
@@ -409,6 +410,7 @@ function axisStatusToRecS(val : std_logic_vector(axisStatusSize-1 downto 0))
  return axisStatusRec is
  variable rtnRec : axisStatusRec;
 begin
+ rtnRec.axDistZero  := val(4);
  rtnRec.axDoneLimit := val(3);
  rtnRec.axDoneHome  := val(2);
  rtnRec.axDoneDro   := val(1);
@@ -490,8 +492,8 @@ end function;
 function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
  variable rtnVec : clkCtlVec;
 begin
- rtnVec := val.clkDbgFreqEna & val.xFreqShift    & val.zFreqShift    &
-           val.xFreqSel      & val.zFreqSel;
+ rtnVec := val.clkDbgFreqEna & val.clkMask       & val.xFreqShift    &
+           val.zFreqShift    & val.xFreqSel      & val.zFreqSel;
  return rtnVec;
 end function;
 
@@ -499,6 +501,7 @@ function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.clkMask       := val(0);
  rtnRec.xFreqShift    := val(0);
  rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);
@@ -512,6 +515,7 @@ function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.clkMask       := val(0);
  rtnRec.xFreqShift    := val(0);
  rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);

@@ -5,6 +5,7 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+use neorv32.MpgRecord.all;
 
 use work.IORecord.all;
 use work.DbgRecord.all;
@@ -14,14 +15,14 @@ use work.FpgaLatheBitsFunc.all;
 
 entity LatheTop is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
-          MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
+          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- size of processor-internal instruction memory in bytes
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
           ledPins : positive := 8;
           dbgPins : positive := 8);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
-  
+
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
@@ -50,7 +51,7 @@ entity LatheTop is
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
   extOut   : out std_logic_vector(2 downto 0) := (others => '0');
-  
+
   bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
@@ -65,7 +66,7 @@ entity LatheTop is
 
   -- GPIO --
   -- gpio_o      : out std_ulogic_vector(7 downto 0); -- parallel output
-  
+
   -- UART0 --
   dbg_txd_o : out std_ulogic; -- UART0 send data
   dbg_rxd_i : in  std_ulogic; -- UART0 receive data
@@ -73,7 +74,7 @@ entity LatheTop is
   -- UART1 --
   rem_txd_o : out std_ulogic; -- UART1 send data
   rem_rxd_i : in  std_ulogic  -- UART1 receive data
-  
+
   );
 end LatheTop;
 
@@ -148,6 +149,8 @@ architecture Behavioral of LatheTop is
  signal debug      : InterfaceDbg;
  signal riscvDout  : std_logic;
 
+ signal mpgQuad    : MpgQuadRec;
+
 begin
 
  dbgsetup : entity work.DbgMap
@@ -158,10 +161,13 @@ begin
    );
 
  pllClock : entity work.Clock
-  port map ( 
+  port map (
    clockIn  => sysClk,
    clockOut => sysClkOut
-   ); 
+   );
+
+ mpgQuad.zQuad <= zMpg;
+ mpgQuad.xQuad <= xMpg;
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -207,7 +213,9 @@ begin
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
-   
+
+   cfs_mpg_i   => mpgQuad,
+
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
    jtag_tdi_i  => jtag_tdi_i,
@@ -259,7 +267,7 @@ begin
   clk        => sysClkOut,
   we         => cfs_we_o,
   reg        => cfs_reg_o,
-  
+
   CFSDataIn  => cfs_out_o,
   CFSDataOut => cfs_in_i,
 

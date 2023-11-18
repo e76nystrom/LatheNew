@@ -5,6 +5,7 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+use neorv32.MpgRecord.all;
 
 use work.IORecord.all;
 use work.DbgRecord.all;
@@ -39,8 +40,8 @@ entity LatheTopSimRiscV is
 
   zDro     : in std_logic_vector(1 downto 0);
   xDro     : in std_logic_vector(1 downto 0);
-  zMpg     : in std_logic_vector(1 downto 0);
 
+  zMpg     : in std_logic_vector(1 downto 0);
   xMpg     : in std_logic_vector(1 downto 0);
 
   pinIn    : in std_logic_vector(4 downto 0);
@@ -142,7 +143,15 @@ architecture Behavorial of LatheTopSimRiscV is
  signal debug      : InterfaceDbg;
  signal extDout    : std_logic;
 
+ signal mpgQuad    : MpgQuadRec;
+
 begin
+
+ -- mpgQuad.zQuad <= zMpg;
+ mpgQuad.xQuad <= xMpg;
+
+   mpgQuad.zQuad(0) <= con_gpio_o(0);
+   mpgQuad.zQuad(1) <= con_gpio_o(1);
 
  dbgsetup : entity work.DbgMap
   port map (
@@ -192,6 +201,8 @@ begin
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
+
+   cfs_mpg_i   => mpgQuad,
 
    -- jtag_trst_i => jtag_trst_i,
    -- jtag_tck_i  => jtag_tck_i,
@@ -269,9 +280,13 @@ begin
    din      => latheDin,
    dout     => data,                    --extDout,
 
-   aIn      => con_gpio_o(0),--aIn,
-   bIn      => con_gpio_o(1),--bIn,
-   syncIn   => con_gpio_o(2),--syncIn,
+   -- aIn      => con_gpio_o(0),--aIn,
+   -- bIn      => con_gpio_o(1),--bIn,
+   -- syncIn   => con_gpio_o(2),--syncIn,
+
+   aIn      => aIn,
+   bIn      => bIn,
+   syncIn   => syncIn,
 
    zDro     => zDro,
    xDro     => xDro,

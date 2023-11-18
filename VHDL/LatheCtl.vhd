@@ -159,9 +159,11 @@ architecture Behavioral of LatheCtl is
  
  signal zDroPhase : std_logic_vector(1 downto 0) := (others => '0');
  signal xDroPhase : std_logic_vector(1 downto 0) := (others => '0');
+ signal zStepLast : std_logic := '0';
 
  signal zAxisDro : std_logic_vector(1 downto 0) := (others => '0');
  signal xAxisDro : std_logic_vector(1 downto 0) := (others => '0');
+ signal xStepLast : std_logic := '0';
 
 begin
 
@@ -412,7 +414,8 @@ begin
  zDro_Sim : process(clk)
  begin
   if (rising_edge(clk)) then
-   if (zAxisStep = '1') then
+   zStepLast <= zAxisStep;
+   if ((zStepLast = '0') and (zAxisStep = '1')) then
     if (zAxisDir = '1') then
      case zDroPhase is
       when "00"   => zDroPhase <= "01";
@@ -509,7 +512,8 @@ begin
  xDro_Sim : process(clk)
  begin
   if (rising_edge(clk)) then
-   if (xAxisStep = '1') then
+   xStepLast <= xAxisStep;
+   if ((xStepLast = '0') and (xAxisStep = '1')) then
     if (xAxisDir = '1') then
      case xDroPhase is
       when "00"   => xDroPhase <= "01";

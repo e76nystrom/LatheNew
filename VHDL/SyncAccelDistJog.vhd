@@ -43,6 +43,7 @@ entity SyncAccelDistJog is
   dbg        : out SyncAccelDbg;
   movDone    : out std_logic := '0';    --done move
   droDone    : out std_logic := '0';    --dro move done
+  distZero   : out std_logic := '0';    --distance zero
   dout       : out SyncData;
   dirOut     : out std_logic := '0';    --direction out
   synStep    : out std_logic := '0'     --output step pulse
@@ -101,19 +102,20 @@ architecture Behavioral of SyncAccelDistJog is
 
  -- distance registers
 
- signal distVal  : unsigned(distBits-1 downto 0); --input distance
- signal distCtr  : unsigned(distBits-1 downto 0) := (others => '0');
- signal maxDist  : unsigned(distBits-1 downto 0) := (others => '0');
- signal backlash : unsigned(distBits-1 downto 0) := (others => '0');
+ signal distVal     : unsigned(distBits-1 downto 0); --input distance
+ signal distCtr     : unsigned(distBits-1 downto 0) := (others => '0');
+ signal maxDist     : unsigned(distBits-1 downto 0) := (others => '0');
+ signal backlash    : unsigned(distBits-1 downto 0) := (others => '0');
 
- signal loadDist   : std_logic := '0';
- signal distUpdate : std_logic := '0';
- signal distReLoad : std_logic := '0';
+ signal loadDist    : std_logic := '0';
+ signal distUpdate  : std_logic := '0';
+ signal distReLoad  : std_logic := '0';
 
- signal movDoneInt : std_logic := '0';
+ signal movDoneInt  : std_logic := '0';
+ signal distZeroInt : std_logic := '0';
 
- signal synStepTmp     : std_logic := '0';
- signal synStepLast    : std_logic := '0';
+ signal synStepTmp  : std_logic := '0';
+ signal synStepLast : std_logic := '0';
 
   -- ********** location definitions **********
 
@@ -581,6 +583,9 @@ begin
  dbg.distCtr <= std_logic(distCtr(0));
  dbg.loc     <= std_logic(loc(0));
 
+ distZeroInt <= '1' when (distCtr = 0) else '0';
+ distZero    <= distZeroInt;
+
  syn_process: process(clk)
 
   variable mpgQuadChange : std_logic;
@@ -786,7 +791,7 @@ begin
 
       if (droEndChk = '0') then         --if not using dro for end
 
-       if (distCtr /= 0) then           --if not to distance
+       if (distZeroInt = '0') then      --if not to distance
         syncState <= enabled;           --return to enabled state
        else                             --if distance 0
 
@@ -847,7 +852,7 @@ begin
      synStep <= '0';                    --clear step output
      if (ch = '1') then                 --if clock
       if (chCtr = chDiv) then           --if time to step
-       if (distCtr /= 0) then           --if not done
+       if (distZeroInt = '0') then      --if not done
         chCtr <= to_unsigned(0, chCtr'length); --reset counter
         distCtr <= distCtr - 1;         --update distance
         synStepTmp <= '1';              --set step signal

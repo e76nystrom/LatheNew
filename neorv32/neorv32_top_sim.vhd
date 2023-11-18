@@ -43,6 +43,7 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+use neorv32.MpgRecord.all;
 
 entity neorv32_top is
   generic (
@@ -239,6 +240,8 @@ entity neorv32_top is
 
     cfs_we_o       : out std_ulogic := '0';
     cfs_reg_o      : out std_ulogic_vector(2 downto 0) := (others => '0');
+
+    cfs_mpg_i      : MpgQuadRec;
 
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line
@@ -982,7 +985,9 @@ begin
         cfs_out_o   => cfs_out_o,
 
         cfs_we_o    => cfs_we_o,
-        cfs_reg_o   => cfs_reg_o
+        cfs_reg_o   => cfs_reg_o,
+
+        cfs_mpg_i   => cfs_mpg_i
       );
     end generate;
 

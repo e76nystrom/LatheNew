@@ -35,14 +35,6 @@ add wave -noupdate -color red -itemcolor Gold -radix hexadecimal /a_lathetoptest
 add wave -noupdate /a_lathetoptestriscv/sysClk
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/interfaceProc/CFSdataOut
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dout
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dout0
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dout1
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dout2
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheData.data
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheData.data
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/runRDout
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/delayDout
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheDout
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/distShiftOp/data
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/DistShiftOut/shiftReg
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/axisCtlR.ctlInit
@@ -69,9 +61,13 @@ add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/lath
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/spiCS(0)
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/spiDClk
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/spiDin
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/spiDout
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/axisStatusR.axDistZero
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/droQuad
+add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/droVal
+add wave -noupdate -radix hexadecimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/droQuadState
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/droState
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 2} {6505978 ps} 0}
+WaveRestoreCursors {{Cursor 2} {75405000 ps} 0}
 quietly wave cursor active 1
 configure wave -namecolwidth 683
 configure wave -valuecolwidth 106
@@ -87,4 +83,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {17850 ns}
+WaveRestoreZoom {0 ps} {210 us}

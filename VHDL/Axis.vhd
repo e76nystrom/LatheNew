@@ -75,7 +75,7 @@ architecture Behavioral of Axis is
  
  -- signal doneInt : std_logic;
 
- signal distZero : std_logic;
+ signal movDone    : std_logic;
 
  signal syncAccelEna : std_logic;
 
@@ -200,8 +200,9 @@ begin
    droEndChk  => axisCtlR.ctlDroEnd,
 
    dbg        => dbg.sync,
-   movDone    => distZero,
+   movDone    => movDone,
    droDone    => droDone,
+   distZero   => axisStatusR.axDistZero,
    dout       => dout.sync,
    dirOut     => synDirOut,
    synStep    => synStepOut
@@ -239,7 +240,7 @@ begin
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   doneDist  <= distZero and not axisCtlR.ctlDroEnd;
+   doneDist  <= movDone and not axisCtlR.ctlDroEnd;
    doneDro   <= droDone and axisCtlR.ctlDroEnd;
    doneHome  <= (swHome = '1') and (axisCtlR.ctlHome = '1');
    doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and

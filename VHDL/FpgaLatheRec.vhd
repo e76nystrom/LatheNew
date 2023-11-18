@@ -69,10 +69,11 @@ type axisCtlRec is record
 end record axisCtlRec;
 
 type axisStatusRec is record
- axDoneLimit : std_logic;       --  3 0x8 axis done limit
- axDoneHome  : std_logic;       --  2 0x4 axis done home
- axDoneDro   : std_logic;       --  1 0x2 axis done dro
- axDoneDist  : std_logic;       --  0 0x1 axis done distance
+ axDistZero  : std_logic;       --  4 0x10 axis distance zero
+ axDoneLimit : std_logic;       --  3 0x08 axis done limit
+ axDoneHome  : std_logic;       --  2 0x04 axis done home
+ axDoneDro   : std_logic;       --  1 0x02 axis done dro
+ axDoneDist  : std_logic;       --  0 0x01 axis done distance
 end record axisStatusRec;
 
 type cfgCtlRec is record
@@ -101,6 +102,7 @@ end record cfgCtlRec;
 
 type clkCtlRec is record
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
+ clkMask       : std_logic;     --  0 0x01 clock mask
  xFreqShift    : std_logic;     --  0 0x01 x Frequency shift
  zFreqShift    : std_logic;     --  0 0x01 z Frequency shift
  xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x Frequency select

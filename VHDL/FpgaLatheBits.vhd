@@ -139,18 +139,20 @@ package FpgaLatheBits is
 
 -- axis status register
 
- constant axisStatusSize : integer := 4;
+ constant axisStatusSize : integer := 5;
  signal axisStatusReg : unsigned(axisStatusSize-1 downto 0);
  --variable axisStatusReg : unsigned(axisStatusSize-1 downto 0);
  alias axDoneDist   : std_logic is axisStatusreg(0); -- x01 axis done distance
  alias axDoneDro    : std_logic is axisStatusreg(1); -- x02 axis done dro
  alias axDoneHome   : std_logic is axisStatusreg(2); -- x04 axis done home
  alias axDoneLimit  : std_logic is axisStatusreg(3); -- x08 axis done limit
+ alias axDistZero   : std_logic is axisStatusreg(4); -- x10 axis distance zero
 
  constant c_axDoneDist   : integer :=  0; -- x01 axis done distance
  constant c_axDoneDro    : integer :=  1; -- x02 axis done dro
  constant c_axDoneHome   : integer :=  2; -- x04 axis done home
  constant c_axDoneLimit  : integer :=  3; -- x08 axis done limit
+ constant c_axDistZero   : integer :=  4; -- x10 axis distance zero
 
 -- configuration control register
 
@@ -210,6 +212,7 @@ package FpgaLatheBits is
  alias xFreqSel       : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
  alias zFreqShift   : std_logic is clkCtlreg(0); -- x01 z Frequency shift
  alias xFreqShift   : std_logic is clkCtlreg(0); -- x01 x Frequency shift
+ alias clkMask      : std_logic is clkCtlreg(0); -- x01 clock mask
  constant clkNone      : unsigned (2 downto 0) := "000"; -- 
  constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
  constant clkCh        : unsigned (2 downto 0) := "010"; -- 
@@ -238,6 +241,7 @@ package FpgaLatheBits is
 
  constant c_zFreqShift   : integer :=  0; -- x01 z Frequency shift
  constant c_xFreqShift   : integer :=  0; -- x01 x Frequency shift
+ constant c_clkMask      : integer :=  0; -- x01 clock mask
  constant c_clkDbgFreqEna : integer :=  6; -- x40 enable debug frequency
 
 -- sync control register

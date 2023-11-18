@@ -43,8 +43,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
+
 library neorv32;
 use neorv32.neorv32_package.all;
+use neorv32.mpgRecord.all;
 
 entity neorv32_cfs is
  generic (
@@ -66,7 +68,9 @@ entity neorv32_cfs is
   cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0); -- custom outputs
 
   cfs_we_o    : out std_ulogic := '0';
-  cfs_reg_o   : out std_ulogic_vector(2 downto 0) := (others => '0')
+  cfs_reg_o   : out std_ulogic_vector(2 downto 0) := (others => '0');
+
+  cfs_mpg_i   : MpgQuadRec
 
   );
 end neorv32_cfs;
@@ -79,6 +83,27 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
 
  signal divider : integer range 0 to divRange := divRange;
  signal millis  : unsigned(32-1 downto 0) := (others => '0');
+
+ signal msTick : std_logic := '0';
+
+ constant mpgWidth : natural := 8;
+ constant mpgDepth : natural := 16;
+
+ constant dFill : std_logic_vector(32-1 downto mpgWidth+1) := (others => '0');
+
+ signal busAddr : std_ulogic_vector(6-1 downto 0);
+
+ constant millisSel : std_ulogic_vector(6-1 downto 0) := "000100";
+ constant zMpgSel   : std_ulogic_vector(6-1 downto 0) := "000101";
+ constant xMpgSel   : std_ulogic_vector(6-1 downto 0) := "000110";
+
+ signal zEmpty : std_logic := '0';
+ signal zData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
+ signal reMpgZ : std_logic := '0';
+
+ signal xEmpty : std_logic := '0';
+ signal xData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
+ signal reMpgX : std_logic := '0';
  
 begin
 
@@ -87,14 +112,51 @@ begin
  irq_o <= '0';                  -- not used for this minimal example
  bus_rsp_o.err <= '0';          -- Tie to zero if not explicitly used.
 
+ busAddr <= bus_req_i.addr(8-1 downto 2);
+
+ reMpgZ <= '1' when  (bus_req_i.re = '1') and  (busAddr = zMpgSel)
+           else '0';
+
+ mpgZ : entity neorv32.Mpg
+  generic map(mpgDepth => mpgDepth,
+              mpgWidth => mpgWidth)
+  port map (
+   clk    => clk_i,
+   init   => rstn_i,
+   msTick => msTick,
+   re     => reMpgZ,
+   empty  => zEmpty,
+   mpg    => cfs_mpg_i.zQuad,
+   rData  => zData
+   );
+
+ reMpgX <= '1' when  (bus_req_i.re = '1') and  (busAddr = xMpgSel)
+           else '0';
+
+ mpgX : entity neorv32.Mpg
+  generic map(mpgDepth => mpgDepth,
+              mpgWidth => mpgWidth)
+  port map (
+   clk    => clk_i,
+   init   => rstn_i,
+   msTick => msTick,
+   re     => reMpgX,
+   empty  => xEmpty,
+   mpg    => cfs_mpg_i.xQuad,
+   rData  => xData
+   );
+
  divProcess : process(clk_i)
  begin
   if (rising_edge(clk_i)) then          --if clock active
+   -- msTick <= not msTick;
    if (divider = 0) then
     divider <= divRange;
     millis <= millis + 1;
+    msTick <= '1';
    else
     divider <= divider - 1;
+    msTick <= '0';
    end if;
   end if;
  end process;
@@ -139,13 +201,15 @@ begin
     -- else
     --  bus_rsp_o.data <= cfs_in_i;
     -- end if;
-   case bus_req_i.addr(7 downto 2) is
-     when "000000" => bus_rsp_o.data <= data;
-     when "000001" => bus_rsp_o.data <= data;
-     when "000010" => bus_rsp_o.data <= cfs_in_i;
-     when "000011" => bus_rsp_o.data <= data;
-     when "000100" => bus_rsp_o.data <= std_ulogic_vector(millis);
-     when others   => bus_rsp_o.data <= (others => '0');
+   case busAddr is
+     when "000000"  => bus_rsp_o.data <= data;
+     when "000001"  => bus_rsp_o.data <= data;
+     when "000010"  => bus_rsp_o.data <= cfs_in_i;
+     when "000011"  => bus_rsp_o.data <= data;
+     when millisSel => bus_rsp_o.data <= std_ulogic_vector(millis);
+     when zMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & zEmpty & zData);
+     when xMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & xEmpty & xData);
+     when others    => bus_rsp_o.data <= (others => '0');
    end case;
    end if;
   end if;
