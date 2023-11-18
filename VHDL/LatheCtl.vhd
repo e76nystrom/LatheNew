@@ -483,8 +483,8 @@ begin
 
    droQuad    => zAxisDro,
    droInvert  => cfgCtlR.cfgZDroInv,
-   mpgQuad    => zMpg,
-   jogInvert  => cfgctlR.cfgZJogInv,
+   -- mpgQuad    => zMpg,
+   -- jogInvert  => cfgctlR.cfgZJogInv,
 
    currentDir => zCurrentDir,
    switches   => zSwitches,
@@ -579,8 +579,8 @@ begin
 
    droQuad    => xAxisDro,
    droInvert  => cfgCtlR.cfgXDroInv,
-   mpgQuad    => xMpg,
-   jogInvert  => cfgCtlR.cfgXJogInv,
+   -- mpgQuad    => xMpg,
+   -- jogInvert  => cfgCtlR.cfgXJogInv,
 
    currentDir => xCurrentDir,
    switches   => xSwitches,

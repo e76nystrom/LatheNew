@@ -39,8 +39,8 @@ entity Axis is
 
   droQuad    : in std_logic_vector(1 downto 0);
   droInvert  : in std_logic;
-  mpgQuad    : in std_logic_vector(1 downto 0);
-  jogInvert  : in std_logic;
+  -- mpgQuad    : in std_logic_vector(1 downto 0);
+  -- jogInvert  : in std_logic;
 
   currentDir : in std_logic;
   switches   : in std_logic_vector(3 downto 0);
@@ -93,7 +93,7 @@ architecture Behavioral of Axis is
  signal doneHome   : boolean;
  signal doneMove   : std_logic;
 
- signal jogDir  : std_logic;
+ -- signal jogDir  : std_logic;
 
  signal droDone : std_logic;
 
@@ -103,7 +103,7 @@ architecture Behavioral of Axis is
 
  signal pulseOut  : std_logic;
 
- signal jogMode  : std_logic_vector(1 downto 0);
+ -- signal jogMode  : std_logic_vector(1 downto 0);
 
  type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -161,12 +161,12 @@ begin
 
  syncAccelEna <= runEna when axisCtlR.ctlChDirect = '0' else '0';
 
- jogMode <= axisCtlR.ctlJogMpg & axisCtlR.ctlJogCmd;
+ -- jogMode <= axisCtlR.ctlJogMpg & axisCtlR.ctlJogCmd;
 
  curDir <= currentDir;
  dirOut  <= synDirOut;
 
- AxisSyncAccel : entity work.SyncAccelDistJog
+ AxisSyncAccel : entity work.SyncAccelDist
   generic map (opBase     => opBase + F_Sync_Base,
                synBits    => synBits,
                posBits    => posBits,
@@ -191,9 +191,9 @@ begin
    locDisable => locDisable,
    distMode   => axisCtlR.ctlDistMode,
 
-   mpgQuad    => mpgQuad,
-   jogInvert  => jogInvert,
-   jogMode    => jogMode,
+   -- mpgQuad    => mpgQuad,
+   -- jogInvert  => jogInvert,
+   -- jogMode    => jogMode,
 
    droQuad    => droQuad,
    droInvert  => droInvert,
