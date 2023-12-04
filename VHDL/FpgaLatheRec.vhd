@@ -6,14 +6,13 @@ use ieee.numeric_std.all;
 package FpgaLatheBitsRec is
 
 type riscvCtlRec is record
- riscvSPI  : std_logic;         --  1 0x2 riscv spi active
- riscvData : std_logic;         --  0 0x1 riscv data active
+ riscvInTest : std_logic;       --  2 0x4 riscv input test
+ riscvSPI    : std_logic;       --  1 0x2 riscv spi active
+ riscvData   : std_logic;       --  0 0x1 riscv data active
 end record riscvCtlRec;
 
 type statusRec is record
- syncActive    : std_logic;     -- 10 0x400 'SA' sync active
- ctlBusy       : std_logic;     --  9 0x200 'CB' controller busy
- queNotEmpty   : std_logic;     --  8 0x100 'Q+' ctl queue not empty
+ syncActive    : std_logic;     --  8 0x100 'SA' sync active
  spindleActive : std_logic;     --  7 0x080 'S+' spindle active
  stEStop       : std_logic;     --  6 0x040 'ES' emergency stop
  xAxisCurDir   : std_logic;     --  5 0x020 'Xd' x axis current dir
@@ -25,26 +24,48 @@ type statusRec is record
 end record statusRec;
 
 type inputsRec is record
- inPin15  : std_logic;          -- 12 0x1000 pin 15
- inPin13  : std_logic;          -- 11 0x0800 pin 13
- inPin12  : std_logic;          -- 10 0x0400 pin 12
- inPin11  : std_logic;          --  9 0x0200 pin 11
- inPin10  : std_logic;          --  8 0x0100 pin 10
- inProbe  : std_logic;          --  7 0x0080 probe input
- inSpare  : std_logic;          --  6 0x0040 spare input
- inXPlus  : std_logic;          --  5 0x0020 x Limit Plus
- inXMinus : std_logic;          --  4 0x0010 x limit minus
- inXHome  : std_logic;          --  3 0x0008 x home switch
- inZPlus  : std_logic;          --  2 0x0004 z Limit Plus
- inZMinus : std_logic;          --  1 0x0002 z limit minus
- inZHome  : std_logic;          --  0 0x0001 z home switch
+ inSpare  : std_logic;          -- 12 0x1000 'SP' spare input
+ inProbe  : std_logic;          -- 11 0x0800 'PR' probe input
+ inXPlus  : std_logic;          -- 10 0x0400 'X+' x Limit Plus
+ inXMinus : std_logic;          --  9 0x0200 'X-' x limit minus
+ inXHome  : std_logic;          --  8 0x0100 'XH' x home switch
+ inZPlus  : std_logic;          --  7 0x0080 'Z+' z Limit Plus
+ inZMinus : std_logic;          --  6 0x0040 'Z-' z limit minus
+ inZHome  : std_logic;          --  5 0x0020 'ZH' z home switch
+ inPin15  : std_logic;          --  4 0x0010 '15' pin 15
+ inPin13  : std_logic;          --  3 0x0008 '13' pin 13
+ inPin12  : std_logic;          --  2 0x0004 '12' pin 12
+ inPin11  : std_logic;          --  1 0x0002 '11' pin 11
+ inPin10  : std_logic;          --  0 0x0001 '10' pin 10
 end record inputsRec;
 
-type runRec is record
- readerInit : std_logic;        --  2 0x4 initialize reader
- runInit    : std_logic;        --  1 0x2 initialize controller
- runEna     : std_logic;        --  0 0x1 run from controller data
-end record runRec;
+type axisInRec is record
+ axProbe : std_logic;           --  3 0x8 axis probe
+ axPlus  : std_logic;           --  2 0x4 axis plus limit
+ axMinus : std_logic;           --  1 0x2 axis minus limit
+ axHome  : std_logic;           --  0 0x1 axis home
+end record axisInRec;
+
+type outputsRec is record
+ outPin17 : std_logic;          --  2 0x4 pin 17
+ outPin14 : std_logic;          --  1 0x2 pin 14
+ outPin1  : std_logic;          --  0 0x1 pin 1
+end record outputsRec;
+
+type pinOutRec is record
+ pinOut17 : std_logic;          -- 11 0x800 
+ pinOut16 : std_logic;          -- 10 0x400 
+ pinOut14 : std_logic;          --  9 0x200 
+ pinOut1  : std_logic;          --  8 0x100 
+ pinOut9  : std_logic;          --  7 0x080 
+ pinOut8  : std_logic;          --  6 0x040 
+ pinOut7  : std_logic;          --  5 0x020 
+ pinOut6  : std_logic;          --  4 0x010 
+ pinOut5  : std_logic;          --  3 0x008 x step
+ pinOut4  : std_logic;          --  2 0x004 x dir
+ pinOut3  : std_logic;          --  1 0x002 z step
+ pinOut2  : std_logic;          --  0 0x001 z dir
+end record pinOutRec;
 
 type jogRec is record
  jogBacklash   : std_logic;     --  1 0x2 jog backlash present
@@ -52,28 +73,36 @@ type jogRec is record
 end record jogRec;
 
 type axisCtlRec is record
- ctlUseLimits : std_logic;      -- 13 0x2000 use limits
- ctlHome      : std_logic;      -- 12 0x1000 homing axis
- ctlJogMpg    : std_logic;      -- 11 0x0800 jog with mpg
- ctlJogCmd    : std_logic;      -- 10 0x0400 jog with commands
- ctlDistMode  : std_logic;      --  9 0x0200 distance udpdate mode
- ctlDroEnd    : std_logic;      --  8 0x0100 use dro to end move
- ctlSlave     : std_logic;      --  7 0x0080 slave ctl by other axis
- ctlChDirect  : std_logic;      --  6 0x0040 ch input direct
- ctlSetLoc    : std_logic;      --  5 0x0020 set location
- ctlDir       : std_logic;      --  4 0x0010 direction
- ctlWaitSync  : std_logic;      --  3 0x0008 wait for sync to start
- ctlBacklash  : std_logic;      --  2 0x0004 backlash move no pos upd
- ctlStart     : std_logic;      --  1 0x0002 start
- ctlInit      : std_logic;      --  0 0x0001 reset flag
+ ctlUseLimits : std_logic;      -- 15 0x8000 'UL' use limits
+ ctlProbe     : std_logic;      -- 14 0x4000 'PR' probe enable
+ ctlHomePol   : std_logic;      -- 13 0x2000 'HP' home signal polarity
+ ctlHome      : std_logic;      -- 12 0x1000 'HO' homing axis
+ ctlJogMpg    : std_logic;      -- 11 0x0800 'JM' jog with mpg
+ ctlJogCmd    : std_logic;      -- 10 0x0400 'JC' jog with commands
+ ctlDistMode  : std_logic;      --  9 0x0200 'DM' distance udpdate mode
+ ctlDroEnd    : std_logic;      --  8 0x0100 'DE' use dro to end move
+ ctlSlave     : std_logic;      --  7 0x0080 'SL' slave ctl by other axis
+ ctlChDirect  : std_logic;      --  6 0x0040 'CH' ch input direct
+ ctlSetLoc    : std_logic;      --  5 0x0020 'SL' set location
+ ctlDir       : std_logic;      --  4 0x0010 '+-' direction
+ ctlWaitSync  : std_logic;      --  3 0x0008 'WS' wait for sync to start
+ ctlBacklash  : std_logic;      --  2 0x0004 'BK' backlash move no pos upd
+ ctlStart     : std_logic;      --  1 0x0002 'ST' start
+ ctlInit      : std_logic;      --  0 0x0001 'IN' reset flag
 end record axisCtlRec;
 
 type axisStatusRec is record
- axDistZero  : std_logic;       --  4 0x10 axis distance zero
- axDoneLimit : std_logic;       --  3 0x08 axis done limit
- axDoneHome  : std_logic;       --  2 0x04 axis done home
- axDoneDro   : std_logic;       --  1 0x02 axis done dro
- axDoneDist  : std_logic;       --  0 0x01 axis done distance
+ axInFlag    : std_logic;       -- 10 0x400 'IF' axis in flag
+ axInProbe   : std_logic;       --  9 0x200 'IP' axis in probe
+ axInPlus    : std_logic;       --  8 0x100 'I+' axis in plus limit
+ axInMinus   : std_logic;       --  7 0x080 'I-' axis in minus limit
+ axInHome    : std_logic;       --  6 0x040 'IH' axis home
+ axDoneProbe : std_logic;       --  5 0x020 'PR' axis done probe
+ axDoneLimit : std_logic;       --  4 0x010 'LI' axis done limit
+ axDoneHome  : std_logic;       --  3 0x008 'HO' axis done home
+ axDoneDro   : std_logic;       --  2 0x004 'DR' axis done dro
+ axDistZero  : std_logic;       --  1 0x002 'ZE' axis distance zero
+ axDone      : std_logic;       --  0 0x001 'DN' axis done
 end record axisStatusRec;
 
 type cfgCtlRec is record
@@ -92,8 +121,8 @@ type cfgCtlRec is record
  cfgZMinusInv : std_logic;      --  8 0x000100 z minus inverted
  cfgZHomeInv  : std_logic;      --  7 0x000080 z home inverted
  cfgSpDirInv  : std_logic;      --  6 0x000040 spindle dir inverted
- cfgXJogInv   : std_logic;      --  5 0x000020 x jog dir inverted
- cfgZJogInv   : std_logic;      --  4 0x000010 z jog dir inverted
+ cfgXMpgInv   : std_logic;      --  5 0x000020 x mpg dir inverted
+ cfgZMpgInv   : std_logic;      --  4 0x000010 z mpg dir inverted
  cfgXDroInv   : std_logic;      --  3 0x000008 x dro dir inverted
  cfgZDroInv   : std_logic;      --  2 0x000004 z dro dir inverted
  cfgXDirInv   : std_logic;      --  1 0x000002 x dir inverted

@@ -5,6 +5,7 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+
 use neorv32.MpgRecord.all;
 
 use work.IORecord.all;
@@ -17,8 +18,9 @@ entity LatheTop is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
           MEM_INT_IMEM_SIZE : natural := 32*1024;   -- size of processor-internal instruction memory in bytes
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
-          ledPins : positive := 8;
-          dbgPins : positive := 8);
+          ledPins   : positive := 8;
+          dbgPins   : positive := 8;
+          inputPins : positive := inputsSize);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
@@ -40,19 +42,19 @@ entity LatheTop is
 
   zDro     : in std_logic_vector(1 downto 0);
   xDro     : in std_logic_vector(1 downto 0);
-  zMpg     : in std_logic_vector(1 downto 0);
 
+  zMpg     : in std_logic_vector(1 downto 0);
   xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn    : in std_logic_vector(4 downto 0);
+  pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
-  aux      : out std_logic_vector(7 downto 0);
+  xDbg     : out std_ulogic_vector(4 downto 0);
+  -- aux      : out std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
-
-  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0)  := (others => '0');
+  bufOut   : out std_logic_vector(3 downto 0)  := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0';
@@ -101,7 +103,7 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of xMpg : signal is true;
 
  attribute syn_keep of pinIn  : signal is true;
- attribute syn_keep of aux    : signal is true;
+ -- attribute syn_keep of aux    : signal is true;
  attribute syn_keep of pinOut : signal is true;
  attribute syn_keep of extOut : signal is true;
  attribute syn_keep of bufOut : signal is true;
@@ -144,14 +146,25 @@ architecture Behavioral of LatheTop is
  signal riscvData  : RiscvDataRcv;
  signal riscvCtl   : RiscvDataCtl;
 
- signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
+ signal riscVCtlReg : riscVCtlRec := (riscvData => '0',
+                                      riscvSPI => '0',
+                                      riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
+ signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+
+ signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
+ signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
+
+ cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+
+ mpgQuad.zQuad <= zMpg;
+ mpgQuad.xQuad <= xMpg;
 
  dbgsetup : entity work.DbgMap
   port map (
@@ -166,8 +179,6 @@ begin
    clockOut => sysClkOut
    );
 
- mpgQuad.zQuad <= zMpg;
- mpgQuad.xQuad <= xMpg;
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -189,6 +200,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
+   inputPins                    => riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -215,12 +227,14 @@ begin
    cfs_reg_o   => cfs_reg_o,
 
    cfs_mpg_i   => mpgQuad,
+   cfs_pins_i  => cfs_pins_i,
 
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
    jtag_tdi_i  => jtag_tdi_i,
    jtag_tdo_o  => jtag_tdo_o,
    jtag_tms_i  => jtag_tms_i,
+
  -- SPI (available if IO_SPI_EN = true) --
 
    spi_csn_o => spiCS,      -- chip-select
@@ -239,9 +253,9 @@ begin
 
  -- GPIO output --
   -- aux <= con_gpio_o(7 downto 0);
- aux(7) <= riscVCtlReg.riscVData;
- aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
+ xDbg(4) <= riscVCtlReg.riscVData;
+ xDbg(3 downto 0) <= con_gpio_o(3 downto 0);
+ -- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
 
  -- riscvCtl.active <= riscVCtlReg.riscvData;
 
@@ -274,8 +288,11 @@ begin
   riscvCtl   => riscvCtlReg,
 
   latheData  => riscvData,
-  latheCtl   => riscvCtl
+  latheCtl   => riscvCtl,
+  pinIn      => pinInTest
   );
+
+ pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
   generic map (extData => 1,
@@ -304,7 +321,7 @@ begin
 
    xMpg     => xMpg,
 
-   pinIn    => pinIn,
+   pinIn    => pinInLathe,
 
    -- aux      => aux,
    pinOut   => pinOut,

@@ -39,7 +39,7 @@ architecture behavior OF A_LatheTopTestRiscV is
  signal zMpg : std_logic_vector(1 downto 0) := (others => '0');
  signal xMpg : std_logic_vector(1 downto 0) := (others => '0');
 
- signal pinIn : std_logic_vector(4 downto 0) := (others => '0');
+ signal pinIn : std_logic_vector(13-1 downto 0) := (others => '0');
  signal aux   : std_logic_vector(7 downto 0) := (others => '0');
 
  signal pinOut : std_logic_vector(11 downto 0);

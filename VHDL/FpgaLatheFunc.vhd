@@ -7,7 +7,7 @@ use work.FpgaLatheBitsRec.all;
 
 package FpgaLatheBitsFunc is
 
-constant riscvCtlSize : integer := 2;
+constant riscvCtlSize : integer := 3;
 subType riscvCtlVec is std_logic_vector(riscvCtlSize-1 downto 0);
 constant riscvCtlZero : riscvCtlVec := (others => '0');
 
@@ -20,7 +20,7 @@ return riscvCtlRec;
 function riscvCtlToRecS(val : std_logic_vector(riscvCtlSize-1 downto 0))
 return riscvCtlRec;
 
-constant statusSize : integer := 11;
+constant statusSize : integer := 9;
 subType statusVec is std_logic_vector(statusSize-1 downto 0);
 constant statusZero : statusVec := (others => '0');
 
@@ -46,18 +46,44 @@ return inputsRec;
 function inputsToRecS(val : std_logic_vector(inputsSize-1 downto 0))
 return inputsRec;
 
-constant runSize : integer := 3;
-subType runVec is std_logic_vector(runSize-1 downto 0);
-constant runZero : runVec := (others => '0');
+constant axisInSize : integer := 4;
+subType axisInVec is std_logic_vector(axisInSize-1 downto 0);
+constant axisInZero : axisInVec := (others => '0');
 
-function runToVec(val : runRec)
- return runVec;
+function axisInToVec(val : axisInRec)
+ return axisInVec;
 
-function runToRec(val : runVec)
-return runRec;
+function axisInToRec(val : axisInVec)
+return axisInRec;
 
-function runToRecS(val : std_logic_vector(runSize-1 downto 0))
-return runRec;
+function axisInToRecS(val : std_logic_vector(axisInSize-1 downto 0))
+return axisInRec;
+
+constant outputsSize : integer := 3;
+subType outputsVec is std_logic_vector(outputsSize-1 downto 0);
+constant outputsZero : outputsVec := (others => '0');
+
+function outputsToVec(val : outputsRec)
+ return outputsVec;
+
+function outputsToRec(val : outputsVec)
+return outputsRec;
+
+function outputsToRecS(val : std_logic_vector(outputsSize-1 downto 0))
+return outputsRec;
+
+constant pinOutSize : integer := 12;
+subType pinOutVec is std_logic_vector(pinOutSize-1 downto 0);
+constant pinOutZero : pinOutVec := (others => '0');
+
+function pinOutToVec(val : pinOutRec)
+ return pinOutVec;
+
+function pinOutToRec(val : pinOutVec)
+return pinOutRec;
+
+function pinOutToRecS(val : std_logic_vector(pinOutSize-1 downto 0))
+return pinOutRec;
 
 constant jogSize : integer := 2;
 subType jogVec is std_logic_vector(jogSize-1 downto 0);
@@ -72,7 +98,7 @@ return jogRec;
 function jogToRecS(val : std_logic_vector(jogSize-1 downto 0))
 return jogRec;
 
-constant axisCtlSize : integer := 14;
+constant axisCtlSize : integer := 16;
 subType axisCtlVec is std_logic_vector(axisCtlSize-1 downto 0);
 constant axisCtlZero : axisCtlVec := (others => '0');
 
@@ -85,7 +111,7 @@ return axisCtlRec;
 function axisCtlToRecS(val : std_logic_vector(axisCtlSize-1 downto 0))
 return axisCtlRec;
 
-constant axisStatusSize : integer := 5;
+constant axisStatusSize : integer := 11;
 subType axisStatusVec is std_logic_vector(axisStatusSize-1 downto 0);
 constant axisStatusZero : axisStatusVec := (others => '0');
 
@@ -157,15 +183,16 @@ package body FpgaLatheBitsFunc is
 function riscvCtlToVec(val : riscvCtlRec) return riscvCtlVec is
  variable rtnVec : riscvCtlVec;
 begin
- rtnVec := val.riscvSPI  & val.riscvData;
+ rtnVec := val.riscvInTest & val.riscvSPI    & val.riscvData;
  return rtnVec;
 end function;
 
 function riscvCtlToRec(val : riscvCtlVec) return riscvCtlRec is
  variable rtnRec : riscvCtlRec;
 begin
- rtnRec.riscvSPI  := val(1);
- rtnRec.riscvData := val(0);
+ rtnRec.riscvInTest := val(2);
+ rtnRec.riscvSPI    := val(1);
+ rtnRec.riscvData   := val(0);
 
  return rtnRec;
 end function;
@@ -174,8 +201,9 @@ function riscvCtlToRecS(val : std_logic_vector(riscvCtlSize-1 downto 0))
  return riscvCtlRec is
  variable rtnRec : riscvCtlRec;
 begin
- rtnRec.riscvSPI  := val(1);
- rtnRec.riscvData := val(0);
+ rtnRec.riscvInTest := val(2);
+ rtnRec.riscvSPI    := val(1);
+ rtnRec.riscvData   := val(0);
 
  return rtnRec;
 end function;
@@ -183,19 +211,16 @@ end function;
 function statusToVec(val : statusRec) return statusVec is
  variable rtnVec : statusVec;
 begin
- rtnVec := val.syncActive    & val.ctlBusy       & val.queNotEmpty   &
-           val.spindleActive & val.stEStop       & val.xAxisCurDir   &
-           val.xAxisDone     & val.xAxisEna      & val.zAxisCurDir   &
-           val.zAxisDone     & val.zAxisEna;
+ rtnVec := val.syncActive    & val.spindleActive & val.stEStop       &
+           val.xAxisCurDir   & val.xAxisDone     & val.xAxisEna      &
+           val.zAxisCurDir   & val.zAxisDone     & val.zAxisEna;
  return rtnVec;
 end function;
 
 function statusToRec(val : statusVec) return statusRec is
  variable rtnRec : statusRec;
 begin
- rtnRec.syncActive    := val(10);
- rtnRec.ctlBusy       := val(9);
- rtnRec.queNotEmpty   := val(8);
+ rtnRec.syncActive    := val(8);
  rtnRec.spindleActive := val(7);
  rtnRec.stEStop       := val(6);
  rtnRec.xAxisCurDir   := val(5);
@@ -212,9 +237,7 @@ function statusToRecS(val : std_logic_vector(statusSize-1 downto 0))
  return statusRec is
  variable rtnRec : statusRec;
 begin
- rtnRec.syncActive    := val(10);
- rtnRec.ctlBusy       := val(9);
- rtnRec.queNotEmpty   := val(8);
+ rtnRec.syncActive    := val(8);
  rtnRec.spindleActive := val(7);
  rtnRec.stEStop       := val(6);
  rtnRec.xAxisCurDir   := val(5);
@@ -230,29 +253,29 @@ end function;
 function inputsToVec(val : inputsRec) return inputsVec is
  variable rtnVec : inputsVec;
 begin
- rtnVec := val.inPin15  & val.inPin13  & val.inPin12  & val.inPin11  &
-           val.inPin10  & val.inProbe  & val.inSpare  & val.inXPlus  &
-           val.inXMinus & val.inXHome  & val.inZPlus  & val.inZMinus &
-           val.inZHome;
+ rtnVec := val.inSpare  & val.inProbe  & val.inXPlus  & val.inXMinus &
+           val.inXHome  & val.inZPlus  & val.inZMinus & val.inZHome  &
+           val.inPin15  & val.inPin13  & val.inPin12  & val.inPin11  &
+           val.inPin10;
  return rtnVec;
 end function;
 
 function inputsToRec(val : inputsVec) return inputsRec is
  variable rtnRec : inputsRec;
 begin
- rtnRec.inPin15  := val(12);
- rtnRec.inPin13  := val(11);
- rtnRec.inPin12  := val(10);
- rtnRec.inPin11  := val(9);
- rtnRec.inPin10  := val(8);
- rtnRec.inProbe  := val(7);
- rtnRec.inSpare  := val(6);
- rtnRec.inXPlus  := val(5);
- rtnRec.inXMinus := val(4);
- rtnRec.inXHome  := val(3);
- rtnRec.inZPlus  := val(2);
- rtnRec.inZMinus := val(1);
- rtnRec.inZHome  := val(0);
+ rtnRec.inSpare  := val(12);
+ rtnRec.inProbe  := val(11);
+ rtnRec.inXPlus  := val(10);
+ rtnRec.inXMinus := val(9);
+ rtnRec.inXHome  := val(8);
+ rtnRec.inZPlus  := val(7);
+ rtnRec.inZMinus := val(6);
+ rtnRec.inZHome  := val(5);
+ rtnRec.inPin15  := val(4);
+ rtnRec.inPin13  := val(3);
+ rtnRec.inPin12  := val(2);
+ rtnRec.inPin11  := val(1);
+ rtnRec.inPin10  := val(0);
 
  return rtnRec;
 end function;
@@ -261,47 +284,125 @@ function inputsToRecS(val : std_logic_vector(inputsSize-1 downto 0))
  return inputsRec is
  variable rtnRec : inputsRec;
 begin
- rtnRec.inPin15  := val(12);
- rtnRec.inPin13  := val(11);
- rtnRec.inPin12  := val(10);
- rtnRec.inPin11  := val(9);
- rtnRec.inPin10  := val(8);
- rtnRec.inProbe  := val(7);
- rtnRec.inSpare  := val(6);
- rtnRec.inXPlus  := val(5);
- rtnRec.inXMinus := val(4);
- rtnRec.inXHome  := val(3);
- rtnRec.inZPlus  := val(2);
- rtnRec.inZMinus := val(1);
- rtnRec.inZHome  := val(0);
+ rtnRec.inSpare  := val(12);
+ rtnRec.inProbe  := val(11);
+ rtnRec.inXPlus  := val(10);
+ rtnRec.inXMinus := val(9);
+ rtnRec.inXHome  := val(8);
+ rtnRec.inZPlus  := val(7);
+ rtnRec.inZMinus := val(6);
+ rtnRec.inZHome  := val(5);
+ rtnRec.inPin15  := val(4);
+ rtnRec.inPin13  := val(3);
+ rtnRec.inPin12  := val(2);
+ rtnRec.inPin11  := val(1);
+ rtnRec.inPin10  := val(0);
 
  return rtnRec;
 end function;
 
-function runToVec(val : runRec) return runVec is
- variable rtnVec : runVec;
+function axisInToVec(val : axisInRec) return axisInVec is
+ variable rtnVec : axisInVec;
 begin
- rtnVec := val.readerInit & val.runInit    & val.runEna;
+ rtnVec := val.axProbe & val.axPlus  & val.axMinus & val.axHome;
  return rtnVec;
 end function;
 
-function runToRec(val : runVec) return runRec is
- variable rtnRec : runRec;
+function axisInToRec(val : axisInVec) return axisInRec is
+ variable rtnRec : axisInRec;
 begin
- rtnRec.readerInit := val(2);
- rtnRec.runInit    := val(1);
- rtnRec.runEna     := val(0);
+ rtnRec.axProbe := val(3);
+ rtnRec.axPlus  := val(2);
+ rtnRec.axMinus := val(1);
+ rtnRec.axHome  := val(0);
 
  return rtnRec;
 end function;
 
-function runToRecS(val : std_logic_vector(runSize-1 downto 0))
- return runRec is
- variable rtnRec : runRec;
+function axisInToRecS(val : std_logic_vector(axisInSize-1 downto 0))
+ return axisInRec is
+ variable rtnRec : axisInRec;
 begin
- rtnRec.readerInit := val(2);
- rtnRec.runInit    := val(1);
- rtnRec.runEna     := val(0);
+ rtnRec.axProbe := val(3);
+ rtnRec.axPlus  := val(2);
+ rtnRec.axMinus := val(1);
+ rtnRec.axHome  := val(0);
+
+ return rtnRec;
+end function;
+
+function outputsToVec(val : outputsRec) return outputsVec is
+ variable rtnVec : outputsVec;
+begin
+ rtnVec := val.outPin17 & val.outPin14 & val.outPin1;
+ return rtnVec;
+end function;
+
+function outputsToRec(val : outputsVec) return outputsRec is
+ variable rtnRec : outputsRec;
+begin
+ rtnRec.outPin17 := val(2);
+ rtnRec.outPin14 := val(1);
+ rtnRec.outPin1  := val(0);
+
+ return rtnRec;
+end function;
+
+function outputsToRecS(val : std_logic_vector(outputsSize-1 downto 0))
+ return outputsRec is
+ variable rtnRec : outputsRec;
+begin
+ rtnRec.outPin17 := val(2);
+ rtnRec.outPin14 := val(1);
+ rtnRec.outPin1  := val(0);
+
+ return rtnRec;
+end function;
+
+function pinOutToVec(val : pinOutRec) return pinOutVec is
+ variable rtnVec : pinOutVec;
+begin
+ rtnVec := val.pinOut17 & val.pinOut16 & val.pinOut14 & val.pinOut1  &
+           val.pinOut9  & val.pinOut8  & val.pinOut7  & val.pinOut6  &
+           val.pinOut5  & val.pinOut4  & val.pinOut3  & val.pinOut2;
+ return rtnVec;
+end function;
+
+function pinOutToRec(val : pinOutVec) return pinOutRec is
+ variable rtnRec : pinOutRec;
+begin
+ rtnRec.pinOut17 := val(11);
+ rtnRec.pinOut16 := val(10);
+ rtnRec.pinOut14 := val(9);
+ rtnRec.pinOut1  := val(8);
+ rtnRec.pinOut9  := val(7);
+ rtnRec.pinOut8  := val(6);
+ rtnRec.pinOut7  := val(5);
+ rtnRec.pinOut6  := val(4);
+ rtnRec.pinOut5  := val(3);
+ rtnRec.pinOut4  := val(2);
+ rtnRec.pinOut3  := val(1);
+ rtnRec.pinOut2  := val(0);
+
+ return rtnRec;
+end function;
+
+function pinOutToRecS(val : std_logic_vector(pinOutSize-1 downto 0))
+ return pinOutRec is
+ variable rtnRec : pinOutRec;
+begin
+ rtnRec.pinOut17 := val(11);
+ rtnRec.pinOut16 := val(10);
+ rtnRec.pinOut14 := val(9);
+ rtnRec.pinOut1  := val(8);
+ rtnRec.pinOut9  := val(7);
+ rtnRec.pinOut8  := val(6);
+ rtnRec.pinOut7  := val(5);
+ rtnRec.pinOut6  := val(4);
+ rtnRec.pinOut5  := val(3);
+ rtnRec.pinOut4  := val(2);
+ rtnRec.pinOut3  := val(1);
+ rtnRec.pinOut2  := val(0);
 
  return rtnRec;
 end function;
@@ -335,18 +436,21 @@ end function;
 function axisCtlToVec(val : axisCtlRec) return axisCtlVec is
  variable rtnVec : axisCtlVec;
 begin
- rtnVec := val.ctlUseLimits & val.ctlHome      & val.ctlJogMpg    &
-           val.ctlJogCmd    & val.ctlDistMode  & val.ctlDroEnd    &
-           val.ctlSlave     & val.ctlChDirect  & val.ctlSetLoc    &
-           val.ctlDir       & val.ctlWaitSync  & val.ctlBacklash  &
-           val.ctlStart     & val.ctlInit;
+ rtnVec := val.ctlUseLimits & val.ctlProbe     & val.ctlHomePol   &
+           val.ctlHome      & val.ctlJogMpg    & val.ctlJogCmd    &
+           val.ctlDistMode  & val.ctlDroEnd    & val.ctlSlave     &
+           val.ctlChDirect  & val.ctlSetLoc    & val.ctlDir       &
+           val.ctlWaitSync  & val.ctlBacklash  & val.ctlStart     &
+           val.ctlInit;
  return rtnVec;
 end function;
 
 function axisCtlToRec(val : axisCtlVec) return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlUseLimits := val(13);
+ rtnRec.ctlUseLimits := val(15);
+ rtnRec.ctlProbe     := val(14);
+ rtnRec.ctlHomePol   := val(13);
  rtnRec.ctlHome      := val(12);
  rtnRec.ctlJogMpg    := val(11);
  rtnRec.ctlJogCmd    := val(10);
@@ -368,7 +472,9 @@ function axisCtlToRecS(val : std_logic_vector(axisCtlSize-1 downto 0))
  return axisCtlRec is
  variable rtnRec : axisCtlRec;
 begin
- rtnRec.ctlUseLimits := val(13);
+ rtnRec.ctlUseLimits := val(15);
+ rtnRec.ctlProbe     := val(14);
+ rtnRec.ctlHomePol   := val(13);
  rtnRec.ctlHome      := val(12);
  rtnRec.ctlJogMpg    := val(11);
  rtnRec.ctlJogCmd    := val(10);
@@ -389,19 +495,27 @@ end function;
 function axisStatusToVec(val : axisStatusRec) return axisStatusVec is
  variable rtnVec : axisStatusVec;
 begin
- rtnVec := val.axDistZero  & val.axDoneLimit & val.axDoneHome  &
-           val.axDoneDro   & val.axDoneDist;
+ rtnVec := val.axInFlag    & val.axInProbe   & val.axInPlus    &
+           val.axInMinus   & val.axInHome    & val.axDoneProbe &
+           val.axDoneLimit & val.axDoneHome  & val.axDoneDro   &
+           val.axDistZero  & val.axDone;
  return rtnVec;
 end function;
 
 function axisStatusToRec(val : axisStatusVec) return axisStatusRec is
  variable rtnRec : axisStatusRec;
 begin
- rtnRec.axDistZero  := val(4);
- rtnRec.axDoneLimit := val(3);
- rtnRec.axDoneHome  := val(2);
- rtnRec.axDoneDro   := val(1);
- rtnRec.axDoneDist  := val(0);
+ rtnRec.axInFlag    := val(10);
+ rtnRec.axInProbe   := val(9);
+ rtnRec.axInPlus    := val(8);
+ rtnRec.axInMinus   := val(7);
+ rtnRec.axInHome    := val(6);
+ rtnRec.axDoneProbe := val(5);
+ rtnRec.axDoneLimit := val(4);
+ rtnRec.axDoneHome  := val(3);
+ rtnRec.axDoneDro   := val(2);
+ rtnRec.axDistZero  := val(1);
+ rtnRec.axDone      := val(0);
 
  return rtnRec;
 end function;
@@ -410,11 +524,17 @@ function axisStatusToRecS(val : std_logic_vector(axisStatusSize-1 downto 0))
  return axisStatusRec is
  variable rtnRec : axisStatusRec;
 begin
- rtnRec.axDistZero  := val(4);
- rtnRec.axDoneLimit := val(3);
- rtnRec.axDoneHome  := val(2);
- rtnRec.axDoneDro   := val(1);
- rtnRec.axDoneDist  := val(0);
+ rtnRec.axInFlag    := val(10);
+ rtnRec.axInProbe   := val(9);
+ rtnRec.axInPlus    := val(8);
+ rtnRec.axInMinus   := val(7);
+ rtnRec.axInHome    := val(6);
+ rtnRec.axDoneProbe := val(5);
+ rtnRec.axDoneLimit := val(4);
+ rtnRec.axDoneHome  := val(3);
+ rtnRec.axDoneDro   := val(2);
+ rtnRec.axDistZero  := val(1);
+ rtnRec.axDone      := val(0);
 
  return rtnRec;
 end function;
@@ -427,7 +547,7 @@ begin
            val.cfgEncDirInv & val.cfgProbeInv  & val.cfgXPlusInv  &
            val.cfgXMinusInv & val.cfgXHomeInv  & val.cfgZPlusInv  &
            val.cfgZMinusInv & val.cfgZHomeInv  & val.cfgSpDirInv  &
-           val.cfgXJogInv   & val.cfgZJogInv   & val.cfgXDroInv   &
+           val.cfgXMpgInv   & val.cfgZMpgInv   & val.cfgXDroInv   &
            val.cfgZDroInv   & val.cfgXDirInv   & val.cfgZDirInv;
  return rtnVec;
 end function;
@@ -450,8 +570,8 @@ begin
  rtnRec.cfgZMinusInv := val(8);
  rtnRec.cfgZHomeInv  := val(7);
  rtnRec.cfgSpDirInv  := val(6);
- rtnRec.cfgXJogInv   := val(5);
- rtnRec.cfgZJogInv   := val(4);
+ rtnRec.cfgXMpgInv   := val(5);
+ rtnRec.cfgZMpgInv   := val(4);
  rtnRec.cfgXDroInv   := val(3);
  rtnRec.cfgZDroInv   := val(2);
  rtnRec.cfgXDirInv   := val(1);
@@ -479,8 +599,8 @@ begin
  rtnRec.cfgZMinusInv := val(8);
  rtnRec.cfgZHomeInv  := val(7);
  rtnRec.cfgSpDirInv  := val(6);
- rtnRec.cfgXJogInv   := val(5);
- rtnRec.cfgZJogInv   := val(4);
+ rtnRec.cfgXMpgInv   := val(5);
+ rtnRec.cfgZMpgInv   := val(4);
  rtnRec.cfgXDroInv   := val(3);
  rtnRec.cfgZDroInv   := val(2);
  rtnRec.cfgXDirInv   := val(1);

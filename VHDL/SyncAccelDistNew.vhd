@@ -8,6 +8,7 @@ use ieee.math_real.all;
 use work.RegDef.all;
 use work.IORecord.all;
 use work.DbgRecord.all;
+use work.FpgaLatheBitsRec.all;
 
 entity SyncAccelDist is
  generic (opBase     : unsigned := x"00";
@@ -27,23 +28,19 @@ entity SyncAccelDist is
   ena        : in std_logic;            --enable operation
   extDone    : in std_logic;            --external done input
   ch         : in std_logic;            --step input clock
-  cmdDir     : in std_logic;            --direction in
   curDir     : in std_logic;            --current directin
   locDisable : in std_logic;            --disable location update
-  distMode   : in std_logic;            --distance update mode
 
-  -- mpgQuad    : in std_logic_vector(1 downto 0);
-  -- jogInvert  : in std_logic;
-  -- jogMode    : in std_logic_vector(1 downto 0);
+  axisIn     : in  AxisInRec;           --axis input signals
+  axisCtl    : in  AxisCtlRec;          --axis control bits
+  axisStat   : out axisStatusRec;       --axis status output
 
   droQuad    : in std_logic_vector(1 downto 0);
-  droInvert  : in std_logic;
-  droEndChk  : in std_logic;
 
   dbg        : out SyncAccelDbg;
-  movDone    : out std_logic := '0';    --done move
-  droDone    : out std_logic := '0';    --dro move done
-  distZero   : out std_logic := '0';    --distance zero
+  -- moveDone    : out std_logic := '0';    --done move
+  -- droDone    : out std_logic := '0';    --dro move done
+  -- distZero   : out std_logic := '0';    --distance zero
   dout       : out SyncData;
   dirOut     : out std_logic := '0';    --direction out
   synStep    : out std_logic := '0'     --output step pulse
@@ -55,7 +52,7 @@ architecture Behavioral of SyncAccelDist is
  -- state machine
 
  type SyncFsm is (syncInit, syncIdle, enabled, updAccel, checkAccel, clkWait,
-                  distWait, doneWait, mpgEnabled, mpgEnabled1);
+                  distWait);
  signal syncState : syncFsm := syncInit;
 
  function syncConv(a: Syncfsm) return std_logic_vector is
@@ -68,9 +65,6 @@ architecture Behavioral of SyncAccelDist is
    when checkAccel  => return("0101");
    when clkWait     => return("0110");
    when distWait    => return("0111");
-   when doneWait    => return("1000");
-   -- when mpgEnabled  => return("1001");
-   -- when mpgEnabled1 => return("1010");
    when others      => return("0000");
   end case;
   return("0000");
@@ -78,6 +72,10 @@ architecture Behavioral of SyncAccelDist is
 
  type accelFsm is (accelInactive, accelActive, atSpeed, decelActive);
  signal accelState : accelFsm := accelInactive;
+
+ signal droEndChk : std_logic;
+ signal distMode  : std_logic;
+ signal cmdDir    : std_logic;
 
  -- constant registers
 
@@ -111,8 +109,11 @@ architecture Behavioral of SyncAccelDist is
  signal distUpdate  : std_logic := '0';
  signal distReLoad  : std_logic := '0';
 
- signal movDoneInt  : std_logic := '0';
- signal distZeroInt : std_logic := '0';
+ signal moveDone    : std_logic := '0';
+ signal distZero    : std_logic := '0';
+ signal doneHome    : std_logic := '0';
+ signal doneLimit   : std_logic := '0';
+ signal doneProbe   : std_logic := '0';
 
  signal synStepTmp  : std_logic := '0';
  signal synStepLast : std_logic := '0';
@@ -143,204 +144,14 @@ architecture Behavioral of SyncAccelDist is
  signal droEnd       : unsigned(droBits-1 downto 0);
  signal decelLimit   : unsigned(droBits-1 downto 0);
  signal droDecelStop : std_logic := '0';
- signal droDoneInt   : std_logic := '0';
+ signal droDone      : std_logic := '0';
  signal droLoad      : std_logic := '0';
  signal droLoadVal   : std_logic := '0';
 
- -- -- ********** mpg jog definitions **********
-
- -- -- mpg sync accel control signals
-
- -- signal stop     : std_logic := '0';    --stop sync accel
- -- signal mpgEna   : std_logic := '0';    --enable sync accel from mpg
- -- -- signal distLoad : std_logic := '0';    --load distance
-
- -- -- mpg state definitions
-
- -- type jog_fsm is (mpgUpdate, mpgDirChange, mpgBacklash, mpgMove, mpgX, mpgX1);
- -- signal jogState : jog_fsm;         --jog state variable
-
- -- -- mpg quadrature input
-
- -- alias a : std_logic is mpgQuad(0);
- -- alias b : std_logic is mpgQuad(1);
-
- -- signal lastA : std_logic_vector(1 downto 0) := (others => '0');
- -- signal lastB : std_logic_vector(1 downto 0) := (others => '0');
-
- -- signal mpgQuadState   : std_logic_vector(3 downto 0) := (others => '0');
- -- signal mpgQuadUpdate  : std_logic := '0';
- -- signal mpgDir         : std_logic := '0';
- -- signal lastMpgDir     : std_logic := '0';
- -- signal jogdir         : std_logic := '0';
- -- signal backlashActive : std_logic := '0';
-
- -- constant timerMax  : natural := 30; --50000;
- -- constant timerBits : natural := integer(ceil(log2(real(timerMax))));
- -- signal   timer     : unsigned(timerBits-1 downto 0) := (others => '0');
- -- signal   timerClr  : std_logic := '0';
-
- -- constant divMax    : natural := 63;
- -- constant divBits   : natural := integer(ceil(log2(real(divMax)))); 
- -- signal   chDiv     : unsigned(divBits-1 downto 0) := (others => '0');
- -- signal   chCtr     : unsigned(divBits-1 downto 0) := (others => '0');
-
- -- constant deltaMax  : natural := 50;
- -- constant deltaBits : natural := integer(ceil(log2(real(deltaMax))));
- -- signal   delta     : unsigned(deltaBits-1 downto 0) := (others => '0');
-
- -- type deltaRec is record
- --  val : unsigned(deltaBits-1 downto 0);
- -- end record;
-
- -- constant deltaI0   : natural := 30;
- -- constant deltaI1   : natural := 15;
- -- constant deltaI2   : natural := 4;
- -- constant deltaI3   : natural := 0;
-
- -- constant divI0     : natural := 1;
- -- constant divI1     : natural := 3;
- -- constant divI2     : natural := 5;
- -- constant divI3     : natural := 7;
-
- -- constant distI0    : natural := 1;
- -- constant distI1    : natural := 2;
- -- constant distI2    : natural := 4;
- -- constant distI3    : natural := 8;
-
- -- constant mpgBits   : natural := 32;
-
- -- constant regDeltaIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(deltaI3, 8) & to_unsigned(deltaI2, 8) &
- --   to_unsigned(deltaI2, 8) & to_unsigned(deltaI0, 8));
-
- -- constant regDivIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(divI3, 8) & to_unsigned(divI2, 8) &
- --   to_unsigned(divI2, 8) & to_unsigned(divI0, 8));
-
- -- constant regDistIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(distI3, 8) & to_unsigned(distI2, 8) &
- --   to_unsigned(distI2, 8) & to_unsigned(distI0, 8));
-
- -- signal mpgRegDelta : unsigned(mpgBits-1 downto 0) := regDeltaIni;
- -- signal mpgRegDiv   : unsigned(mpgBits-1 downto 0) := regDivIni;
- -- signal mpgRegDist  : unsigned(mpgBits-1 downto 0) := regDistIni;
-
- -- constant mpgDistMax  : natural := 200;
- -- constant mpgDistBits : natural := integer(ceil(log2(real(mpgDistMax))));
- -- signal   mpgDistUpd  : std_logic := '0';
- -- signal   mpgDist     : unsigned(mpgDistBits-1 downto 0) := (others => '0');
- -- signal   mpgDistCtr  : unsigned(mpgDistBits-1 downto 0) := (others => '0');
-
- -- alias delta0 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(0 + deltaBits-1 downto 0);
- -- alias delta1 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(8 + deltaBits-1 downto 8);
- -- alias delta2 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(16 + deltaBits-1 downto 16);
-
- --  alias div0 : unsigned(timerBits-1 downto 0) is
- --  mpgRegDiv(0 + timerBits-1 downto 0);
- -- alias div1 : unsigned(timerBits-1 downto 0) is
- --  mpgRegDiv(8 + timerBits-1 downto 8);
- -- alias div2 : unsigned(timerBits-1 downto 0) is
- --  mpgRegDiv(16 + timerBits-1 downto 16);
- -- alias div3 : unsigned(timerBits-1 downto 0) is
- --  mpgRegDiv(24 + timerBits-1 downto 24);
-
- --  alias dist0 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(0 + mpgDistBits-1 downto 0);
- -- alias dist1 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(8 + mpgDistBits-1 downto 8);
- -- alias dist2 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(16 + mpgDistBits-1 downto 16);
- -- alias dist3 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(24 + mpgDistBits-1 downto 24);
-
- -- constant mpgBits   : natural := 32;
-
- -- constant deltaMax  : natural := 50;
- -- constant deltaBits : natural := integer(ceil(log2(real(deltaMax))));
- -- signal   delta     : unsigned(deltaBits-1 downto 0) := (others => '0');
-
- -- type deltaRec is record
- --  val : unsigned(deltaBits-1 downto 0);
- -- end record;
-
- -- -- delta
-
- -- constant deltaI0   : natural := 30;
- -- constant deltaI1   : natural := 15;
- -- constant deltaI2   : natural := 4;
- -- constant deltaI3   : natural := 0;
-
- -- constant regDeltaIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(deltaI3, 8) & to_unsigned(deltaI2, 8) &
- --   to_unsigned(deltaI2, 8) & to_unsigned(deltaI0, 8));
-
- -- signal mpgRegDelta : unsigned(mpgBits-1 downto 0) := regDeltaIni;
-
- -- alias delta0 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(0 + deltaBits-1 downto 0);
- -- alias delta1 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(8 + deltaBits-1 downto 8);
- -- alias delta2 : unsigned(deltaBits-1 downto 0) is
- --  mpgRegDelta(16 + deltaBits-1 downto 16);
-
- -- -- div
- 
- -- constant divMax    : natural := 63;
- -- constant divBits   : natural := integer(ceil(log2(real(divMax)))); 
- -- signal   chDiv     : unsigned(divBits-1 downto 0) := (others => '0');
- -- signal   chCtr     : unsigned(divBits-1 downto 0) := (others => '0');
-
- -- constant divI0     : natural := 1;
- -- constant divI1     : natural := 3;
- -- constant divI2     : natural := 5;
- -- constant divI3     : natural := 7;
-
- -- constant regDivIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(divI3, 8) & to_unsigned(divI2, 8) &
- --   to_unsigned(divI2, 8) & to_unsigned(divI0, 8));
-
- -- signal mpgRegDiv   : unsigned(mpgBits-1 downto 0) := regDivIni;
-
- -- alias div0 : unsigned(divBits-1 downto 0) is
- --  mpgRegDiv(0 + divBits-1 downto 0);
- -- alias div1 : unsigned(divBits-1 downto 0) is
- --  mpgRegDiv(8 + divBits-1 downto 8);
- -- alias div2 : unsigned(divBits-1 downto 0) is
- --  mpgRegDiv(16 + divBits-1 downto 16);
- -- alias div3 : unsigned(divBits-1 downto 0) is
- --  mpgRegDiv(24 + divBits-1 downto 24);
-
- -- -- dist
- 
- -- constant mpgDistMax  : natural := 200;
- -- constant mpgDistBits : natural := integer(ceil(log2(real(mpgDistMax))));
- -- signal   mpgDistUpd  : std_logic := '0';
- -- signal   mpgDist     : unsigned(mpgDistBits-1 downto 0) := (others => '0');
- -- signal   mpgDistCtr  : unsigned(mpgDistBits-1 downto 0) := (others => '0');
-
- -- constant distI0    : natural := 1;
- -- constant distI1    : natural := 2;
- -- constant distI2    : natural := 4;
- -- constant distI3    : natural := 8;
-
- -- constant regDistIni : unsigned(mpgBits-1 downto 0) :=
- --  (to_unsigned(distI3, 8) & to_unsigned(distI2, 8) &
- --   to_unsigned(distI2, 8) & to_unsigned(distI0, 8));
-
- -- signal mpgRegDist  : unsigned(mpgBits-1 downto 0) := regDistIni;
-
- -- alias dist0 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(0 + mpgDistBits-1 downto 0);
- -- alias dist1 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(8 + mpgDistBits-1 downto 8);
- -- alias dist2 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(16 + mpgDistBits-1 downto 16);
- -- alias dist3 : unsigned(mpgDistBits-1 downto 0) is
- --  mpgRegDist(24 + mpgDistBits-1 downto 24);
+ signal inHome       : std_logic;
+ signal inMinus      : std_logic;
+ signal inPlus       : std_logic;
+ signal inProbe      : std_logic;
 
 begin
 
@@ -428,15 +239,6 @@ begin
    inp   => inp,
    data  => decelLimit);
 
-  -- BacklashShiftOp : entity work.ShiftOp
-  -- generic map(opVal  => opBase + F_Ld_Backlash,
-  --             n      => distBits)
-  -- port map (
-  --  clk   => clk,
-  --  inp   => inp,
-  --  data  => backlash
-  --  );
-
  locvalreg : entity work.ShiftOpLoad
   generic map(opVal  => opBase + F_Ld_Loc,
               n      => locBits)
@@ -445,35 +247,6 @@ begin
    inp   => inp,
    load  => locLoad,
    data  => locVal);
-
- -- MpgDeltaOp : entity work.ShiftOp
- --  generic map(opVal  => opBase + F_Ld_Mpg_Delta,
- --              n      => mpgBits)
- --  port map (
- --   clk   => clk,
- --   inp   => inp,
- --   data  => mpgRegDelta
- --   );
-
- --  MpgDivOp : entity work.ShiftOp
- --  generic map(opVal  => opBase + F_Ld_Mpg_Div,
- --              n      => mpgBits)
- --  port map (
- --   clk   => clk,
- --   inp   => inp,
- --   data  => mpgRegDiv
- --   );
-
- --  MpgDistOp : entity work.ShiftOp
- --  generic map(opVal  => opBase + F_Ld_Mpg_Dist,
- --              n      => mpgBits)
- --  port map (
- --   clk   => clk,
- --   inp   => inp,
- --   data  => mpgRegDist
- --   );
-
- -- read registers
 
  sum_out : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Sum,
@@ -563,7 +336,6 @@ begin
    dout   => dout.dro                   --droDout
    );
 
- -- dirOut <= cmdDir when (jogMode(1) = '0') else jogDir;
  dirOut <= cmdDir;
  
  AccelShiftOut : entity work.ShiftOutN
@@ -577,31 +349,46 @@ begin
    dout   => dout.accelSteps            --accelStepsDout
    );
 
- movDone <= movDoneInt;
+ -- moveDone <= movDoneInt;
 
  dbg.ena     <= ena;
- dbg.done    <= movDoneInt;
+ dbg.done    <= moveDone;
  dbg.distCtr <= std_logic(distCtr(0));
  dbg.loc     <= std_logic(loc(0));
 
- distZeroInt <= '1' when (distCtr = 0) else '0';
- distZero    <= distZeroInt;
+ distzero <= '1' when (distCtr = 0) else '0';
 
+ axisStat.axDone      <= moveDone;
+
+ axisStat.axDistZero  <= distZero;
+ axisStat.axDoneDro   <= droDone;
+ axisStat.axDoneHome  <= doneHome;
+ axisStat.axDoneLimit <= doneLimit;
+ axisStat.axDoneProbe <= doneProbe;
+
+ axisStat.axInHome    <= inHome;
+ axisStat.axInMinus   <= inMinus;
+ axisStat.axInPlus    <= inPlus;
+ axisStat.axInProbe   <= inProbe;
+ axisStat.axInFlag    <= (inHome or inMinus or inPlus or inProbe);
+
+ droEndChk <= axisCtl.ctlDroEnd;
+ distMode  <= axisCtl.ctlDistMode;
+ cmdDir    <= axisCtl.ctlDir;
+ 
  syn_process: process(clk)
-
-  -- variable mpgQuadChange : std_logic;
 
  begin
   
   if (rising_edge(clk)) then            --if clock active
 
-   droDone <= droDoneInt;
+   inHome  <= axisIn.axHome;
+   inMinus <= axisIn.axMinus;
+   inPlus  <= axisIn.axPlus;
+   inProbe <= axisIn.axProbe;
 
-   -- if ((jogMode = "01") and (loadDist = '1')) then --jog and dist update
-   --  distUpdate <= '1';                  --set distance update flag
-   -- end if;
-
-   if ((distMode = '1') and (loadDist = '1')) then --dist upd mode and update
+   if ((axisCtl.ctlDistMode = '1') and
+       (loadDist = '1')) then           --dist upd mode and update
     distReLoad <= '1';                  --set distance reload flag
    end if;
 
@@ -610,7 +397,7 @@ begin
    end if;
 
    if (init = '1') then                 --if initialization
-    movDoneInt <= '0';                  --clear done
+    moveDone <= '0';                    --clear done
     droDone <= '0';                     --clear dro done
     xPos <= (others => '0');            --clear input count
     yPos <= (others => '0');            --clear output count
@@ -625,7 +412,7 @@ begin
 
     -- initialization
     when syncInit => --***********************************************
-     -- movDone <= '0';                 --clear move done
+     -- moveDone <= '0';                 --clear move done
      accelState <= accelInactive;       --set to inactive state
      synStep <= '0';                    --clear output step
      synStepTmp <= '0';                 --clear step
@@ -641,22 +428,9 @@ begin
      synStep <= '0';                    --clear output step
 
      if (ena = '1') then
-     -- if (((ena = '1')    and (jogMode = "00")) or
-     --     ((mpgEna = '1') and (jogMode = "10"))) then
       distCtr <= distVal;
       accelState <= accelActive;        --start acceleration
       syncState <= enabled;             --go to enabled state
-     -- elsif ((mpgEna = '1') and (jogMode = "11")) then --if mpg jog
-
-     --  if (backlashActive /= '0') then   --if backlash
-     --   distCtr <= backlash;             --set to move backlash dist
-     --   syncState <= enabled;            --go to enabled state
-     --  else
-     --   distCtr <= ((distCtr'length - mpgDist'length-1 downto 0 =>'0') &
-     --               mpgDist);            --load distance
-     --   chCtr <= to_unsigned(0, chCtr'length); --initialize clock divider
-     --   syncState <= mpgEnabled;          --advance to mpg jog state
-     --  end if;
      end if;
 
     --enabled
@@ -668,7 +442,7 @@ begin
 
      synStep <= '0';                    --clear output step
 
-     if ((ena = '0') or (extDone = '1')) then --if enable cleared
+     if ((ena = '0') or (extDone= '1')) then --if enable cleared
       syncState <= syncInit;            --return to init state
      elsif (ch = '1') then              --if input clock
 
@@ -747,6 +521,17 @@ begin
     -- check acceleration
     when checkAccel => --*********************************************
 
+     if (axisCtl.ctlHome = '1') then
+      if (axisCtl.ctlHomePol = '1') then
+       doneHome <= inHome;
+      else
+       doneHome <= not inHome;
+      end if;
+     end if;
+
+     doneProbe <= inProbe and axisCtl.ctlProbe;
+     doneLimit <= (inMinus or inPlus) and axisCtl.ctlUseLimits;
+
      if (distUpdate = '1') then         --if distance update
       distUpdate <= '0';                --clear update flag
       if (distCtr > maxDist) then       --if distance out of range
@@ -791,28 +576,29 @@ begin
 
      if (ch = '0') then                 --if change flag cleared
 
+      if (doneLimit or doneHome or doneProbe) = '1' then
+       moveDone <= '1';               --set done flag
+       syncState <= syncInit;           --return to init state
+      end if;
+
       if (droEndChk = '0') then         --if not using dro for end
 
-       if (distZeroInt = '0') then      --if not to distance
+       if (distZero = '0') then         --if not to distance
         syncState <= enabled;           --return to enabled state
        else                             --if distance 0
 
-        -- if (jogMode = "00") then        --if not jogging
-         if (distMode = '0') then       --if in distance mode
-          movDoneInt <= '1';            --set done flag
-          syncState <= syncInit;        --return to init state
-         else                           --if distance update mode
-          syncState <= distWait;        --wait for distance update
-         end if;          
-        -- else                            --if jog mode
-        --  syncState <= doneWait;         --wait to jog again
-        -- end if;
+        if (distMode = '0') then       --if in distance mode
+         moveDone <= '1';              --set done flag
+         syncState <= syncInit;        --return to init state
+        else                           --if distance update mode
+         syncState <= distWait;        --wait for distance update
+        end if;          
 
        end if;
 
       else                              --if using dro for end
 
-       if (droDoneInt = '0') then       --if not done
+       if (droDone = '0') then          --if not done
         syncState <= enabled;           --return to enabled
        else                             --if dro done
         droDone <= '1';                 --set done flag
@@ -837,50 +623,6 @@ begin
       syncState <= enabled;             --return to enabled
      end if;      
 
-    --wait for mpg
-    when doneWait => --***********************************************
-
-     -- if (jogMode = "00") then           --if out of jog mode
-      syncState <= syncInit;            --return to init state
-     -- else                               --if jog mode
-     --  if (jogState = mpgUpdate) then    --if jog waiting for an update
-     --   syncState <= syncInit;           --return to init state
-     --  end if;
-     -- end if;
-
-    -- mpg updates
-    -- when mpgEnabled => --*********************************************
-
-    --  synStep <= '0';                    --clear step output
-    --  if (ch = '1') then                 --if clock
-    --   if (chCtr = chDiv) then           --if time to step
-    --    if (distZeroInt = '0') then      --if not done
-    --     chCtr <= to_unsigned(0, chCtr'length); --reset counter
-    --     distCtr <= distCtr - 1;         --update distance
-    --     synStepTmp <= '1';              --set step signal
-    --     syncState <= mpgEnabled1;       --advance to next state
-    --    else                             --if done
-    --     syncState <= syncInit;          --return to init state
-    --    end if;
-    --   else                              --if not time to step
-    --    chCtr <= chCtr + 1;              --increment counter
-    --   end if;
-    --  end if;
-
-    -- -- mpg updates
-    -- when mpgEnabled1 => --********************************************
-
-    --  synStep <= synStepTmp;             --output step pulse
-    --  synStepTmp <= '0';                 --clear step pulse
-    --  if (mpgDistUpd = '1') then         --if time for a distance update
-    --   distCtr <= distCtr + mpgDist;     --update distance
-    --  elsif (distCtr > maxDist) then     --if distctr gt max
-    --   distCtr <= maxDist;               --reset to max
-    --  end if;
-
-    --  syncState <= mpgEnabled;           --return to enable state
-
-    -- others
     when others => --*************************************************
      syncState <= syncInit;             --set to init
 
@@ -894,14 +636,14 @@ begin
    droQuadState <= droB(1) & droA(1) & droB(0) & droA(0);
    
    case (droQuadState) is
-    when "0001" => droUpdate <= '1'; droDir <= droInvert;
-    when "0111" => droUpdate <= '1'; droDir <= droInvert;
-    when "1110" => droUpdate <= '1'; droDir <= droInvert;
-    when "1000" => droUpdate <= '1'; droDir <= droInvert;
-    when "0010" => droUpdate <= '1'; droDir <= not droInvert; 
-    when "1011" => droUpdate <= '1'; droDir <= not droInvert; 
-    when "1101" => droUpdate <= '1'; droDir <= not droInvert; 
-    when "0100" => droUpdate <= '1'; droDir <= not droInvert; 
+    when "0001" => droUpdate <= '1'; droDir <= '0';
+    when "0111" => droUpdate <= '1'; droDir <= '0';
+    when "1110" => droUpdate <= '1'; droDir <= '0';
+    when "1000" => droUpdate <= '1'; droDir <= '0';
+    when "0010" => droUpdate <= '1'; droDir <= '1';
+    when "1011" => droUpdate <= '1'; droDir <= '1';
+    when "1101" => droUpdate <= '1'; droDir <= '1';
+    when "0100" => droUpdate <= '1'; droDir <= '1';
     when others => droUpdate <= '0';
    end case;                            --end case droQuadChange
 
@@ -930,7 +672,7 @@ begin
 
    case droState is                     --select state
     when droIdle =>                     --idle
-     droDoneInt <= '0';
+     droDone <= '0';
      droDecelStop <= '0';
 
     when droCalcDist =>                 --calculate distance
@@ -951,7 +693,7 @@ begin
      
     when droChkDone =>                     --check for done
      if (droDist < to_signed(0, droBits)) then
-      droDoneInt <= '1';
+      droDone <= '1';
       droState <= droDoneWait;
      end if;
 
@@ -964,151 +706,7 @@ begin
      droState <= droIdle;
    end case;                            --end case droState
   
-   -- ********** jog and mpg **********
-
-   -- if (jogMode(1) = '1') then           --if enabled mpg mode
-
-   --  mpgQuadChange := (lastA(1) xor lastA(0)) or
-   --                   (lastB(1) xor lastB(0)); --quadrature change
-
-   --  if (mpgQuadChange = '0') then          --if no quadrature change
-   --   -- if (delta < deltaMax) then
-   --   --  delta <= delta + 1;
-   --   -- end if;
-   --   mpgQuadUpdate <= '0';
-   --  else                                --if quadrature change
-   --   mpgQuadState <= lastB(1) & lastA(1) & lastB(0) & lastA(0); --direction
-
-   --   case (mpgQuadState) is
-   --    when "0001" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
-   -- -- when "0111" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
-   -- -- when "1110" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
-   -- -- when "1000" => mpgQuadUpdate <= '1'; mpgDir <= jogInvert;
-
-   --    when "0010" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
-   -- -- when "1011" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
-   -- -- when "1101" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
-   -- -- when "0100" =>  mpgQuadUpdate <= '1'; mpgDir <= not jogInvert;
-
-   --    when others => mpgQuadUpdate <= '0';
-   --   end case;
-   --  end if;
-
-   --  if (jogMode(0) = '1') then          --if continuous jog
-   --   if (timerClr = '0') then
-   --    if (timer = 0) then               --if msec timer zero
-   --     timer <= to_unsigned(timerMax, timer'length); --reset to maximum
-   --     if (delta /= to_unsigned(deltaMax, delta'length)) then
-   --      delta <= delta + 1;             --update delta
-   --     end if;
-   --    else                              --if non zero
-   --     timer <= timer - 1;              --decrement timer
-   --    end if;
-   --   else
-   --    timer <= to_unsigned(timerMax, timer'length); --reset to maximum
-   --    delta <= to_unsigned(0, delta'length); --clear delta
-   --   end if;
-   --  end if;                             --end usec timer
-
-   --  lastA <= lastA(0) & a;
-   --  lastB <= lastB(0) & b;
-
-   --  case jogState is                    --select on jogState
-
-   --   when mpgUpdate =>                  --process message update
-   --    if (mpgQuadUpdate = '1') then     --if mpg state changed
-
-   --     -- if (mpgDir /= lastMpgDir) then   --if direction changed
-   --     --  lastMpgDir <= mpgDir;           --save direction
-
-   --     if (mpgDir /= curDir) then       --if direction changed
-   --      stop <= '1';                    --stop
-   --      jogState <= mpgDirChange;       --got to direction change state
-   --     else                             --if direction the same
-   --      mpgEna <= '1';
-   --      if (jogMode(0) = '1') then      --if jog mpg continuous
-
-   --       if (delta >= delta0) then
-   --        chDiv   <= div0;
-   --        mpgDist <= dist0;
-   --       elsif (delta >= delta1) then
-   --        chDiv   <= div1;
-   --        mpgDist <= dist1;
-   --       elsif (delta >= delta2) then
-   --        chDiv   <= div2;
-   --        mpgDist <= dist2;
-   --       else
-   --        chDiv   <= div3;
-   --        mpgDist <= dist3;
-   --       end if;
-
-   --       if (syncState = mpgEnabled) then --if moving
-   --        mpgDistUpd <= '1';            --update distance
-   --       end if;
-   --       timerClr <= '1';
-   --       jogState <= mpgX;
-   --      else
-   --       jogState <= mpgMove;
-   --      end if;
-   --     end if;                          --end direction change
-
-   --    else                              --if not update
-
-   --    end if;                           --end update
-
-   --   when mpgDirChange =>               --direction change
-   --    if (syncState = syncIdle) then    --if syncAccel in idle state
-   --     stop <= '0';                     --clear stop flag
-   --     if (backlash = 0) then           --if no backlash
-   --      jogState <= mpgMove;            --go to move state
-   --     else                             --if backlash
-   --      jogDir <= mpgDir;
-   --      backlashActive <= '1';
-   --      -- distLoad <= '1';
-   --      mpgEna <= '1';
-   --      jogState <= mpgBacklash;
-   --     end if;
-   --    end if;
-
-   --   when mpgBacklash =>                --backlash
-   --    if (syncState = doneWait) then    --if move done
-   --     mpgEna <= '0';
-   --     backlashActive <= '0';
-   --     jogState <= mpgUpdate;
-   --    -- elsif (syncState /=syncIdle) then
-   --    --  distLoad <= '0';
-   --    end if;
-
-   --   when mpgMove =>
-   --    if (syncState = doneWait) then    --if move done
-   --     mpgEna <= '0';
-   --     jogState <= mpgUpdate;
-   --    -- elsif (syncState /=syncIdle) then
-   --    --  distLoad <= '0';
-   --    end if;
-
-   --   when mpgX =>                       --
-   --    timerClr <= '0';
-   --    jogState <= mpgX1;
-
-   --   when mpgX1 =>
-   --    if (syncState = mpgEnabled1) then
-   --     mpgDistUpd <= '0';
-   --    end if;
-   --    if (distCtr = to_unsigned(0, distCtr'length)) then
-   --     mpgEna <= '0';
-   --     jogState <= mpgUpdate;
-   --    end if;
-
-   --   when others => null;
-   --  end case;                           --end case jog
-
-   -- -- else                                 --if not mpg mode
-   -- --  lastMpgDir <= dirIn;                --update last direction
-   -- end if;                              --enabled
-
    if ((synStepLast = '0') and (synStepTmp = '1')) then --if stepping
-    -- if ((locDisable = '0') and (backlashActive = '0')) then --enabled
     if (locDisable = '0') then          --if loc updates not disabled
      if (cmdDir = '1') then             --if forward
       loc <= loc + 1;                   --increment location

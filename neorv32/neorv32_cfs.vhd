@@ -53,7 +53,8 @@ entity neorv32_cfs is
   CFS_CONFIG   : std_ulogic_vector(31 downto 0); -- custom CFS configuration generic
 
   CFS_IN_SIZE  : natural;        -- size of CFS input conduit in bits
-  CFS_OUT_SIZE : natural         -- size of CFS output conduit in bits
+  CFS_OUT_SIZE : natural;        -- size of CFS output conduit in bits
+  inputPins    : positive
   );
  port (
   clk_i       : in  std_ulogic; -- global clock line
@@ -70,8 +71,8 @@ entity neorv32_cfs is
   cfs_we_o    : out std_ulogic := '0';
   cfs_reg_o   : out std_ulogic_vector(2 downto 0) := (others => '0');
 
-  cfs_mpg_i   : MpgQuadRec
-
+  cfs_mpg_i   : in  MpgQuadRec;
+  cfs_pins_i  : in  std_ulogic_vector(inputPins-1 downto 0)
   );
 end neorv32_cfs;
 
@@ -96,6 +97,7 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
  constant millisSel : std_ulogic_vector(6-1 downto 0) := "000100";
  constant zMpgSel   : std_ulogic_vector(6-1 downto 0) := "000101";
  constant xMpgSel   : std_ulogic_vector(6-1 downto 0) := "000110";
+ constant pinsSel   : std_ulogic_vector(6-1 downto 0) := "000111";
 
  signal zEmpty : std_logic := '0';
  signal zData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
@@ -104,6 +106,9 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
  signal xEmpty : std_logic := '0';
  signal xData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
  signal reMpgX : std_logic := '0';
+
+ constant pinFill : std_ulogic_vector(32-inputPins-1 downto 0) :=
+  (others => '0');
  
 begin
 
@@ -209,6 +214,7 @@ begin
      when millisSel => bus_rsp_o.data <= std_ulogic_vector(millis);
      when zMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & zEmpty & zData);
      when xMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & xEmpty & xData);
+     when pinsSel   => bus_rsp_o.data <= pinFill & cfs_pins_i;
      when others    => bus_rsp_o.data <= (others => '0');
    end case;
    end if;

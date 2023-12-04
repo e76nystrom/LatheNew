@@ -11,8 +11,9 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity CFSInterface is
- generic (lenBits  : positive := 8;
-          dataBits : positive := 32);
+ generic (lenBits   : positive := 8;
+          dataBits  : positive := 32;
+          inputPins : positive := 13);
  port (
   clk     : in std_logic;               --clock
   we      : in std_ulogic;              --write request
@@ -24,7 +25,8 @@ entity CFSInterface is
   riscVCtl   : out riscVCtlRec;
 
   latheData  : in  RiscvDataRcv;          --incoming read data
-  latheCtl   : out RiscvDataCtl := riscvDataCtlInit --outgoing control and data
+  latheCtl   : out RiscvDataCtl := riscvDataCtlInit; --outgoing control and data
+  pinIn      : out std_logic_vector(inputPins-1 downto 0) := (others => '0')
   );
 end CFSInterface;
 
@@ -97,6 +99,9 @@ begin
        recv <= '1';
       end if;
 
+     when "111" =>
+      pinIn <= std_logic_vector(CFSDataIn(inputPins-1 downto 0));
+
      when others => null;
     end case;
    end if;
@@ -144,7 +149,7 @@ begin
      recvState <= rRecv;
 
     when rRecv =>
-     if (rCount < 4) then
+     if (rCount <= 4) then
       latheCtl.shift <= '0';
      end if;
 

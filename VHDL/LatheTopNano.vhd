@@ -8,8 +8,9 @@ use work.dbgRecord.all;
 use work.IORecord.all;
 
 entity LatheTop is
- generic (ledPins : positive := 8;
-          dbgPins : positive := 8);
+ generic (ledPins   : positive := 8;
+          dbgPins   : positive := 8;
+          inputPins : positive := 13);
  port (
   sysClk   : in std_logic;
   
@@ -33,9 +34,9 @@ entity LatheTop is
 
   xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn    : in std_logic_vector(4 downto 0);
+  pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
-  aux      : out std_logic_vector(7 downto 0);
+  -- aux      : out std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0) := (others => '0');
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
@@ -71,7 +72,7 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of xMpg : signal is true;
 
  attribute syn_keep of pinIn  : signal is true;
- attribute syn_keep of aux    : signal is true;
+ -- attribute syn_keep of aux    : signal is true;
  attribute syn_keep of pinOut : signal is true;
  attribute syn_keep of extOut : signal is true;
  attribute syn_keep of bufOut : signal is true;

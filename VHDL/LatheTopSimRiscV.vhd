@@ -17,8 +17,9 @@ entity LatheTopSimRiscV is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
           MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
-          ledPins : positive := 8;
-          dbgPins : positive := 8);
+          ledPins   : positive := 8;
+          dbgPins   : positive := 8;
+          inputPins : positive := inputsSize);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
@@ -44,7 +45,7 @@ entity LatheTopSimRiscV is
   zMpg     : in std_logic_vector(1 downto 0);
   xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn    : in std_logic_vector(4 downto 0);
+  pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
   aux      : out std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0);
@@ -122,7 +123,6 @@ architecture Behavorial of LatheTopSimRiscV is
  signal cfs_out_o  : std_ulogic_vector(32-1 downto 0) := (others => '0');
 
  signal cfs_we_o   : std_ulogic := '0';
- signal cfs_re_o   : std_ulogic := '0';
  signal cfs_reg_o  : std_ulogic_vector(2 downto 0) := (others => '0');
 
  signal spiDClk : std_ulogic;
@@ -138,20 +138,28 @@ architecture Behavorial of LatheTopSimRiscV is
  signal riscvData  : RiscvDataRcv;
  signal riscvCtl   : RiscvDataCtl;
 
- signal riscVCtlReg : riscVCtlRec := (riscVData => '0', riscVSPI => '0');
+ signal riscVCtlReg : riscVCtlRec := (riscvData => '0',
+                                      riscvSPI => '0',
+                                      riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
  signal extDout    : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
+ signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+
+ signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
+ signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
 
- -- mpgQuad.zQuad <= zMpg;
- mpgQuad.xQuad <= xMpg;
+ cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
-   mpgQuad.zQuad(0) <= con_gpio_o(0);
-   mpgQuad.zQuad(1) <= con_gpio_o(1);
+-- mpgQuad.zQuad <= zMpg;
+ mpgQuad.zQuad(0) <= con_gpio_o(0);
+ mpgQuad.zQuad(1) <= con_gpio_o(1);
+
+ mpgQuad.xQuad <= xMpg;
 
  dbgsetup : entity work.DbgMap
   port map (
@@ -185,6 +193,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
+   inputPins                    => riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -203,6 +212,7 @@ begin
    cfs_reg_o   => cfs_reg_o,
 
    cfs_mpg_i   => mpgQuad,
+   cfs_pins_i  => cfs_pins_i,
 
    -- jtag_trst_i => jtag_trst_i,
    -- jtag_tck_i  => jtag_tck_i,
@@ -260,8 +270,11 @@ begin
   riscVCtl   => riscVCtlReg,
 
   latheData  => riscvData,
-  latheCtl   => riscvCtl
+  latheCtl   => riscvCtl,
+  pinIn      => pinInTest
   );
+
+ pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
   generic map (extData => 1,
@@ -294,7 +307,7 @@ begin
 
    xMpg     => xMpg,
 
-   pinIn    => pinIn,
+   pinIn    => pinInLathe,
 
    -- aux      => aux,
    pinOut   => pinOut,

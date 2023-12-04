@@ -13,6 +13,7 @@ use work.FpgaLatheBitsFunc.all;
 
 entity LatheCtl is
  generic (dbgPins       : positive := 8;
+          inputPins     : positive := 13;
           synBits       : positive := 32;
           posBits       : positive := 24;
           countBits     : positive := 18;
@@ -55,15 +56,15 @@ entity LatheCtl is
   zMpg     : in  std_logic_vector(1 downto 0);
   xMpg     : in  std_logic_vector(1 downto 0);
 
-  pinIn    : in  std_logic_vector(4 downto 0);
+  pinIn    : in  std_logic_vector(inputPins-1 downto 0);
 
   statusR  : out statusRec := statusToRec(statusZero);
 
   dbg      : out controlDbg;
   -- aux      : out std_logic_vector(7 downto 0) := (others => '0');
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
-  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0)  := (others => '0');
+  bufOut   : out std_logic_vector(3 downto 0)  := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -76,10 +77,11 @@ architecture Behavioral of LatheCtl is
  -- control registers
 
  signal inputsR   : inputsRec;
- signal inputsReg : unsigned(inputsSize-1 downto 0);
 
- -- signal runReg : runVec;
- -- signal runR   : runRec;
+ signal pinOutR : pinOutRec;
+
+ signal outPinReg : outputsVec;
+ signal outPinR   : outputsRec;
 
  signal synCtlReg : synCtlVec;
  signal synCtlR   : synCtlRec;
@@ -114,6 +116,7 @@ architecture Behavioral of LatheCtl is
  signal zCh       : std_logic;
  signal xInit     : std_logic;
  signal zInit     : std_logic;
+ signal zAxisIn   : axisInRec;
 
  signal zAxisStep : std_logic;
  signal xAxisStep : std_logic;
@@ -123,6 +126,7 @@ architecture Behavioral of LatheCtl is
  signal xExtInit  : std_logic;
  signal zExtEna   : std_logic;
  signal xExtEna   : std_logic;
+ signal xAxisIn   : axisInRec;
 
  signal zDelayStep : std_logic;
  signal xDelayStep : std_logic;
@@ -147,12 +151,12 @@ architecture Behavioral of LatheCtl is
  signal spindleStepOut : std_logic;
  signal spindleDirOut  : std_logic;
 
- signal zSwitches : std_logic_vector(3 downto 0);
- signal xSwitches : std_logic_vector(3 downto 0);
+ -- signal zSwitches : std_logic_vector(3 downto 0);
+ -- signal xSwitches : std_logic_vector(3 downto 0);
 
- alias eStopIn : std_logic is pinIn(0);
- alias pwmOut  : std_logic is pinOut(10);
- alias chgPump : std_logic is pinOut(11);
+ alias eStopIn : std_logic is inputsR.inPin10;
+ -- alias pwmOut  : std_logic is pinOut(10);
+ -- alias chgPump : std_logic is pinOut(11);
 
  signal eStop  : std_logic;
  signal pwmEna : std_logic;
@@ -162,28 +166,47 @@ architecture Behavioral of LatheCtl is
  signal zStepLast : std_logic := '0';
 
  signal zAxisDro : std_logic_vector(1 downto 0) := (others => '0');
+ signal zDroSel  : std_logic_vector(1 downto 0) := (others => '0');
  signal xAxisDro : std_logic_vector(1 downto 0) := (others => '0');
+ signal xDroSel  : std_logic_vector(1 downto 0) := (others => '0');
  signal xStepLast : std_logic := '0';
 
 begin
 
+ inputsR <= inputsToRec(pinIn);
+
  eStop <= cfgCtlR.cfgEStopEna and (eStopIn xor cfgCtlR.cfgEStopInv);
  statusR.stEStop <= eStop;
 
- statusR.ctlBusy     <= '0';
- statusR.queNotEmpty <= '0';
+ -- statusR.ctlBusy     <= '0';
+ -- statusR.queNotEmpty <= '0';
 
- pinOut(0) <= zDir;
- pinOut(1) <= zStep;
- pinOut(2) <= xDir;
- pinOut(3) <= xStep;
+ pinOut <= pinOutToVec(pinOutR);
 
- pinOut(7 downto 4) <= (others => '0');
+ pinOutR.pinOut2  <= zDir; 
+ pinOutR.pinOut3  <= zStep;
+ pinOutR.pinOut4  <= xDir; 
+ pinOutR.pinOut5  <= xStep;
+ pinOutR.pinOut6  <= '0';
+ pinOutR.pinOut7  <= '0';
+ pinOutR.pinOut8  <= '0';
+ pinOutR.pinOut9  <= '0';
+ pinOutR.pinOut1  <= outPinR.outPin1;
+ pinOutR.pinOut14 <= outPinR.outPin14;
+ -- pinOutR.pinOut16
+ -- pinOutR.pinOut17
+
+ -- pinOut(0) <= zDir;
+ -- pinOut(1) <= zStep;
+ -- pinOut(2) <= xDir;
+ -- pinOut(3) <= xStep;
+
+ -- pinOut(7 downto 4) <= (others => '0');
 
  -- alias digSel: unsigned(1 downto 0) is div(19 downto 18);
  -- pinOut(5 downto 4) <= zMpg;
  -- pinout(7 downto 6) <= xMpg;
- pinOut(9 downto 8) <= zDro;
+ -- pinOut(9 downto 8) <= zDro;
 
  -- pinOut(9 downto 4) <= std_logic_vector(div(19 downto 14));
 
@@ -191,14 +214,13 @@ begin
  --                               cfgCtlReg(c_cfgZPlusInv downto c_cfgzHomeInv));
  -- xSwitches <= std_logic_vector(cfgProbeInv &
  --                               cfgCtlReg(c_cfgXPlusInv downto c_cfgxHomeInv));
- zSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgZPlusInv &
-               cfgCtlR.cfgZHomeInv & cfgCtlR.cfgZMinusInv);
+ -- zSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgZPlusInv &
+ --               cfgCtlR.cfgZHomeInv & cfgCtlR.cfgZMinusInv);
 
- xSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgXPlusInv &
-               cfgCtlR.cfgXHomeInv & cfgCtlR.cfgXMinusInv);
+ -- xSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgXPlusInv &
+ --               cfgCtlR.cfgXHomeInv & cfgCtlR.cfgXMinusInv);
 
- inputsR <= inputsToRec("00000000" & pinIn);
-
+ -- inputsR <= inputsToRec("00000000" & pinIn);
 
  bufOutP : process (clk)
  begin
@@ -209,7 +231,8 @@ begin
 
  extOut(0) <= spindleDirOut;
  extOut(1) <= spindleStepOut;
- extOut(2) <= pinIn(4);
+
+ extOut(2) <= inputsR.inZHome;
 
  statusR.zAxisEna <= zExtEna;
  statusR.xAxisEna <= xExtEna;
@@ -241,11 +264,20 @@ begin
   port map (
    clk  => clk,
    oRec => curR,
-   data => inputsReg,
+   data => unsigned(pinIn),
    dout => dout.inputs                  --inputsDout
    );
 
- inputsReg <= unsigned(inputsToVec(inputsR));
+ outPin_reg : entity work.CtlReg
+  generic map (opVal => F_Ld_Out_Reg,
+               n     => outputsSize)
+  port map (
+   clk  => clk,
+   inp  => curW,
+   data => outPinReg
+   );
+
+ outPinR <= outputsToRec(outPinReg);
 
  sync_reg : entity work.CtlReg
   generic map (opVal => F_Ld_Sync_Ctl,
@@ -437,7 +469,15 @@ begin
   end if;
  end process;
 
- zAxisDro <= zDro when (cfgCtlR.cfgDroStep = '0') else zDroPhase;
+ zDroSel <= zDro when (cfgCtlR.cfgDroStep = '0') else zDroPhase;
+
+ zAxisDro(0) <= zDroSel(0) when (cfgCtlR.cfgZDroInv = '0') else zDroSel(1);
+ zAxisDro(1) <= zDroSel(1) when (cfgCtlR.cfgZDroInv = '0') else zDroSel(0);
+
+ zAxisIn.axHome  <= inputsR.inZHome  xor cfgCtlR.cfgZHomeInv;
+ zAxisIn.axMinus <= inputsR.inZMinus xor cfgCtlR.cfgZMinusInv;
+ zAxisIn.axPlus  <= inputsR.inZPlus  xor cfgCtlR.cfgZPlusInv;
+ zAxisIn.axProbe <= inputsR.inProbe  xor cfgCtlR.cfgProbeInv;
 
  zCh_Data : process(clk)
  begin
@@ -476,18 +516,20 @@ begin
 
    extInit    => xExtInit,
    extEna     => xExtEna,
+   extDone    => intXDoneInt,
 
    ch         => zCh,
    encDir     => direction,
    sync       => sync,
 
    droQuad    => zAxisDro,
-   droInvert  => cfgCtlR.cfgZDroInv,
+   -- droInvert  => cfgCtlR.cfgZDroInv,
+   axisIn     => zAxisIn,
    -- mpgQuad    => zMpg,
    -- jogInvert  => cfgctlR.cfgZJogInv,
 
    currentDir => zCurrentDir,
-   switches   => zSwitches,
+   -- switches   => zSwitches,
    eStop      => eStop,
 
    dbg        => dbg.z,
@@ -507,7 +549,15 @@ begin
    pulseOut => zStep
    );
 
- xAxisDro <= xDro when (cfgCtlR.cfgDroStep = '0') else xDroPhase;
+ xDroSel <= xDro when (cfgCtlR.cfgDroStep = '0') else xDroPhase;
+
+ xAxisDro(0) <= xDroSel(0) when (cfgCtlR.cfgXDroInv = '0') else xDroSel(1);
+ xAxisDro(1) <= xDroSel(1) when (cfgCtlR.cfgXDroInv = '0') else xDroSel(0);
+
+ xAxisIn.axHome  <= inputsR.inXHome  xor cfgCtlR.cfgXHomeInv;
+ xAxisIn.axMinus <= inputsR.inXMinus xor cfgCtlR.cfgXMinusInv;
+ xAxisIn.axPlus  <= inputsR.inXPlus  xor cfgCtlR.cfgXPlusInv;
+ xAxisIn.axProbe <= inputsR.inProbe  xor cfgCtlR.cfgProbeInv;
 
  xDro_Sim : process(clk)
  begin
@@ -572,18 +622,20 @@ begin
 
    extInit    => zExtInit,
    extEna     => zExtEna,
+   extDone    => intZDoneInt,
 
    ch         => xCh,
    encDir     => direction,
    sync       => sync,
 
    droQuad    => xAxisDro,
-   droInvert  => cfgCtlR.cfgXDroInv,
+   -- droInvert  => cfgCtlR.cfgXDroInv,
+   axisIn     => xAxisIn,
    -- mpgQuad    => xMpg,
    -- jogInvert  => cfgCtlR.cfgXJogInv,
 
    currentDir => xCurrentDir,
-   switches   => xSwitches,
+   -- switches   => xSwitches,
    eStop      => eStop,
 
    dbg        => dbg.x,
@@ -617,10 +669,10 @@ begin
     xDir <= xAxisDir xor cfgCtlR.cfgxDirInv;
    end if;
 
-   if (curR.Op = F_Rd_Status) then
-    chgPump <= '1';
+   if (curR.Op = F_Rd_Status) then      --charge pump
+     pinOutR.pinOut17 <= '1';
    else
-    chgPump <= '0';
+     pinOutR.pinOut17 <= '0';
    end if;
   end if;
  end process;
@@ -640,7 +692,7 @@ begin
 
    ch        => spFreqGen,
    mpgQuad   => zMpg,
-   jogInvert => cfgCtlR.cfgZJogInv,
+   jogInvert => cfgCtlR.cfgZMpgInv,
    eStop     => eStop,
    spActive  => statusR.spindleActive,
    stepOut   => spindleStep,
@@ -666,7 +718,7 @@ begin
    clk    => clk,
    inp    => curW,
    ena    => pwmEna,
-   pwmOut => pwmOut
+   pwmOut =>  pinOutR.pinOut16
    );
 
 end Behavioral;

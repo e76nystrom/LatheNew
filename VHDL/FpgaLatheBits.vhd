@@ -7,31 +7,31 @@ package FpgaLatheBits is
 
 -- RiscV control register
 
- constant riscvCtlSize : integer := 2;
+ constant riscvCtlSize : integer := 3;
  signal riscvCtlReg : unsigned(riscvCtlSize-1 downto 0);
  --variable riscvCtlReg : unsigned(riscvCtlSize-1 downto 0);
- alias riscvData    : std_logic is riscvCtlreg(0); -- x01 riscv data active
- alias riscvSPI     : std_logic is riscvCtlreg(1); -- x02 riscv spi active
+ alias riscvData    : std_logic is riscvCtlReg(0); -- x01 riscv data active
+ alias riscvSPI     : std_logic is riscvCtlReg(1); -- x02 riscv spi active
+ alias riscvInTest  : std_logic is riscvCtlReg(2); -- x04 riscv input test
 
  constant c_riscvData    : integer :=  0; -- x01 riscv data active
  constant c_riscvSPI     : integer :=  1; -- x02 riscv spi active
+ constant c_riscvInTest  : integer :=  2; -- x04 riscv input test
 
 -- status register
 
- constant statusSize : integer := 11;
+ constant statusSize : integer := 9;
  signal statusReg : unsigned(statusSize-1 downto 0);
  --variable statusReg : unsigned(statusSize-1 downto 0);
- alias zAxisEna     : std_logic is statusreg(0); -- x01 'ZE' z axis enable flag
- alias zAxisDone    : std_logic is statusreg(1); -- x02 'ZD' z axis done
- alias zAxisCurDir  : std_logic is statusreg(2); -- x04 'Zd' z axis current dir
- alias xAxisEna     : std_logic is statusreg(3); -- x08 'XE' x axis enable flag
- alias xAxisDone    : std_logic is statusreg(4); -- x10 'XD' x axis done
- alias xAxisCurDir  : std_logic is statusreg(5); -- x20 'Xd' x axis current dir
- alias stEStop      : std_logic is statusreg(6); -- x40 'ES' emergency stop
- alias spindleActive : std_logic is statusreg(7); -- x80 'S+' spindle active
- alias queNotEmpty  : std_logic is statusreg(8); -- x100 'Q+' ctl queue not empty
- alias ctlBusy      : std_logic is statusreg(9); -- x200 'CB' controller busy
- alias syncActive   : std_logic is statusreg(10); -- x400 'SA' sync active
+ alias zAxisEna     : std_logic is statusReg(0); -- x01 'ZE' z axis enable flag
+ alias zAxisDone    : std_logic is statusReg(1); -- x02 'ZD' z axis done
+ alias zAxisCurDir  : std_logic is statusReg(2); -- x04 'Zd' z axis current dir
+ alias xAxisEna     : std_logic is statusReg(3); -- x08 'XE' x axis enable flag
+ alias xAxisDone    : std_logic is statusReg(4); -- x10 'XD' x axis done
+ alias xAxisCurDir  : std_logic is statusReg(5); -- x20 'Xd' x axis current dir
+ alias stEStop      : std_logic is statusReg(6); -- x40 'ES' emergency stop
+ alias spindleActive : std_logic is statusReg(7); -- x80 'S+' spindle active
+ alias syncActive   : std_logic is statusReg(8); -- x100 'SA' sync active
 
  constant c_zAxisEna     : integer :=  0; -- x01 'ZE' z axis enable flag
  constant c_zAxisDone    : integer :=  1; -- x02 'ZD' z axis done
@@ -41,152 +41,212 @@ package FpgaLatheBits is
  constant c_xAxisCurDir  : integer :=  5; -- x20 'Xd' x axis current dir
  constant c_stEStop      : integer :=  6; -- x40 'ES' emergency stop
  constant c_spindleActive : integer :=  7; -- x80 'S+' spindle active
- constant c_queNotEmpty  : integer :=  8; -- x100 'Q+' ctl queue not empty
- constant c_ctlBusy      : integer :=  9; -- x200 'CB' controller busy
- constant c_syncActive   : integer := 10; -- x400 'SA' sync active
+ constant c_syncActive   : integer :=  8; -- x100 'SA' sync active
 
--- inputs register
+-- input register
 
  constant inputsSize : integer := 13;
  signal inputsReg : unsigned(inputsSize-1 downto 0);
  --variable inputsReg : unsigned(inputsSize-1 downto 0);
- alias inZHome      : std_logic is inputsreg(0); -- x01 z home switch
- alias inZMinus     : std_logic is inputsreg(1); -- x02 z limit minus
- alias inZPlus      : std_logic is inputsreg(2); -- x04 z Limit Plus
- alias inXHome      : std_logic is inputsreg(3); -- x08 x home switch
- alias inXMinus     : std_logic is inputsreg(4); -- x10 x limit minus
- alias inXPlus      : std_logic is inputsreg(5); -- x20 x Limit Plus
- alias inSpare      : std_logic is inputsreg(6); -- x40 spare input
- alias inProbe      : std_logic is inputsreg(7); -- x80 probe input
- alias inPin10      : std_logic is inputsreg(8); -- x100 pin 10
- alias inPin11      : std_logic is inputsreg(9); -- x200 pin 11
- alias inPin12      : std_logic is inputsreg(10); -- x400 pin 12
- alias inPin13      : std_logic is inputsreg(11); -- x800 pin 13
- alias inPin15      : std_logic is inputsreg(12); -- x1000 pin 15
+ alias inPin10      : std_logic is inputsReg(0); -- x01 '10' pin 10
+ alias inPin11      : std_logic is inputsReg(1); -- x02 '11' pin 11
+ alias inPin12      : std_logic is inputsReg(2); -- x04 '12' pin 12
+ alias inPin13      : std_logic is inputsReg(3); -- x08 '13' pin 13
+ alias inPin15      : std_logic is inputsReg(4); -- x10 '15' pin 15
+ alias inZHome      : std_logic is inputsReg(5); -- x20 'ZH' z home switch
+ alias inZMinus     : std_logic is inputsReg(6); -- x40 'Z-' z limit minus
+ alias inZPlus      : std_logic is inputsReg(7); -- x80 'Z+' z Limit Plus
+ alias inXHome      : std_logic is inputsReg(8); -- x100 'XH' x home switch
+ alias inXMinus     : std_logic is inputsReg(9); -- x200 'X-' x limit minus
+ alias inXPlus      : std_logic is inputsReg(10); -- x400 'X+' x Limit Plus
+ alias inProbe      : std_logic is inputsReg(11); -- x800 'PR' probe input
+ alias inSpare      : std_logic is inputsReg(12); -- x1000 'SP' spare input
 
- constant c_inZHome      : integer :=  0; -- x01 z home switch
- constant c_inZMinus     : integer :=  1; -- x02 z limit minus
- constant c_inZPlus      : integer :=  2; -- x04 z Limit Plus
- constant c_inXHome      : integer :=  3; -- x08 x home switch
- constant c_inXMinus     : integer :=  4; -- x10 x limit minus
- constant c_inXPlus      : integer :=  5; -- x20 x Limit Plus
- constant c_inSpare      : integer :=  6; -- x40 spare input
- constant c_inProbe      : integer :=  7; -- x80 probe input
- constant c_inPin10      : integer :=  8; -- x100 pin 10
- constant c_inPin11      : integer :=  9; -- x200 pin 11
- constant c_inPin12      : integer := 10; -- x400 pin 12
- constant c_inPin13      : integer := 11; -- x800 pin 13
- constant c_inPin15      : integer := 12; -- x1000 pin 15
+ constant c_inPin10      : integer :=  0; -- x01 '10' pin 10
+ constant c_inPin11      : integer :=  1; -- x02 '11' pin 11
+ constant c_inPin12      : integer :=  2; -- x04 '12' pin 12
+ constant c_inPin13      : integer :=  3; -- x08 '13' pin 13
+ constant c_inPin15      : integer :=  4; -- x10 '15' pin 15
+ constant c_inZHome      : integer :=  5; -- x20 'ZH' z home switch
+ constant c_inZMinus     : integer :=  6; -- x40 'Z-' z limit minus
+ constant c_inZPlus      : integer :=  7; -- x80 'Z+' z Limit Plus
+ constant c_inXHome      : integer :=  8; -- x100 'XH' x home switch
+ constant c_inXMinus     : integer :=  9; -- x200 'X-' x limit minus
+ constant c_inXPlus      : integer := 10; -- x400 'X+' x Limit Plus
+ constant c_inProbe      : integer := 11; -- x800 'PR' probe input
+ constant c_inSpare      : integer := 12; -- x1000 'SP' spare input
 
--- run control register
+-- axis inputs
 
- constant runSize : integer := 3;
- signal runReg : unsigned(runSize-1 downto 0);
- --variable runReg : unsigned(runSize-1 downto 0);
- alias runEna       : std_logic is runreg(0); -- x01 run from controller data
- alias runInit      : std_logic is runreg(1); -- x02 initialize controller
- alias readerInit   : std_logic is runreg(2); -- x04 initialize reader
+ constant axisInSize : integer := 4;
+ signal axisInReg : unsigned(axisInSize-1 downto 0);
+ --variable axisInReg : unsigned(axisInSize-1 downto 0);
+ alias axHome       : std_logic is axisInReg(0); -- x01 axis home
+ alias axMinus      : std_logic is axisInReg(1); -- x02 axis minus limit
+ alias axPlus       : std_logic is axisInReg(2); -- x04 axis plus limit
+ alias axProbe      : std_logic is axisInReg(3); -- x08 axis probe
 
- constant c_runEna       : integer :=  0; -- x01 run from controller data
- constant c_runInit      : integer :=  1; -- x02 initialize controller
- constant c_readerInit   : integer :=  2; -- x04 initialize reader
+ constant c_axHome       : integer :=  0; -- x01 axis home
+ constant c_axMinus      : integer :=  1; -- x02 axis minus limit
+ constant c_axPlus       : integer :=  2; -- x04 axis plus limit
+ constant c_axProbe      : integer :=  3; -- x08 axis probe
+
+-- output register
+
+ constant outputsSize : integer := 3;
+ signal outputsReg : unsigned(outputsSize-1 downto 0);
+ --variable outputsReg : unsigned(outputsSize-1 downto 0);
+ alias outPin1      : std_logic is outputsReg(0); -- x01 pin 1
+ alias outPin14     : std_logic is outputsReg(1); -- x02 pin 14
+ alias outPin17     : std_logic is outputsReg(2); -- x04 pin 17
+
+ constant c_outPin1      : integer :=  0; -- x01 pin 1
+ constant c_outPin14     : integer :=  1; -- x02 pin 14
+ constant c_outPin17     : integer :=  2; -- x04 pin 17
+
+-- pin out signals
+
+ constant pinOutSize : integer := 12;
+ signal pinOutReg : unsigned(pinOutSize-1 downto 0);
+ --variable pinOutReg : unsigned(pinOutSize-1 downto 0);
+ alias pinOut2      : std_logic is pinOutReg(0); -- x01 z dir
+ alias pinOut3      : std_logic is pinOutReg(1); -- x02 z step
+ alias pinOut4      : std_logic is pinOutReg(2); -- x04 x dir
+ alias pinOut5      : std_logic is pinOutReg(3); -- x08 x step
+ alias pinOut6      : std_logic is pinOutReg(4); -- x10 
+ alias pinOut7      : std_logic is pinOutReg(5); -- x20 
+ alias pinOut8      : std_logic is pinOutReg(6); -- x40 
+ alias pinOut9      : std_logic is pinOutReg(7); -- x80 
+ alias pinOut1      : std_logic is pinOutReg(8); -- x100 
+ alias pinOut14     : std_logic is pinOutReg(9); -- x200 
+ alias pinOut16     : std_logic is pinOutReg(10); -- x400 
+ alias pinOut17     : std_logic is pinOutReg(11); -- x800 
+
+ constant c_pinOut2      : integer :=  0; -- x01 z dir
+ constant c_pinOut3      : integer :=  1; -- x02 z step
+ constant c_pinOut4      : integer :=  2; -- x04 x dir
+ constant c_pinOut5      : integer :=  3; -- x08 x step
+ constant c_pinOut6      : integer :=  4; -- x10 
+ constant c_pinOut7      : integer :=  5; -- x20 
+ constant c_pinOut8      : integer :=  6; -- x40 
+ constant c_pinOut9      : integer :=  7; -- x80 
+ constant c_pinOut1      : integer :=  8; -- x100 
+ constant c_pinOut14     : integer :=  9; -- x200 
+ constant c_pinOut16     : integer := 10; -- x400 
+ constant c_pinOut17     : integer := 11; -- x800 
 
 -- jog control register
 
  constant jogSize : integer := 2;
  signal jogReg : unsigned(jogSize-1 downto 0);
  --variable jogReg : unsigned(jogSize-1 downto 0);
- alias jogContinuous : std_logic is jogreg(0); -- x01 jog continuous mode
- alias jogBacklash  : std_logic is jogreg(1); -- x02 jog backlash present
+ alias jogContinuous : std_logic is jogReg(0); -- x01 jog continuous mode
+ alias jogBacklash  : std_logic is jogReg(1); -- x02 jog backlash present
 
  constant c_jogContinuous : integer :=  0; -- x01 jog continuous mode
  constant c_jogBacklash  : integer :=  1; -- x02 jog backlash present
 
 -- axis control register
 
- constant axisCtlSize : integer := 14;
+ constant axisCtlSize : integer := 16;
  signal axisCtlReg : unsigned(axisCtlSize-1 downto 0);
  --variable axisCtlReg : unsigned(axisCtlSize-1 downto 0);
- alias ctlInit      : std_logic is axisCtlreg(0); -- x01 reset flag
- alias ctlStart     : std_logic is axisCtlreg(1); -- x02 start
- alias ctlBacklash  : std_logic is axisCtlreg(2); -- x04 backlash move no pos upd
- alias ctlWaitSync  : std_logic is axisCtlreg(3); -- x08 wait for sync to start
- alias ctlDir       : std_logic is axisCtlreg(4); -- x10 direction
- alias ctlSetLoc    : std_logic is axisCtlreg(5); -- x20 set location
- alias ctlChDirect  : std_logic is axisCtlreg(6); -- x40 ch input direct
- alias ctlSlave     : std_logic is axisCtlreg(7); -- x80 slave ctl by other axis
- alias ctlDroEnd    : std_logic is axisCtlreg(8); -- x100 use dro to end move
- alias ctlDistMode  : std_logic is axisCtlreg(9); -- x200 distance udpdate mode
- alias ctlJogCmd    : std_logic is axisCtlreg(10); -- x400 jog with commands
- alias ctlJogMpg    : std_logic is axisCtlreg(11); -- x800 jog with mpg
- alias ctlHome      : std_logic is axisCtlreg(12); -- x1000 homing axis
- alias ctlUseLimits : std_logic is axisCtlreg(13); -- x2000 use limits
+ alias ctlInit      : std_logic is axisCtlReg(0); -- x01 'IN' reset flag
+ alias ctlStart     : std_logic is axisCtlReg(1); -- x02 'ST' start
+ alias ctlBacklash  : std_logic is axisCtlReg(2); -- x04 'BK' backlash move no pos upd
+ alias ctlWaitSync  : std_logic is axisCtlReg(3); -- x08 'WS' wait for sync to start
+ alias ctlDir       : std_logic is axisCtlReg(4); -- x10 '+-' direction
+ alias ctlSetLoc    : std_logic is axisCtlReg(5); -- x20 'SL' set location
+ alias ctlChDirect  : std_logic is axisCtlReg(6); -- x40 'CH' ch input direct
+ alias ctlSlave     : std_logic is axisCtlReg(7); -- x80 'SL' slave ctl by other axis
+ alias ctlDroEnd    : std_logic is axisCtlReg(8); -- x100 'DE' use dro to end move
+ alias ctlDistMode  : std_logic is axisCtlReg(9); -- x200 'DM' distance udpdate mode
+ alias ctlJogCmd    : std_logic is axisCtlReg(10); -- x400 'JC' jog with commands
+ alias ctlJogMpg    : std_logic is axisCtlReg(11); -- x800 'JM' jog with mpg
+ alias ctlHome      : std_logic is axisCtlReg(12); -- x1000 'HO' homing axis
+ alias ctlHomePol   : std_logic is axisCtlReg(13); -- x2000 'HP' home signal polarity
+ alias ctlProbe     : std_logic is axisCtlReg(14); -- x4000 'PR' probe enable
+ alias ctlUseLimits : std_logic is axisCtlReg(15); -- x8000 'UL' use limits
 
- constant c_ctlInit      : integer :=  0; -- x01 reset flag
- constant c_ctlStart     : integer :=  1; -- x02 start
- constant c_ctlBacklash  : integer :=  2; -- x04 backlash move no pos upd
- constant c_ctlWaitSync  : integer :=  3; -- x08 wait for sync to start
- constant c_ctlDir       : integer :=  4; -- x10 direction
- constant c_ctlSetLoc    : integer :=  5; -- x20 set location
- constant c_ctlChDirect  : integer :=  6; -- x40 ch input direct
- constant c_ctlSlave     : integer :=  7; -- x80 slave ctl by other axis
- constant c_ctlDroEnd    : integer :=  8; -- x100 use dro to end move
- constant c_ctlDistMode  : integer :=  9; -- x200 distance udpdate mode
- constant c_ctlJogCmd    : integer := 10; -- x400 jog with commands
- constant c_ctlJogMpg    : integer := 11; -- x800 jog with mpg
- constant c_ctlHome      : integer := 12; -- x1000 homing axis
- constant c_ctlUseLimits : integer := 13; -- x2000 use limits
+ constant c_ctlInit      : integer :=  0; -- x01 'IN' reset flag
+ constant c_ctlStart     : integer :=  1; -- x02 'ST' start
+ constant c_ctlBacklash  : integer :=  2; -- x04 'BK' backlash move no pos upd
+ constant c_ctlWaitSync  : integer :=  3; -- x08 'WS' wait for sync to start
+ constant c_ctlDir       : integer :=  4; -- x10 '+-' direction
+ constant c_ctlSetLoc    : integer :=  5; -- x20 'SL' set location
+ constant c_ctlChDirect  : integer :=  6; -- x40 'CH' ch input direct
+ constant c_ctlSlave     : integer :=  7; -- x80 'SL' slave ctl by other axis
+ constant c_ctlDroEnd    : integer :=  8; -- x100 'DE' use dro to end move
+ constant c_ctlDistMode  : integer :=  9; -- x200 'DM' distance udpdate mode
+ constant c_ctlJogCmd    : integer := 10; -- x400 'JC' jog with commands
+ constant c_ctlJogMpg    : integer := 11; -- x800 'JM' jog with mpg
+ constant c_ctlHome      : integer := 12; -- x1000 'HO' homing axis
+ constant c_ctlHomePol   : integer := 13; -- x2000 'HP' home signal polarity
+ constant c_ctlProbe     : integer := 14; -- x4000 'PR' probe enable
+ constant c_ctlUseLimits : integer := 15; -- x8000 'UL' use limits
 
 -- axis status register
 
- constant axisStatusSize : integer := 5;
+ constant axisStatusSize : integer := 11;
  signal axisStatusReg : unsigned(axisStatusSize-1 downto 0);
  --variable axisStatusReg : unsigned(axisStatusSize-1 downto 0);
- alias axDoneDist   : std_logic is axisStatusreg(0); -- x01 axis done distance
- alias axDoneDro    : std_logic is axisStatusreg(1); -- x02 axis done dro
- alias axDoneHome   : std_logic is axisStatusreg(2); -- x04 axis done home
- alias axDoneLimit  : std_logic is axisStatusreg(3); -- x08 axis done limit
- alias axDistZero   : std_logic is axisStatusreg(4); -- x10 axis distance zero
+ alias axDone       : std_logic is axisStatusReg(0); -- x01 'DN' axis done
+ alias axDistZero   : std_logic is axisStatusReg(1); -- x02 'ZE' axis distance zero
+ alias axDoneDro    : std_logic is axisStatusReg(2); -- x04 'DR' axis done dro
+ alias axDoneHome   : std_logic is axisStatusReg(3); -- x08 'HO' axis done home
+ alias axDoneLimit  : std_logic is axisStatusReg(4); -- x10 'LI' axis done limit
+ alias axDoneProbe  : std_logic is axisStatusReg(5); -- x20 'PR' axis done probe
+ alias axInHome     : std_logic is axisStatusReg(6); -- x40 'IH' axis home
+ alias axInMinus    : std_logic is axisStatusReg(7); -- x80 'I-' axis in minus limit
+ alias axInPlus     : std_logic is axisStatusReg(8); -- x100 'I+' axis in plus limit
+ alias axInProbe    : std_logic is axisStatusReg(9); -- x200 'IP' axis in probe
+ alias axInFlag     : std_logic is axisStatusReg(10); -- x400 'IF' axis in flag
 
- constant c_axDoneDist   : integer :=  0; -- x01 axis done distance
- constant c_axDoneDro    : integer :=  1; -- x02 axis done dro
- constant c_axDoneHome   : integer :=  2; -- x04 axis done home
- constant c_axDoneLimit  : integer :=  3; -- x08 axis done limit
- constant c_axDistZero   : integer :=  4; -- x10 axis distance zero
+ constant c_axDone       : integer :=  0; -- x01 'DN' axis done
+ constant c_axDistZero   : integer :=  1; -- x02 'ZE' axis distance zero
+ constant c_axDoneDro    : integer :=  2; -- x04 'DR' axis done dro
+ constant c_axDoneHome   : integer :=  3; -- x08 'HO' axis done home
+ constant c_axDoneLimit  : integer :=  4; -- x10 'LI' axis done limit
+ constant c_axDoneProbe  : integer :=  5; -- x20 'PR' axis done probe
+ constant c_axInHome     : integer :=  6; -- x40 'IH' axis home
+ constant c_axInMinus    : integer :=  7; -- x80 'I-' axis in minus limit
+ constant c_axInPlus     : integer :=  8; -- x100 'I+' axis in plus limit
+ constant c_axInProbe    : integer :=  9; -- x200 'IP' axis in probe
+ constant c_axInFlag     : integer := 10; -- x400 'IF' axis in flag
 
 -- configuration control register
 
  constant cfgCtlSize : integer := 21;
  signal cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
  --variable cfgCtlReg : unsigned(cfgCtlSize-1 downto 0);
- alias cfgZDirInv   : std_logic is cfgCtlreg(0); -- x01 z dir inverted
- alias cfgXDirInv   : std_logic is cfgCtlreg(1); -- x02 x dir inverted
- alias cfgZDroInv   : std_logic is cfgCtlreg(2); -- x04 z dro dir inverted
- alias cfgXDroInv   : std_logic is cfgCtlreg(3); -- x08 x dro dir inverted
- alias cfgZJogInv   : std_logic is cfgCtlreg(4); -- x10 z jog dir inverted
- alias cfgXJogInv   : std_logic is cfgCtlreg(5); -- x20 x jog dir inverted
- alias cfgSpDirInv  : std_logic is cfgCtlreg(6); -- x40 spindle dir inverted
- alias cfgZHomeInv  : std_logic is cfgCtlreg(7); -- x80 z home inverted
- alias cfgZMinusInv : std_logic is cfgCtlreg(8); -- x100 z minus inverted
- alias cfgZPlusInv  : std_logic is cfgCtlreg(9); -- x200 z plus inverted
- alias cfgXHomeInv  : std_logic is cfgCtlreg(10); -- x400 x home inverted
- alias cfgXMinusInv : std_logic is cfgCtlreg(11); -- x800 x minus inverted
- alias cfgXPlusInv  : std_logic is cfgCtlreg(12); -- x1000 x plus inverted
- alias cfgProbeInv  : std_logic is cfgCtlreg(13); -- x2000 probe inverted
- alias cfgEncDirInv : std_logic is cfgCtlreg(14); -- x4000 invert encoder dir
- alias cfgEStopEna  : std_logic is cfgCtlreg(15); -- x8000 estop enable
- alias cfgEStopInv  : std_logic is cfgCtlreg(16); -- x10000 estop invert
- alias cfgEnaEncDir : std_logic is cfgCtlreg(17); -- x20000 enable encoder dir
- alias cfgGenSync   : std_logic is cfgCtlreg(18); -- x40000 generate sync pulse
- alias cfgPwmEna    : std_logic is cfgCtlreg(19); -- x80000 pwm enable
- alias cfgDroStep   : std_logic is cfgCtlreg(20); -- x100000 step pulse to dro
+ alias cfgZDirInv   : std_logic is cfgCtlReg(0); -- x01 z dir inverted
+ alias cfgXDirInv   : std_logic is cfgCtlReg(1); -- x02 x dir inverted
+ alias cfgZDroInv   : std_logic is cfgCtlReg(2); -- x04 z dro dir inverted
+ alias cfgXDroInv   : std_logic is cfgCtlReg(3); -- x08 x dro dir inverted
+ alias cfgZMpgInv   : std_logic is cfgCtlReg(4); -- x10 z mpg dir inverted
+ alias cfgXMpgInv   : std_logic is cfgCtlReg(5); -- x20 x mpg dir inverted
+ alias cfgSpDirInv  : std_logic is cfgCtlReg(6); -- x40 spindle dir inverted
+ alias cfgZHomeInv  : std_logic is cfgCtlReg(7); -- x80 z home inverted
+ alias cfgZMinusInv : std_logic is cfgCtlReg(8); -- x100 z minus inverted
+ alias cfgZPlusInv  : std_logic is cfgCtlReg(9); -- x200 z plus inverted
+ alias cfgXHomeInv  : std_logic is cfgCtlReg(10); -- x400 x home inverted
+ alias cfgXMinusInv : std_logic is cfgCtlReg(11); -- x800 x minus inverted
+ alias cfgXPlusInv  : std_logic is cfgCtlReg(12); -- x1000 x plus inverted
+ alias cfgProbeInv  : std_logic is cfgCtlReg(13); -- x2000 probe inverted
+ alias cfgEncDirInv : std_logic is cfgCtlReg(14); -- x4000 invert encoder dir
+ alias cfgEStopEna  : std_logic is cfgCtlReg(15); -- x8000 estop enable
+ alias cfgEStopInv  : std_logic is cfgCtlReg(16); -- x10000 estop invert
+ alias cfgEnaEncDir : std_logic is cfgCtlReg(17); -- x20000 enable encoder dir
+ alias cfgGenSync   : std_logic is cfgCtlReg(18); -- x40000 generate sync pulse
+ alias cfgPwmEna    : std_logic is cfgCtlReg(19); -- x80000 pwm enable
+ alias cfgDroStep   : std_logic is cfgCtlReg(20); -- x100000 step pulse to dro
 
  constant c_cfgZDirInv   : integer :=  0; -- x01 z dir inverted
  constant c_cfgXDirInv   : integer :=  1; -- x02 x dir inverted
  constant c_cfgZDroInv   : integer :=  2; -- x04 z dro dir inverted
  constant c_cfgXDroInv   : integer :=  3; -- x08 x dro dir inverted
- constant c_cfgZJogInv   : integer :=  4; -- x10 z jog dir inverted
- constant c_cfgXJogInv   : integer :=  5; -- x20 x jog dir inverted
+ constant c_cfgZMpgInv   : integer :=  4; -- x10 z mpg dir inverted
+ constant c_cfgXMpgInv   : integer :=  5; -- x20 x mpg dir inverted
  constant c_cfgSpDirInv  : integer :=  6; -- x40 spindle dir inverted
  constant c_cfgZHomeInv  : integer :=  7; -- x80 z home inverted
  constant c_cfgZMinusInv : integer :=  8; -- x100 z minus inverted
@@ -210,9 +270,9 @@ package FpgaLatheBits is
  --variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  alias zFreqSel       : unsigned is clkCtlreg(2 downto 0); -- x04 z Frequency select
  alias xFreqSel       : unsigned is clkCtlreg(5 downto 3); -- x20 x Frequency select
- alias zFreqShift   : std_logic is clkCtlreg(0); -- x01 z Frequency shift
- alias xFreqShift   : std_logic is clkCtlreg(0); -- x01 x Frequency shift
- alias clkMask      : std_logic is clkCtlreg(0); -- x01 clock mask
+ alias zFreqShift   : std_logic is clkCtlReg(0); -- x01 z Frequency shift
+ alias xFreqShift   : std_logic is clkCtlReg(0); -- x01 x Frequency shift
+ alias clkMask      : std_logic is clkCtlReg(0); -- x01 clock mask
  constant clkNone      : unsigned (2 downto 0) := "000"; -- 
  constant clkFreq      : unsigned (2 downto 0) := "001"; -- 
  constant clkCh        : unsigned (2 downto 0) := "010"; -- 
@@ -237,7 +297,7 @@ package FpgaLatheBits is
  constant xClkZCh      : unsigned (2 downto 0) := "101"; -- 
  constant xClkSpindle  : unsigned (2 downto 0) := "110"; -- 
  constant xClkDbgFreq  : unsigned (2 downto 0) := "111"; -- 
- alias clkDbgFreqEna : std_logic is clkCtlreg(6); -- x40 enable debug frequency
+ alias clkDbgFreqEna : std_logic is clkCtlReg(6); -- x40 enable debug frequency
 
  constant c_zFreqShift   : integer :=  0; -- x01 z Frequency shift
  constant c_xFreqShift   : integer :=  0; -- x01 x Frequency shift
@@ -249,9 +309,9 @@ package FpgaLatheBits is
  constant synCtlSize : integer := 3;
  signal synCtlReg : unsigned(synCtlSize-1 downto 0);
  --variable synCtlReg : unsigned(synCtlSize-1 downto 0);
- alias synPhaseInit : std_logic is synCtlreg(0); -- x01 init phase counter
- alias synEncInit   : std_logic is synCtlreg(1); -- x02 init encoder
- alias synEncEna    : std_logic is synCtlreg(2); -- x04 enable encoder
+ alias synPhaseInit : std_logic is synCtlReg(0); -- x01 init phase counter
+ alias synEncInit   : std_logic is synCtlReg(1); -- x02 init encoder
+ alias synEncEna    : std_logic is synCtlReg(2); -- x04 enable encoder
 
  constant c_synPhaseInit : integer :=  0; -- x01 init phase counter
  constant c_synEncInit   : integer :=  1; -- x02 init encoder
@@ -262,10 +322,10 @@ package FpgaLatheBits is
  constant spCtlSize : integer := 4;
  signal spCtlReg : unsigned(spCtlSize-1 downto 0);
  --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
- alias spInit       : std_logic is spCtlreg(0); -- x01 spindle init
- alias spEna        : std_logic is spCtlreg(1); -- x02 spindle enable
- alias spDir        : std_logic is spCtlreg(2); -- x04 spindle direction
- alias spJogEnable  : std_logic is spCtlreg(3); -- x08 spindle jog enable
+ alias spInit       : std_logic is spCtlReg(0); -- x01 spindle init
+ alias spEna        : std_logic is spCtlReg(1); -- x02 spindle enable
+ alias spDir        : std_logic is spCtlReg(2); -- x04 spindle direction
+ alias spJogEnable  : std_logic is spCtlReg(3); -- x08 spindle jog enable
 
  constant c_spInit       : integer :=  0; -- x01 spindle init
  constant c_spEna        : integer :=  1; -- x02 spindle enable

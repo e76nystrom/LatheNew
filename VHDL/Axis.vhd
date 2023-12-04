@@ -32,18 +32,20 @@ entity Axis is
 
   extInit    : in std_logic;            --reset
   extEna     : in std_logic;            --enable operation
+  extDone    : in std_logic;
 
   ch         : in std_logic;
   encDir     : in std_logic;
   sync       : in std_logic;
 
   droQuad    : in std_logic_vector(1 downto 0);
-  droInvert  : in std_logic;
+  -- droInvert  : in std_logic;
+  axisIn     : in axisInRec;
   -- mpgQuad    : in std_logic_vector(1 downto 0);
   -- jogInvert  : in std_logic;
 
   currentDir : in std_logic;
-  switches   : in std_logic_vector(3 downto 0);
+  -- switches   : in std_logic_vector(3 downto 0);
   eStop      : in std_logic;
 
   dbg        : out AxisDbg;
@@ -89,17 +91,17 @@ architecture Behavioral of Axis is
  signal synDbgData : std_logic_vector(synDbgBits-1 downto 0);
  signal doneDist   : std_logic;
  signal doneDro    : std_logic;
- signal doneLimit  : boolean;
- signal doneHome   : boolean;
- signal doneMove   : std_logic;
+ signal doneLimit  : std_logic;
+ signal doneHome   : std_logic;
+ signal doneProbe   : std_logic;
 
  -- signal jogDir  : std_logic;
 
  signal droDone : std_logic;
 
- alias swHome     : std_logic is switches(0);
- alias swLimMinus : std_logic is switches(1);
- alias swLimPlus  : std_logic is switches(2);
+ -- alias swHome     : std_logic is switches(0);
+ -- alias swLimMinus : std_logic is switches(1);
+ -- alias swLimPlus  : std_logic is switches(2);
 
  signal pulseOut  : std_logic;
 
@@ -184,25 +186,28 @@ begin
 
    init       => runInit,
    ena        => syncAccelEna,
-   extDone    => doneMove,
+   extDone    => extDone,
    ch         => ch,
-   cmdDir     => axisCtlR.ctlDir,
+   -- cmdDir     => axisCtlR.ctlDir,
    curDir     => curDir,
    locDisable => locDisable,
-   distMode   => axisCtlR.ctlDistMode,
+   -- distMode   => axisCtlR.ctlDistMode,
 
    -- mpgQuad    => mpgQuad,
    -- jogInvert  => jogInvert,
    -- jogMode    => jogMode,
 
    droQuad    => droQuad,
-   droInvert  => droInvert,
-   droEndChk  => axisCtlR.ctlDroEnd,
+   axisIn     => axisIn,
+   axisCtl    => axisCtlR,
+   axisStat   => axisStatusR,
+   -- droInvert  => droInvert,
+   -- droEndChk  => axisCtlR.ctlDroEnd,
 
    dbg        => dbg.sync,
-   movDone    => movDone,
-   droDone    => droDone,
-   distZero   => axisStatusR.axDistZero,
+   -- movDone    => movDone,
+   -- droDone    => droDone,
+   -- distZero   => axisStatusR.axDistZero,
    dout       => dout.sync,
    dirOut     => synDirOut,
    synStep    => synStepOut
@@ -218,7 +223,7 @@ begin
 
  dbg.ctlStart <= axisCtlR.ctlStart;
  dbg.axisEna  <= axisEna;
- dbg.doneDist <= doneDist;
+ dbg.doneDist <= axisStatusR.axDone;
  dbg.pulseOut <= pulseOut;
 
  runInit <= extInit when axisCtlR.ctlSlave = '1' else axisInit;
@@ -232,25 +237,25 @@ begin
  enaCh   <= runEna and ch;
  stepOut <= step;
 
- axisStatusR.axDoneDist  <= doneDist;
- axisStatusR.axDoneDro   <= doneDro;
- axisStatusR.axDoneHome  <= '1' when doneHome else '0';
- axisStatusR.axDoneLimit <= '1' when doneLimit else '0';
+ -- axisStatusR.axDoneDist  <= doneDist;
+ -- axisStatusR.axDoneDro   <= doneDro;
+ -- axisStatusR.axDoneHome  <= doneHome;
+ -- axisStatusR.axDoneLimit <= doneLimit;
+ -- axisStatusR.axDoneProbe <= doneProbe;
 
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
-   doneDist  <= movDone and not axisCtlR.ctlDroEnd;
-   doneDro   <= droDone and axisCtlR.ctlDroEnd;
-   doneHome  <= (swHome = '1') and (axisCtlR.ctlHome = '1');
-   doneLimit <= ((swLimMinus = '1') or (swLimPlus = '1')) and
-                (axisCtlR.ctlUseLimits = '1');
+   
+   -- doneDist   <= movDone and not axisCtlR.ctlDroEnd;
+   -- doneDro    <= droDone and axisCtlR.ctlDroEnd;
 
-   if (doneLimit or doneHome) then
-    doneMove <= '1';
-   else
-    doneMove <= '0';
-   end if;
+
+   -- if (axisStatusR.axDone = '1') then
+   --  doneMove <= '1';
+   -- else
+   --  doneMove <= '0';
+   -- end if;
 
    if (eStop = '1') then                --if emergency stop
     axisEna  <= '0';                    --stop axis
@@ -286,18 +291,21 @@ begin
       else                              --if start flag set
        if (sync = '1') then             --if time to sync
         axisEna    <= '1';              --set run flag
-        -- axisUpdLoc <= '1';              --enable location update
         runState   <= run;              --advance to run state
        end if;
       end if;
       
      when run =>                        --run state
-      if ((doneDist = '1') or (doneDro = '1') or
-          (axisCtlR.ctlStart = '0')) then  --if done
-       doneInt    <= '1';               --set done interrupt
-       locDisable <= '0';               --enable loc updates
-       axisEna    <= '0';               --clear run flag
-       runState   <= done;              --advance to done state
+      if (axisCtlR.ctlStart = '0') then
+       runState <= idle;                --return to idle
+      else
+       if ((axisStatusR.axDone = '1') or
+           (extDone = '1')) then        --if done
+        doneInt    <= '1';              --set done interrupt
+        locDisable <= '0';              --enable loc updates
+        axisEna    <= '0';              --clear run flag
+        runState   <= done;             --advance to done state
+       end if;
       end if;
 
      when done =>                       --done state

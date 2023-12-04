@@ -389,7 +389,7 @@ begin
   variable dist : integer;
   variable maxDist : integer;
   variable loc : integer;
-  variable backlash : integer;
+  -- variable backlash : integer;
 
   variable ctl : integer;
 
@@ -671,7 +671,7 @@ begin
   maxDist := 100;
   loc := 5;
 
-  backlash := 10;
+  -- backlash := 10;
 
   incr1 := 2 * dy;
   -- incr2 := 2 * (dy - dx);
@@ -719,8 +719,8 @@ begin
 
   delay(1);
 
-  loadParm(base + F_Sync_Base + F_Ld_Backlash);
-  loadValue(backlash, distBits);
+  -- loadParm(base + F_Sync_Base + F_Ld_Backlash);
+  -- loadValue(backlash, distBits);
 
   delay(1);
   
@@ -729,20 +729,20 @@ begin
 
   delay(1);
   
-  loadParm(base + F_Sync_Base + F_Ld_Mpg_Delta);
-  loadValue(to_integer(mpgRegDelta), mpgBits);
+  -- loadParm(base + F_Sync_Base + F_Ld_Mpg_Delta);
+  -- loadValue(to_integer(mpgRegDelta), mpgBits);
 
-  delay(1);
+  -- delay(1);
   
-  loadParm(base + F_Sync_Base + F_Ld_Mpg_Dist);
-  loadValue(to_integer(mpgRegDist), mpgBits);
+  -- loadParm(base + F_Sync_Base + F_Ld_Mpg_Dist);
+  -- loadValue(to_integer(mpgRegDist), mpgBits);
 
-  delay(1);
+  -- delay(1);
   
-  loadParm(base + F_Sync_Base + F_Ld_Mpg_Div);
-  loadValue(to_integer(mpgRegDiv), mpgBits);
+  -- loadParm(base + F_Sync_Base + F_Ld_Mpg_Div);
+  -- loadValue(to_integer(mpgRegDiv), mpgBits);
 
-  delay(1);
+  -- delay(1);
   
   axisCtlReg := (others => '0');
   axisCtlReg(c_ctlInit) := '1';

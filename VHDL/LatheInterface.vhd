@@ -16,6 +16,7 @@ entity LatheInterface is
  generic (extData       : natural  := 0;
           ledPins       : positive := 8;
           dbgPins       : positive := 8;
+          inputPins     : positive := 13;
           posBits       : positive := 24;
           countBits     : positive := 18;
           distBits      : positive := 18;
@@ -44,7 +45,7 @@ entity LatheInterface is
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
-  dclk     : in std_logic;
+  dclk     : in  std_logic;
   dout     : out LatheInterfaceData;
   -- dout     : out std_logic := '0';
   din      : in std_logic;
@@ -59,7 +60,7 @@ entity LatheInterface is
   zMpg     : in std_logic_vector(1 downto 0);
   xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn    : in std_logic_vector(4 downto 0);
+  pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
   dbg      : out InterfaceDbg;
   -- aux      : out std_logic_vector(7 downto 0);
@@ -95,45 +96,45 @@ architecture Behavioral of LatheInterface is
 
  -- controller
 
- signal ctlDin   : std_logic;
- signal ctlShift : std_logic;
- signal ctlOp    : unsigned (opb-1 downto 0); --operation code
- signal ctlLoad  : std_logic;
+ -- signal ctlDin   : std_logic;
+ -- signal ctlShift : std_logic;
+ -- signal ctlOp    : unsigned (opb-1 downto 0); --operation code
+ -- signal ctlLoad  : std_logic;
 
  signal spiW   : DataInp := dataInpInit;
- signal ctlW   : DataInp := dataInpInit;
+ -- signal ctlW   : DataInp := dataInpInit;
  signal extW   : DataInp := dataInpInit;
 
  signal curW   : DataInp := dataInpInit;
 
  signal spiR   : DataOut := dataOutInit;
- signal readR  : DataOut := dataOutInit;
+ -- signal readR  : DataOut := dataOutInit;
  signal extR   : DataOut := dataOutInit;
- signal dspR   : DataOut := dataOutInit;
+ -- signal dspR   : DataOut := dataOutInit;
 
  signal curR   : DataOut := dataOutInit;
 
  -- reader
 
- signal rdActive : std_logic;
- signal rdCopy   : std_logic;
- signal rdOp     : unsigned (opb-1 downto 0); --operation code
+ -- signal rdActive : std_logic;
+ -- signal rdCopy   : std_logic;
+ -- signal rdOp     : unsigned (opb-1 downto 0); --operation code
  
  -- display
 
  constant displayBits : positive := 16;
- signal dspCopy  : std_logic;
- signal dspShift : std_logic;
- signal dspOp    : unsigned (opb-1 downto 0) := (others => '0');
- signal dspData  : unsigned (displayBits-1 downto 0) := (others => '0');
+ -- signal dspCopy  : std_logic;
+ -- signal dspShift : std_logic;
+ -- signal dspOp    : unsigned (opb-1 downto 0) := (others => '0');
+ signal dspData  : std_logic_vector (displayBits-1 downto 0) := (others => '0');
 
  signal statusR   : statusRec := statusToRec(statusZero);
  signal statusRL  : statusRec := statusToRec(statusZero);
  signal statusReg : unsigned(statusSize-1 downto 0);
 
- signal runReg   : runVec;
- signal runR     : runRec;
- signal runRdReg : unsigned(runSize-1 downto 0);
+ -- signal runReg   : runVec;
+ -- signal runR     : runRec;
+ -- signal runRdReg : unsigned(runSize-1 downto 0);
 
  signal zDone : std_logic;
  signal xDone : std_logic;
@@ -142,6 +143,9 @@ architecture Behavioral of LatheInterface is
  signal delayDout  : std_logic_vector(delay-1 downto 0) := (others => '0');
 
 begin
+
+ dout.ctl  <= '0';
+ dout.runR <= '0';
 
  clk <= sysClk;
 
@@ -170,43 +174,45 @@ begin
 
  -- dspData(3 downto 0) <= zDbg;
  -- dspData(7 downto 4) <= xDbg;
- dspData(7  downto 0) <= spiW.op;
+ -- dspData(7  downto 0) <= spiW.op;
 
  spiW <= (din => din,    shift => spiShift, op => spiOp, load => spiLoad);
- ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
+ -- ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
 
- extData1T : if extData /= 0 generate
+ -- extData1T : if extData /= 0 generate
   extW <= (din => riscvCtl.dSnd, shift => riscvCtl.shift, op => riscvCtl.op,
            load => riscvCtl.load);
+  curW <= spiW when (riscvCtl.active = '0') else extW;
 
-  curW <= ctlW when (runR.runEna     = '1') else
-          extW when (riscvCtl.active = '1') else
-          spiW;
- end generate extData1T;
+ --  curW <= ctlW when (runR.runEna     = '1') else
+ --          extW when (riscvCtl.active = '1') else
+ --          spiW;
+ -- end generate extData1T;
 
- extData1F : if extData = 0 generate
-  curW <= ctlW when (runR.runEna = '1') else
-          spiW;
- end generate extData1F;
+ -- extData1F : if extData = 0 generate
+ --  curW <= ctlW when (runR.runEna = '1') else
+ --          spiW;
+ -- end generate extData1F;
 
  spiR  <= (shift => spiShift, op => spiOp, copy => spiCopy);
- readR <= (shift => spiShift, op => rdOp,  copy => rdCopy);
- dspR  <= (shift => dspShift, op => dspOp, copy => dspCopy);
+ -- readR <= (shift => spiShift, op => rdOp,  copy => rdCopy);
+ -- dspR  <= (shift => dspShift, op => dspOp, copy => dspCopy);
 
- extData2T : if extData /= 0 generate
-  extR  <= (shift => riscvCtl.shift, op => riscvCtl.op, copy => riscvCtl.copy);
+ -- extData2T : if extData /= 0 generate
+ extR <= (shift => riscvCtl.shift, op => riscvCtl.op, copy => riscvCtl.copy);
+ curR <= spiR   when (riscvCtl.active = '0') else extR;
 
-  curR <= readR  when (rdActive        = '1') else
-          extR   when (riscvCtl.active = '1') else
-          spiR   when (spiActive       = '1') else
-          dspR;
- end generate extData2T;
+ --  curR <= readR  when (rdActive        = '1') else
+ --          extR   when (riscvCtl.active = '1') else
+ --          spiR   when (spiActive       = '1') else
+ --          dspR;
+ -- end generate extData2T;
  
- extData2F : if extData = 0 generate
-  curR <= readR  when (rdActive  = '1') else
-          spiR   when (spiActive = '1') else
-          dspR;
- end generate extData2F;
+ -- extData2F : if extData = 0 generate
+ --  curR <= readR  when (rdActive  = '1') else
+ --          spiR   when (spiActive = '1') else
+ --          dspR;
+ -- end generate extData2F;
 
  spi_int : entity work.SPI
   port map (
@@ -236,86 +242,95 @@ begin
 
  statusReg <= unsigned(statusToVec(statusR));
 
- runCtl : entity work.CtlReg
-  generic map (opVal => F_Ld_Run_Ctl,
-               n     => runSize)
+ -- runCtl : entity work.CtlReg
+ --  generic map (opVal => F_Ld_Run_Ctl,
+ --               n     => runSize)
+ --  port map (
+ --   clk  => clk,
+ --   inp  => curW,
+ --   data => runReg
+ --   );
+
+ -- runR <= runToRec(runReg);
+
+ --  runCtlRd : entity work.ShiftOutN
+ --  generic map(opVal   => F_Rd_Run_Ctl,
+ --              n       => runSize,              
+ --              outBits => outBits)
+ --  port map (
+ --   clk  => clk,
+ --   oRec => curR,
+ --   data => runRdReg,
+ --   dout => dout.runR                    --runRDout
+ --   );
+
+ --  runRdReg <= unsigned(runToVec(runR));
+
+ -- ctrlProc : entity work.Controller
+ --  generic map (opBase     => F_Ctrl_Base,
+ --               addrBits   => addrBits,
+ --               statusBits => statusSize,
+ --               seqBits    => seqBits,
+ --               outBits    => outBits)
+ --  port map (
+ --   clk       => clk,
+
+ --   init      => runR.runInit,
+
+ --   dInp      => spiW,
+ --   copy      => spiCopy,
+
+ --   ena       => runR.runEna,
+ --   zDoneInt  => zDone,
+ --   xDoneInt  => xDone,
+
+ --   dout      => dout.ctl,               --ctlDout,
+
+ --   ctlDIn    => ctlDin,
+ --   ctlShift  => ctlShift,
+ --   ctlOp     => ctlOp,
+ --   ctlLoad   => ctlLoad,
+
+ --   busy      => statusR.ctlBusy,
+ --   notEmpty  => statusR.queNotEmpty
+ --   );
+
+ -- dataReader : entity work.Reader
+ --  generic map (opBase     => F_Read_Base,
+ --               rdAddrBits => rdAddrBits,
+ --               outBits    => outBits)
+ --  port map (
+ --   clk     => clk,
+ --   init    => runR.readerInit,
+ --   inp     => spiW,
+ --   copy    => spiCopy,
+ --   copyOut => rdCopy,
+ --   opOut   => rdOp,
+ --   active  => rdActive
+ --   );
+
+ -- dispalyCtlProc : entity work.DisplayCtl
+ --  generic map (opVal       => F_Ld_Dsp_Reg,
+ --               displayBits => displayBits,
+ --               outBits     => outBits)
+ --  port map (
+ --   clk      => clk,
+ --   dsel     => dsel,
+ --   inp      => spiW,
+ --   dspCopy  => dspCopy,
+ --   dspShift => dspShift,
+ --   dspOp    => dspOp,
+ --   dspreg => dspData
+ --   -- dspReg   => open
+ --   );
+
+ displayCtlProc : entity work.CtlReg
+  generic map (opVal => F_Ld_Dsp_Reg,
+               n     => displayBits)
   port map (
    clk  => clk,
    inp  => curW,
-   data => runReg
-   );
-
- runR <= runToRec(runReg);
-
-  runCtlRd : entity work.ShiftOutN
-  generic map(opVal   => F_Rd_Run_Ctl,
-              n       => runSize,              
-              outBits => outBits)
-  port map (
-   clk  => clk,
-   oRec => curR,
-   data => runRdReg,
-   dout => dout.runR                    --runRDout
-   );
-
-  runRdReg <= unsigned(runToVec(runR));
-
- ctrlProc : entity work.Controller
-  generic map (opBase     => F_Ctrl_Base,
-               addrBits   => addrBits,
-               statusBits => statusSize,
-               seqBits    => seqBits,
-               outBits    => outBits)
-  port map (
-   clk       => clk,
-
-   init      => runR.runInit,
-
-   dInp      => spiW,
-   copy      => spiCopy,
-
-   ena       => runR.runEna,
-   zDoneInt  => zDone,
-   xDoneInt  => xDone,
-
-   dout      => dout.ctl,               --ctlDout,
-
-   ctlDIn    => ctlDin,
-   ctlShift  => ctlShift,
-   ctlOp     => ctlOp,
-   ctlLoad   => ctlLoad,
-
-   busy      => statusR.ctlBusy,
-   notEmpty  => statusR.queNotEmpty
-   );
-
- dataReader : entity work.Reader
-  generic map (opBase     => F_Read_Base,
-               rdAddrBits => rdAddrBits,
-               outBits    => outBits)
-  port map (
-   clk     => clk,
-   init    => runR.readerInit,
-   inp     => spiW,
-   copy    => spiCopy,
-   copyOut => rdCopy,
-   opOut   => rdOp,
-   active  => rdActive
-   );
-
- dispalyCtlProc : entity work.DisplayCtl
-  generic map (opVal       => F_Ld_Dsp_Reg,
-               displayBits => displayBits,
-               outBits     => outBits)
-  port map (
-   clk      => clk,
-   dsel     => dsel,
-   inp      => spiW,
-   dspCopy  => dspCopy,
-   dspShift => dspShift,
-   dspOp    => dspOp,
-   -- dspreg => dspData
-   dspReg   => open
+   data => dspData
    );
 
  -- led display
@@ -323,7 +338,7 @@ begin
  led_display : entity work.Display
   port map (
    clk    => clk,
-   dspReg => dspData,
+   dspReg => unsigned(dspData),
    digSel => digSel,
    anode  => anode,
    seg    => seg
