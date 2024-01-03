@@ -38,9 +38,6 @@ entity SyncAccelDist is
   droQuad    : in std_logic_vector(1 downto 0);
 
   dbg        : out SyncAccelDbg;
-  -- moveDone    : out std_logic := '0';    --done move
-  -- droDone    : out std_logic := '0';    --dro move done
-  -- distZero   : out std_logic := '0';    --distance zero
   dout       : out SyncData;
   dirOut     : out std_logic := '0';    --direction out
   synStep    : out std_logic := '0'     --output step pulse
@@ -51,7 +48,7 @@ architecture Behavioral of SyncAccelDist is
 
  -- state machine
 
- type SyncFsm is (syncInit, syncIdle, enabled, updAccel, checkAccel, clkWait,
+ type SyncFsm is (syncInit, syncIdle, chDirect, enabled, updAccel, checkAccel, clkWait,
                   distWait);
  signal syncState : syncFsm := syncInit;
 
@@ -256,7 +253,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => sum,
-   dout   => dout.sum                   --sumDout
+   dout   => dout.sum
    );
 
  accelSum_Out : entity work.ShiftOutN
@@ -267,7 +264,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => accelSUm,
-   dout   => dout.accelSum              --accelSumDout
+   dout   => dout.accelSum
    );
 
  accelCtr_out : entity work.ShiftOutN
@@ -278,7 +275,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => accelCounter,
-   dout   => dout.accelCtr              --accelCtrDout
+   dout   => dout.accelCtr
    );
 
  xPos_Shift : entity work.ShiftOutN
@@ -289,7 +286,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => xPos,
-   dout   => dout.xPos                  --xPosDout
+   dout   => dout.xPos
    );
 
  yPos_Shift : entity work.ShiftOutN
@@ -300,7 +297,7 @@ begin
    clk => clk,
    oRec   => oRec,
    data => yPos,
-   dout => dout.yPos                    --yPosDout
+   dout => dout.yPos
    );
 
  DistShiftOut : entity work.ShiftOutN
@@ -311,7 +308,7 @@ begin
    clk => clk,
    oRec   => oRec,
    data => distCtr,
-   dout => dout.dist                    --distDout
+   dout => dout.dist
    );
  
  LocShiftOut : entity work.ShiftOutNS
@@ -322,7 +319,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => loc,
-   dout   => dout.loc                   --locDout
+   dout   => dout.loc
    );
 
  droShiftOut : entity work.ShiftOutNS
@@ -333,7 +330,7 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => unsigned(droVal),
-   dout   => dout.dro                   --droDout
+   dout   => dout.dro
    );
 
  dirOut <= cmdDir;
@@ -346,10 +343,8 @@ begin
    clk    => clk,
    oRec   => oRec,
    data   => accelSteps,
-   dout   => dout.accelSteps            --accelStepsDout
+   dout   => dout.accelSteps
    );
-
- -- moveDone <= movDoneInt;
 
  dbg.ena     <= ena;
  dbg.done    <= moveDone;
@@ -427,11 +422,33 @@ begin
 
      synStep <= '0';                    --clear output step
 
-     if (ena = '1') then
-      distCtr <= distVal;
-      accelState <= accelActive;        --start acceleration
-      syncState <= enabled;             --go to enabled state
+     if (axisCtl.ctlChDirect = '1') then --if ch controls step
+       distCtr <= distVal;              --initialize distance counter
+       syncState <= chDirect;           --go to ch direct state
+     else                               --if step generation
+      if (ena = '1') then               --if enabled
+       distCtr <= distVal;              --initialize distance counter
+       accelState <= accelActive;       --start acceleration
+       syncState <= enabled;            --go to enabled state
+      end if;
      end if;
+
+    --chDirect
+    when chDirect => --***********************************************
+      if (distZero = '0') then          --if not done
+       synStepTmp <= ch;                --copy ch to step
+       if ((synStepLast = '0') and (synStepTmp = '1')) then --if stepping
+        synStep <= '1';                 --output step
+        distctr <= distCtr - 1;         --count off distance
+       else                             --done stepping
+        synStep <= '0';                 --clear step
+       end if;
+      else
+       synStep <= '0';                  --clear step pulse
+       if (axisCtl.ctlChDirect = '0') then --if ch not controlling step
+        syncState <= syncInit;          --return to init state
+       end if;
+      end if;
 
     --enabled
     when enabled => --************************************************

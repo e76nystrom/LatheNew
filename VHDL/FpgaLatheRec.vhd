@@ -1,3 +1,5 @@
+--rFile
+
 library ieee;
 
 use ieee.std_logic_1164.all;
@@ -5,11 +7,15 @@ use ieee.numeric_std.all;
 
 package FpgaLatheBitsRec is
 
+-- RiscV control register
+
 type riscvCtlRec is record
  riscvInTest : std_logic;       --  2 0x4 riscv input test
  riscvSPI    : std_logic;       --  1 0x2 riscv spi active
  riscvData   : std_logic;       --  0 0x1 riscv data active
 end record riscvCtlRec;
+
+-- status register
 
 type statusRec is record
  syncActive    : std_logic;     --  8 0x100 'SA' sync active
@@ -22,6 +28,8 @@ type statusRec is record
  zAxisDone     : std_logic;     --  1 0x002 'ZD' z axis done
  zAxisEna      : std_logic;     --  0 0x001 'ZE' z axis enable flag
 end record statusRec;
+
+-- input register
 
 type inputsRec is record
  inSpare  : std_logic;          -- 12 0x1000 'SP' spare input
@@ -39,6 +47,8 @@ type inputsRec is record
  inPin10  : std_logic;          --  0 0x0001 '10' pin 10
 end record inputsRec;
 
+-- axis inputs
+
 type axisInRec is record
  axProbe : std_logic;           --  3 0x8 axis probe
  axPlus  : std_logic;           --  2 0x4 axis plus limit
@@ -46,11 +56,15 @@ type axisInRec is record
  axHome  : std_logic;           --  0 0x1 axis home
 end record axisInRec;
 
+-- output register
+
 type outputsRec is record
  outPin17 : std_logic;          --  2 0x4 pin 17
  outPin14 : std_logic;          --  1 0x2 pin 14
  outPin1  : std_logic;          --  0 0x1 pin 1
 end record outputsRec;
+
+-- pin out signals
 
 type pinOutRec is record
  pinOut17 : std_logic;          -- 11 0x800 
@@ -67,10 +81,22 @@ type pinOutRec is record
  pinOut2  : std_logic;          --  0 0x001 z dir
 end record pinOutRec;
 
+-- jog control register
+
 type jogRec is record
  jogBacklash   : std_logic;     --  1 0x2 jog backlash present
  jogContinuous : std_logic;     --  0 0x1 jog continuous mode
 end record jogRec;
+
+-- runOut control register
+
+type runOutCtlRec is record
+ runOutDir  : std_logic;        --  2 0x4 runout direction
+ runOutEna  : std_logic;        --  1 0x2 runout enable
+ runOutInit : std_logic;        --  0 0x1 runout init
+end record runOutCtlRec;
+
+-- axis control register
 
 type axisCtlRec is record
  ctlUseLimits : std_logic;      -- 15 0x8000 'UL' use limits
@@ -91,6 +117,8 @@ type axisCtlRec is record
  ctlInit      : std_logic;      --  0 0x0001 'IN' reset flag
 end record axisCtlRec;
 
+-- axis status register
+
 type axisStatusRec is record
  axInFlag    : std_logic;       -- 10 0x400 'IF' axis in flag
  axInProbe   : std_logic;       --  9 0x200 'IP' axis in probe
@@ -104,6 +132,8 @@ type axisStatusRec is record
  axDistZero  : std_logic;       --  1 0x002 'ZE' axis distance zero
  axDone      : std_logic;       --  0 0x001 'DN' axis done
 end record axisStatusRec;
+
+-- configuration control register
 
 type cfgCtlRec is record
  cfgDroStep   : std_logic;      -- 20 0x100000 step pulse to dro
@@ -129,51 +159,91 @@ type cfgCtlRec is record
  cfgZDirInv   : std_logic;      --  0 0x000001 z dir inverted
 end record cfgCtlRec;
 
+-- clock control register
+
 type clkCtlRec is record
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
- clkMask       : std_logic;     --  0 0x01 clock mask
- xFreqShift    : std_logic;     --  0 0x01 x Frequency shift
- zFreqShift    : std_logic;     --  0 0x01 z Frequency shift
- xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x Frequency select
- zFreqSel      : std_logic_vector(2 downto 0);-- 2-0 z Frequency select
+ xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x clock select
+ zFreqSel      : std_logic_vector(2 downto 0);-- 2-0 z clock select
 end record clkCtlRec;
 
- constant clkNone      : std_logic_vector (2 downto 0) := "000"; -- 
- constant clkFreq      : std_logic_vector (2 downto 0) := "001"; -- 
- constant clkCh        : std_logic_vector (2 downto 0) := "010"; -- 
- constant clkIntClk    : std_logic_vector (2 downto 0) := "011"; -- 
- constant clkSlvFreq   : std_logic_vector (2 downto 0) := "100"; -- 
- constant clkSlvCh     : std_logic_vector (2 downto 0) := "101"; -- 
- constant clkSpindle   : std_logic_vector (2 downto 0) := "110"; -- 
- constant clkDbgFreq   : std_logic_vector (2 downto 0) := "111"; -- 
- constant zClkNone     : std_logic_vector (2 downto 0) := "000"; -- 
- constant zClkZFreq    : std_logic_vector (2 downto 0) := "001"; -- 
- constant zClkCh       : std_logic_vector (2 downto 0) := "010"; -- 
- constant zClkIntClk   : std_logic_vector (2 downto 0) := "011"; -- 
- constant zClkXFreq    : std_logic_vector (2 downto 0) := "100"; -- 
- constant zClkXCh      : std_logic_vector (2 downto 0) := "101"; -- 
- constant zClkSpindle  : std_logic_vector (2 downto 0) := "110"; -- 
- constant zClkDbgFreq  : std_logic_vector (2 downto 0) := "111"; -- 
- constant xClkNone     : std_logic_vector (2 downto 0) := "000"; -- 
- constant xClkXFreq    : std_logic_vector (2 downto 0) := "001"; -- 
- constant xClkCh       : std_logic_vector (2 downto 0) := "010"; -- 
- constant xClkIntClk   : std_logic_vector (2 downto 0) := "011"; -- 
- constant xClkZFreq    : std_logic_vector (2 downto 0) := "100"; -- 
- constant xClkZCh      : std_logic_vector (2 downto 0) := "101"; -- 
- constant xClkSpindle  : std_logic_vector (2 downto 0) := "110"; -- 
- constant xClkDbgFreq  : std_logic_vector (2 downto 0) := "111"; -- 
+-- clock shift values
+
+ constant zFreqShift     : integer :=  0; -- x0001 z clock shift
+ constant xFreqShift     : integer :=  0; -- x0001 x clock shift
+ constant clkMask        : integer :=  0; -- x0001 clock mask
+
+-- clock selection values
+
+ constant clkNone        : std_logic_vector (2 downto 0) := "000"; -- 
+ constant clkFreq        : std_logic_vector (2 downto 0) := "001"; -- 
+ constant clkCh          : std_logic_vector (2 downto 0) := "010"; -- 
+ constant clkIntClk      : std_logic_vector (2 downto 0) := "011"; -- 
+ constant clkSlvFreq     : std_logic_vector (2 downto 0) := "100"; -- 
+ constant clkSlvCh       : std_logic_vector (2 downto 0) := "101"; -- 
+ constant clkSpindle     : std_logic_vector (2 downto 0) := "110"; -- 
+ constant clkDbgFreq     : std_logic_vector (2 downto 0) := "111"; -- 
+
+-- z clock values
+
+ constant zClkNone       : std_logic_vector (2 downto 0) := "000"; -- 
+ constant zClkZFreq      : std_logic_vector (2 downto 0) := "001"; -- 
+ constant zClkCh         : std_logic_vector (2 downto 0) := "010"; -- 
+ constant zClkIntClk     : std_logic_vector (2 downto 0) := "011"; -- 
+ constant zClkXFreq      : std_logic_vector (2 downto 0) := "100"; -- 
+ constant zClkXCh        : std_logic_vector (2 downto 0) := "101"; -- 
+ constant zClkSpindle    : std_logic_vector (2 downto 0) := "110"; -- 
+ constant zClkDbgFreq    : std_logic_vector (2 downto 0) := "111"; -- 
+
+-- x clock values
+
+ constant xClkNone       : std_logic_vector (2 downto 0) := "000"; -- 
+ constant xClkXFreq      : std_logic_vector (2 downto 0) := "001"; -- 
+ constant xClkCh         : std_logic_vector (2 downto 0) := "010"; -- 
+ constant xClkIntClk     : std_logic_vector (2 downto 0) := "011"; -- 
+ constant xClkZFreq      : std_logic_vector (2 downto 0) := "100"; -- 
+ constant xClkZCh        : std_logic_vector (2 downto 0) := "101"; -- 
+ constant xClkSpindle    : std_logic_vector (2 downto 0) := "110"; -- 
+ constant xClkDbgFreq    : std_logic_vector (2 downto 0) := "111"; -- 
+
+-- sync control register
 
 type synCtlRec is record
- synEncEna    : std_logic;      --  2 0x4 enable encoder
- synEncInit   : std_logic;      --  1 0x2 init encoder
- synPhaseInit : std_logic;      --  0 0x1 init phase counter
+ synEncClkSel : std_logic_vector(1 downto 0);-- 4-3 encoder clk sel
+ synEncEna    : std_logic;      --  2 0x04 enable encoder
+ synEncInit   : std_logic;      --  1 0x02 init encoder
+ synPhaseInit : std_logic;      --  0 0x01 init phase counter
+ clkMask      : std_logic;      --  0 0x01 clock mask
+ xFreqShift   : std_logic;      --  0 0x01 x clock shift
+ zFreqShift   : std_logic;      --  0 0x01 z clock shift
 end record synCtlRec;
 
+-- encoder clock shift
+
+ constant encClkShift    : integer :=  0; -- x0001 enc clock shift
+
+-- encoder clock values
+
+ constant encClkNone     : std_logic_vector (1 downto 0) := "00"; -- 
+ constant encClkCh       : std_logic_vector (1 downto 0) := "01"; -- 
+ constant encClkSp       : std_logic_vector (1 downto 0) := "10"; -- 
+ constant encClkDbg      : std_logic_vector (1 downto 0) := "11"; -- 
+
+-- encoder clock values shifted
+
+ constant synEncClkNone  : std_logic_vector (1 downto 0) := "00"; -- 
+ constant synEncClkCh    : std_logic_vector (1 downto 0) := "01"; -- 
+ constant synEncClkSp    : std_logic_vector (1 downto 0) := "10"; -- 
+ constant synEncClkDbg   : std_logic_vector (1 downto 0) := "11"; -- 
+
+-- spindle control register
+
 type spCtlRec is record
- spJogEnable : std_logic;       --  3 0x8 spindle jog enable
- spDir       : std_logic;       --  2 0x4 spindle direction
- spEna       : std_logic;       --  1 0x2 spindle enable
- spInit      : std_logic;       --  0 0x1 spindle init
+ spJogEnable : std_logic;       --  3 0x08 spindle jog enable
+ spDir       : std_logic;       --  2 0x04 spindle direction
+ spEna       : std_logic;       --  1 0x02 spindle enable
+ spInit      : std_logic;       --  0 0x01 spindle init
+ encClkShift : std_logic;       --  0 0x01 enc clock shift
 end record spCtlRec;
 
 end package FpgaLatheBitsRec;

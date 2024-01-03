@@ -112,6 +112,7 @@ architecture Behavioral of LatheCtl is
 
  signal intActive : std_logic;
  signal intClk    : std_logic;
+ signal encCh     : std_logic;
  signal xCh       : std_logic;
  signal zCh       : std_logic;
  signal xInit     : std_logic;
@@ -120,12 +121,18 @@ architecture Behavioral of LatheCtl is
 
  signal zAxisStep : std_logic;
  signal xAxisStep : std_logic;
+
  signal zAxisDir  : std_logic;
  signal xAxisDir  : std_logic;
+
  signal zExtInit  : std_logic;
  signal xExtInit  : std_logic;
+
  signal zExtEna   : std_logic;
+ signal zExtRunOutEna : std_logic;
+ 
  signal xExtEna   : std_logic;
+
  signal xAxisIn   : axisInRec;
 
  signal zDelayStep : std_logic;
@@ -178,9 +185,6 @@ begin
  eStop <= cfgCtlR.cfgEStopEna and (eStopIn xor cfgCtlR.cfgEStopInv);
  statusR.stEStop <= eStop;
 
- -- statusR.ctlBusy     <= '0';
- -- statusR.queNotEmpty <= '0';
-
  pinOut <= pinOutToVec(pinOutR);
 
  pinOutR.pinOut2  <= zDir; 
@@ -193,34 +197,6 @@ begin
  pinOutR.pinOut9  <= '0';
  pinOutR.pinOut1  <= outPinR.outPin1;
  pinOutR.pinOut14 <= outPinR.outPin14;
- -- pinOutR.pinOut16
- -- pinOutR.pinOut17
-
- -- pinOut(0) <= zDir;
- -- pinOut(1) <= zStep;
- -- pinOut(2) <= xDir;
- -- pinOut(3) <= xStep;
-
- -- pinOut(7 downto 4) <= (others => '0');
-
- -- alias digSel: unsigned(1 downto 0) is div(19 downto 18);
- -- pinOut(5 downto 4) <= zMpg;
- -- pinout(7 downto 6) <= xMpg;
- -- pinOut(9 downto 8) <= zDro;
-
- -- pinOut(9 downto 4) <= std_logic_vector(div(19 downto 14));
-
- -- zSwitches <= std_logic_vector(cfgProbeInv &
- --                               cfgCtlReg(c_cfgZPlusInv downto c_cfgzHomeInv));
- -- xSwitches <= std_logic_vector(cfgProbeInv &
- --                               cfgCtlReg(c_cfgXPlusInv downto c_cfgxHomeInv));
- -- zSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgZPlusInv &
- --               cfgCtlR.cfgZHomeInv & cfgCtlR.cfgZMinusInv);
-
- -- xSwitches <= (cfgCtlR.cfgProbeInv & cfgCtlR.cfgXPlusInv &
- --               cfgCtlR.cfgXHomeInv & cfgCtlR.cfgXMinusInv);
-
- -- inputsR <= inputsToRec("00000000" & pinIn);
 
  bufOutP : process (clk)
  begin
@@ -265,7 +241,7 @@ begin
    clk  => clk,
    oRec => curR,
    data => unsigned(pinIn),
-   dout => dout.inputs                  --inputsDout
+   dout => dout.inputs
    );
 
  outPin_reg : entity work.CtlReg
@@ -334,6 +310,18 @@ begin
    dir => encDir
    );
 
+ enc_clk : process(clk)
+ begin
+  if (rising_edge(clk)) then
+   case synCtlR.synEncClkSel is
+    when encClkCh  => encCh <= ch;
+    when encClkSp  => encCh <= spFreqGen;
+    when encClkDbg => encCh <= dbgFreqGen;
+    when others    => encCh <= '0';
+   end case;
+  end if;
+ end process;
+
  encoderProc : entity work.Encoder
   generic map (opBase       => F_Enc_Base,
                cycleLenBits => cycleLenBits,
@@ -346,11 +334,10 @@ begin
    inp     => curW,
    oRec    => curR,
    dout    => dout.encoder,
-   -- dout    => encDout,
 
    init    => synCtlR.synEncInit,
    ena     => synCtlR.synEncEna,
-   ch      => ch,
+   ch      => encCh,
    active  => intActive,
    intclk  => intClk
    );
@@ -366,7 +353,6 @@ begin
    inp     => curW,
    oRec    => curR,
    dout    => dout.phase,
-   -- dout    => phaseDOut,
 
    init    => synCtlR.synPhaseInit,
    genSync => cfgCtlR.cfgGenSync,
@@ -383,7 +369,6 @@ begin
    clk   => clk,
    oRec  => curR,
    dout  => dout.index,
-   -- dout  => idxClkDout,
    ch    => ch,
    index => sync
    );
@@ -512,7 +497,7 @@ begin
 
    inp        => curW,
    oRec       => curR,
-   dout       => dout.z,                --zDOut,
+   dout       => dout.z,
 
    extInit    => xExtInit,
    extEna     => xExtEna,
@@ -523,13 +508,8 @@ begin
    sync       => sync,
 
    droQuad    => zAxisDro,
-   -- droInvert  => cfgCtlR.cfgZDroInv,
    axisIn     => zAxisIn,
-   -- mpgQuad    => zMpg,
-   -- jogInvert  => cfgctlR.cfgZJogInv,
-
    currentDir => zCurrentDir,
-   -- switches   => zSwitches,
    eStop      => eStop,
 
    dbg        => dbg.z,
@@ -585,6 +565,19 @@ begin
   end if;
  end process;
 
+ RunOut_Ctl : entity work.RunOutSync
+  generic map (
+   opBase        => F_RunOut_Base,
+   runOutCtrBits => 18
+   )
+  port map (
+   clk     => clk,
+   inp     => curW,
+   enable  => zExtEna,
+   ch      => zCh,
+   rEnable => zExtRunOutEna
+   );
+
  xCh_Data : process(clk)
  begin
   if (rising_edge(clk)) then
@@ -618,10 +611,10 @@ begin
 
    inp        => curW,
    oRec       => curR,
-   dout       => dout.x,                --xDOut,
+   dout       => dout.x,
 
    extInit    => zExtInit,
-   extEna     => zExtEna,
+   extEna     => zExtRunOutEna,
    extDone    => intZDoneInt,
 
    ch         => xCh,
@@ -629,13 +622,8 @@ begin
    sync       => sync,
 
    droQuad    => xAxisDro,
-   -- droInvert  => cfgCtlR.cfgXDroInv,
    axisIn     => xAxisIn,
-   -- mpgQuad    => xMpg,
-   -- jogInvert  => cfgCtlR.cfgXJogInv,
-
    currentDir => xCurrentDir,
-   -- switches   => xSwitches,
    eStop      => eStop,
 
    dbg        => dbg.x,
@@ -688,7 +676,7 @@ begin
 
    inp       => curW,
    oRec      => curR,
-   dout      => dout.spindle,           --spindleDout,
+   dout      => dout.spindle,
 
    ch        => spFreqGen,
    mpgQuad   => zMpg,

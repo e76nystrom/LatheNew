@@ -137,9 +137,6 @@ architecture Behavioral of LatheTop is
  signal spiCS   : std_uLogic_vector(7 downto 0);
 
  signal data    : LatheInterfaceData;
- signal a0, a1, a2, a3, a4, a5, a6, a7, a8 : std_logic;
- signal b0, b1, b2 : std_logic;
- signal extDout : std_logic;
 
  signal latheDClk : std_logic;
  signal latheDin  : std_logic;
@@ -156,8 +153,17 @@ architecture Behavioral of LatheTop is
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
+ signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+
+ signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
+ signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
+
+ cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+
+ mpgQuad.zQuad <= zMpg;
+ mpgQuad.xQuad <= xMpg;
 
  dbgsetup : entity work.DbgMap
   port map (
@@ -172,8 +178,6 @@ begin
    clockOut => sysClkOut
    ); 
 
- mpgQuad.zQuad <= zMpg;
- mpgQuad.xQuad <= xMpg;
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -195,6 +199,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
+   inputPins                    => riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -221,6 +226,7 @@ begin
    cfs_reg_o   => cfs_reg_o,
    
    cfs_mpg_i   => mpgQuad,
+   cfs_pins_i  => cfs_pins_i,
 
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
@@ -267,59 +273,6 @@ begin
                          (riscVCtlReg.riscVData = '0')) else '0';
  riscvData.data <= riscvDout when riscVCtlReg.riscVData = '1' else '0';
 
--- Out <= extDout;
-
--- a0 <= data.ctl or
---       data.runR or
---       data.status or
---       data.latheCtl.inputs;
-
--- a1 <= data.latheCtl.phase or
---       data.latheCtl.index or
---       data.latheCtl.encoder.cmpTmr or
---       data.latheCtl.encoder.intTmr;
-
--- a2 <= data.latheCtl.z.status or
---       data.latheCtl.z.ctl or
---       data.latheCtl.z.sync.dist or
---       data.latheCtl.z.sync.loc;
-
--- b0 <= a0 or a1 or a2;
-
--- a3 <= data.latheCtl.z.sync.xPos or
---       data.latheCtl.z.sync.yPos or
---       data.latheCtl.z.sync.sum or
---       data.latheCtl.z.sync.accelSum;
-
--- a4 <= data.latheCtl.z.sync.accelCtr or
---       data.latheCtl.z.sync.accelSteps or
---       data.latheCtl.z.sync.dro;
-
--- a5 <= data.latheCtl.x.status or
---       data.latheCtl.x.ctl or
---       data.latheCtl.x.sync.dist or
---       data.latheCtl.x.sync.loc;
-
--- b1 <= a3 or a4 or a5;
-
--- a6 <= data.latheCtl.x.sync.xPos or
---       data.latheCtl.x.sync.yPos or
---       data.latheCtl.x.sync.sum or
---       data.latheCtl.x.sync.accelSum;
-
--- a7 <= data.latheCtl.x.sync.accelCtr or
---       data.latheCtl.x.sync.accelSteps or
---       data.latheCtl.x.sync.dro or
---       data.latheCtl.spindle.xPos;
-
--- a8 <= data.latheCtl.spindle.yPos or
---       data.latheCtl.spindle.sum or
---       data.latheCtl.spindle.accelSum or
---       data.latheCtl.spindle.accelCtr;
- 
--- b2 <= a6 or a7 or a8;
-
--- extDout <= b0 or b1 or b2;
 
  interfaceProc : entity work.CFSInterface
  generic map (lenBits  => 8,
@@ -335,8 +288,11 @@ begin
   riscvCtl   => riscvCtlReg,
 
   latheData  => riscvData,
-  latheCtl   => riscvCtl
+  latheCtl   => riscvCtl,
+  pinIn      => pinInTest
   );
+
+ pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
   generic map (extData => 1,
@@ -365,7 +321,7 @@ begin
 
    xMpg     => xMpg,
 
-   pinIn    => pinIn,
+   pinIn    => pinInLathe,
 
    -- aux      => aux,
    pinOut   => pinOut,

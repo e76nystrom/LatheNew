@@ -1,3 +1,5 @@
+-- fFile
+
 library ieee;
 
 use ieee.std_logic_1164.all;
@@ -98,6 +100,19 @@ return jogRec;
 function jogToRecS(val : std_logic_vector(jogSize-1 downto 0))
 return jogRec;
 
+constant runOutCtlSize : integer := 3;
+subType runOutCtlVec is std_logic_vector(runOutCtlSize-1 downto 0);
+constant runOutCtlZero : runOutCtlVec := (others => '0');
+
+function runOutCtlToVec(val : runOutCtlRec)
+ return runOutCtlVec;
+
+function runOutCtlToRec(val : runOutCtlVec)
+return runOutCtlRec;
+
+function runOutCtlToRecS(val : std_logic_vector(runOutCtlSize-1 downto 0))
+return runOutCtlRec;
+
 constant axisCtlSize : integer := 16;
 subType axisCtlVec is std_logic_vector(axisCtlSize-1 downto 0);
 constant axisCtlZero : axisCtlVec := (others => '0');
@@ -150,7 +165,7 @@ return clkCtlRec;
 function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
 return clkCtlRec;
 
-constant synCtlSize : integer := 3;
+constant synCtlSize : integer := 5;
 subType synCtlVec is std_logic_vector(synCtlSize-1 downto 0);
 constant synCtlZero : synCtlVec := (others => '0');
 
@@ -208,6 +223,9 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function statusToVec(val : statusRec) return statusVec is
  variable rtnVec : statusVec;
 begin
@@ -249,6 +267,9 @@ begin
 
  return rtnRec;
 end function;
+
+
+-- end
 
 function inputsToVec(val : inputsRec) return inputsVec is
  variable rtnVec : inputsVec;
@@ -301,6 +322,9 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function axisInToVec(val : axisInRec) return axisInVec is
  variable rtnVec : axisInVec;
 begin
@@ -331,6 +355,9 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function outputsToVec(val : outputsRec) return outputsVec is
  variable rtnVec : outputsVec;
 begin
@@ -358,6 +385,9 @@ begin
 
  return rtnRec;
 end function;
+
+
+-- end
 
 function pinOutToVec(val : pinOutRec) return pinOutVec is
  variable rtnVec : pinOutVec;
@@ -407,6 +437,9 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function jogToVec(val : jogRec) return jogVec is
  variable rtnVec : jogVec;
 begin
@@ -432,6 +465,40 @@ begin
 
  return rtnRec;
 end function;
+
+
+-- end
+
+function runOutCtlToVec(val : runOutCtlRec) return runOutCtlVec is
+ variable rtnVec : runOutCtlVec;
+begin
+ rtnVec := val.runOutDir  & val.runOutEna  & val.runOutInit;
+ return rtnVec;
+end function;
+
+function runOutCtlToRec(val : runOutCtlVec) return runOutCtlRec is
+ variable rtnRec : runOutCtlRec;
+begin
+ rtnRec.runOutDir  := val(2);
+ rtnRec.runOutEna  := val(1);
+ rtnRec.runOutInit := val(0);
+
+ return rtnRec;
+end function;
+
+function runOutCtlToRecS(val : std_logic_vector(runOutCtlSize-1 downto 0))
+ return runOutCtlRec is
+ variable rtnRec : runOutCtlRec;
+begin
+ rtnRec.runOutDir  := val(2);
+ rtnRec.runOutEna  := val(1);
+ rtnRec.runOutInit := val(0);
+
+ return rtnRec;
+end function;
+
+
+-- end
 
 function axisCtlToVec(val : axisCtlRec) return axisCtlVec is
  variable rtnVec : axisCtlVec;
@@ -492,6 +559,9 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function axisStatusToVec(val : axisStatusRec) return axisStatusVec is
  variable rtnVec : axisStatusVec;
 begin
@@ -538,6 +608,9 @@ begin
 
  return rtnRec;
 end function;
+
+
+-- end
 
 function cfgCtlToVec(val : cfgCtlRec) return cfgCtlVec is
  variable rtnVec : cfgCtlVec;
@@ -609,11 +682,13 @@ begin
  return rtnRec;
 end function;
 
+
+-- end
+
 function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
  variable rtnVec : clkCtlVec;
 begin
- rtnVec := val.clkDbgFreqEna & val.clkMask       & val.xFreqShift    &
-           val.zFreqShift    & val.xFreqSel      & val.zFreqSel;
+ rtnVec := val.clkDbgFreqEna & val.xFreqSel      & val.zFreqSel;
  return rtnVec;
 end function;
 
@@ -621,9 +696,6 @@ function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
- rtnRec.clkMask       := val(0);
- rtnRec.xFreqShift    := val(0);
- rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);
 
@@ -635,28 +707,34 @@ function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
  variable rtnRec : clkCtlRec;
 begin
  rtnRec.clkDbgFreqEna := val(6);
- rtnRec.clkMask       := val(0);
- rtnRec.xFreqShift    := val(0);
- rtnRec.zFreqShift    := val(0);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);
 
  return rtnRec;
 end function;
 
+
+-- end
+
 function synCtlToVec(val : synCtlRec) return synCtlVec is
  variable rtnVec : synCtlVec;
 begin
- rtnVec := val.synEncEna    & val.synEncInit   & val.synPhaseInit;
+ rtnVec := val.synEncClkSel & val.synEncEna    & val.synEncInit   &
+           val.synPhaseInit & val.clkMask      & val.xFreqShift   &
+           val.zFreqShift;
  return rtnVec;
 end function;
 
 function synCtlToRec(val : synCtlVec) return synCtlRec is
  variable rtnRec : synCtlRec;
 begin
+ rtnRec.synEncClkSel := val(4 downto 3);
  rtnRec.synEncEna    := val(2);
  rtnRec.synEncInit   := val(1);
  rtnRec.synPhaseInit := val(0);
+ rtnRec.clkMask      := val(0);
+ rtnRec.xFreqShift   := val(0);
+ rtnRec.zFreqShift   := val(0);
 
  return rtnRec;
 end function;
@@ -665,18 +743,25 @@ function synCtlToRecS(val : std_logic_vector(synCtlSize-1 downto 0))
  return synCtlRec is
  variable rtnRec : synCtlRec;
 begin
+ rtnRec.synEncClkSel := val(4 downto 3);
  rtnRec.synEncEna    := val(2);
  rtnRec.synEncInit   := val(1);
  rtnRec.synPhaseInit := val(0);
+ rtnRec.clkMask      := val(0);
+ rtnRec.xFreqShift   := val(0);
+ rtnRec.zFreqShift   := val(0);
 
  return rtnRec;
 end function;
+
+
+-- end
 
 function spCtlToVec(val : spCtlRec) return spCtlVec is
  variable rtnVec : spCtlVec;
 begin
  rtnVec := val.spJogEnable & val.spDir       & val.spEna       &
-           val.spInit;
+           val.spInit      & val.encClkShift;
  return rtnVec;
 end function;
 
@@ -687,6 +772,7 @@ begin
  rtnRec.spDir       := val(2);
  rtnRec.spEna       := val(1);
  rtnRec.spInit      := val(0);
+ rtnRec.encClkShift := val(0);
 
  return rtnRec;
 end function;
@@ -699,8 +785,12 @@ begin
  rtnRec.spDir       := val(2);
  rtnRec.spEna       := val(1);
  rtnRec.spInit      := val(0);
+ rtnRec.encClkShift := val(0);
 
  return rtnRec;
 end function;
+
+
+-- end
 
 end package body FpgaLatheBitsFunc;

@@ -8,11 +8,12 @@ use work.regDef.all;
 use work.IORecord.all;
 
 entity Encoder is
- generic(opBase       : unsigned := x"00";
-         cycleLenBits : positive := 16;
-         encClkBits   : positive := 24;
-         cycleClkbits : positive := 32;
-         outBits      : positive := 32);
+ generic(opBase        : unsigned := x"00";
+         preScalerBits : positive := 16;
+         cycleLenBits  : positive := 16;
+         encClkBits    : positive := 24;
+         cycleClkbits  : positive := 32;
+         outBits       : positive := 32);
  port(
   clk    : in std_logic;                --system clock
   inp    : DataInp;
@@ -20,7 +21,6 @@ entity Encoder is
   init   : in std_logic;                --init signal
   ena    : in std_logic;                --enable input
   ch     : in std_logic;                --input clock
-  -- dout   : out std_logic := '0';        --data out
   dout   : out EncoderData;
   active : out std_logic := '0';        --active
   intclk : out std_logic := '0'         --output clock
@@ -29,18 +29,33 @@ end Encoder;
 
 architecture Behavioral of Encoder is
 
- -- signal cmpTmrDout : std_logic;
- -- signal intTmrDout : std_logic;
-
  signal encCycleDone : std_logic;
  signal cycleClocks : unsigned (cycleClkBits-1 downto 0);
 
  signal intClkOut : std_logic;
  signal intActive : std_logic;
 
+ signal preScalerVal : unsigned(preScalerBits-1 downto 0) := (others => '0');
+ signal preScalerCtr : unsigned(preScalerBits-1 downto 0) := (others => '0');
+
+ signal lastCh    : std_logic := '0';
+ signal scaleCh   : std_logic := '0';
+
+ signal usePreScaler : std_logic := '0';
+ signal encCh        : std_logic := '0';
+
 begin
 
- -- dout <= cmpTmrDout or intTmrDout;
+ preScaler : entity work.ShiftOp
+  generic map(opVal  => opBase + F_Ld_Enc_Prescale,
+              n      => preScalerBits)
+  port map (
+   clk   => clk,
+   inp   => inp,
+   data  => preScalerVal);
+
+ usePreScaler <= '1' when preScalerVal /= 0 else '0';
+ encCh <= ch when usePreScaler = '0' else scaleCh;
 
  cmp_tmr : entity work.CmpTmrNewMem
   generic map (opBase       => opBase + 0,
@@ -52,10 +67,10 @@ begin
    clk          => clk,
    inp          => inp,
    init         => init,
-   dout         => dout.cmpTmr,         --cmpTmrDout,
+   dout         => dout.cmpTmr,
    oRec         => oRec,
    ena          => ena,
-   encClk       => ch,
+   encClk       => encCh,
    encCycleDone => encCycleDone,
    cycleClocks  => cycleClocks
    );
@@ -69,14 +84,45 @@ begin
                encClkBits   => encClkBits,
                cycleClkbits => cycleClkBits)
   port map (
-   clk         => clk,
-   inp         => inp,
+   clk          => clk,
+   inp          => inp,
    init         => init,
-   dout         => dout.intTmr,         --intTmrDout,
+   dout         => dout.intTmr,
    intClk       => intClkOut,
    Active       => intActive,
    encCycleDone => encCycleDone,
    cycleClocks  => cycleClocks
    );
+
+ enc_process: process(clk)
+
+ begin
+  
+  if (rising_edge(clk)) then            --if clock active
+
+   if (init = '1') then                 --if init
+    preScalerCtr <= (others => '0');
+   else
+
+    if (ena = '1' and usePreScaler = '1') then --if enabled
+
+     if (lastCh = '0' and ch = '1') then
+      if (preScalerCtr = 0) then
+       preScalerCtr <= preScalerVal;
+       scaleCh <= '1';
+      else
+       preScalerCtr <= preScalerCtr - 1;
+      end if;
+     else
+       scaleCh <= '0';
+     end if;
+
+    end if;                             --enabled
+
+    lastCh <= ch;
+   end if;                              --init
+   
+  end if;                               --end rising_edge
+ end process;
 
 end Behavioral;

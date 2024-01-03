@@ -39,13 +39,9 @@ entity Axis is
   sync       : in std_logic;
 
   droQuad    : in std_logic_vector(1 downto 0);
-  -- droInvert  : in std_logic;
   axisIn     : in axisInRec;
-  -- mpgQuad    : in std_logic_vector(1 downto 0);
-  -- jogInvert  : in std_logic;
 
   currentDir : in std_logic;
-  -- switches   : in std_logic_vector(3 downto 0);
   eStop      : in std_logic;
 
   dbg        : out AxisDbg;
@@ -75,8 +71,6 @@ architecture Behavioral of Axis is
  signal runEna     : std_logic;
  signal locDisable : std_logic := '0';
  
- -- signal doneInt : std_logic;
-
  signal movDone    : std_logic;
 
  signal syncAccelEna : std_logic;
@@ -86,7 +80,7 @@ architecture Behavioral of Axis is
  signal synStepOut : std_logic;
  signal step       : std_logic;
 
- signal enaCh : std_logic;
+ -- signal enaCh : std_logic;
 
  signal synDbgData : std_logic_vector(synDbgBits-1 downto 0);
  signal doneDist   : std_logic;
@@ -95,17 +89,9 @@ architecture Behavioral of Axis is
  signal doneHome   : std_logic;
  signal doneProbe   : std_logic;
 
- -- signal jogDir  : std_logic;
-
  signal droDone : std_logic;
 
- -- alias swHome     : std_logic is switches(0);
- -- alias swLimMinus : std_logic is switches(1);
- -- alias swLimPlus  : std_logic is switches(2);
-
  signal pulseOut  : std_logic;
-
- -- signal jogMode  : std_logic_vector(1 downto 0);
 
  type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -163,8 +149,6 @@ begin
 
  syncAccelEna <= runEna when axisCtlR.ctlChDirect = '0' else '0';
 
- -- jogMode <= axisCtlR.ctlJogMpg & axisCtlR.ctlJogCmd;
-
  curDir <= currentDir;
  dirOut  <= synDirOut;
 
@@ -188,26 +172,16 @@ begin
    ena        => syncAccelEna,
    extDone    => extDone,
    ch         => ch,
-   -- cmdDir     => axisCtlR.ctlDir,
+
    curDir     => curDir,
    locDisable => locDisable,
-   -- distMode   => axisCtlR.ctlDistMode,
-
-   -- mpgQuad    => mpgQuad,
-   -- jogInvert  => jogInvert,
-   -- jogMode    => jogMode,
 
    droQuad    => droQuad,
    axisIn     => axisIn,
    axisCtl    => axisCtlR,
    axisStat   => axisStatusR,
-   -- droInvert  => droInvert,
-   -- droEndChk  => axisCtlR.ctlDroEnd,
 
    dbg        => dbg.sync,
-   -- movDone    => movDone,
-   -- droDone    => droDone,
-   -- distZero   => axisStatusR.axDistZero,
    dout       => dout.sync,
    dirOut     => synDirOut,
    synStep    => synStepOut
@@ -229,34 +203,19 @@ begin
  runInit <= extInit when axisCtlR.ctlSlave = '1' else axisInit;
  runEna  <= extEna  when axisCtlR.ctlSlave = '1' else axisEna;
 
- step    <= synStepOut when axisCtlR.ctlChDirect = '0' else enaCh;
+ -- enaCh   <= runEna and ch;
+ -- step    <= synStepOut when axisCtlR.ctlChDirect = '0' else enaCh;
+ step <= synStepOut;
 
  initOut   <= axisInit;
  enaOut    <= axisEna;
  
- enaCh   <= runEna and ch;
  stepOut <= step;
-
- -- axisStatusR.axDoneDist  <= doneDist;
- -- axisStatusR.axDoneDro   <= doneDro;
- -- axisStatusR.axDoneHome  <= doneHome;
- -- axisStatusR.axDoneLimit <= doneLimit;
- -- axisStatusR.axDoneProbe <= doneProbe;
 
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
    
-   -- doneDist   <= movDone and not axisCtlR.ctlDroEnd;
-   -- doneDro    <= droDone and axisCtlR.ctlDroEnd;
-
-
-   -- if (axisStatusR.axDone = '1') then
-   --  doneMove <= '1';
-   -- else
-   --  doneMove <= '0';
-   -- end if;
-
    if (eStop = '1') then                --if emergency stop
     axisEna  <= '0';                    --stop axis
     runState <= idle;                   --set idle state
@@ -270,7 +229,7 @@ begin
     case runState is                    --check state
      when idle =>                       --idle state
       axisInit <= '0';                  --clear load flag
-      if (axisCtlR.ctlStart = '1') then    --if start requested
+      if (axisCtlR.ctlStart = '1') then --if start requested
        runState <= loadReg;             --advance to load state
       end if;
 
