@@ -41,7 +41,6 @@ add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/encode
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/encoderProc/scaleCh
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/encoderProc/encCh
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/axisCtlR.ctlInit
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/axisCtlR.ctlChDirect
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/ch
 add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/distCtr
 add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/loc
@@ -51,9 +50,18 @@ add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/clkCtl
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/xCh
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/clkCtlR.zFreqSel
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/zCh
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dbgFreq_gen/syncOut
+add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/dbgFreq_gen/syncCounter
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/axisCtlR.ctlWaitSync
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/runState
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/enaOut
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/axisCtlR.ctlChDirect
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/syncState
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/extEna
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/ena
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 2} {48515362 ps} 0} {{Cursor 3} {47138077 ps} 0}
-quietly wave cursor active 1
+WaveRestoreCursors {{Cursor 2} {89300106 ps} 0} {{Cursor 3} {42595000 ps} 0}
+quietly wave cursor active 2
 configure wave -namecolwidth 519
 configure wave -valuecolwidth 100
 configure wave -justifyvalue left
@@ -68,4 +76,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {48441986 ps} {48682242 ps}
+WaveRestoreZoom {143655299 ps} {202965511 ps}

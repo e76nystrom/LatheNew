@@ -298,8 +298,10 @@ package FpgaLatheBits is
  alias    zFreqSel           : unsigned is clkCtlreg(2 downto 0); -- x0001 z clock select
  alias    xFreqSel           : unsigned is clkCtlreg(5 downto 3); -- x0008 x clock select
  alias    clkDbgFreqEna      : std_logic is clkCtlReg( 6); -- x0040 enable debug frequency
+ alias    clkDbgSyncEna      : std_logic is clkCtlReg( 6); -- x0040 enable debug sync
 
  constant c_clkDbgFreqEna    : integer :=  6; -- x0040 enable debug frequency
+ constant c_clkDbgSyncEna    : integer :=  6; -- x0040 enable debug sync
 
 -- clock shift values
 

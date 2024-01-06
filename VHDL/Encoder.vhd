@@ -6,6 +6,7 @@ use ieee.numeric_std.all;
 
 use work.regDef.all;
 use work.IORecord.all;
+use work.DbgRecord.all;
 
 entity Encoder is
  generic(opBase        : unsigned := x"00";
@@ -18,9 +19,12 @@ entity Encoder is
   clk    : in std_logic;                --system clock
   inp    : DataInp;
   oRec   : DataOut;
+  
   init   : in std_logic;                --init signal
   ena    : in std_logic;                --enable input
   ch     : in std_logic;                --input clock
+
+  dbg    : out EncScaleDbg;
   dout   : out EncoderData;
   active : out std_logic := '0';        --active
   intclk : out std_logic := '0'         --output clock
@@ -30,19 +34,21 @@ end Encoder;
 architecture Behavioral of Encoder is
 
  signal encCycleDone : std_logic;
- signal cycleClocks : unsigned (cycleClkBits-1 downto 0);
+ signal cycleClocks  : unsigned (cycleClkBits-1 downto 0);
 
- signal intClkOut : std_logic;
- signal intActive : std_logic;
+ signal intClkOut    : std_logic;
+ signal intActive    : std_logic;
 
  signal preScalerVal : unsigned(preScalerBits-1 downto 0) := (others => '0');
  signal preScalerCtr : unsigned(preScalerBits-1 downto 0) := (others => '0');
 
- signal lastCh    : std_logic := '0';
- signal scaleCh   : std_logic := '0';
+ signal lastCh       : std_logic := '0';
+ signal scaleCh      : std_logic := '0';
 
  signal usePreScaler : std_logic := '0';
  signal encCh        : std_logic := '0';
+
+ signal cmpUpd       : std_logic := '0';
 
 begin
 
@@ -56,6 +62,10 @@ begin
 
  usePreScaler <= '1' when preScalerVal /= 0 else '0';
  encCh <= ch when usePreScaler = '0' else scaleCh;
+
+ dbg.cycleDone <= encCycleDone;
+ dbg.cmpUpd    <= cmpUpd;
+ dbg.intClk    <= intClk;
 
  cmp_tmr : entity work.CmpTmrNewMem
   generic map (opBase       => opBase + 0,
@@ -71,6 +81,7 @@ begin
    oRec         => oRec,
    ena          => ena,
    encClk       => encCh,
+   cmpUpd       => cmpUpd,
    encCycleDone => encCycleDone,
    cycleClocks  => cycleClocks
    );

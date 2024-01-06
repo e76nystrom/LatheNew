@@ -27,7 +27,8 @@ begin
   generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => debug.ctl.xCh,
+   -- pulseIn => debug.ctl.xCh,
+   pulseIn => debug.ctl.encScale.cmpUpd,
    PulseOut => test0
    );
 
@@ -37,7 +38,8 @@ begin
   generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => debug.ctl.zCh,
+   -- pulseIn => debug.ctl.zCh,
+   pulseIn => debug.ctl.encScale.intClk,
    pulseOut => test1
    );
 
@@ -57,7 +59,8 @@ begin
   generic map (pulseWidth => 50)
   port map (
    clk => clk,
-   pulseIn => debug.ctl.dbgFreq,
+   -- pulseIn => debug.ctl.dbgFreq,
+   pulseIn => debug.ctl.encScale.cycleDone,
    pulseOut => test3
    );
 

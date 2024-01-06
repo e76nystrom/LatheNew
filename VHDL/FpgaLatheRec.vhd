@@ -162,6 +162,7 @@ end record cfgCtlRec;
 -- clock control register
 
 type clkCtlRec is record
+ clkDbgSyncEna : std_logic;     --  6 0x40 enable debug sync
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
  xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x clock select
  zFreqSel      : std_logic_vector(2 downto 0);-- 2-0 z clock select

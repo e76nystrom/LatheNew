@@ -73,14 +73,10 @@ architecture Behavioral of Axis is
  
  signal movDone    : std_logic;
 
- signal syncAccelEna : std_logic;
-
  signal curDir     : std_logic;
  signal synDirOut  : std_logic;
  signal synStepOut : std_logic;
  signal step       : std_logic;
-
- -- signal enaCh : std_logic;
 
  signal synDbgData : std_logic_vector(synDbgBits-1 downto 0);
  signal doneDist   : std_logic;
@@ -147,8 +143,6 @@ begin
 
  axisCtlRdReg <= unsigned(axisCtlToVec(axisCtlR));
 
- syncAccelEna <= runEna when axisCtlR.ctlChDirect = '0' else '0';
-
  curDir <= currentDir;
  dirOut  <= synDirOut;
 
@@ -169,7 +163,7 @@ begin
    oRec       => oRec,
 
    init       => runInit,
-   ena        => syncAccelEna,
+   ena        => runEna,
    extDone    => extDone,
    ch         => ch,
 
@@ -203,8 +197,6 @@ begin
  runInit <= extInit when axisCtlR.ctlSlave = '1' else axisInit;
  runEna  <= extEna  when axisCtlR.ctlSlave = '1' else axisEna;
 
- -- enaCh   <= runEna and ch;
- -- step    <= synStepOut when axisCtlR.ctlChDirect = '0' else enaCh;
  step <= synStepOut;
 
  initOut   <= axisInit;

@@ -27,15 +27,22 @@ package DbgRecord is
  -- constant AxisDbgInit : AxisDbg := (sync => SyncAccelDbgInit,
  --                                    dbg => (others => '0'));
 
+ type EncScaleDbg is record
+  cycleDone : std_logic;
+  cmpUpd    : std_logic;
+  intClk    : std_logic;
+ end record EncScaleDbg;
+
  type ControlDbg is record
-  xCh     : std_logic;
-  zCh     : std_logic;
-  sync    : std_logic;
-  dbgFreq : std_logic;
-  xDone   : std_logic;
-  zDone   : std_logic;
-  z       : AxisDbg;
-  x       : AxisDbg;
+  xCh      : std_logic;
+  zCh      : std_logic;
+  sync     : std_logic;
+  dbgFreq  : std_logic;
+  xDone    : std_logic;
+  zDone    : std_logic;
+  z        : AxisDbg;
+  x        : AxisDbg;
+  encScale : EncScaleDbg;
  end record controlDbg;
 
  type InterfaceDbg is record

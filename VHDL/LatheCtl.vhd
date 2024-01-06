@@ -108,7 +108,11 @@ architecture Behavioral of LatheCtl is
  signal dbgFreqGen : std_logic;
  signal spFreqGen  : std_logic;
 
- signal sync      : std_logic;
+ -- sync signals
+
+ signal dbgSync     : std_logic;
+ signal phaseSyncIn : std_logic;
+ signal sync        : std_logic;
 
  signal intActive : std_logic;
  signal intClk    : std_logic;
@@ -165,18 +169,20 @@ architecture Behavioral of LatheCtl is
  -- alias pwmOut  : std_logic is pinOut(10);
  -- alias chgPump : std_logic is pinOut(11);
 
- signal eStop  : std_logic;
- signal pwmEna : std_logic;
+ signal eStop     : std_logic;
+ signal pwmEna    : std_logic;
  
  signal zDroPhase : std_logic_vector(1 downto 0) := (others => '0');
  signal xDroPhase : std_logic_vector(1 downto 0) := (others => '0');
  signal zStepLast : std_logic := '0';
 
- signal zAxisDro : std_logic_vector(1 downto 0) := (others => '0');
- signal zDroSel  : std_logic_vector(1 downto 0) := (others => '0');
- signal xAxisDro : std_logic_vector(1 downto 0) := (others => '0');
- signal xDroSel  : std_logic_vector(1 downto 0) := (others => '0');
+ signal zAxisDro  : std_logic_vector(1 downto 0) := (others => '0');
+ signal zDroSel   : std_logic_vector(1 downto 0) := (others => '0');
+ signal xAxisDro  : std_logic_vector(1 downto 0) := (others => '0');
+ signal xDroSel   : std_logic_vector(1 downto 0) := (others => '0');
  signal xStepLast : std_logic := '0';
+
+ signal dbgEncScale : EncScaleDbg;
 
 begin
 
@@ -221,12 +227,13 @@ begin
  zDoneInt <= intZDoneInt;
  xDoneInt <= intXDoneInt;
 
- dbg.xCh     <= xCh;
- dbg.zCh     <= zCh;
- dbg.sync    <= ch;
- dbg.xDone   <= intXDoneInt;
- dbg.zDone   <= intZDoneInt;
- dbg.dbgFreq <= dbgFreqGen;
+ dbg.xCh      <= xCh;
+ dbg.zCh      <= zCh;
+ dbg.sync     <= ch;
+ dbg.xDone    <= intXDoneInt;
+ dbg.zDone    <= intZDoneInt;
+ dbg.dbgFreq  <= dbgFreqGen;
+ dbg.encScale <= dbgEncScale;
 
  -- clock divider
 
@@ -330,17 +337,20 @@ begin
                outBits      => outBits)
   port map (
    clk     => clk,
-
    inp     => curW,
    oRec    => curR,
-   dout    => dout.encoder,
 
    init    => synCtlR.synEncInit,
    ena     => synCtlR.synEncEna,
    ch      => encCh,
+
+   dbg     => dbgEncScale,
+   dout    => dout.encoder,
    active  => intActive,
    intclk  => intClk
    );
+
+ phaseSyncIn <= syncIn when (clkCtlR.clkDbgSyncEna = '0') else dbgSync;
 
  phase_counter : entity work.PhaseCounter
   generic map (opBase    => F_Phase_Base,
@@ -357,7 +367,7 @@ begin
    init    => synCtlR.synPhaseInit,
    genSync => cfgCtlR.cfgGenSync,
    ch      => ch,
-   sync    => syncIn,
+   sync    => phaseSyncIn,
    dir     => direction,
    syncOut => sync);
 
@@ -417,6 +427,7 @@ begin
    clk      => clk,
    inp      => curW,
    ena      => clkCtlR.clkDbgFreqEna,
+   syncOut  => dbgSync,
    pulseOut => dbgFreqGen
    );
 
@@ -574,7 +585,7 @@ begin
    clk     => clk,
    inp     => curW,
    enable  => zExtEna,
-   ch      => zCh,
+   step    => zDelayStep,
    rEnable => zExtRunOutEna
    );
 

@@ -62,9 +62,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
    data => phaseVal);
 
  phaseSynOut : entity work.ShiftOutN
@@ -74,20 +71,9 @@ begin
   port map (
    clk => clk,
    oRec    => oRec,
-   -- dshift => dShiftR,
-   -- op => opR,
-   -- copy => copyR,
    data => phaseSyn,
    dout => doutPhaseSyn
    );
- 
- --totalCounter: UpCounter
- -- generic map(totalBits)
- -- port map (
- --  clk => clk,
- --  clr => init,
- --  ena => totalInc,
- --  counter => totphase);
 
  -- update phase counter
 
@@ -96,12 +82,13 @@ begin
   if (rising_edge(clk)) then
    if (init = '1') then                 --if load
     state <= idle;                      --set sart state
-    --totalInc <= '0';
     syncOut <= '0';
     phaseCtr <= (phaseBits-1 downto 0 => '0');
    else                                 --if not initializing
+    
     if ((lastSyn(0) = '1') and (lastSyn(1) = '0')) then --if rising edge
      phaseSyn <= phaseCtr;               --save phase counter
+
      if (genSync = '0') then             --if generating sync
       syncOut <= '1';                    --output sync pulse
      end if;
@@ -110,80 +97,50 @@ begin
       syncOut <= '0';                   --clear sync pulse
      end if;
     end if;
+
     lastSyn <= lastSyn(0) & sync;
+
     case state is
      when idle =>                       --idle
       if (genSync = '1') then           --if generating sync
        syncOut <= '0';                  --clear sync
       end if;
+
       if (ch = '1') then                --if clock
-       --if (run_sync ='1') then
-       -- totalInc <= '1';
-       --end if;
        state <= updPhase;               --update phase
       end if;
 
      when updPhase =>                   --update phase
-      --totalInc <= '0';
       
       if (dir = '1') then               --if forward
        if (phaseCtr = phaseVal) then    --if at maximum
+        phaseCtr <= (phaseBits-1 downto 0 => '0'); --reset to zero
+
         if (genSync = '1') then         --if generating sync
          syncOut <= '1';                --set sync pulse
         end if;
-        phaseCtr <= (phaseBits-1 downto 0 => '0'); --reset to zero
+
        else                             --if not at maximum
         phaseCtr <= phaseCtr + 1;       --incrementt phase coounter
        end if;
+
       else                              --if reverse
        if (phaseCtr = 0) then
+        phaseCtr <= phaseVal;
+
         if (genSync = '1') then
          syncOut <= '1';
         end if;
-        phaseCtr <= phaseVal;
+
        else
         phaseCtr <= phaseCtr - 1;
        end if;
+
       end if;
       state <= idle;                    --return to idle state
     end case;
    end if;
   end if;
  end process;
- 
- --phase_ctr: process(clk)
- --begin
- -- if (rising_edge(clk)) then           --if clock active
- --  lastSyn <= lastSyn(0) & sync;
- --  if (init = '1') then                 --if time to load
- --   phaseCtr <= (phaseBits-1 downto 0 => '0');
- --   totphase <= (totalBits-1 downto 0 => '0');
- --  else
- --   if (ch = '1') then                  --if clock active and change
- --    if (run_sync = '1') then           --if synchronized mode
- --     totphase <= totphase + 1;         --count total phase
- --    end if;
-
- --    if (dir = '1') then                --if encoder turning forward
- --     if (phaseCtr = phaseVal) then     --if at maximum count
- --      phaseCtr <= (phaseBits-1 downto 0 => '0'); --reset to zero
- --      syncOut <= '1';                 --output sync pulse
- --     else                              --if not at maximum
- --      phaseCtr <= phaseCtr + 1;        --increment counter
- --      syncOut <= '0';                 --clear sync pulse
- --     end if;
- --    else                               --if encoder turning backwards
- --     if (phaseCtr = 0) then            --if at minimum
- --      phaseCtr <= phaseVal;            --reset to maximum
- --      syncOut <= '1';                 --ouput sync pulse
- --     else                              --if not at minimum
- --      phaseCtr <= phaseCtr - 1;        --count down
- --      syncOut <= '0';                 --reset sync pulse
- --     end if;
- --    end if;
- --   end if;
- --  end if;
- -- end if;
- --end process;
 
 end Behavioral;

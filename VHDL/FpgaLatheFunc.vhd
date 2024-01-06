@@ -688,13 +688,15 @@ end function;
 function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
  variable rtnVec : clkCtlVec;
 begin
- rtnVec := val.clkDbgFreqEna & val.xFreqSel      & val.zFreqSel;
+ rtnVec := val.clkDbgSyncEna & val.clkDbgFreqEna & val.xFreqSel      &
+           val.zFreqSel;
  return rtnVec;
 end function;
 
 function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
  variable rtnRec : clkCtlRec;
 begin
+ rtnRec.clkDbgSyncEna := val(6);
  rtnRec.clkDbgFreqEna := val(6);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);
@@ -706,6 +708,7 @@ function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
  return clkCtlRec is
  variable rtnRec : clkCtlRec;
 begin
+ rtnRec.clkDbgSyncEna := val(6);
  rtnRec.clkDbgFreqEna := val(6);
  rtnRec.xFreqSel      := val(5 downto 3);
  rtnRec.zFreqSel      := val(2 downto 0);

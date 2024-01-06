@@ -30,8 +30,9 @@ constant F_Enc_Max          : unsigned(opb-1 downto 0) := x"04"; -- number of en
 -- debug frequency
 
 constant F_Ld_Dbg_Freq      : unsigned(opb-1 downto 0) := x"00"; -- 'DBF' debug frequency
-constant F_Ld_Dbg_Count     : unsigned(opb-1 downto 0) := x"01"; -- 'DBC' debug count
-constant F_Dbg_Freq_Max     : unsigned(opb-1 downto 0) := x"02"; -- number of debug frequency regs
+constant F_Ld_Dbg_Count     : unsigned(opb-1 downto 0) := x"01"; -- 'DBC' debug clock count
+constant F_Ld_Sync_Count    : unsigned(opb-1 downto 0) := x"02"; -- 'DBS' debug sync length
+constant F_Dbg_Freq_Max     : unsigned(opb-1 downto 0) := x"03"; -- number of debug frequency regs
 
 -- sync accel
 
@@ -108,21 +109,21 @@ constant F_Dbg_Freq_Base    : unsigned(opb-1 downto 0) := x"08"; -- 'D' dbg freq
 
 -- spindle speed
 
-constant F_Rd_Idx_Clks      : unsigned(opb-1 downto 0) := x"0a"; -- 'RIDX' clocks per index
+constant F_Rd_Idx_Clks      : unsigned(opb-1 downto 0) := x"0b"; -- 'RIDX' clocks per index
 
 -- pwm
 
-constant F_PWM_Base         : unsigned(opb-1 downto 0) := x"0b"; -- 'P' pwm control
+constant F_PWM_Base         : unsigned(opb-1 downto 0) := x"0c"; -- 'P' pwm control
 
 -- base for modules
 
-constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"0d"; -- 'E' encoder registers
-constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"11"; -- 'H' phase registers
-constant F_RunOut_Base      : unsigned(opb-1 downto 0) := x"13"; -- 'R' runout registers
-constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"15"; -- 'Z' z axis registers
-constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"2d"; -- 'X' x axis registers
-constant F_Spindle_Base     : unsigned(opb-1 downto 0) := x"45"; -- 'S' spindle registers
-constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"5e"; -- number of commands
+constant F_Enc_Base         : unsigned(opb-1 downto 0) := x"0e"; -- 'E' encoder registers
+constant F_Phase_Base       : unsigned(opb-1 downto 0) := x"12"; -- 'H' phase registers
+constant F_RunOut_Base      : unsigned(opb-1 downto 0) := x"14"; -- 'R' runout registers
+constant F_ZAxis_Base       : unsigned(opb-1 downto 0) := x"16"; -- 'Z' z axis registers
+constant F_XAxis_Base       : unsigned(opb-1 downto 0) := x"2e"; -- 'X' x axis registers
+constant F_Spindle_Base     : unsigned(opb-1 downto 0) := x"46"; -- 'S' spindle registers
+constant F_Cmd_Max          : unsigned(opb-1 downto 0) := x"5f"; -- number of commands
 
 end RegDef;
 

@@ -422,7 +422,8 @@ begin
 
      synStep <= '0';                    --clear output step
 
-     if (axisCtl.ctlChDirect = '1') then --if ch controls step
+     if ((ena = '1') and                --if enabled
+         (axisCtl.ctlChDirect = '1')) then --if ch controls step
        distCtr <= distVal;              --initialize distance counter
        syncState <= chDirect;           --go to ch direct state
      else                               --if step generation

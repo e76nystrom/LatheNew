@@ -15,7 +15,7 @@ entity RunOutSync is
   clk     : in std_logic;
   inp     : in DataInp;
   enable  : in std_logic;
-  ch      : in std_logic;
+  step    : in std_logic;
   rEnable : out std_logic := '0'
   );
 end RunOutSync;
@@ -27,12 +27,12 @@ architecture Behavioral of RunOutSync is
 
  signal runOutCtlRdReg : unsigned(runOutCtlSize-1 downto 0);
 
- signal counter   : unsigned(runOutCtrBits-1 downto 0);
- signal loadLimit : std_logic;
- signal limitVal  : unsigned(runOutCtrBits-1 downto 0);
- signal limit     : unsigned(runOutCtrBits-1 downto 0);
+ signal counter   : unsigned(runOutCtrBits-1 downto 0) := (others => '0');
+ signal loadLimit : std_logic := '0';
+ signal limitVal  : unsigned(runOutCtrBits-1 downto 0) := (others => '0');
+ signal limit     : unsigned(runOutCtrBits-1 downto 0) := (others => '0');
 
- signal runOutEna : std_logic;
+ signal runOutEna : std_logic := '0';
 
 begin
 
@@ -68,31 +68,31 @@ begin
 
    if (runOutCtlR.runOutInit = '1') then
     counter <= (others => '0');
-    runOutEna <= '1';
+    runOutEna <= '0';
    else
 
     if ((runOutCtlR.runOutEna and enable) = '1') then
 
-     if (ch = '1') then
+     if ((step = '1') and (runOutEna = '0')) then
       counter <= counter + 1;
      else
 
-      if (runOutCtlR.runOutDir = '1') then
+      if (runOutCtlR.runOutDir = '1') then --direction
        if (counter > limit) then
         runOutEna <= '1';
        else
         runOutEna <= '0';
        end if;
-      else
+      else                              --direction
        if (counter < limit) then
         runOutEna <= '1';
        else
         runOutEna <= '0';
        end if;
+       
+      end if;                           --direction
 
-      end if;                           --ch
-
-     end if;
+     end if;                            --ch
 
     end if;                             --enable
 
