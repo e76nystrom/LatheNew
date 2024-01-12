@@ -97,6 +97,7 @@ architecture Behavioral of LatheCtl is
 
  -- quadrature encoder
 
+ signal quadCh    : std_logic;
  signal ch        : std_logic;
  signal encDir    : std_logic;
  signal direction : std_logic;
@@ -308,12 +309,14 @@ begin
  
  -- quadrature encoder
 
+ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
+
  quad_encoder : entity work.QuadEncoder
   port map (
    clk => clk,
    a   => aIn,
    b   => bIn,
-   ch  => ch,
+   ch  => quadCh,
    dir => encDir
    );
 
@@ -372,15 +375,17 @@ begin
    syncOut => sync);
 
  index_clocks : entity work.IndexClocks
-  generic map (opval   => F_Rd_Idx_Clks,
+  generic map (opBase  => F_Index_Base,
                n       => idxClkBits,
                outBits => outBits)
   port map (
-   clk   => clk,
-   oRec  => curR,
-   dout  => dout.index,
-   ch    => ch,
-   index => sync
+   clk     => clk,
+   inp     => curW,
+   oRec    => curR,
+   dout    => dout.index,
+   axisEna => zExtEna,
+   ch      => ch,
+   index   => sync
    );
 
  zFreqGenEna <= '1' when ((clkCtlR.zFreqSel = clkFreq) and (zExtEna = '1'))

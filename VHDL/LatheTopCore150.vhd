@@ -15,18 +15,20 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity LatheTop is
- generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
-          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- size of processor-internal instruction memory in bytes
-          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
-          ledPins : positive := 2;
-          dbgPins : positive := 8;
-          inputPins : positive := inputsSize);
+ generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency
+          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- insturction mem bytes
+          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- data memory  bytes
+          ledPins           : positive := 2;
+          dbgPins           : positive := 8;
+          outPins           : positive := 4;
+          inputPins         : positive := inputsSize);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
   
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
+  xOut     : out std_ulogic_vector(outPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -178,7 +180,6 @@ begin
    clockOut => sysClkOut
    ); 
 
-
  neorv32_top_inst: entity work.neorv32_top
   generic map (
    -- General --
@@ -227,6 +228,8 @@ begin
    
    cfs_mpg_i   => mpgQuad,
    cfs_pins_i  => cfs_pins_i,
+
+   cfs_dbg_o   => xOut,
 
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,

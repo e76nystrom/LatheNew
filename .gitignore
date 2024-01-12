@@ -8,6 +8,7 @@
 *~
 *.bak
 *.hex
+*.out
 LatheCtl.qsf
 Proj/*.rpt
 Proj/*.txt
@@ -23,6 +24,7 @@ Sim/*.wlf
 Sim/db
 Sim/wlf*
 Sim/work
+Sim/neorv32/*
 VHDL/greybox_tmp
 
 

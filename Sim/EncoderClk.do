@@ -59,8 +59,11 @@ add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/syncState
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/extEna
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/x_Axis/AxisSyncAccel/ena
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/encoderProc/int_tmr/intClk
+add wave -noupdate -radix decimal /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/distCtr
+add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxisSyncAccel/synStep
 TreeUpdate [SetDefaultTree]
-WaveRestoreCursors {{Cursor 2} {89300106 ps} 0} {{Cursor 3} {42595000 ps} 0}
+WaveRestoreCursors {{Cursor 2} {89300106 ps} 0} {{Cursor 3} {30395000 ps} 0}
 quietly wave cursor active 2
 configure wave -namecolwidth 519
 configure wave -valuecolwidth 100
@@ -76,4 +79,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {143655299 ps} {202965511 ps}
+WaveRestoreZoom {11952108 ps} {68336574 ps}

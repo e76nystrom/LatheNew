@@ -139,6 +139,7 @@ entity neorv32_top is
     IO_CFS_EN                    : boolean := false;  -- implement custom functions subsystem (CFS)?
     IO_CFS_CONFIG                : std_ulogic_vector(31 downto 0) := x"00000000"; -- custom CFS configuration generic
     inputPins                    : positive := 13;
+    xOutPins                     : positive := 4;
 
     IO_CFS_IN_SIZE               : natural := 32;     -- size of CFS input conduit in bits
     IO_CFS_OUT_SIZE              : natural := 32;     -- size of CFS output conduit in bits
@@ -245,6 +246,7 @@ entity neorv32_top is
 
     cfs_mpg_i      : in  MpgQuadRec;
     cfs_pins_i     : in  std_ulogic_vector(inputPins-1 downto 0);
+    cfs_dbg_o      : out std_ulogic_vector(xOutPins-1 downto 0);
 
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line
@@ -974,7 +976,8 @@ begin
         CFS_CONFIG   => IO_CFS_CONFIG,
         CFS_IN_SIZE  => IO_CFS_IN_SIZE,
         CFS_OUT_SIZE => IO_CFS_OUT_SIZE,
-        inputPins    => inputPins
+        inputPins    => inputPins,
+        xOutPins     => xOutPins
       )
       port map (
         clk_i       => clk_i,
@@ -987,6 +990,7 @@ begin
 
         cfs_in_i    => cfs_in_i,
         cfs_out_o   => cfs_out_o,
+        cfs_dbg_o   => cfs_dbg_o,
 
         cfs_we_o    => cfs_we_o,
         cfs_reg_o   => cfs_reg_o,

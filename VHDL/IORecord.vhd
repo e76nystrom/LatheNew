@@ -55,10 +55,16 @@ package IORecord is
   intTmr : std_logic;
  end record EncoderData;
 
+ type IndexData is record
+  index     : std_logic;
+  encoder   : std_logic;
+  turnCount : std_logic;
+ end record IndexData;
+
  type LatheCtlData is record
   inputs  : std_logic;
   phase   : std_logic;
-  index   : std_logic;
+  index   : indexData;
   encoder : EncoderData;
   z       : AxisData;
   x       : AxisData;

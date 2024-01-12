@@ -17,8 +17,8 @@ entity Encoder is
          outBits       : positive := 32);
  port(
   clk    : in std_logic;                --system clock
-  inp    : DataInp;
-  oRec   : DataOut;
+  inp    : in DataInp;
+  oRec   : in DataOut;
   
   init   : in std_logic;                --init signal
   ena    : in std_logic;                --enable input
@@ -65,7 +65,7 @@ begin
 
  dbg.cycleDone <= encCycleDone;
  dbg.cmpUpd    <= cmpUpd;
- dbg.intClk    <= intClk;
+ dbg.intClk    <= intClkOut;
 
  cmp_tmr : entity work.CmpTmrNewMem
   generic map (opBase       => opBase + 0,
@@ -75,13 +75,13 @@ begin
                outBits      => outBits)
   port map (
    clk          => clk,
-   inp          => inp,
    init         => init,
-   dout         => dout.cmpTmr,
+   inp          => inp,
    oRec         => oRec,
    ena          => ena,
    encClk       => encCh,
    cmpUpd       => cmpUpd,
+   dout         => dout.cmpTmr,
    encCycleDone => encCycleDone,
    cycleClocks  => cycleClocks
    );
@@ -96,11 +96,12 @@ begin
                cycleClkbits => cycleClkBits)
   port map (
    clk          => clk,
-   inp          => inp,
    init         => init,
-   dout         => dout.intTmr,
+   inp          => inp,
+   oRec         => oRec,
    intClk       => intClkOut,
-   Active       => intActive,
+   dout         => dout.intTmr,
+   active       => intActive,
    encCycleDone => encCycleDone,
    cycleClocks  => cycleClocks
    );

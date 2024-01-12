@@ -12,8 +12,6 @@ package DbgRecord is
   loc     : std_logic;
  end record SyncAccelDbg;
 
- -- constant syncAccelDbgInit : SyncAccelDbg := (dbg => (others => '0'));
-
  constant nAxis : positive := 4;
 
  type AxisDbg is record
@@ -23,9 +21,6 @@ package DbgRecord is
   doneDist : std_logic;
   pulseOut : std_logic;
  end record AxisDbg;
-
- -- constant AxisDbgInit : AxisDbg := (sync => SyncAccelDbgInit,
- --                                    dbg => (others => '0'));
 
  type EncScaleDbg is record
   cycleDone : std_logic;
@@ -45,8 +40,13 @@ package DbgRecord is
   encScale : EncScaleDbg;
  end record controlDbg;
 
+ -- type RiscVDbg is record
+ --  dbgOut   : std_logic_vector(4-1 downto 0);
+ -- end record RiscVDbg;
+
  type InterfaceDbg is record
-  ctl : ControlDbg;
+  ctl   : ControlDbg;
+  -- riscV : RiscVDbg;
  end record InterfaceDbg;
 
 end package DbgRecord;

@@ -43,7 +43,6 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-
 library neorv32;
 use neorv32.neorv32_package.all;
 use neorv32.mpgRecord.all;
@@ -54,7 +53,8 @@ entity neorv32_cfs is
 
   CFS_IN_SIZE  : natural;        -- size of CFS input conduit in bits
   CFS_OUT_SIZE : natural;        -- size of CFS output conduit in bits
-  inputPins    : positive
+  inputPins    : positive;
+  xOutPins     : positive
   );
  port (
   clk_i       : in  std_ulogic; -- global clock line
@@ -66,7 +66,10 @@ entity neorv32_cfs is
   irq_o       : out std_ulogic; -- interrupt request
 
   cfs_in_i    : in  std_ulogic_vector(CFS_IN_SIZE-1 downto 0); -- custom inputs
-  cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0); -- custom outputs
+  cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0) :=
+		(others => '0'); -- custom outputs
+  cfs_dbg_o   : out std_ulogic_vector(xOutPins-1 downto 0):=
+		(others => '0'); -- debug output
 
   cfs_we_o    : out std_ulogic := '0';
   cfs_reg_o   : out std_ulogic_vector(2 downto 0) := (others => '0');
@@ -79,25 +82,35 @@ end neorv32_cfs;
 architecture neorv32_cfs_rtl of neorv32_cfs is
 
  signal data : std_ulogic_vector(CFS_IN_SIZE-1 downto 0);
+ signal dbg  : std_ulogic_vector(xOutPins-1 downto 0) := (others => '0');
  
  constant divRange : integer := 50000-1;
+ signal divider    : integer range 0 to divRange := divRange;
+ signal millis     : unsigned(32-1 downto 0) := (others => '0');
 
- signal divider : integer range 0 to divRange := divRange;
- signal millis  : unsigned(32-1 downto 0) := (others => '0');
-
- signal msTick : std_logic := '0';
+ signal msTick     : std_logic := '0';
 
  constant mpgWidth : natural := 8;
  constant mpgDepth : natural := 16;
 
- constant dFill : std_logic_vector(32-1 downto mpgWidth+1) := (others => '0');
+ constant dFill   : std_logic_vector(32-mpgWidth-2 downto 0) :=
+  (others => '0');
+ constant pinFill : std_ulogic_vector(32-inputPins-1 downto 0) :=
+  (others => '0');
+ constant dbgFill : std_ulogic_vector(32-xOutPins-1 downto 0) :=
+  (others => '0');
 
  signal busAddr : std_ulogic_vector(6-1 downto 0);
 
+ constant rsvSel    : std_ulogic_vector(6-1 downto 0) := "000000";
+ constant ctlSel    : std_ulogic_vector(6-1 downto 0) := "000001";
+ constant dataSel   : std_ulogic_vector(6-1 downto 0) := "000010";
+ constant opSel     : std_ulogic_vector(6-1 downto 0) := "000011";
  constant millisSel : std_ulogic_vector(6-1 downto 0) := "000100";
  constant zMpgSel   : std_ulogic_vector(6-1 downto 0) := "000101";
  constant xMpgSel   : std_ulogic_vector(6-1 downto 0) := "000110";
  constant pinsSel   : std_ulogic_vector(6-1 downto 0) := "000111";
+ constant dbgSel    : std_ulogic_vector(6-1 downto 0) := "001000";
 
  signal zEmpty : std_logic := '0';
  signal zData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
@@ -106,13 +119,12 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
  signal xEmpty : std_logic := '0';
  signal xData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
  signal reMpgX : std_logic := '0';
-
- constant pinFill : std_ulogic_vector(32-inputPins-1 downto 0) :=
-  (others => '0');
  
 begin
 
  cfs_out_o <= data;
+ cfs_dbg_o <= dbg;
+
  clkgen_en_o <= '0';            -- not used for this minimal example
  irq_o <= '0';                  -- not used for this minimal example
  bus_rsp_o.err <= '0';          -- Tie to zero if not explicitly used.
@@ -169,21 +181,38 @@ begin
  host_access: process(rstn_i, clk_i)
  begin
   if (rstn_i = '0') then
+
    -- cfs_reg_wr(0) <= (others => '0');
    -- cfs_reg_wr(1) <= (others => '0');
    -- cfs_reg_wr(2) <= (others => '0');
    -- cfs_reg_wr(3) <= (others => '0');
-   --
+
    bus_rsp_o.ack  <= '0';
    bus_rsp_o.data <= (others => '0');
+
   elsif rising_edge(clk_i) then -- synchronous interface for read and write accesses
+
    cfs_we_o <= bus_req_i.we;
    cfs_reg_o <= bus_req_i.addr(4 downto 2);
    bus_rsp_o.ack <= bus_req_i.re or bus_req_i.we;
 
    -- write access --
    if (bus_req_i.we = '1') then
-    data <= bus_req_i.data;
+   case busAddr is
+    when rsvSel    => data <= bus_req_i.data;
+    when ctlSel    => data <= bus_req_i.data;
+    when dataSel   => data <= bus_req_i.data;
+    when opsel     => data <= bus_req_i.data;
+    when millisSel => null;
+    when zMpgSel   => null;
+    when xMpgSel   => null;
+    when pinsSel   => null;
+    when dbgSel    => dbg <= bus_req_i.data(xOutPins-1 downto 0);
+    when others    => null;
+   end case;
+
+    -- data <= bus_req_i.data;
+
    -- if (bus_req_i.addr(7 downto 2) = "000000") then
    --   cfs_reg_wr(0) <= bus_req_i.data;
    -- end if;
@@ -207,15 +236,16 @@ begin
     --  bus_rsp_o.data <= cfs_in_i;
     -- end if;
    case busAddr is
-     when "000000"  => bus_rsp_o.data <= data;
-     when "000001"  => bus_rsp_o.data <= data;
-     when "000010"  => bus_rsp_o.data <= cfs_in_i;
-     when "000011"  => bus_rsp_o.data <= data;
-     when millisSel => bus_rsp_o.data <= std_ulogic_vector(millis);
-     when zMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & zEmpty & zData);
-     when xMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & xEmpty & xData);
-     when pinsSel   => bus_rsp_o.data <= pinFill & cfs_pins_i;
-     when others    => bus_rsp_o.data <= (others => '0');
+    when rsvSel    => bus_rsp_o.data <= data;
+    when ctlSel    => bus_rsp_o.data <= data;
+    when dataSel   => bus_rsp_o.data <= cfs_in_i;
+    when opsel     => bus_rsp_o.data <= data;
+    when millisSel => bus_rsp_o.data <= std_ulogic_vector(millis);
+    when zMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & zEmpty & zData);
+    when xMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & xEmpty & xData);
+    when pinsSel   => bus_rsp_o.data <= pinFill & cfs_pins_i;
+    when dbgSel    => bus_rsp_o.data <= dbgFill & dbg;                 
+    when others    => bus_rsp_o.data <= (others => '0');
    end case;
    end if;
   end if;

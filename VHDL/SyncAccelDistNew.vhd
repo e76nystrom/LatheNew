@@ -436,7 +436,12 @@ begin
 
     --chDirect
     when chDirect => --***********************************************
+     if ((ena = '0') or (axisCtl.ctlChDirect = '0')) then --if disabled
+      syncState <= syncInit;            --return to init state        
+     else                               --if active
+
       if (distZero = '0') then          --if not done
+
        synStepTmp <= ch;                --copy ch to step
        if ((synStepLast = '0') and (synStepTmp = '1')) then --if stepping
         synStep <= '1';                 --output step
@@ -444,12 +449,14 @@ begin
        else                             --done stepping
         synStep <= '0';                 --clear step
        end if;
-      else
-       synStep <= '0';                  --clear step pulse
-       if (axisCtl.ctlChDirect = '0') then --if ch not controlling step
-        syncState <= syncInit;          --return to init state
-       end if;
+
+      else                              --if done
+       synStep <= '0';                  --clear step
+       moveDone <= '1';                 --move done
+       syncState <= syncInit;           --return to init state        
       end if;
+
+     end if;
 
     --enabled
     when enabled => --************************************************
@@ -595,7 +602,7 @@ begin
      if (ch = '0') then                 --if change flag cleared
 
       if (doneLimit or doneHome or doneProbe) = '1' then
-       moveDone <= '1';               --set done flag
+       moveDone <= '1';                 --set done flag
        syncState <= syncInit;           --return to init state
       end if;
 
@@ -605,11 +612,11 @@ begin
         syncState <= enabled;           --return to enabled state
        else                             --if distance 0
 
-        if (distMode = '0') then       --if in distance mode
-         moveDone <= '1';              --set done flag
-         syncState <= syncInit;        --return to init state
-        else                           --if distance update mode
-         syncState <= distWait;        --wait for distance update
+        if (distMode = '0') then        --if in distance mode
+         moveDone <= '1';               --set done flag
+         syncState <= syncInit;         --return to init state
+        else                            --if distance update mode
+         syncState <= distWait;         --wait for distance update
         end if;          
 
        end if;

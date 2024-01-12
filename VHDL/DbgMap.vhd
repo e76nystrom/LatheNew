@@ -67,10 +67,10 @@ begin
  doutProc : process(clk)
  begin
   if (rising_edge(clk)) then
-   dbg(0) <= debug.ctl.x.ctlStart;
-   dbg(1) <= debug.ctl.x.axisEna;
-   dbg(2) <= debug.ctl.x.doneDist;
-   dbg(3) <= debug.ctl.x.pulseOut;
+   dbg(0) <= debug.ctl.z.ctlStart;
+   dbg(1) <= debug.ctl.z.axisEna;
+   dbg(2) <= debug.ctl.z.doneDist;
+   dbg(3) <= debug.ctl.z.pulseOut;
    dbg(4) <= test0;
    dbg(5) <= test1;
    dbg(6) <= test2;

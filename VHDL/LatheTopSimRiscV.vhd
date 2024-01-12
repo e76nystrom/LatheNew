@@ -19,13 +19,16 @@ entity LatheTopSimRiscV is
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
           ledPins   : positive := 8;
           dbgPins   : positive := 8;
-          inputPins : positive := inputsSize);
+          inputPins : positive := inputsSize;
+	  xOutPins  : positive := 4
+	  );
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
 
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
+  xOut     : out std_logic_vector(xOutPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -194,6 +197,7 @@ begin
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
    inputPins                    => riscvCtlSize + inputsSize,
+   xOutPIns                     => xOutPins,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,

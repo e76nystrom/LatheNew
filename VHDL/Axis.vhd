@@ -71,6 +71,8 @@ architecture Behavioral of Axis is
  signal runEna     : std_logic;
  signal locDisable : std_logic := '0';
  
+ signal encActive  : std_logic := '0';
+
  signal movDone    : std_logic;
 
  signal curDir     : std_logic;
@@ -83,11 +85,9 @@ architecture Behavioral of Axis is
  signal doneDro    : std_logic;
  signal doneLimit  : std_logic;
  signal doneHome   : std_logic;
- signal doneProbe   : std_logic;
+ signal doneProbe  : std_logic;
 
- signal droDone : std_logic;
-
- signal pulseOut  : std_logic;
+ signal pulseOut   : std_logic;
 
  type run_fsm is (idle, loadReg, synWait, run, done);
  signal runState : run_fsm;         --z run state variable
@@ -207,6 +207,10 @@ begin
  z_run: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
+
+   if (ch = '1') then                   --if encoder pulse
+    encActive <= '1';                   --set to active
+   end if;
    
    if (eStop = '1') then                --if emergency stop
     axisEna  <= '0';                    --stop axis
@@ -217,6 +221,7 @@ begin
     axisEna    <= '0';                  --clear run flag
     locDisable <= '0';                  --enable loc updates
     axisInit   <= '1';                  --set flag to load accel and sync
+    encActive  <= '0';                  --clear encoder active
    else                                 --if normal operation
     case runState is                    --check state
      when idle =>                       --idle state
@@ -240,7 +245,7 @@ begin
       if (axisCtlR.ctlStart = '0') then --if start flag cleared
        runState <= idle;                --return to idle
       else                              --if start flag set
-       if (sync = '1') then             --if time to sync
+       if ((sync = '1') and (encActive = '1')) then --if time to sync
         axisEna    <= '1';              --set run flag
         runState   <= run;              --advance to run state
        end if;
