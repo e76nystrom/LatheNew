@@ -43,7 +43,9 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+-- <
 use neorv32.MpgRecord.all;
+-- >
 
 entity neorv32_top is
   generic (
@@ -123,7 +125,7 @@ entity neorv32_top is
     IO_MTIME_EN                  : boolean := false;  -- implement machine system timer (MTIME)?
     IO_UART0_EN                  : boolean := false;  -- implement primary universal asynchronous receiver/transmitter (UART0)?
     IO_UART0_RX_FIFO             : natural := 1;      -- RX fifo depth, has to be a power of two, min 1
-    IO_UART0_TX_FIFO             : natural := 512;    -- TX fifo depth, has to be a power of two, min 1
+    IO_UART0_TX_FIFO             : natural := 1  ;    -- TX fifo depth, has to be a power of two, min 1
     IO_UART1_EN                  : boolean := false;  -- implement secondary universal asynchronous receiver/transmitter (UART1)?
     IO_UART1_RX_FIFO             : natural := 1;      -- RX fifo depth, has to be a power of two, min 1
     IO_UART1_TX_FIFO             : natural := 1;      -- TX fifo depth, has to be a power of two, min 1
@@ -138,9 +140,10 @@ entity neorv32_top is
     IO_TRNG_FIFO                 : natural := 1;      -- data fifo depth, has to be a power of two, min 1
     IO_CFS_EN                    : boolean := false;  -- implement custom functions subsystem (CFS)?
     IO_CFS_CONFIG                : std_ulogic_vector(31 downto 0) := x"00000000"; -- custom CFS configuration generic
+    -- <
     inputPins                    : positive := 13;
     xOutPins                     : positive := 4;
-
+    -- >
     IO_CFS_IN_SIZE               : natural := 32;     -- size of CFS input conduit in bits
     IO_CFS_OUT_SIZE              : natural := 32;     -- size of CFS output conduit in bits
     IO_NEOLED_EN                 : boolean := false;  -- implement NeoPixel-compatible smart LED interface (NEOLED)?
@@ -243,11 +246,11 @@ entity neorv32_top is
 
     cfs_we_o       : out std_ulogic := '0';
     cfs_reg_o      : out std_ulogic_vector(2 downto 0) := (others => '0');
-
+    -- <
     cfs_mpg_i      : in  MpgQuadRec;
     cfs_pins_i     : in  std_ulogic_vector(inputPins-1 downto 0);
     cfs_dbg_o      : out std_ulogic_vector(xOutPins-1 downto 0);
-
+    -- >
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line
 
@@ -975,9 +978,11 @@ begin
       generic map (
         CFS_CONFIG   => IO_CFS_CONFIG,
         CFS_IN_SIZE  => IO_CFS_IN_SIZE,
+        -- <
         CFS_OUT_SIZE => IO_CFS_OUT_SIZE,
         inputPins    => inputPins,
         xOutPins     => xOutPins
+       -- >
         )
       port map (
         clk_i       => clk_i,
@@ -987,16 +992,15 @@ begin
         clkgen_en_o => cg_en.cfs,
         clkgen_i    => clk_gen,
         irq_o       => firq.cfs,
-
         cfs_in_i    => cfs_in_i,
         cfs_out_o   => cfs_out_o,
-        cfs_dbg_o   => cfs_dbg_o,
-
         cfs_we_o    => cfs_we_o,
+        -- <
         cfs_reg_o   => cfs_reg_o,
-
+        cfs_dbg_o   => cfs_dbg_o,
         cfs_mpg_i   => cfs_mpg_i,
         cfs_pins_i  => cfs_pins_i
+        -- >
       );
     end generate;
 
