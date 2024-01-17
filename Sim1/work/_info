@@ -1,0 +1,2897 @@
+m255
+K4
+z2
+Z0 !s12c _opt
+Z1 !s99 nomlopt
+R0
+R1
+!s11e vcom 2023.1 2023.01, Jan 23 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z2 dC:/Development/Altera/LatheNew/Sim1
+T_opt
+!s110 1705518408
+V<YRmlGBidV2oL`G?bYIi[1
+04 19 8 work a_lathetoptestriscv behavior 1
+=2-00e04c680a50-65a82547-2e4-abd4
+R1
+!s12b OEM100
+!s124 OEM10U160 
+o-quiet -auto_acc_if_foreign -work work
+tCvgOpt 0
+n@_opt
+OL;O;2023.1;77
+Ea_axistest
+Z3 w1696706835
+Z4 DPx4 work 6 regdef 0 22 >nR<m@HOF2E9[oCQQ=M?a1
+Z5 DPx4 work 7 simproc 0 22 HB0_]l49R59M^Dc@h_HY:1
+Z6 DPx4 ieee 15 std_logic_arith 0 22 B[jVX6I8iRX2o6WYW0BB>3
+Z7 DPx4 ieee 11 numeric_std 0 22 F8@]:i<mFK7<TjIzKcTGi0
+Z8 DPx3 std 6 textio 0 22 LS[?81n5ZHWBI9JkBZTV<2
+Z9 DPx4 ieee 14 std_logic_1164 0 22 6<US`=mgl_dFdCEFF7J=m1
+!i122 34
+R2
+Z10 8C:/Development/Altera/LatheNew/Test/AxisTest.vhd
+Z11 FC:/Development/Altera/LatheNew/Test/AxisTest.vhd
+l0
+L9 1
+VNNAR]>NCnfcN>bnJ0`HB@1
+!s100 9Wf=R=_7SK_TnD:6fQcW12
+Z12 OL;C;2023.1;77
+33
+Z13 !s110 1705517835
+!i10b 1
+Z14 !s108 1705517835.000000
+Z15 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/AxisTest.vhd|
+Z16 !s107 C:/Development/Altera/LatheNew/Test/AxisTest.vhd|
+!i113 0
+Z17 o-work work -2008 -explicit
+Z18 tExplicit 1 CvgOpt 0
+Abehavior
+R4
+R5
+R6
+R7
+R8
+R9
+DEx4 work 10 a_axistest 0 22 NNAR]>NCnfcN>bnJ0`HB@1
+!i122 34
+l99
+L11 302
+ViVJAbG2ia<]?LKZdnlR>22
+!s100 5`O_NX8:QzJDVWzjSPABe2
+R12
+33
+R13
+!i10b 1
+R14
+R15
+R16
+!i113 0
+R17
+R18
+Ea_lathenewtest
+Z19 w1700505017
+R4
+R5
+Z20 DPx4 ieee 9 math_real 0 22 :8NNHF3SFI6^on5?4X[S`1
+R6
+R7
+R8
+R9
+!i122 40
+R2
+Z21 8C:/Development/Altera/LatheNew/Test/LatheNewTest.vhd
+Z22 FC:/Development/Altera/LatheNew/Test/LatheNewTest.vhd
+l0
+Z23 L11 1
+VNFImb?6QIEBEU<K6jGK0d1
+!s100 >oLP37U8>Don@_PQh@VQM3
+R12
+33
+Z24 !s110 1705517836
+!i10b 1
+Z25 !s108 1705517836.000000
+Z26 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/LatheNewTest.vhd|
+Z27 !s107 C:/Development/Altera/LatheNew/Test/LatheNewTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+R4
+R5
+R20
+R6
+R7
+R8
+R9
+DEx4 work 14 a_lathenewtest 0 22 NFImb?6QIEBEU<K6jGK0d1
+!i122 40
+l96
+L13 888
+VnI8GS^LP?bIiPl7EeK5LX1
+!s100 mC6]GGBz`H39:IgNF6EC52
+R12
+33
+R24
+!i10b 1
+R25
+R26
+R27
+!i113 0
+R17
+R18
+Ea_lathetoptest
+Z28 w1700504915
+Z29 DPx4 work 17 fpgalathebitsfunc 0 22 KoIPKi>jZCdDK=jhHaVjX3
+Z30 DPx4 work 16 fpgalathebitsrec 0 22 i]fHoPT[7Ec8<bGngh=oz3
+R4
+R5
+R20
+R6
+R7
+R8
+R9
+!i122 56
+R2
+Z31 8C:/Development/Altera/LatheNew/Test/LatheTopTest.vhd
+Z32 FC:/Development/Altera/LatheNew/Test/LatheTopTest.vhd
+l0
+Z33 L14 1
+VQ@?HVL[EJfL4Tdl:O^O9F0
+!s100 >I`z0`gG2EShTZCW]<H?<2
+R12
+33
+Z34 !s110 1705517842
+!i10b 1
+Z35 !s108 1705517842.000000
+Z36 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/LatheTopTest.vhd|
+Z37 !s107 C:/Development/Altera/LatheNew/Test/LatheTopTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+Z38 DPx4 work 12 riscvdatarec 0 22 R609=4@WEhX?URL^jl`PS1
+Z39 DPx4 work 9 dbgrecord 0 22 ;f_JiN0RCR7LF^FNLQd8o1
+Z40 DPx4 work 8 iorecord 0 22 z5VeH0NbkzCYj56:a_0@L1
+Z41 DPx7 neorv32 9 mpgrecord 0 22 l<b48=?hiFEH>DCZM;k;i0
+Z42 DPx7 neorv32 15 neorv32_package 0 22 0bYk161z9K?`>73YHWe7<0
+Z43 DEx4 work 16 lathetopsimriscv 0 22 OR2Ya^KWBeG?6`Xg7Olm22
+R29
+R30
+R4
+R5
+R20
+R6
+R7
+R8
+R9
+DEx4 work 14 a_lathetoptest 0 22 Q@?HVL[EJfL4Tdl:O^O9F0
+!i122 56
+l63
+L17 694
+Vm8mj53HX2;eR3j][gmPWM0
+!s100 [k>1KJM[m>MBQH4OL<3Zl1
+R12
+33
+R34
+!i10b 1
+R35
+R36
+R37
+!i113 0
+R17
+R18
+Ea_lathetoptestriscv
+Z44 w1704975097
+R29
+R30
+R4
+R5
+R20
+R6
+R7
+R8
+R9
+!i122 55
+R2
+Z45 8C:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd
+Z46 FC:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd
+l0
+R33
+VB_>0cmBEg6`9Vb[>fUXmE1
+!s100 =Y``?M:7<6T0h4?:hTW2M1
+R12
+32
+R34
+!i10b 1
+R35
+Z47 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd|
+Z48 !s107 C:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd|
+!i113 0
+Z49 o-work work -2002 -explicit
+R18
+Abehavior
+R38
+R39
+R40
+R41
+R42
+R43
+R29
+R30
+R4
+R5
+R20
+R6
+R7
+R8
+R9
+DEx4 work 19 a_lathetoptestriscv 0 22 B_>0cmBEg6`9Vb[>fUXmE1
+!i122 55
+l65
+L17 700
+VzQN3<zX:T^2=la;j7=3<Z2
+!s100 CQPJOcRgWa0>@LhH_Fek33
+R12
+32
+R34
+!i10b 1
+R35
+R47
+R48
+!i113 0
+R49
+R18
+Eaxis
+Z50 w1705311039
+R29
+R30
+R39
+R40
+R4
+R7
+R8
+R9
+!i122 44
+R2
+Z51 8C:/Development/Altera/LatheNew/VHDL/Axis.vhd
+Z52 FC:/Development/Altera/LatheNew/VHDL/Axis.vhd
+l0
+Z53 L15 1
+VU@SJE4>FBh77AdO2FiYIk2
+!s100 HcP9dai>M70g^gjPccGb<3
+R12
+33
+R24
+!i10b 1
+R25
+Z54 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Axis.vhd|
+Z55 !s107 C:/Development/Altera/LatheNew/VHDL/Axis.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z56 DEx4 work 8 pulsegen 0 22 ZnYDALJ9kc]6SM2cl2R;J2
+R20
+Z57 DEx4 work 13 syncacceldist 0 22 `87YzoGS4mM5UQ1P3hGNl0
+Z58 DEx4 work 6 ctlreg 0 22 Bf=mXd:OHjKlGP?>TaN<A0
+Z59 DEx4 work 9 shiftoutn 0 22 g1aDgf]WFkz?KSGTm=CQD2
+R29
+R30
+R39
+R40
+R4
+R7
+R8
+R9
+Z60 DEx4 work 4 axis 0 22 U@SJE4>FBh77AdO2FiYIk2
+!i122 44
+l109
+L57 233
+V?6EKXY[>nI0AMTS_7BPKz2
+!s100 lFe]^Si[0hk=z8_9Uzk>P1
+R12
+33
+R24
+!i10b 1
+R25
+R54
+R55
+!i113 0
+R17
+R18
+Ecfsinterface
+Z61 w1705430968
+R29
+R30
+R38
+R40
+R4
+R6
+R7
+R8
+R9
+!i122 50
+R2
+Z62 8C:/Development/Altera/LatheNew/VHDL/Interface.vhd
+Z63 FC:/Development/Altera/LatheNew/VHDL/Interface.vhd
+l0
+Z64 L13 1
+VeHCDbXN?c3825G6?5X0C;1
+!s100 ]T]fiNFPeQ7]kRaePh>f01
+R12
+33
+Z65 !s110 1705517837
+!i10b 1
+Z66 !s108 1705517837.000000
+Z67 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Interface.vhd|
+Z68 !s107 C:/Development/Altera/LatheNew/VHDL/Interface.vhd|
+!i113 0
+R17
+R18
+Abehavorial
+R29
+R30
+R38
+R40
+R4
+R6
+R7
+R8
+R9
+Z69 DEx4 work 12 cfsinterface 0 22 eHCDbXN?c3825G6?5X0C;1
+!i122 50
+l58
+L33 138
+V1O=SUS7813;TBI15f=zmc0
+!s100 23DF4Id=hD7YlHnM:3Rn<2
+R12
+33
+R65
+!i10b 1
+R66
+R67
+R68
+!i113 0
+R17
+R18
+Eclock
+Z70 w1695748620
+R7
+R8
+R9
+!i122 47
+R2
+Z71 8C:/Development/Altera/LatheNew/VHDL/ClockA.vhd
+Z72 FC:/Development/Altera/LatheNew/VHDL/ClockA.vhd
+l0
+L5 1
+Vbd;?D>a8m]3G5PAW1YLSl1
+!s100 fIS?o:Ah:idhbeOWiQ5HT0
+R12
+33
+R65
+!i10b 1
+R66
+Z73 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ClockA.vhd|
+Z74 !s107 C:/Development/Altera/LatheNew/VHDL/ClockA.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R7
+R8
+R9
+Z75 DEx4 work 5 clock 0 22 bd;?D>a8m]3G5PAW1YLSl1
+!i122 47
+l21
+L12 18
+Vkg]jcaMWGK559GVR_J1Gj1
+!s100 L5nJSOYoQ4MnI?L<[LAPd0
+R12
+33
+R65
+!i10b 1
+R66
+R73
+R74
+!i113 0
+R17
+R18
+Eclockenablen
+Z76 w1580778363
+R8
+R9
+!i122 8
+R2
+Z77 8C:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd
+Z78 FC:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd
+l0
+L29 1
+V@H8:WJ?[?5<O>2f^mZ<i90
+!s100 GU?B[kfRi=8_Nl<OEGmBB2
+R12
+33
+Z79 !s110 1705517833
+!i10b 1
+Z80 !s108 1705517833.000000
+Z81 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd|
+Z82 !s107 C:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R8
+R9
+Z83 DEx4 work 12 clockenablen 0 22 @H8:WJ?[?5<O>2f^mZ<i90
+!i122 8
+l41
+L36 22
+V7B@go52d6ncKhg@VK:gaE3
+!s100 89>BMZnTAKILPjcVEe4W[2
+R12
+33
+R79
+!i10b 1
+R80
+R81
+R82
+!i113 0
+R17
+R18
+Ecmptmrnewmem
+Z84 w1705431350
+R40
+R4
+R7
+R8
+R9
+!i122 26
+R2
+Z85 8C:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd
+Z86 FC:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd
+l0
+Z87 L10 1
+VcXNO<[R<NcOfKMXn7N;X`1
+!s100 KoeKezB:jeBj5>P:4Ro>a2
+R12
+33
+R13
+!i10b 1
+Z88 !s108 1705517834.000000
+Z89 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd|
+Z90 !s107 C:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R59
+Z91 DEx4 work 7 shiftop 0 22 HGle0YT]QSkd>Qm05R:^;1
+R40
+R4
+R7
+R8
+R9
+Z92 DEx4 work 12 cmptmrnewmem 0 22 cXNO<[R<NcOfKMXn7N;X`1
+!i122 26
+l93
+L30 205
+V>F[[nF>F]ID@SnA^JNJm50
+!s100 8P8BdA<]m`fo;KQVSIHbe2
+R12
+33
+R13
+!i10b 1
+R88
+R89
+R90
+!i113 0
+R17
+R18
+Pconversion
+R6
+R8
+R9
+!i122 18
+Z93 w1695818646
+R2
+Z94 8C:/Development/Altera/LatheNew/VHDL/Conversion.vhd
+Z95 FC:/Development/Altera/LatheNew/VHDL/Conversion.vhd
+l0
+L5 16
+VEkMjLXNbZF;3YO;V?Ff143
+!s100 c8M7]DYdNOW01IbPJ21^:0
+R12
+33
+b1
+Z96 !s110 1705517834
+!i10b 1
+R88
+Z97 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Conversion.vhd|
+Z98 !s107 C:/Development/Altera/LatheNew/VHDL/Conversion.vhd|
+!i113 0
+R17
+R18
+Bbody
+Z99 DPx4 work 10 conversion 0 22 EkMjLXNbZF;3YO;V?Ff143
+R6
+R8
+R9
+!i122 18
+l0
+L22 43
+VD^07R_A9LS4_P<iD2j?[<2
+!s100 UT:_9MgzVX:jTD=7RXIW_3
+R12
+33
+R96
+!i10b 1
+R88
+R97
+R98
+!i113 0
+R17
+R18
+Ectlreg
+Z100 w1705431531
+R40
+R4
+R7
+R8
+R9
+!i122 16
+R2
+Z101 8C:/Development/Altera/LatheNew/VHDL/CtlReg.vhd
+Z102 FC:/Development/Altera/LatheNew/VHDL/CtlReg.vhd
+l0
+R23
+VBf=mXd:OHjKlGP?>TaN<A0
+!s100 i?85WjOi<3Qf[PER05Mj10
+R12
+33
+R96
+!i10b 1
+R88
+Z103 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/CtlReg.vhd|
+Z104 !s107 C:/Development/Altera/LatheNew/VHDL/CtlReg.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+R58
+!i122 16
+l24
+L20 24
+V6MBGkAjo]=ZUV<KZ8<^CH3
+!s100 5HVEZE;^:onKKm0DiC6:O2
+R12
+33
+R96
+!i10b 1
+R88
+R103
+R104
+!i113 0
+R17
+R18
+Edbgmap
+Z105 w1705307872
+R39
+R8
+R9
+!i122 10
+R2
+Z106 8C:/Development/Altera/LatheNew/VHDL/DbgMap.vhd
+Z107 FC:/Development/Altera/LatheNew/VHDL/DbgMap.vhd
+l0
+L7 1
+VH^Nl:J3FJBCaKM^zX?gaX2
+!s100 :>o=<bY>Q]:F2>M^fQO@92
+R12
+32
+R79
+!i10b 1
+R80
+Z108 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/DbgMap.vhd|
+Z109 !s107 C:/Development/Altera/LatheNew/VHDL/DbgMap.vhd|
+!i113 0
+R49
+R18
+Abehavorial
+R7
+R56
+R39
+R8
+R9
+Z110 DEx4 work 6 dbgmap 0 22 H^Nl:J3FJBCaKM^zX?gaX2
+!i122 10
+l57
+L16 125
+V5US;j?jdaf>hQTPLae6RT2
+!s100 iHSbfQCGfQC`fi1gTCcn[1
+R12
+32
+R79
+!i10b 1
+R80
+R108
+R109
+!i113 0
+R49
+R18
+Pdbgrecord
+R8
+R9
+!i122 2
+w1705309594
+R2
+8C:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd
+FC:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd
+l0
+L4 49
+V;f_JiN0RCR7LF^FNLQd8o1
+!s100 _Ug76EI6<k`llcJPze=NU3
+R12
+32
+Z111 !s110 1705517832
+!i10b 1
+Z112 !s108 1705517832.000000
+!s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd|
+!s107 C:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd|
+!i113 0
+R49
+R18
+Edisplay
+Z113 w1695076717
+R7
+R8
+R9
+!i122 25
+R2
+Z114 8C:/Development/Altera/Encoder/VHDL/Display.vhd
+Z115 FC:/Development/Altera/Encoder/VHDL/Display.vhd
+l0
+Z116 L32 1
+Vzgi9RRX;Xn[a^YP_]4Y:N2
+!s100 jPQb16Y@Q[VGI:LDbPd9b3
+R12
+33
+R96
+!i10b 1
+R88
+Z117 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/Encoder/VHDL/Display.vhd|
+Z118 !s107 C:/Development/Altera/Encoder/VHDL/Display.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R7
+R8
+R9
+Z119 DEx4 work 7 display 0 22 zgi9RRX;Xn[a^YP_]4Y:N2
+!i122 25
+l45
+L41 69
+VzLR<[A4_J?j]`V[NNSng`3
+!s100 3VcfbP6oTcMGIiko;5NS52
+R12
+33
+R96
+!i10b 1
+R88
+R117
+R118
+!i113 0
+R17
+R18
+Edisplayctltest
+Z120 w1580778593
+R4
+R5
+R6
+R7
+R8
+R9
+!i122 36
+R2
+Z121 8C:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd
+Z122 FC:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd
+l0
+L9 1
+V;N2?[khh5Ba@0j4T=nBIW2
+!s100 CVeaO;=l0BUa?<QP[ZS3P1
+R12
+33
+R13
+!i10b 1
+R14
+Z123 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd|
+Z124 !s107 C:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+R4
+R5
+R6
+R7
+R8
+R9
+DEx4 work 14 displayctltest 0 22 ;N2?[khh5Ba@0j4T=nBIW2
+!i122 36
+l85
+L11 211
+VEKm9h@L>iJ56LG8hHT8Z;3
+!s100 YTe[cS14c8hYUme5meCj91
+R12
+33
+R13
+!i10b 1
+R14
+R123
+R124
+!i113 0
+R17
+R18
+Edmux16
+Z125 w1697055092
+R7
+R8
+R9
+!i122 48
+R2
+Z126 8C:/Development/Altera/LatheNew/VHDL/Selector.vhd
+Z127 FC:/Development/Altera/LatheNew/VHDL/Selector.vhd
+l0
+Z128 L43 1
+V?>aGc1WK;baUAPLV21EQU3
+!s100 YXkYPR5VP8^8ajW2zA?kf2
+R12
+32
+R65
+!i10b 1
+R66
+Z129 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Selector.vhd|
+Z130 !s107 C:/Development/Altera/LatheNew/VHDL/Selector.vhd|
+!i113 0
+R49
+R18
+Abehavorial
+R7
+R8
+R9
+DEx4 work 6 dmux16 0 22 ?>aGc1WK;baUAPLV21EQU3
+!i122 48
+l54
+L52 30
+VMIjRn4l`6>eUR_8SQ3Of50
+!s100 z=_FVdlOEYb9mzl4g]iAe0
+R12
+32
+R65
+!i10b 1
+R66
+R129
+R130
+!i113 0
+R49
+R18
+Edmux8
+R125
+R7
+R8
+R9
+!i122 48
+R2
+R126
+R127
+l0
+L6 1
+VX0:22GVkWo:^LJjJdB<gN1
+!s100 ge39=;Sm5Fi3A7iR]41^k2
+R12
+32
+R65
+!i10b 1
+R66
+R129
+R130
+!i113 0
+R49
+R18
+Abehavorial
+R7
+R8
+R9
+DEx4 work 5 dmux8 0 22 X0:22GVkWo:^LJjJdB<gN1
+!i122 48
+l17
+L15 22
+VdBD`[V_[XICO`EY@gjMU@0
+!s100 DKcgUolg3hgNn<8NY^VN71
+R12
+32
+R65
+!i10b 1
+R66
+R129
+R130
+!i113 0
+R49
+R18
+Edoutdelay
+Z131 w1705269777
+R4
+R7
+R40
+R8
+R9
+!i122 49
+R2
+Z132 8C:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd
+Z133 FC:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd
+l0
+L7 1
+VZHXGKeoQ9=Jk?EBNg2m081
+!s100 GgCcnIfn_?nmH_fn80SBK0
+R12
+32
+R65
+!i10b 1
+R66
+Z134 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd|
+Z135 !s107 C:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd|
+!i113 0
+R49
+R18
+Abehavorial
+R4
+R7
+R40
+R8
+R9
+Z136 DEx4 work 9 doutdelay 0 22 ZHXGKeoQ9=Jk?EBNg2m081
+!i122 49
+l67
+L15 81
+V]:4lnAifP:OHhW];bYBeI0
+!s100 6GTU`VUEUlzAbGNI8[Sdm2
+R12
+32
+R65
+!i10b 1
+R66
+R134
+R135
+!i113 0
+R49
+R18
+Eencoder
+Z137 w1705430177
+R39
+R40
+R4
+R7
+R8
+R9
+!i122 28
+R2
+Z138 8C:/Development/Altera/LatheNew/VHDL/Encoder.vhd
+Z139 FC:/Development/Altera/LatheNew/VHDL/Encoder.vhd
+l0
+R23
+VlgLEYb`NEQTA`L7DFa8d@3
+!s100 O>zRgV??_:I;6CQh`o8662
+R12
+33
+R13
+!i10b 1
+R14
+Z140 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Encoder.vhd|
+Z141 !s107 C:/Development/Altera/LatheNew/VHDL/Encoder.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z142 DEx4 work 9 inttmrnew 0 22 Fzf?A[1_3m2:a98^@h[NM0
+R92
+R91
+R39
+R40
+R4
+R7
+R8
+R9
+Z143 DEx4 work 7 encoder 0 22 lgLEYb`NEQTA`L7DFa8d@3
+!i122 28
+l53
+L34 107
+V6H2Wk@jBE1Y@b=ID<`Gim0
+!s100 m4X=2T0LjaodRI9IKSL0[3
+R12
+33
+R13
+!i10b 1
+R14
+R140
+R141
+!i113 0
+R17
+R18
+Pextsignal
+R8
+R9
+!i122 7
+w1694626316
+R2
+8C:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd
+FC:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd
+l0
+L4 33
+V8R<LM;^IPWZkE1aPX`zY73
+!s100 Y8X?:Pk^ho`7QPSc1YMAD2
+R12
+33
+R79
+!i10b 1
+R80
+!s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd|
+!s107 C:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd|
+!i113 0
+R17
+R18
+Pfpgalathebits
+R7
+R8
+R9
+!i122 3
+Z144 w1705452273
+R2
+Z145 8C:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd
+Z146 FC:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd
+l0
+L8 385
+VLjBMVSmS?g^=3U2<S=EZ21
+!s100 O;0^cM6028zGCS8UPg30S0
+R12
+32
+R79
+!i10b 1
+R112
+Z147 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd|
+Z148 !s107 C:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd|
+!i113 0
+R49
+R18
+Bbody
+DPx4 work 13 fpgalathebits 0 22 LjBMVSmS?g^=3U2<S=EZ21
+R7
+R8
+R9
+!i122 3
+l0
+L394 3
+VAfzU7K4o=m772g;HNBKJe3
+!s100 ng1cgmjV4Xb>WPTId2LfR0
+R12
+32
+R79
+!i10b 1
+R112
+R147
+R148
+!i113 0
+R49
+R18
+Pfpgalathebitsfunc
+R30
+R7
+R8
+R9
+!i122 5
+R144
+R2
+Z149 8C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd
+Z150 FC:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd
+l0
+L10 185
+VKoIPKi>jZCdDK=jhHaVjX3
+!s100 Y6Ad=:0Ik80g<Ym^FGfGe1
+R12
+33
+b1
+R79
+!i10b 1
+R80
+Z151 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd|
+Z152 !s107 C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd|
+!i113 0
+R17
+R18
+Bbody
+R29
+R30
+R7
+R8
+R9
+!i122 5
+l0
+L196 603
+VQ0;hPkgkfSgmHeDSCD>110
+!s100 hF2YmfiB>nB__US@_4f?Z3
+R12
+33
+R79
+!i10b 1
+R80
+R151
+R152
+!i113 0
+R17
+R18
+Pfpgalathebitsrec
+R7
+R8
+R9
+!i122 4
+R144
+R2
+8C:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd
+FC:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd
+l0
+L8 242
+Vi]fHoPT[7Ec8<bGngh=oz3
+!s100 G3Wd2MGEij5SnYGkZohg?0
+R12
+33
+R79
+!i10b 1
+R80
+!s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd|
+!s107 C:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd|
+!i113 0
+R17
+R18
+Efreqgen
+Z153 w1705430190
+R40
+R4
+R7
+R8
+R9
+!i122 19
+R2
+Z154 8C:/Development/Altera/LatheNew/VHDL/FreqGen.vhd
+Z155 FC:/Development/Altera/LatheNew/VHDL/FreqGen.vhd
+l0
+R23
+VFClDPlOaZ8[L;X@2Df7@02
+!s100 Cz^[[n1jQbYO?2]Y^G2oY2
+R12
+33
+R96
+!i10b 1
+R88
+Z156 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/FreqGen.vhd|
+Z157 !s107 C:/Development/Altera/LatheNew/VHDL/FreqGen.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R91
+R40
+R4
+R7
+R8
+R9
+Z158 DEx4 work 7 freqgen 0 22 FClDPlOaZ8[L;X@2Df7@02
+!i122 19
+l27
+L22 33
+Vm452<P=n;?nba:^i=iSOj3
+!s100 U30X3]>akNY]UFRjHaDWZ0
+R12
+33
+R96
+!i10b 1
+R88
+R156
+R157
+!i113 0
+R17
+R18
+Efreqgenctr
+Z159 w1705431860
+R40
+R4
+R7
+R8
+R9
+!i122 29
+R2
+Z160 8C:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd
+Z161 FC:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd
+l0
+R23
+V@KLhL3ofDP:1Z?S_46_MR3
+!s100 C7M`N=4@<j1m`KTb5I7QM2
+R12
+33
+R13
+!i10b 1
+R14
+Z162 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd|
+Z163 !s107 C:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z164 DEx4 work 11 shiftopload 0 22 MMNJdCBhClXI`2mh`bdeb1
+R91
+R40
+R4
+R7
+R8
+R9
+Z165 DEx4 work 10 freqgenctr 0 22 @KLhL3ofDP:1Z?S_46_MR3
+!i122 29
+l42
+L25 126
+V0^on`_Em?[LQ1>Rkh8U[S3
+!s100 O[13kMa^>WoLo]8NAlHZA3
+R12
+33
+R13
+!i10b 1
+R14
+R162
+R163
+!i113 0
+R17
+R18
+Efreqgenctrtest
+R120
+R5
+R4
+R6
+R7
+R8
+R9
+!i122 37
+R2
+Z166 8C:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd
+Z167 FC:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd
+l0
+L39 1
+VT_WH>_[8X6dfF=GBo6DI63
+!s100 7eiB[hV4Rz`VTTB@h`n9]3
+R12
+33
+R13
+!i10b 1
+R14
+Z168 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd|
+Z169 !s107 C:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+R5
+R4
+R6
+R7
+R8
+R9
+DEx4 work 14 freqgenctrtest 0 22 T_WH>_[8X6dfF=GBo6DI63
+!i122 37
+l78
+L42 137
+V4;cCgY4iXK@8P1igoOah[3
+!s100 [O^34ozG428OYc:>nOXW11
+R12
+33
+R13
+!i10b 1
+R14
+R168
+R169
+!i113 0
+R17
+R18
+Eindexclocks
+Z170 w1705430200
+R40
+R4
+R7
+R8
+R9
+!i122 30
+R2
+Z171 8C:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd
+Z172 FC:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd
+l0
+L9 1
+V@B<QTWaJ6Ro6n];_b[M=f1
+!s100 _jHS;>C[j`9baB`InB8VA1
+R12
+33
+R13
+!i10b 1
+R14
+Z173 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd|
+Z174 !s107 C:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R91
+R59
+R40
+R4
+R7
+R8
+R9
+Z175 DEx4 work 11 indexclocks 0 22 @B<QTWaJ6Ro6n];_b[M=f1
+!i122 30
+l48
+L24 134
+V`LXWWFf[b<cYM3Dkd;A2_3
+!s100 W[RnN5Q62OzU=1_NJ?J@32
+R12
+33
+R13
+!i10b 1
+R14
+R173
+R174
+!i113 0
+R17
+R18
+Einttmrnew
+Z176 w1705431367
+R40
+R4
+R7
+R8
+R9
+!i122 27
+R2
+Z177 8C:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd
+Z178 FC:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd
+l0
+R87
+VFzf?A[1_3m2:a98^@h[NM0
+!s100 jnJ0:;>_]EUKXMXFoFIi?0
+R12
+32
+R13
+!i10b 1
+R14
+Z179 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd|
+Z180 !s107 C:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd|
+!i113 0
+R49
+R18
+Abehavioral
+R59
+R91
+R40
+R4
+R7
+R8
+R9
+R142
+!i122 27
+l68
+L29 132
+Va4k<;Gz0]nE;TYSkmQ39R3
+!s100 HiPG3^3PiUUJ8PF:oY6?Y3
+R12
+32
+R13
+!i10b 1
+R14
+R179
+R180
+!i113 0
+R49
+R18
+Piorecord
+R4
+R7
+R8
+R9
+!i122 1
+w1705431311
+R2
+8C:/Development/Altera/LatheNew/VHDL/IORecord.vhd
+FC:/Development/Altera/LatheNew/VHDL/IORecord.vhd
+l0
+L8 86
+Vz5VeH0NbkzCYj56:a_0@L1
+!s100 =bGdBHajX<?jMG=OVDGPA2
+R12
+33
+R111
+!i10b 1
+R112
+!s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/IORecord.vhd|
+!s107 C:/Development/Altera/LatheNew/VHDL/IORecord.vhd|
+!i113 0
+R17
+R18
+Elathectl
+Z181 w1705430088
+R29
+R30
+R99
+R39
+R40
+R4
+R6
+R7
+R8
+R9
+!i122 45
+R2
+Z182 8C:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd
+Z183 FC:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd
+l0
+R33
+VEV>g9g8@DgIhc52jVP3U82
+!s100 DPR=]3]@ZgCFXXDaGBAWk0
+R12
+33
+R24
+!i10b 1
+R25
+Z184 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd|
+Z185 !s107 C:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z186 DEx4 work 3 pwm 0 22 jD8FkfLoLdAI>bhm?G?ZN1
+Z187 DEx4 work 7 spindle 0 22 :62O5IHn7iFNokzi`[nSI2
+Z188 DEx4 work 10 runoutsync 0 22 ZkBk2BT4mM6_dMLHzPIYa1
+R56
+R60
+R165
+R158
+R175
+Z189 DEx4 work 12 phasecounter 0 22 A1[m=TJR^J9IJcnm9Ubhg3
+R143
+Z190 DEx4 work 11 quadencoder 0 22 gcA7dM4EX3OW7:9g5zRkJ3
+R58
+R59
+R29
+R30
+R99
+R39
+R40
+R4
+R6
+R7
+R8
+R9
+Z191 DEx4 work 8 lathectl 0 22 EV>g9g8@DgIhc52jVP3U82
+!i122 45
+l188
+L75 647
+V]02ObN[f3`6HBb[9Y?oa42
+!s100 IV>UMFfUJ<FfXoNjIb_5i3
+R12
+33
+R24
+!i10b 1
+R25
+R184
+R185
+!i113 0
+R17
+R18
+Elatheinterface
+Z192 w1705432089
+R29
+R30
+R99
+R38
+R39
+R40
+R4
+R6
+R7
+R8
+R9
+!i122 46
+R2
+Z193 8C:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd
+Z194 FC:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd
+l0
+R53
+V5bP^ZKlb[d[G7=<Yl`F?T2
+!s100 Uf4`0P8z9kMALRhS1TmJZ0
+R12
+33
+R65
+!i10b 1
+R66
+Z195 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd|
+Z196 !s107 C:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R191
+R119
+R58
+R59
+Z197 DEx4 work 3 spi 0 22 @hDRCSN_G_4TCjI3B20lk2
+R29
+R30
+R99
+R38
+R39
+R40
+R4
+R6
+R7
+R8
+R9
+Z198 DEx4 work 14 latheinterface 0 22 5bP^ZKlb[d[G7=<Yl`F?T2
+!i122 46
+l118
+L78 267
+V6lH0GWLcLBUiKDa<XY;De2
+!s100 [EIIh3;fc=?^T`=BOD2kc0
+R12
+33
+R65
+!i10b 1
+R66
+R195
+R196
+!i113 0
+R17
+R18
+Elathetop
+Z199 w1705438078
+R29
+R30
+R38
+R39
+R4
+R40
+R41
+R42
+R7
+R8
+R9
+!i122 53
+R2
+Z200 8C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd
+Z201 FC:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd
+l0
+L17 1
+V0Yeb[^VVDGW?<cfg7Cf7b3
+!s100 RCR1U?G@;VZK[C8:6Y04n2
+R12
+32
+R34
+!i10b 1
+R35
+Z202 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd|
+Z203 !s107 C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd|
+!i113 0
+R49
+R18
+Abehavioral
+R99
+R198
+R6
+R69
+R136
+Z204 DEx4 work 11 neorv32_top 0 22 oY:bNC928@U=;eHzd7Jf12
+R75
+R110
+R29
+R30
+R38
+R39
+R4
+R40
+R41
+R42
+R7
+R8
+R9
+DEx4 work 8 lathetop 0 22 0Yeb[^VVDGW?<cfg7Cf7b3
+!i122 53
+l163
+L83 258
+Va@K9RDQ25M<R0e@TX:bWK0
+!s100 4Bj:352b9U[Cn;VX;A?De2
+R12
+32
+R34
+!i10b 1
+R35
+R202
+R203
+!i113 0
+R49
+R18
+Elathetopsimriscv
+Z205 w1705513753
+R29
+R30
+R38
+R39
+R4
+R40
+R41
+R42
+R7
+R8
+R9
+!i122 54
+R2
+Z206 8C:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd
+Z207 FC:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd
+l0
+L16 1
+VOR2Ya^KWBeG?6`Xg7Olm22
+!s100 Rl>c[;UP_4GDz4H@5oTCD1
+R12
+32
+R34
+!i10b 1
+R35
+Z208 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd|
+Z209 !s107 C:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd|
+!i113 0
+R49
+R18
+Abehavorial
+R99
+R198
+R6
+R69
+R136
+R204
+R75
+R110
+R29
+R30
+R38
+R39
+R4
+R40
+R41
+R42
+R7
+R8
+R9
+R43
+!i122 54
+l159
+L81 250
+VKPMeG^dMc3KjWjB^1RDM]1
+!s100 ]N>EJU?U06T=;80fB=31[1
+R12
+32
+R34
+!i10b 1
+R35
+R208
+R209
+!i113 0
+R49
+R18
+Emultiplier
+Z210 w1685557320
+R8
+R9
+!i122 24
+R2
+Z211 8C:/Development/Altera/LatheNew/Proj/Multiplier.vhd
+Z212 FC:/Development/Altera/LatheNew/Proj/Multiplier.vhd
+l0
+R128
+VlIiGmO<:TTc^;3>ZTOBA?2
+!s100 4[a<l:Of88n>QmCz;`z8X2
+R12
+33
+R96
+!i10b 1
+R88
+Z213 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Proj/Multiplier.vhd|
+Z214 !s107 C:/Development/Altera/LatheNew/Proj/Multiplier.vhd|
+!i113 0
+R17
+R18
+Asyn
+R8
+R9
+DEx4 work 10 multiplier 0 22 lIiGmO<:TTc^;3>ZTOBA?2
+!i122 24
+l82
+L56 51
+VGCgNzEjSn[T^2KeE:zNIU2
+!s100 2_=SO1JAOSIAedl:Z`gIZ0
+R12
+33
+R96
+!i10b 1
+R88
+R213
+R214
+!i113 0
+R17
+R18
+Eneorv32_top
+Z215 w1705514702
+R41
+R42
+R7
+R8
+R9
+!i122 51
+R2
+Z216 8C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd
+Z217 FC:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd
+l0
+L50 1
+VoY:bNC928@U=;eHzd7Jf12
+!s100 O7R_S_Pzh]XD<<KR^T8mG2
+R12
+32
+Z218 !s110 1705517841
+!i10b 1
+Z219 !s108 1705517841.000000
+Z220 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd|
+Z221 !s107 C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd|
+!i113 0
+R49
+R18
+Aneorv32_top_rtl
+DEx7 neorv32 16 neorv32_debug_dm 0 22 SL^FB@:b]D?H^hz?9n@3`3
+DEx7 neorv32 17 neorv32_debug_dtm 0 22 3I=4bEO=N`T6^4W<TYICb0
+DEx7 neorv32 15 neorv32_sysinfo 0 22 A?31h^zQZ_[@NH?8W3lGd3
+DEx7 neorv32 11 neorv32_crc 0 22 DFiG3Jh]>>DPX_L0inEU>3
+DEx7 neorv32 13 neorv32_slink 0 22 EzUmjOGd44W[j=VWNZcJL0
+DEx7 neorv32 15 neorv32_onewire 0 22 MRj]EC^TWkMPGXnf5LmHY2
+DEx7 neorv32 13 neorv32_gptmr 0 22 P0Af@0ERgP:>U1?kj4WNT2
+DEx7 neorv32 12 neorv32_xirq 0 22 [gi6CzF10kS4T`:ae4>XG3
+DEx7 neorv32 14 neorv32_neoled 0 22 3:XlS>55cCQ>EA`1O<Fd]3
+DEx7 neorv32 12 neorv32_trng 0 22 ?<[lF@8QDLi>[A`;P@l4`3
+DEx7 neorv32 11 neorv32_pwm 0 22 UK9Bl1VKaTM<4BojToh[31
+DEx7 neorv32 11 neorv32_twi 0 22 Uc0bheBOYHXU1h4WJ5T9l2
+DEx7 neorv32 11 neorv32_spi 0 22 <P`B4zh<f>IELfYK`A27g1
+DEx7 neorv32 12 neorv32_uart 0 22 BU7U`<FH0HJXW`j:BU_oL1
+DEx7 neorv32 13 neorv32_mtime 0 22 G=zd7n3cF3=c@KfHOb:gn0
+DEx7 neorv32 11 neorv32_wdt 0 22 WK[Zfa[njIM<P_2<4L[g_3
+DEx7 neorv32 12 neorv32_gpio 0 22 aNUQ>15La7CgoS^B2W_Q23
+DEx7 neorv32 11 neorv32_sdi 0 22 V=DgnH2l9TXIXCgi4majT1
+DEx7 neorv32 11 neorv32_cfs 0 22 U2i7Ez5l^AKKc>MGjWSi:1
+DEx7 neorv32 21 neorv32_bus_io_switch 0 22 boe3HTgh6gD@OX;eU0Ofn1
+DEx7 neorv32 16 neorv32_wishbone 0 22 L6ZR[JdYPnIcJSW0CX]TF2
+DEx7 neorv32 11 neorv32_xip 0 22 @z:5zQR;DJYkai9P7ozH]1
+DPx7 neorv32 24 neorv32_bootloader_image 0 22 @:[?E5QB]a?3c>dm:RmEU2
+DEx7 neorv32 16 neorv32_boot_rom 0 22 @cGe?]IPS<XQe5:OdBI<z3
+DEx7 neorv32 12 neorv32_dmem 0 22 Y`EN49`YKV]WIgOBHLZ`11
+DEx7 neorv32 12 neorv32_imem 0 22 n]O1GhHSlOeJ?V2dF5@fc0
+DEx7 neorv32 19 neorv32_bus_gateway 0 22 ]4d98Mb3DB3lUL5eo]OcL2
+DEx7 neorv32 27 neorv32_bus_reservation_set 0 22 1nCfHV7_7F:fZSW>ce44<2
+DEx7 neorv32 11 neorv32_dma 0 22 Y@_GDYdO6kMnMYNFkk@U20
+DEx7 neorv32 18 neorv32_bus_switch 0 22 O8XkPi^W>_?gH4DACVL@>0
+DEx7 neorv32 14 neorv32_dcache 0 22 kM73=N9=_N25O`n]bNI^K3
+DEx7 neorv32 14 neorv32_icache 0 22 KbMh=dEmLJ3BHALI?c9681
+DEx7 neorv32 11 neorv32_cpu 0 22 8TOdI`B:h<9?1]BOf5GBN2
+R41
+R42
+R7
+R8
+R9
+R204
+!i122 51
+l348
+L268 1331
+VbB9_UN0an;C670BPXWI=Q0
+!s100 Cm?SPRkc4COFN@ADakG0B1
+R12
+32
+R218
+!i10b 1
+R219
+R220
+R221
+!i113 0
+R49
+R18
+Eopsel
+R125
+R7
+R8
+R9
+!i122 48
+R2
+R126
+R127
+l0
+L88 1
+VS2i9@1eOWOhh<4nALK2RI2
+!s100 HJaU4RW;lZi>WEKJ=T8ae0
+R12
+32
+R65
+!i10b 1
+R66
+R129
+R130
+!i113 0
+R49
+R18
+Abehavorial
+R7
+R8
+R9
+DEx4 work 5 opsel 0 22 S2i9@1eOWOhh<4nALK2RI2
+!i122 48
+l117
+L96 158
+V^mGiTCBm`HnWmOHMXfPSB3
+!s100 X@4l8[4f441OcCf<7k=A02
+R12
+32
+R65
+!i10b 1
+R66
+R129
+R130
+!i113 0
+R49
+R18
+Ephasecounter
+Z222 w1705430224
+R40
+R4
+R7
+R8
+R9
+!i122 31
+R2
+Z223 8C:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd
+Z224 FC:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd
+l0
+R87
+VA1[m=TJR^J9IJcnm9Ubhg3
+!s100 g__YM];ENM<@OD_Li1m>`3
+R12
+33
+R13
+!i10b 1
+R14
+Z225 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd|
+Z226 !s107 C:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R59
+R91
+R40
+R4
+R7
+R8
+R9
+R189
+!i122 31
+l44
+L28 108
+VcCQ1o_1`D3dg=z1BWR9Ze0
+!s100 :6^Hl]XY1P:z1XbmQ@]if2
+R12
+33
+R13
+!i10b 1
+R14
+R225
+R226
+!i113 0
+R17
+R18
+Ephasectrtest
+R120
+R6
+R5
+R7
+R8
+R9
+!i122 38
+R2
+Z227 8C:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd
+Z228 FC:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd
+l0
+L37 1
+V6?;DTSnO`2V@YG>BdWN?[1
+!s100 NSI:kSEiFO7l=T8_LUL[S0
+R12
+33
+R24
+!i10b 1
+R25
+Z229 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd|
+Z230 !s107 C:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+R6
+R5
+R7
+R8
+R9
+DEx4 work 12 phasectrtest 0 22 6?;DTSnO`2V@YG>BdWN?[1
+!i122 38
+l88
+L40 141
+V77EzXRA91GlN7Chn?@N6I0
+!s100 KQQ0oWgfn0YNbbM3mSNYc1
+R12
+33
+R24
+!i10b 1
+R25
+R229
+R230
+!i113 0
+R17
+R18
+Ppkg_enum
+R7
+R8
+R9
+!i122 41
+Z231 w1687284215
+R2
+Z232 8C:/Development/Altera/LatheNew/Spinal/Spix.vhd
+Z233 FC:/Development/Altera/LatheNew/Spinal/Spix.vhd
+l0
+L9 7
+VcHZ`dZaz:cc?^YkHh>E7I1
+!s100 7Q3b_9Pc9S>d<S:e>aI^k2
+R12
+33
+b1
+R24
+!i10b 1
+R25
+Z234 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Spinal/Spix.vhd|
+Z235 !s107 C:/Development/Altera/LatheNew/Spinal/Spix.vhd|
+!i113 0
+R17
+R18
+Bbody
+Z236 DPx4 work 8 pkg_enum 0 22 cHZ`dZaz:cc?^YkHh>E7I1
+R7
+R8
+R9
+!i122 41
+l0
+L17 43
+VGzKR21`_Od0G]k^C85NET3
+!s100 9IGh6EVP`^_W@NKFTWW9`3
+R12
+33
+R24
+!i10b 1
+R25
+R234
+R235
+!i113 0
+R17
+R18
+Ppkg_scala2hdl
+R20
+R7
+R8
+R9
+!i122 41
+R231
+R2
+R232
+R233
+l0
+L67 52
+V@fH_W8IZ@2N4QL:T3D;eW3
+!s100 iJN4PjEF;;Ao6zCU7W?`R2
+R12
+33
+b1
+R24
+!i10b 1
+R25
+R234
+R235
+!i113 0
+R17
+R18
+Bbody
+Z237 DPx4 work 13 pkg_scala2hdl 0 22 @fH_W8IZ@2N4QL:T3D;eW3
+R20
+R7
+R8
+R9
+!i122 41
+l0
+L120 326
+VL8abRL0<`ZE3BVZj7Sd6n0
+!s100 =N7im`l[zL0zo@jaCEVZg1
+R12
+33
+R24
+!i10b 1
+R25
+R234
+R235
+!i113 0
+R17
+R18
+Epulsegen
+Z238 w1694690018
+R7
+R8
+R9
+!i122 9
+R2
+Z239 8C:/Development/Altera/LatheNew/VHDL/PulseGen.vhd
+Z240 FC:/Development/Altera/LatheNew/VHDL/PulseGen.vhd
+l0
+R116
+VZnYDALJ9kc]6SM2cl2R;J2
+!s100 V:W7gmY[bXCUVQY9]Xz_20
+R12
+33
+R79
+!i10b 1
+R80
+Z241 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/PulseGen.vhd|
+Z242 !s107 C:/Development/Altera/LatheNew/VHDL/PulseGen.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R83
+R7
+R8
+R9
+R56
+!i122 9
+l45
+L39 31
+V``a9cn3`JZE;;8GR[iV<O3
+!s100 >f]XT?VgFT4ch4YkJdK[U1
+R12
+33
+R79
+!i10b 1
+R80
+R241
+R242
+!i113 0
+R17
+R18
+Epwm
+Z243 w1705430214
+R40
+R4
+R7
+R8
+R9
+!i122 32
+R2
+Z244 8C:/Development/Altera/LatheNew/VHDL/PWM.vhd
+Z245 FC:/Development/Altera/LatheNew/VHDL/PWM.vhd
+l0
+L8 1
+VjD8FkfLoLdAI>bhm?G?ZN1
+!s100 RDbN2NCjk[?`MUY=[CeJD1
+R12
+33
+R13
+!i10b 1
+R14
+Z246 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/PWM.vhd|
+Z247 !s107 C:/Development/Altera/LatheNew/VHDL/PWM.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z248 DEx4 work 10 shiftopsel 0 22 h>OATJ]j`0d;]i6PNMcQ?2
+R91
+R40
+R4
+R7
+R8
+R9
+R186
+!i122 32
+l29
+L19 61
+V;VFF^9KJ4E?f105CKLaPZ2
+!s100 n>lIViSjV2_WnKEb2Ui>Q3
+R12
+33
+R13
+!i10b 1
+R14
+R246
+R247
+!i113 0
+R17
+R18
+Equadencoder
+Z249 w1705222740
+R8
+R9
+!i122 20
+R2
+Z250 8C:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd
+Z251 FC:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd
+l0
+R116
+VgcA7dM4EX3OW7:9g5zRkJ3
+!s100 lhP8``CXUelOY9GEJoMam1
+R12
+33
+R96
+!i10b 1
+R88
+Z252 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd|
+Z253 !s107 C:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R8
+R9
+R190
+!i122 20
+l49
+L42 49
+V>^2UYhh1jN81zf<f8@LS^2
+!s100 YS<E4MbR?kmGWlK8ES0@o0
+R12
+33
+R96
+!i10b 1
+R88
+R252
+R253
+!i113 0
+R17
+R18
+Erdmem
+Z254 w1685567641
+R7
+R8
+R9
+!i122 21
+R2
+Z255 8C:/Development/Altera/LatheNew/Sim/ReaderMem.vhd
+Z256 FC:/Development/Altera/LatheNew/Sim/ReaderMem.vhd
+l0
+L5 1
+V4oeK2]zFGmE@kTg?g9f`Y0
+!s100 ]9ZjhV9^mOWVkR3fd8;RB2
+R12
+33
+R96
+!i10b 1
+R88
+Z257 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Sim/ReaderMem.vhd|
+Z258 !s107 C:/Development/Altera/LatheNew/Sim/ReaderMem.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R7
+R8
+R9
+DEx4 work 5 rdmem 0 22 4oeK2]zFGmE@kTg?g9f`Y0
+!i122 21
+l19
+L16 15
+VPG@I3ACk]?R@hOHe:2S=P3
+!s100 j89bY3fYQfO@;E5fVALz32
+R12
+33
+R96
+!i10b 1
+R88
+R257
+R258
+!i113 0
+R17
+R18
+Pregdef
+R7
+R8
+R9
+!i122 0
+R144
+R2
+Z259 8C:/Development/Altera/LatheNew/VHDL/RegDef.vhd
+Z260 FC:/Development/Altera/LatheNew/VHDL/RegDef.vhd
+l0
+L5 135
+V>nR<m@HOF2E9[oCQQ=M?a1
+!s100 YHKDYSIdE;BZ8]6`hIeTj0
+R12
+33
+R111
+!i10b 1
+R112
+Z261 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/RegDef.vhd|
+Z262 !s107 C:/Development/Altera/LatheNew/VHDL/RegDef.vhd|
+!i113 0
+R17
+R18
+Bbody
+R4
+R7
+R8
+R9
+!i122 0
+l0
+L141 3
+Vmj66nGT:BDMUogXl@WDn71
+!s100 LSFDfYSIh9?4dH9G>G8940
+R12
+33
+R111
+!i10b 1
+R112
+R261
+R262
+!i113 0
+R17
+R18
+Priscvdatarec
+R4
+R7
+R8
+R9
+!i122 6
+Z263 w1705431495
+R2
+Z264 8C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd
+Z265 FC:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd
+l0
+L8 30
+VR609=4@WEhX?URL^jl`PS1
+!s100 mbh=Y50b=i``cV<ICGVi43
+R12
+32
+b1
+R79
+!i10b 1
+R80
+Z266 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd|
+Z267 !s107 C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd|
+!i113 0
+R49
+R18
+Bbody
+R38
+R4
+R7
+R8
+R9
+!i122 6
+l0
+L39 11
+V9gES@8_A><?UGo6jP_lXo0
+!s100 JV<Z]QKDfK3[zNZTD_BEZ2
+R12
+32
+R79
+!i10b 1
+R80
+R266
+R267
+!i113 0
+R49
+R18
+Erunoutsync
+Z268 w1705232704
+R29
+R30
+R40
+R4
+R7
+R8
+R9
+!i122 35
+R2
+Z269 8C:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd
+Z270 FC:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd
+l0
+R23
+VZkBk2BT4mM6_dMLHzPIYa1
+!s100 ;k?2?@P9iWLceWE9RFS7P2
+R12
+32
+R13
+!i10b 1
+R14
+Z271 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd|
+Z272 !s107 C:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd|
+!i113 0
+R49
+R18
+Abehavioral
+R164
+R58
+R29
+R30
+R40
+R4
+R7
+R8
+R9
+R188
+!i122 35
+l37
+L23 83
+VPCmk8c8[O6@L9J6ho`Mii0
+!s100 aU=]Foi4CGB[94]M]:a7b2
+R12
+32
+R13
+!i10b 1
+R14
+R271
+R272
+!i113 0
+R49
+R18
+Eshiftop
+Z273 w1705429948
+R40
+R4
+R7
+R8
+R9
+!i122 11
+R2
+Z274 8C:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd
+Z275 FC:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd
+l0
+R23
+VHGle0YT]QSkd>Qm05R:^;1
+!s100 I86WReoX;iGoPH`N[N`;Q2
+R12
+33
+R79
+!i10b 1
+R80
+Z276 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd|
+Z277 !s107 C:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+R91
+!i122 11
+l23
+L21 14
+VYPSS6A:Vz@[VB<X<D9Y7E3
+!s100 zN75=V49:9EjZhN?W6Aim0
+R12
+33
+R79
+!i10b 1
+R80
+R276
+R277
+!i113 0
+R17
+R18
+Eshiftopload
+Z278 w1705431155
+R40
+R4
+R7
+R8
+R9
+!i122 12
+R2
+Z279 8C:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd
+Z280 FC:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd
+l0
+R23
+VMMNJdCBhClXI`2mh`bdeb1
+!s100 k<oYb997^Yk^nhlOTQ[eX2
+R12
+33
+R79
+!i10b 1
+R80
+Z281 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd|
+Z282 !s107 C:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+R164
+!i122 12
+l26
+L22 26
+Vk1@i<Jk:=KDHK3]cS`=UJ0
+!s100 Le7M>nbidGJL9ZKTC55hQ1
+R12
+33
+R79
+!i10b 1
+R80
+R281
+R282
+!i113 0
+R17
+R18
+Eshiftopsel
+Z283 w1705430380
+R40
+R4
+R7
+R8
+R9
+!i122 13
+R2
+Z284 8C:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd
+Z285 FC:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd
+l0
+R23
+Vh>OATJ]j`0d;]i6PNMcQ?2
+!s100 YMlCnb3UW>Q=GDDZhma[60
+R12
+33
+R79
+!i10b 1
+R80
+Z286 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd|
+Z287 !s107 C:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+R248
+!i122 13
+l24
+L22 23
+VY5DAB0S8G>[OFECe53G]n1
+!s100 g65beKHCL]d[ZI0em;94H1
+R12
+33
+R79
+!i10b 1
+R80
+R286
+R287
+!i113 0
+R17
+R18
+Eshiftoutn
+Z288 w1705234693
+R40
+R4
+R7
+R8
+R9
+!i122 14
+R2
+Z289 8C:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd
+Z290 FC:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd
+l0
+R23
+Vg1aDgf]WFkz?KSGTm=CQD2
+!s100 o26bmeCj7`mOQlXEIkiRa0
+R12
+33
+R79
+!i10b 1
+R80
+Z291 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd|
+Z292 !s107 C:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+R59
+!i122 14
+l30
+L24 60
+VSR6>SN:S4i>BUI6_C?W[f1
+!s100 N<1P:LC6RRJWGc<CVW;bV1
+R12
+33
+R79
+!i10b 1
+R80
+R291
+R292
+!i113 0
+R17
+R18
+Eshiftoutns
+Z293 w1695286410
+R40
+R4
+R7
+R8
+R9
+!i122 15
+R2
+Z294 8C:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd
+Z295 FC:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd
+l0
+R23
+Vz1elnVXVbBR>gHhH_<WXE1
+!s100 n1F]1cGHE5T2Jhg@]l>6_0
+R12
+33
+R96
+!i10b 1
+R80
+Z296 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd|
+Z297 !s107 C:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R40
+R4
+R7
+R8
+R9
+Z298 DEx4 work 10 shiftoutns 0 22 z1elnVXVbBR>gHhH_<WXE1
+!i122 15
+l29
+L23 35
+V=jFXelD89cmJAGl0e_Z2Z3
+!s100 DkO9Abh6L^13^LgW9?<XQ2
+R12
+33
+R96
+!i10b 1
+R80
+R296
+R297
+!i113 0
+R17
+R18
+Eshiftoutntest
+R120
+R4
+R5
+R6
+R7
+R8
+R9
+!i122 39
+R2
+Z299 8C:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd
+Z300 FC:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd
+l0
+L9 1
+Vo;VQ;ocbae2:;mXCz<Jfk2
+!s100 FVa6SaB56cS1mK]BmU>JZ2
+R12
+33
+R24
+!i10b 1
+R25
+Z301 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd|
+Z302 !s107 C:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd|
+!i113 0
+R17
+R18
+Abehavior
+R4
+R5
+R6
+R7
+R8
+R9
+DEx4 work 13 shiftoutntest 0 22 o;VQ;ocbae2:;mXCz<Jfk2
+!i122 39
+l42
+L11 101
+VAJMYe4VUUFTj]2Oo[ReM62
+!s100 IFNhjhaPh^Q1KIXUb>h5a3
+R12
+33
+R24
+!i10b 1
+R25
+R301
+R302
+!i113 0
+R17
+R18
+Psimproc
+R6
+R7
+R8
+R9
+!i122 33
+R120
+R2
+Z303 8C:/Development/Altera/LatheNew/Test/SimProc.vhd
+Z304 FC:/Development/Altera/LatheNew/Test/SimProc.vhd
+l0
+L6 47
+VHB0_]l49R59M^Dc@h_HY:1
+!s100 ;dLUb_Yf7k2nPLl6:R]aE1
+R12
+33
+b1
+R13
+!i10b 1
+R14
+Z305 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/SimProc.vhd|
+Z306 !s107 C:/Development/Altera/LatheNew/Test/SimProc.vhd|
+!i113 0
+R17
+R18
+Bbody
+R5
+R6
+R7
+R8
+R9
+!i122 33
+l0
+L54 134
+VQ[EG[TgQSfG`7ZFACFO4k1
+!s100 1A]^D9@W[1B_RS3:6BA^G0
+R12
+33
+R13
+!i10b 1
+R14
+R305
+R306
+!i113 0
+R17
+R18
+Espi
+Z307 w1705432748
+R4
+R7
+R8
+R9
+!i122 22
+R2
+Z308 8C:/Development/Altera/LatheNew/VHDL/SPI.vhd
+Z309 FC:/Development/Altera/LatheNew/VHDL/SPI.vhd
+l0
+R87
+V@hDRCSN_G_4TCjI3B20lk2
+!s100 Kb16c=@bFmD;kc_6iRAF_3
+R12
+33
+R96
+!i10b 1
+R88
+Z310 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/SPI.vhd|
+Z311 !s107 C:/Development/Altera/LatheNew/VHDL/SPI.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R83
+R4
+R7
+R8
+R9
+R197
+!i122 22
+l57
+L25 127
+VC0UR[Gggl>kE8SG_h5=aI3
+!s100 0HIDUD1N513l6eo@mgI<i1
+R12
+33
+R96
+!i10b 1
+R88
+R310
+R311
+!i113 0
+R17
+R18
+Espindle
+Z312 w1705430103
+R29
+R30
+R40
+R4
+R7
+R8
+R9
+!i122 42
+R2
+Z313 8C:/Development/Altera/LatheNew/VHDL/Spindle.vhd
+Z314 FC:/Development/Altera/LatheNew/VHDL/Spindle.vhd
+l0
+L12 1
+V:62O5IHn7iFNokzi`[nSI2
+!s100 3?_M@BR:ddb]1kWC4S2C80
+R12
+33
+R24
+!i10b 1
+R25
+Z315 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Spindle.vhd|
+Z316 !s107 C:/Development/Altera/LatheNew/VHDL/Spindle.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+Z317 DEx4 work 12 syncaccelnew 0 22 U]m@<P>P0;]JA]FSlU^2i3
+R158
+R58
+R29
+R30
+R40
+R4
+R7
+R8
+R9
+R187
+!i122 42
+l64
+L38 148
+V;X?gzNT9aQ7zho?<97HVl2
+!s100 JWmQic>A7f=CEHF5068bb2
+R12
+33
+R24
+!i10b 1
+R25
+R315
+R316
+!i113 0
+R17
+R18
+Espix
+R231
+R236
+R20
+R237
+R7
+R8
+R9
+!i122 41
+R2
+R232
+R233
+l0
+L458 1
+VJ?ClLb8zoh^`a3iB=4W3b1
+!s100 h?dJC_>Y[CKI?Gjk^J6EQ2
+R12
+33
+R24
+!i10b 1
+R25
+R234
+R235
+!i113 0
+R17
+R18
+Aarch
+R236
+R20
+R237
+R7
+R8
+R9
+DEx4 work 4 spix 0 22 J?ClLb8zoh^`a3iB=4W3b1
+!i122 41
+l497
+L474 207
+V2G5;n0z6<8NEf0eRF]i=91
+!s100 2_KEjGVAFGCzUC0YS?Io=3
+R12
+33
+R24
+!i10b 1
+R25
+R234
+R235
+!i113 0
+R17
+R18
+Esyncacceldist
+Z318 w1705431907
+R30
+R39
+R40
+R4
+R20
+R7
+R8
+R9
+!i122 43
+R2
+Z319 8C:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd
+Z320 FC:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd
+l0
+R64
+V`87YzoGS4mM5UQ1P3hGNl0
+!s100 iiaDBTof900VLMnNVNPQa2
+R12
+32
+R24
+!i10b 1
+R25
+Z321 !s90 -reportprogress|300|-work|work|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd|
+Z322 !s107 C:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd|
+!i113 0
+R49
+R18
+Abehavioral
+R298
+R59
+R164
+R91
+R30
+R39
+R40
+R4
+R20
+R7
+R8
+R9
+R57
+!i122 43
+l153
+L47 708
+Vkz<:nF>CQ^P0BIR59<A6A0
+!s100 eLXSQ6ZTgj^nX[Fz@VGK?0
+R12
+32
+R24
+!i10b 1
+R25
+R321
+R322
+!i113 0
+R49
+R18
+Esyncaccelnew
+Z323 w1705451354
+R40
+R4
+R7
+R8
+R9
+!i122 23
+R2
+Z324 8C:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd
+Z325 FC:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd
+l0
+R87
+VU]m@<P>P0;]JA]FSlU^2i3
+!s100 GK5FVOnl3QhZZRd<R?>[72
+R12
+33
+R96
+!i10b 1
+R88
+Z326 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd|
+Z327 !s107 C:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R59
+R91
+R40
+R4
+R7
+R8
+R9
+R317
+!i122 23
+l61
+L34 212
+V=mi5RN^o=G6bi1>OD<a6K2
+!s100 K;`Q2OHZ3HEfO5`VNmNjm1
+R12
+33
+R96
+!i10b 1
+R88
+R326
+R327
+!i113 0
+R17
+R18
+Esystemclk
+Z328 w1696540176
+R7
+R8
+R9
+!i122 17
+R2
+Z329 8C:/Development/Altera/LatheNew/Test/ClockTest.vhd
+Z330 FC:/Development/Altera/LatheNew/Test/ClockTest.vhd
+l0
+L5 1
+VlOjPoF<CV:;LoOV[RV<Y:0
+!s100 oOj]CzlIkjDEz3UiaEh640
+R12
+33
+R96
+!i10b 1
+R88
+Z331 !s90 -reportprogress|300|-work|work|-2008|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/Test/ClockTest.vhd|
+Z332 !s107 C:/Development/Altera/LatheNew/Test/ClockTest.vhd|
+!i113 0
+R17
+R18
+Abehavioral
+R7
+R8
+R9
+DEx4 work 9 systemclk 0 22 lOjPoF<CV:;LoOV[RV<Y:0
+!i122 17
+l14
+L12 7
+V8MD>lAAl?bLlidZF:?V3D1
+!s100 ZLnQDO42MI=_?J8R7Z_lU3
+R12
+33
+R96
+!i10b 1
+R88
+R331
+R332
+!i113 0
+R17
+R18

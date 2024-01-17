@@ -772,7 +772,7 @@ begin
     -- -------------------------------------------------------------------------------------------
     neorv32_int_imem_inst_true:
     if (MEM_INT_IMEM_EN = true) and (imem_size_c > 0) generate
-      neorv32_int_imem_inst: entity work.neorv32_imem
+      neorv32_int_imem_inst: entity neorv32.neorv32_imem
       generic map (
         IMEM_SIZE    => imem_size_c,
         IMEM_AS_IROM => imem_as_rom_c
@@ -794,7 +794,7 @@ begin
     -- -------------------------------------------------------------------------------------------
     neorv32_int_dmem_inst_true:
     if (MEM_INT_DMEM_EN = true) and (dmem_size_c > 0) generate
-      neorv32_int_dmem_inst: entity work.neorv32_dmem
+      neorv32_int_dmem_inst: entity neorv32.neorv32_dmem
       generic map (
         DMEM_SIZE => dmem_size_c
       )

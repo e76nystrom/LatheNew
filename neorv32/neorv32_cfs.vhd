@@ -85,8 +85,8 @@ end neorv32_cfs;
 
 architecture neorv32_cfs_rtl of neorv32_cfs is
 
- signal data : std_ulogic_vector(CFS_IN_SIZE-1 downto 0);
  -- <
+ signal data : std_ulogic_vector(CFS_IN_SIZE-1 downto 0) := (others => '0');
  signal dbg  : std_ulogic_vector(xOutPins-1 downto 0) := (others => '0');
  
  constant divRange : integer := 50000-1;
