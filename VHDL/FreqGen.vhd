@@ -6,19 +6,15 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 use work.RegDef.opb;
-use work.IORecord.DataInp;
+use work.IORecord.all;
 
 entity FreqGen is
  generic(opVal    : unsigned;
          freqBits : positive);
  port (
-  clk      : in std_logic;
-  inp      : DataInp;
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- load : in boolean;
-  -- op : in unsigned(opBits-1 downto 0);
-  ena      : in std_logic;
+  clk      : in  std_logic;
+  inp      : in  DataInp;
+  ena      : in  std_logic;
   pulseOut : out std_logic := '0'
   );
 end FreqGen;
@@ -36,9 +32,6 @@ begin
   port map (
    clk  => clk,
    inp  => inp,
-   -- shift => dshift,
-   -- op => op,
-   -- din => din,
    data => freqVal);
 
  FreqGen: process(clk)
@@ -59,4 +52,3 @@ begin
  end process FreqGen;
 
 end Behavioral;
-

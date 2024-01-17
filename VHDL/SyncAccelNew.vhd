@@ -15,15 +15,14 @@ entity SyncAccelNew is
           outBits   : positive := 32);
  port (
   clk : in std_logic;
-
-  inp         : in DataInp;
-  oRec        : in DataOut;
+  inp          : in DataInp;
+  oRec         : in DataOut;
   init         : in std_logic;          --reset
   ena          : in std_logic;          --enable operation
   decel        : in std_logic;
   decelDisable : in boolean;
   ch           : in std_logic;
-  dir          : in std_logic;
+  -- dir          : in std_logic;
   -- dout         : out std_logic := '0';
   dout         : out SpindleData;
   accelActive  : out std_logic := '0';
@@ -42,26 +41,20 @@ architecture Behavioral of SyncAccelNew is
  signal incr2  : unsigned(synBits-1 downto 0);
  signal accel  : unsigned(synBits-1 downto 0);
 
- signal accelCount : unsigned(countBits-1 downto 0);
+ signal accelCount   : unsigned(countBits-1 downto 0);
  signal accelCounter : unsigned(countBits-1 downto 0) := (others => '0');
 
- alias opD     : unsigned is F_Ld_D;
- alias opIncr1 : unsigned is F_Ld_Incr1;
- alias opIncr2 : unsigned is F_Ld_Incr2;
- alias opAccel : unsigned is F_Ld_Accel_Val;
- alias opAccelCount : unsigned is F_Ld_Accel_Count;
+ alias opD          : unsigned is F_Ld_Sp_D;
+ alias opIncr1      : unsigned is F_Ld_Sp_Incr1;
+ alias opIncr2      : unsigned is F_Ld_Sp_Incr2;
+ alias opAccel      : unsigned is F_Ld_Sp_Accel_Val;
+ alias opAccelCount : unsigned is F_Ld_Sp_Accel_Count;
 
- signal xpos : unsigned(posBits-1 downto 0) := (others => '0');
- signal ypos : unsigned(posBits-1 downto 0) := (others => '0');
- signal sum :  unsigned(synBits-1 downto 0) := (others => '0');
- alias sumNeg : std_logic is sum(synBits-1);
+ signal xpos     : unsigned(posBits-1 downto 0) := (others => '0');
+ signal ypos     : unsigned(posBits-1 downto 0) := (others => '0');
+ signal sum      : unsigned(synBits-1 downto 0) := (others => '0');
+ alias sumNeg    : std_logic is sum(synBits-1);
  signal accelSum : unsigned(synBits-1 downto 0) := (others => '0');
-
- -- signal xPosDout : std_logic;
- -- signal yPosDout : std_logic;
- -- signal sumDout : std_logic;
- -- signal accelSumDout : std_logic;
- -- signal accelCtrDout : std_logic;
 
  signal synStepTmp : std_logic := '0';
 
@@ -114,7 +107,7 @@ begin
    data => accelCount);
 
  sum_out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Sum,
+  generic map(opVal   => opBase + F_Rd_Sp_Sum,
               n       => synBits,
               outBits => outBits)
   port map (
@@ -125,7 +118,7 @@ begin
    );
 
  accelSum_Out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Accel_Sum,
+  generic map(opVal   => opBase + F_Rd_Sp_Accel_Sum,
               n       => synBits,
               outBits => outBits)
   port map (
@@ -136,7 +129,7 @@ begin
    );
 
  accelCtr_out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Accel_Ctr,
+  generic map(opVal   => opBase + F_Rd_Sp_Accel_Ctr,
               n       => countBits,
               outBits => outBits)
   port map (
@@ -147,7 +140,7 @@ begin
    );
 
  xPos_Shift : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_XPos,
+  generic map(opVal   => opBase + F_Rd_Sp_XPos,
               n       => posBits,
               outBits => outBits)
   port map (
@@ -158,7 +151,7 @@ begin
    );
 
  yPos_Shift : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_YPos,
+  generic map(opVal   => opBase + F_Rd_Sp_YPos,
               n       => posBits,
               outBits => outBits)
   port map (

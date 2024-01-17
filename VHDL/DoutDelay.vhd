@@ -81,7 +81,7 @@ begin
 
    b(1) <= a(3) or a(4) or a(5);
 
-   a(6) <= a24 or a15 or a26 or a27;
+   a(6) <= a24 or a25 or a26 or a27;
    a(7) <= a28 or a29 or a30 or a31;
    a(8) <= a32 or a33 or a34 or a35;
    a(9) <= a36;

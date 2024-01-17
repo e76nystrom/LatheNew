@@ -6,7 +6,7 @@ use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
 use work.RegDef.all;
-use work.IORecord.DataInp;
+use work.IORecord.all;
 
 entity FreqGenCtr is
  generic(opBase    : unsigned;
@@ -37,6 +37,8 @@ architecture Behavioral of FreqGenCtr is
  signal syncVal       : unsigned(syncBits-1 downto 0) := (others => '0');
  signal syncCounter   : unsigned(syncBits-1 downto 0) := (others => '0');
 
+ signal countLoad     : std_logic;
+
 begin
 
  freqReg : entity work.ShiftOp
@@ -47,12 +49,13 @@ begin
    inp  => inp,
    data => freqVal);
 
- countReg : entity work.ShiftOp
+ countReg : entity work.ShiftOpLoad
   generic map(opVal  => opBase + F_Ld_Dbg_Count,
               n      => countBits)
   port map (
    clk  => clk,
    inp  => inp,
+   load => countLoad,
    data => countVal);
 
  synctReg : entity work.ShiftOp
@@ -135,7 +138,7 @@ begin
        state <= idle;                   --return to idle state
       end if;
 
-      if ((inp.op = opBase + F_Ld_Dbg_Count) and (inp.load = '1')) then
+      if (countLoad = '1') then         --if count loaded
        state <= idle;                   --restart with new counters
       end if;
 
@@ -145,4 +148,3 @@ begin
  end process freqCtr;
 
 end Behavioral;
-

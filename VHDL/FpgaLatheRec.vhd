@@ -18,6 +18,7 @@ end record riscvCtlRec;
 -- status register
 
 type statusRec is record
+ encoderDir    : std_logic;     --  9 0x200 'ED' encoder direction
  syncActive    : std_logic;     --  8 0x100 'SA' sync active
  spindleActive : std_logic;     --  7 0x080 'S+' spindle active
  stEStop       : std_logic;     --  6 0x040 'ES' emergency stop
@@ -59,7 +60,6 @@ end record axisInRec;
 -- output register
 
 type outputsRec is record
- outPin17 : std_logic;          --  2 0x4 pin 17
  outPin14 : std_logic;          --  1 0x2 pin 14
  outPin1  : std_logic;          --  0 0x1 pin 1
 end record outputsRec;
@@ -240,11 +240,10 @@ end record synCtlRec;
 -- spindle control register
 
 type spCtlRec is record
- spJogEnable : std_logic;       --  3 0x08 spindle jog enable
- spDir       : std_logic;       --  2 0x04 spindle direction
- spEna       : std_logic;       --  1 0x02 spindle enable
- spInit      : std_logic;       --  0 0x01 spindle init
- encClkShift : std_logic;       --  0 0x01 enc clock shift
+ spDir       : std_logic;       --  2 0x4 spindle direction
+ spEna       : std_logic;       --  1 0x2 spindle enable
+ spInit      : std_logic;       --  0 0x1 spindle init
+ encClkShift : std_logic;       --  0 0x1 enc clock shift
 end record spCtlRec;
 
 end package FpgaLatheBitsRec;

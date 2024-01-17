@@ -15,9 +15,9 @@ entity SPI is
   din   : in std_logic;                 --spi data in
   op    : out unsigned(opb-1 downto 0) := (others => '0'); --op code
   copy  : out std_logic := '0';         --copy data to be shifted out
-  shift : out std_logic := '0';         --shift data
-  load  : out std_logic := '0';         --load data shifted in
-  spiActive : out std_logic := '0'
+  shift : out std_logic := '0'          --shift data
+  -- load  : out std_logic := '0'          --load data shifted in
+  -- spiActive : out std_logic := '0'
   --info : out std_logic_vector(2 downto 0) --state info
   );
 end SPI;
@@ -81,16 +81,16 @@ begin
 
     when idle =>
      shift <= '0';
-     load <= '0';
+     -- load <= '0';
      copy <= '0';
      if (dselEna) then
-      spiActive <= '1';
+      -- spiActive <= '1';
       msgData <= false;
       opReg <= (opb-1 downto 0 => '0');
       count <= opb;
       state <= read_hdr;
      else
-      spiActive <= '0';
+      -- spiActive <= '0';
      end if;
 
     when read_hdr =>
@@ -124,7 +124,7 @@ begin
      if (dselDis) then
       if (msgdata) then
        msgData <= false;
-       load <= '1';
+       -- load <= '1';
        state <= load_reg;
       end if;
      else
@@ -140,7 +140,7 @@ begin
      state <= active;
  
     when load_reg =>
-     load <= '0';
+     -- load <= '0';
      op <= to_unsigned(0, opb);
      state <= idle;
 

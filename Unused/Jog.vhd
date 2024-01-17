@@ -94,27 +94,8 @@ begin
               n =>      DistBits)
   port map (
    clk  => clk,
-   -- din =>   din,
-   -- op =>    op,
-   -- shift => dshift,
    inp  => inp,
    data => backlashDist);
-
- -- dout <= posDout;
-
- -- LocShiftOut : ShiftOutNS
- --  generic map(opVal => opBase + F_Rd_Dro,
- --              opBits => opBits,
- --              n => droBits,
- --              outBits => outBits)
- --  port map (
- --   clk => clk,
- --   dshift => dshiftR,
- --   op => opR,
- --   copy => copyR,
- --   data => posVal,
- --   dout => posDout
- --   );
 
  jogProc : process(clk)
   variable quadState : std_logic_vector(3 downto 0);

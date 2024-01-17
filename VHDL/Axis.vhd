@@ -35,13 +35,13 @@ entity Axis is
   extDone    : in std_logic;
 
   ch         : in std_logic;
-  encDir     : in std_logic;
+  -- encDir     : in std_logic;
   sync       : in std_logic;
 
   droQuad    : in std_logic_vector(1 downto 0);
   axisIn     : in axisInRec;
 
-  currentDir : in std_logic;
+  -- currentDir : in std_logic;
   eStop      : in std_logic;
 
   dbg        : out AxisDbg;
@@ -61,6 +61,7 @@ architecture Behavioral of Axis is
 
  signal axisCtlReg : axisCtlVec;
  signal axisCtlR   : axisCtlRec;
+ signal syncCtlR   : syncCtlRec;
 
  signal axisCtlRdReg : unsigned(axisctlSize-1 downto 0);
 
@@ -70,12 +71,12 @@ architecture Behavioral of Axis is
  signal runInit    : std_logic;
  signal runEna     : std_logic;
  signal locDisable : std_logic := '0';
- 
+
  signal encActive  : std_logic := '0';
 
  signal movDone    : std_logic;
 
- signal curDir     : std_logic;
+ -- signal curDir     : std_logic;
  signal synDirOut  : std_logic;
  signal synStepOut : std_logic;
  signal step       : std_logic;
@@ -128,11 +129,20 @@ begin
    inp  => inp,
    data => axisCtlReg);
 
-  axisCtlR <= axisCtlToRec(axisCtlReg);
+ axisCtlR <= axisCtlToRec(axisCtlReg);
+
+ syncCtlR.ctlChDirect  <= axisCtlR.ctlChDirect;
+ syncCtlR.ctlDroEnd    <= axisCtlR.ctlDroEnd;
+ syncCtlR.ctlDistMode  <= axisCtlR.ctlDistMode;
+ syncCtlR.ctlDir       <= axisCtlR.ctlDir;
+ syncCtlR.ctlHome      <= axisCtlR.ctlHome;
+ syncCtlR.ctlHomePol   <= axisCtlR.ctlHomePol;
+ syncCtlR.ctlProbe     <= axisCtlR.ctlProbe;
+ syncCtlR.ctlUseLimits <= axisCtlR.ctlUseLimits;
 
  AxCtlRegRd : entity work.ShiftOutN
   generic map(opVal   => opBase + F_Rd_Axis_Ctl,
-              n       => axisCtlSize,              
+              n       => axisCtlSize,
               outBits => outBits)
   port map (
    clk  => clk,
@@ -143,7 +153,7 @@ begin
 
  axisCtlRdReg <= unsigned(axisCtlToVec(axisCtlR));
 
- curDir <= currentDir;
+ -- curDir <= currentDir;
  dirOut  <= synDirOut;
 
  AxisSyncAccel : entity work.SyncAccelDist
@@ -167,12 +177,12 @@ begin
    extDone    => extDone,
    ch         => ch,
 
-   curDir     => curDir,
+   -- curDir     => curDir,
    locDisable => locDisable,
 
    droQuad    => droQuad,
    axisIn     => axisIn,
-   axisCtl    => axisCtlR,
+   axisCtl    => SyncCtlR,
    axisStat   => axisStatusR,
 
    dbg        => dbg.sync,
@@ -201,7 +211,7 @@ begin
 
  initOut   <= axisInit;
  enaOut    <= axisEna;
- 
+
  stepOut <= step;
 
  z_run: process(clk)
@@ -211,7 +221,7 @@ begin
    if (ch = '1') then                   --if encoder pulse
     encActive <= '1';                   --set to active
    end if;
-   
+
    if (eStop = '1') then                --if emergency stop
     axisEna  <= '0';                    --stop axis
     runState <= idle;                   --set idle state
@@ -250,7 +260,7 @@ begin
         runState   <= run;              --advance to run state
        end if;
       end if;
-      
+
      when run =>                        --run state
       if (axisCtlR.ctlStart = '0') then
        runState <= idle;                --return to idle

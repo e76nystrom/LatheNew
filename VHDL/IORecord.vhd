@@ -11,10 +11,10 @@ package IORecord is
   dIn   : std_logic;
   shift : std_logic;
   op    : unsigned(opb-1 downto 0);
-  load  : std_logic;
  end record DataInp;
 
- constant dataInpInit : DataInp := (dIn => '0', shift => '0', op => (others =>'0'), load => '0');
+ constant dataInpInit : DataInp := (dIn => '0', shift => '0',
+                                    op => (others =>'0'));
 
  type DataOut is record
   shift : std_logic;
@@ -22,7 +22,19 @@ package IORecord is
   copy  : std_logic;
  end record DataOut;
 
- constant dataOutInit : DataOut := (shift => '0', op => (others => '0'), copy => '0');
+ constant dataOutInit : DataOut := (shift => '0', op => (others => '0'),
+                                    copy => '0');
+
+ type SyncCtlRec is record
+  ctlChDirect  : std_logic;
+  ctlDroEnd    : std_logic;
+  ctlDistMode  : std_logic;
+  ctlDir       : std_logic;
+  ctlHome      : std_logic;
+  ctlHomePol   : std_logic;
+  ctlProbe     : std_logic;
+  ctlUseLimits : std_logic;
+ end record SyncCtlRec;
 
  type SyncData is record
   dist       : std_logic;
