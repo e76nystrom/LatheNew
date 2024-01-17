@@ -26,8 +26,9 @@ Sim/wlf*
 Sim/work
 Sim/neorv32/*
 VHDL/greybox_tmp
-
-
 *.log
-
 Sim/transcript
+neorv32/core
+neorv32-1/core
+*.mti
+
