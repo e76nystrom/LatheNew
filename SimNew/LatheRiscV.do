@@ -2,7 +2,6 @@ onerror {resume}
 quietly WaveActivateNextPane {} 0
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/neorv32_top_inst/imem_req
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/neorv32_top_inst/memory_system/neorv32_int_imem_inst_true/neorv32_int_imem_inst/addr
-add wave -noupdate /a_lathetoptestriscv/LatheTopSim/neorv32_top_inst/memory_system/neorv32_int_imem_inst_true/neorv32_int_imem_inst/mem_rom_rd
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/neorv32_top_inst/memory_system/neorv32_int_imem_inst_true/neorv32_int_imem_inst/rdata
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/neorv32_top_inst/memory_system/neorv32_int_imem_inst_true/neorv32_int_imem_inst/rden
 add wave -noupdate /a_lathetoptestriscv/aux(6)
@@ -15,7 +14,6 @@ add wave -noupdate -color Coral /a_lathetoptestriscv/LatheTopSim/interfaceProc/s
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/interfaceProc/sCount
 add wave -noupdate -color Yellow /a_lathetoptestriscv/LatheTopSim/interfaceProc/recv
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/interfaceProc/shiftOut
-add wave -noupdate -divider RunCtl
 add wave -noupdate -divider AxisCtl
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxCtlReg/data
 add wave -noupdate /a_lathetoptestriscv/LatheTopSim/latheInt/latheCtlProc/z_Axis/AxCtlReg/sreg
@@ -79,4 +77,4 @@ configure wave -griddelta 40
 configure wave -timeline 0
 configure wave -timelineunits ns
 update
-WaveRestoreZoom {0 ps} {210 us}
+WaveRestoreZoom {0 ps} {105 us}

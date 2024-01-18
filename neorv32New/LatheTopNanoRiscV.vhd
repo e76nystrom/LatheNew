@@ -15,23 +15,18 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity LatheTop is
- generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency
-          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- insturction mem bytes
-          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- data memory  bytes
-          ledPins           : positive := 2;
-          dbgPins           : positive := 8;
-          outPins           : positive := 4;
-          extPins           : positive := 3;
-          bufPins           : positive := 4;
-          inputPins         : positive := inputsSize);
+ generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
+          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- size of processor-internal instruction memory in bytes
+          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
+          ledPins   : positive := 8;
+          dbgPins   : positive := 8;
+          inputPins : positive := inputsSize);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
-  
+
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
-  ledX     : out std_ulogic := '0';
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
-  xOut     : out std_ulogic_vector(outPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -53,12 +48,13 @@ entity LatheTop is
 
   pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
-  aux      : out std_logic_vector(7 downto 0);
+  xDbg     : out std_ulogic_vector(4 downto 0);
+  -- aux      : out std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(extPins-1 downto 0) := (others => '0');
-  bufOut   : out std_logic_vector(bufPins-1 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0)  := (others => '0');
+  bufOut   : out std_logic_vector(3 downto 0)  := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0';
@@ -72,7 +68,7 @@ entity LatheTop is
 
   -- GPIO --
   -- gpio_o      : out std_ulogic_vector(7 downto 0); -- parallel output
-  
+
   -- UART0 --
   dbg_txd_o : out std_ulogic; -- UART0 send data
   dbg_rxd_i : in  std_ulogic; -- UART0 receive data
@@ -166,7 +162,7 @@ architecture Behavioral of LatheTop is
 
 begin
 
- cfs_pins_i <= std_ulogic_vector(sink & riscvCtlToVec(riscvCtlReg) & pinInLathe);
+ cfs_pins_i <= sink & std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
  mpgQuad.zQuad <= zMpg;
  mpgQuad.xQuad <= xMpg;
@@ -180,10 +176,11 @@ begin
    );
 
  pllClock : entity work.Clock
-  port map ( 
+  port map (
    clockIn  => sysClk,
    clockOut => sysClkOut
-   ); 
+   );
+
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -196,7 +193,7 @@ begin
    CPU_EXTENSION_RISCV_B        => true,
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
-   CPU_EXTENSION_RISCV_Zicntr   => true,
+   -- CPU_EXTENSION_RISCV_Zicntr   => true,
    -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
@@ -204,10 +201,6 @@ begin
    -- Internal Data memory --
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
-
-   IO_NEOLED_EN                 => true,
-   IO_NEOLED_TX_FIFO            => 16,
-
    IO_CFS_EN                    => true,
    inputPins                    => 1 + riscvCtlSize + inputsSize,
    -- Processor peripherals --
@@ -231,16 +224,13 @@ begin
 
    cfs_in_i    => cfs_in_i,
    cfs_out_o   => cfs_out_o,
+   cfs_dbg_o   => xDbg(4-1 downto 0),
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
-   
+
    cfs_mpg_i   => mpgQuad,
    cfs_pins_i  => cfs_pins_i,
-
-   cfs_dbg_o   => xOut,
-
-   neoled_o    => ledX,
 
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
@@ -265,9 +255,10 @@ begin
    );
 
  -- GPIO output --
- aux(7) <= riscVCtlReg.riscVData;
- aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
+  -- aux <= con_gpio_o(7 downto 0);
+ xDbg(4) <= riscVCtlReg.riscVData;
+ -- xDbg(3 downto 0) <= con_gpio_o(3 downto 0);
+ -- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
 
  -- riscvCtl.active <= riscVCtlReg.riscvData;
 
@@ -293,7 +284,7 @@ begin
   clk        => sysClkOut,
   we         => cfs_we_o,
   reg        => cfs_reg_o,
-  
+
   CFSDataIn  => cfs_out_o,
   CFSDataOut => cfs_in_i,
 

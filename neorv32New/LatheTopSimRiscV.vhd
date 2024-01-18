@@ -5,7 +5,6 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
-
 use neorv32.MpgRecord.all;
 
 use work.IORecord.all;
@@ -14,24 +13,22 @@ use work.RiscvDataRec.all;
 use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
-entity LatheTop is
- generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency
-          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- insturction mem bytes
-          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- data memory  bytes
-          ledPins           : positive := 2;
-          dbgPins           : positive := 8;
-          outPins           : positive := 4;
-          extPins           : positive := 3;
-          bufPins           : positive := 4;
-          inputPins         : positive := inputsSize);
+entity LatheTopSimRiscV is
+ generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
+          MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
+          MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
+          ledPins   : positive := 8;
+          dbgPins   : positive := 8;
+          inputPins : positive := inputsSize;
+	  xOutPins  : positive := 4
+	  );
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
-  
+
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
-  ledX     : out std_ulogic := '0';
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
-  xOut     : out std_ulogic_vector(outPins-1 downto 0) := (others => '0');
+  xOut     : out std_logic_vector(xOutPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
@@ -57,34 +54,31 @@ entity LatheTop is
   -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(extPins-1 downto 0) := (others => '0');
-  bufOut   : out std_logic_vector(bufPins-1 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
+
+  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
-  xDoneInt : out std_logic := '0';
+  xDoneInt : out std_logic := '0'
 
   -- JTAG on-chip debugger interface --
-  jtag_trst_i : in  std_ulogic; -- low-active TAP reset (optional)
-  jtag_tck_i  : in  std_ulogic; -- serial clock
-  jtag_tdi_i  : in  std_ulogic; -- serial data input
-  jtag_tdo_o  : out std_ulogic; -- serial data output
-  jtag_tms_i  : in  std_ulogic; -- mode select
+  -- jtag_trst_i : in  std_ulogic; -- low-active TAP reset (optional)
+  -- jtag_tck_i  : in  std_ulogic; -- serial clock
+  -- jtag_tdi_i  : in  std_ulogic; -- serial data input
+  -- jtag_tdo_o  : out std_ulogic; -- serial data output
+  -- jtag_tms_i  : in  std_ulogic; -- mode select
 
   -- GPIO --
   -- gpio_o      : out std_ulogic_vector(7 downto 0); -- parallel output
-  
-  -- UART0 --
-  dbg_txd_o : out std_ulogic; -- UART0 send data
-  dbg_rxd_i : in  std_ulogic; -- UART0 receive data
 
-  -- UART1 --
-  rem_txd_o : out std_ulogic; -- UART1 send data
-  rem_rxd_i : in  std_ulogic  -- UART1 receive data
+  -- UART0 --
+  -- dbg_txd_o : out std_ulogic; -- UART0 send data
+  -- dbg_rxd_i : in  std_ulogic  -- UART0 receive data
 
   );
-end LatheTop;
+end LatheTopSimRiscV;
 
-architecture Behavioral of LatheTop is
+architecture Behavorial of LatheTopSimRiscV is
 
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
@@ -107,7 +101,7 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of xMpg : signal is true;
 
  attribute syn_keep of pinIn  : signal is true;
- -- attribute syn_keep of aux    : signal is true;
+ attribute syn_keep of aux    : signal is true;
  attribute syn_keep of pinOut : signal is true;
  attribute syn_keep of extOut : signal is true;
  attribute syn_keep of bufOut : signal is true;
@@ -115,17 +109,14 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of zDoneInt : signal is true;
  attribute syn_keep of xDoneInt : signal is true;
 
- attribute syn_keep of jtag_trst_i : signal is true;
- attribute syn_keep of jtag_tck_i  : signal is true;
- attribute syn_keep of jtag_tdo_o  : signal is true;
- attribute syn_keep of jtag_tms_i  : signal is true;
- attribute syn_keep of jtag_tdi_i  : signal is true;
+ -- attribute syn_keep of jtag_trst_i : signal is true;
+ -- attribute syn_keep of jtag_tck_i  : signal is true;
+ -- attribute syn_keep of jtag_tdo_o  : signal is true;
+ -- attribute syn_keep of jtag_tms_i  : signal is true;
+ -- attribute syn_keep of jtag_tdi_i  : signal is true;
 
- attribute syn_keep of dbg_txd_o : signal is true;
- attribute syn_keep of dbg_rxd_i : signal is true;
-
- attribute syn_keep of rem_txd_o : signal is true;
- attribute syn_keep of rem_rxd_i : signal is true;
+ -- attribute syn_keep of dbg_txd_o : signal is true;
+ -- attribute syn_keep of dbg_rxd_i : signal is true;
 
  signal sysClkOut  : std_logic;
 
@@ -156,6 +147,7 @@ architecture Behavioral of LatheTop is
 
  signal debug      : InterfaceDbg;
  signal sink       : std_logic;
+ signal extDout    : std_logic;
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
@@ -168,7 +160,10 @@ begin
 
  cfs_pins_i <= std_ulogic_vector(sink & riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
- mpgQuad.zQuad <= zMpg;
+-- mpgQuad.zQuad <= zMpg;
+ mpgQuad.zQuad(0) <= con_gpio_o(0);
+ mpgQuad.zQuad(1) <= con_gpio_o(1);
+
  mpgQuad.xQuad <= xMpg;
 
  dbgsetup : entity work.DbgMap
@@ -180,23 +175,22 @@ begin
    );
 
  pllClock : entity work.Clock
-  port map ( 
+  port map (
    clockIn  => sysClk,
    clockOut => sysClkOut
-   ); 
+   );
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
    -- General --
-   CLOCK_FREQUENCY              => CLOCK_FREQUENCY,
-   INT_BOOTLOADER_EN            => true,
+   CLOCK_FREQUENCY              => 50000000,
+   INT_BOOTLOADER_EN            => false,
    -- On-Chip Debugger (OCD) --
-   ON_CHIP_DEBUGGER_EN          => true,
+   ON_CHIP_DEBUGGER_EN          => false,
    -- RISC-V CPU Extensions --
-   CPU_EXTENSION_RISCV_B        => true,
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
-   CPU_EXTENSION_RISCV_Zicntr   => true,
+   -- CPU_EXTENSION_RISCV_Zicntr   => true,
    -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
@@ -204,26 +198,15 @@ begin
    -- Internal Data memory --
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
-
-   IO_NEOLED_EN                 => true,
-   IO_NEOLED_TX_FIFO            => 16,
-
    IO_CFS_EN                    => true,
    inputPins                    => 1 + riscvCtlSize + inputsSize,
+   xOutPIns                     => xOutPins,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
-
-   IO_UART0_EN                  => true,
-   IO_UART0_RX_FIFO             => 1,
-   IO_UART0_TX_FIFO             => 1024,
-
-   IO_UART1_EN                  => true,
-   IO_UART1_RX_FIFO             => 128,
-   IO_UART1_TX_FIFO             => 128,
-
-   IO_SPI_EN                    => true,
-   IO_SPI_FIFO                  => 1
+   IO_UART0_EN                  => false,
+   IO_SPI_EN                    => true, -- implement serial peripheral interface (SPI)?
+   IO_SPI_FIFO                  => 1     -- RTX fifo depth, has to be a power of two, min 1
    )
   port map (
    clk_i       => sysClkOut,
@@ -234,42 +217,37 @@ begin
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
-   
+
    cfs_mpg_i   => mpgQuad,
    cfs_pins_i  => cfs_pins_i,
 
-   cfs_dbg_o   => xOut,
+   -- jtag_trst_i => jtag_trst_i,
+   -- jtag_tck_i  => jtag_tck_i,
+   -- jtag_tdi_i  => jtag_tdi_i,
+   -- jtag_tdo_o  => jtag_tdo_o,
+   -- jtag_tms_i  => jtag_tms_i,
 
-   neoled_o    => ledX,
-
-   jtag_trst_i => jtag_trst_i,
-   jtag_tck_i  => jtag_tck_i,
-   jtag_tdi_i  => jtag_tdi_i,
-   jtag_tdo_o  => jtag_tdo_o,
-   jtag_tms_i  => jtag_tms_i,
-
- -- SPI (available if IO_SPI_EN = true) --
+   -- SPI (available if IO_SPI_EN = true) --
 
    spi_csn_o => spiCS,      -- chip-select
    spi_clk_o => spiDClk,    -- SPI serial clock
    spi_dat_o => spiDin,     -- controller data out, peripheral data in
-   spi_dat_i => riscvDout,  -- controller data in, peripheral data out
+   spi_dat_i => extDout,    -- controller data in, peripheral data out
 
-   uart0_txd_o => dbg_txd_o,
-   uart0_rxd_i => dbg_rxd_i,
-
-   uart1_txd_o => rem_txd_o,
-   uart1_rxd_i => rem_rxd_i,
+   -- uart0_txd_o => dbg_txd_o,
+   -- uart0_rxd_i => dbg_rxd_i,
 
    gpio_o      => con_gpio_o
    );
 
  -- GPIO output --
+ -- aux <= con_gpio_o(7 downto 0);
  aux(7) <= riscVCtlReg.riscVData;
- aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
+ aux(6) <= con_gpio_o(7);
+ aux(5) <= con_gpio_o(6);
+ aux(4 downto 0) <= std_logic_vector(riscvCtl.op(4 downto 0));
 
- -- riscvCtl.active <= riscVCtlReg.riscvData;
+ riscvCtl.active <= riscvCtlReg.riscvData;
 
  latheDSel <=  spiCS(0) when riscVCtlReg.riscVSPI = '1' else dsel;
  latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
@@ -279,12 +257,11 @@ begin
   port map (
    clk  => sysClkOut,
    data => data,
-   dout => riscvDout
+   dout => extDout
    );
 
- dOut <= riscvDout when ((riscVCtlReg.riscVSPI = '0') and
-                         (riscVCtlReg.riscVData = '0')) else '0';
- riscvData.data <= riscvDout when riscVCtlReg.riscVData = '1' else '0';
+ dOut <= extDout;
+ riscvData.data <= extDout;
 
  interfaceProc : entity work.CFSInterface
  generic map (lenBits  => 8,
@@ -293,11 +270,11 @@ begin
   clk        => sysClkOut,
   we         => cfs_we_o,
   reg        => cfs_reg_o,
-  
+
   CFSDataIn  => cfs_out_o,
   CFSDataOut => cfs_in_i,
 
-  riscvCtl   => riscvCtlReg,
+  riscVCtl   => riscVCtlReg,
 
   latheData  => riscvData,
   latheCtl   => riscvCtl,
@@ -323,6 +300,10 @@ begin
    din      => latheDin,
    dout     => data,                    --extDout,
 
+   -- aIn      => con_gpio_o(0),--aIn,
+   -- bIn      => con_gpio_o(1),--bIn,
+   -- syncIn   => con_gpio_o(2),--syncIn,
+
    aIn      => aIn,
    bIn      => bIn,
    syncIn   => syncIn,
@@ -346,4 +327,4 @@ begin
    xDoneInt => xDoneInt
    );
 
-end Behavioral;
+end Behavorial;

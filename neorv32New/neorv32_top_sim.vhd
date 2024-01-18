@@ -43,6 +43,9 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+-- <
+use neorv32.MpgRecord.all;
+-- >
 
 entity neorv32_top is
   generic (
@@ -140,6 +143,10 @@ entity neorv32_top is
     IO_CFS_CONFIG              : std_ulogic_vector(31 downto 0) := x"00000000"; -- custom CFS configuration generic
     IO_CFS_IN_SIZE             : natural                        := 32;          -- size of CFS input conduit in bits
     IO_CFS_OUT_SIZE            : natural                        := 32;          -- size of CFS output conduit in bits
+    -- <
+    inputPins                    : positive := 13;
+    xOutPins                     : positive := 4;
+    -- >
     IO_NEOLED_EN               : boolean                        := false;       -- implement NeoPixel-compatible smart LED interface (NEOLED)?
     IO_NEOLED_TX_FIFO          : natural range 1 to 2**15       := 1;           -- NEOLED FIFO depth, has to be a power of two, min 1
     IO_GPTMR_EN                : boolean                        := false;       -- implement general purpose timer (GPTMR)?
@@ -237,6 +244,13 @@ entity neorv32_top is
     -- Custom Functions Subsystem IO (available if IO_CFS_EN = true) --
     cfs_in_i       : in  std_ulogic_vector(IO_CFS_IN_SIZE-1 downto 0) := (others => 'U'); -- custom CFS inputs conduit
     cfs_out_o      : out std_ulogic_vector(IO_CFS_OUT_SIZE-1 downto 0); -- custom CFS outputs conduit
+    -- <
+    cfs_we_o       : out std_ulogic := '0';
+    cfs_reg_o      : out std_ulogic_vector(2 downto 0) := (others => '0');
+    cfs_mpg_i      : in  MpgQuadRec;
+    cfs_pins_i     : in  std_ulogic_vector(inputPins-1 downto 0);
+    cfs_dbg_o      : out std_ulogic_vector(xOutPins-1 downto 0);
+    -- >
 
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line
@@ -787,7 +801,7 @@ begin
     -- Processor-Internal Instruction Memory (IMEM) -------------------------------------------
     -- -------------------------------------------------------------------------------------------
     neorv32_int_imem_inst_true:
-    if MEM_INT_IMEM_EN generate
+    if (MEM_INT_IMEM_EN = true) and (imem_size_c > 0) generate
       neorv32_int_imem_inst: entity neorv32.neorv32_imem
       generic map (
         IMEM_SIZE    => imem_size_c,
@@ -802,7 +816,7 @@ begin
     end generate;
 
     neorv32_int_imem_inst_false:
-    if not MEM_INT_IMEM_EN generate
+    if (MEM_INT_IMEM_EN = false) or (imem_size_c = 0) generate
       imem_rsp <= rsp_terminate_c;
     end generate;
 
@@ -810,7 +824,7 @@ begin
     -- Processor-Internal Data Memory (DMEM) --------------------------------------------------
     -- -------------------------------------------------------------------------------------------
     neorv32_int_dmem_inst_true:
-    if MEM_INT_DMEM_EN generate
+    if (MEM_INT_DMEM_EN = true) and (dmem_size_c > 0) generate
       neorv32_int_dmem_inst: entity neorv32.neorv32_dmem
       generic map (
         DMEM_SIZE => dmem_size_c
@@ -824,7 +838,7 @@ begin
     end generate;
 
     neorv32_int_dmem_inst_false:
-    if not MEM_INT_DMEM_EN generate
+    if (MEM_INT_DMEM_EN = false) or (dmem_size_c = 0) generate
       dmem_rsp <= rsp_terminate_c;
     end generate;
 
@@ -998,7 +1012,11 @@ begin
       generic map (
         CFS_CONFIG   => IO_CFS_CONFIG,
         CFS_IN_SIZE  => IO_CFS_IN_SIZE,
-        CFS_OUT_SIZE => IO_CFS_OUT_SIZE
+        -- <
+        CFS_OUT_SIZE => IO_CFS_OUT_SIZE,
+        inputPins    => inputPins,
+        xOutPins     => xOutPins
+       -- >
       )
       port map (
         clk_i       => clk_i,
@@ -1009,7 +1027,14 @@ begin
         clkgen_i    => clk_gen,
         irq_o       => firq.cfs,
         cfs_in_i    => cfs_in_i,
-        cfs_out_o   => cfs_out_o
+        -- <
+        cfs_out_O   => cfs_out_o,
+        cfs_we_o    => cfs_we_o,
+        cfs_reg_o   => cfs_reg_o,
+        cfs_dbg_o   => cfs_dbg_o,
+        cfs_mpg_i   => cfs_mpg_i,
+        cfs_pins_i  => cfs_pins_i
+        -- >
       );
     end generate;
 

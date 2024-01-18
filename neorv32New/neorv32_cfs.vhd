@@ -10,7 +10,7 @@
 -- # ********************************************************************************************* #
 -- # BSD 3-Clause License                                                                          #
 -- #                                                                                               #
--- # Copyright (c) 2024, Stephan Nolting. All rights reserved.                                     #
+-- # Copyright (c) 2023, Stephan Nolting. All rights reserved.                                     #
 -- #                                                                                               #
 -- # Redistribution and use in source and binary forms, with or without modification, are          #
 -- # permitted provided that the following conditions are met:                                     #
@@ -45,24 +45,39 @@ use ieee.numeric_std.all;
 
 library neorv32;
 use neorv32.neorv32_package.all;
+-- <
+use neorv32.mpgRecord.all;
+-- >
 
 entity neorv32_cfs is
   generic (
     CFS_CONFIG   : std_ulogic_vector(31 downto 0); -- custom CFS configuration generic
     CFS_IN_SIZE  : natural; -- size of CFS input conduit in bits
-    CFS_OUT_SIZE : natural  -- size of CFS output conduit in bits
+  -- <
+  CFS_OUT_SIZE : natural;        -- size of CFS output conduit in bits
+  inputPins    : positive;
+  xOutPins     : positive
+  -- >
   );
   port (
-    clk_i       : in  std_ulogic; -- global clock line
-    rstn_i      : in  std_ulogic; -- global reset line, low-active, use as async
-    bus_req_i   : in  bus_req_t; -- bus request
-    bus_rsp_o   : out bus_rsp_t := rsp_terminate_c; -- bus response
-    clkgen_en_o : out std_ulogic := '0'; -- enable clock generator
-    clkgen_i    : in  std_ulogic_vector(7 downto 0); -- "clock" inputs
-    irq_o       : out std_ulogic := '0'; -- interrupt request
-    cfs_in_i    : in  std_ulogic_vector(CFS_IN_SIZE-1 downto 0); -- custom inputs
-    cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0) := (others => '0') -- custom outputs
-  );
+   clk_i       : in  std_ulogic; -- global clock line
+   rstn_i      : in  std_ulogic; -- global reset line, low-active, use as async
+   bus_req_i   : in  bus_req_t;  -- bus request
+   bus_rsp_o   : out bus_rsp_t := rsp_terminate_c; -- bus response
+   clkgen_en_o : out std_ulogic := '0'; -- enable clock generator
+   clkgen_i    : in  std_ulogic_vector(7 downto 0); -- "clock" inputs
+   irq_o       : out std_ulogic := '0'; -- interrupt request
+   cfs_in_i    : in  std_ulogic_vector(CFS_IN_SIZE-1 downto 0); -- custom inputs
+   cfs_out_o   : out std_ulogic_vector(CFS_OUT_SIZE-1 downto 0) :=
+   (others => '0'); -- custom outputs
+   cfs_we_o    : out std_ulogic := '0';
+   cfs_reg_o   : out std_ulogic_vector(2 downto 0) := (others => '0');
+   cfs_dbg_o   : out std_ulogic_vector(xOutPins-1 downto 0):=
+   (others => '0'); -- debug output
+   cfs_mpg_i   : in  MpgQuadRec;
+   cfs_pins_i  : in  std_ulogic_vector(inputPins-1 downto 0)
+   -- >
+   );
 end neorv32_cfs;
 
 architecture neorv32_cfs_rtl of neorv32_cfs is
@@ -71,29 +86,70 @@ architecture neorv32_cfs_rtl of neorv32_cfs is
   type cfs_regs_t is array (0 to 3) of std_ulogic_vector(31 downto 0); -- just implement 4 registers for this example
   signal cfs_reg_wr : cfs_regs_t; -- interface registers for WRITE accesses
   signal cfs_reg_rd : cfs_regs_t; -- interface registers for READ accesses
+-- <
+ signal data : std_ulogic_vector(CFS_IN_SIZE-1 downto 0) := (others => '0');
+ signal dbg  : std_ulogic_vector(xOutPins-1 downto 0) := (others => '0');
+ 
+ constant divRange : integer := 50000-1;
+ signal divider    : integer range 0 to divRange := divRange;
+ signal millis     : unsigned(32-1 downto 0) := (others => '0');
 
+ signal msTick     : std_logic := '0';
+
+ constant mpgWidth : natural := 8;
+ constant mpgDepth : natural := 16;
+
+ constant dFill   : std_logic_vector(32-mpgWidth-2 downto 0) :=
+  (others => '0');
+ constant pinFill : std_ulogic_vector(32-inputPins-1 downto 0) :=
+  (others => '0');
+ constant dbgFill : std_ulogic_vector(32-xOutPins-1 downto 0) :=
+  (others => '0');
+
+ signal busAddr : std_ulogic_vector(6-1 downto 0);
+
+ constant rsvSel    : std_ulogic_vector(6-1 downto 0) := "000000";
+ constant ctlSel    : std_ulogic_vector(6-1 downto 0) := "000001";
+ constant dataSel   : std_ulogic_vector(6-1 downto 0) := "000010";
+ constant opSel     : std_ulogic_vector(6-1 downto 0) := "000011";
+ constant millisSel : std_ulogic_vector(6-1 downto 0) := "000100";
+ constant zMpgSel   : std_ulogic_vector(6-1 downto 0) := "000101";
+ constant xMpgSel   : std_ulogic_vector(6-1 downto 0) := "000110";
+ constant pinsSel   : std_ulogic_vector(6-1 downto 0) := "000111";
+ constant dbgSel    : std_ulogic_vector(6-1 downto 0) := "001000";
+
+ signal zEmpty : std_logic := '0';
+ signal zData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
+ signal reMpgZ : std_logic := '0';
+
+ signal xEmpty : std_logic := '0';
+ signal xData  : std_logic_vector(mpgWidth-1 downto 0) := (others => '0');
+ signal reMpgX : std_logic := '0';
+-- >
 begin
 
-  -- CFS Generics ---------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- In it's default version the CFS provides three configuration generics:
-  -- > CFS_IN_SIZE  - configures the size (in bits) of the CFS input conduit cfs_in_i
-  -- > CFS_OUT_SIZE - configures the size (in bits) of the CFS output conduit cfs_out_o
-  -- > CFS_CONFIG   - is a blank 32-bit generic. It is intended as a "generic conduit" to propagate
-  --                  custom configuration flags from the top entity down to this module.
+ -- CFS Generics ---------------------------------------------------------------------------
+ -- -------------------------------------------------------------------------------------------
+ -- In it's default version the CFS provides three configuration generics:
+ -- > CFS_IN_SIZE  - configures the size (in bits) of the CFS input conduit cfs_in_i
+ -- > CFS_OUT_SIZE - configures the size (in bits) of the CFS output conduit cfs_out_o
+ -- > CFS_CONFIG   - is a blank 32-bit generic. It is intended as a "generic conduit" to propagate
+ --                  custom configuration flags from the top entity down to this module.
 
 
-  -- CFS IOs --------------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- By default, the CFS provides two IO signals (cfs_in_i and cfs_out_o) that are available at the processor's top entity.
-  -- These are intended as "conduits" to propagate custom signals from this module and the processor top entity.
+ -- CFS IOs --------------------------------------------------------------------------------
+ -- -------------------------------------------------------------------------------------------
+ -- By default, the CFS provides two IO signals (cfs_in_i and cfs_out_o) that are available at the processor's top entity.
+ -- These are intended as "conduits" to propagate custom signals from this module and the processor top entity.
 
-  cfs_out_o <= (others => '0'); -- not used for this minimal example
+ -- cfs_out_o <= (others => '0'); -- not used for this minimal example
+ -- <
+ cfs_out_o <= data;
+ -- >
 
-
-  -- Reset System ---------------------------------------------------------------------------
-  -- -------------------------------------------------------------------------------------------
-  -- The CFS can be reset using the global rstn_i signal. This signal should be used as asynchronous reset and is active-low.
+ -- Reset System ---------------------------------------------------------------------------
+ -- -------------------------------------------------------------------------------------------
+ -- The CFS can be reset using the global rstn_i signal. This signal should be used as asynchronous reset and is active-low.
   -- Note that rstn_i can be asserted by a processor-external reset, the on-chip debugger and also by the watchdog.
   --
   -- Most default peripheral devices of the NEORV32 do NOT use a dedicated hardware reset at all. Instead, these units are
@@ -172,58 +228,145 @@ begin
   -- supported (and acknowledged) by this example. Sub-word write access will not alter any CFS register state and will cause
   -- a "bus store access" exception (with a "Device Timeout" qualifier as not ACK is generated in that case).
 
+
+ -- <
+ cfs_dbg_o <= dbg;
+
+ busAddr <= bus_req_i.addr(8-1 downto 2);
+
+ reMpgZ <= '1' when  (bus_req_i.rw = '0') and  (busAddr = zMpgSel)
+           else '0';
+
+ mpgZ : entity neorv32.Mpg
+  generic map(mpgDepth => mpgDepth,
+              mpgWidth => mpgWidth)
+  port map (
+   clk    => clk_i,
+   init   => rstn_i,
+   msTick => msTick,
+   re     => reMpgZ,
+   empty  => zEmpty,
+   mpg    => cfs_mpg_i.zQuad,
+   rData  => zData
+   );
+
+ reMpgX <= '1' when  (bus_req_i.rw = '0') and  (busAddr = xMpgSel)
+           else '0';
+
+ mpgX : entity neorv32.Mpg
+  generic map(mpgDepth => mpgDepth,
+              mpgWidth => mpgWidth)
+  port map (
+   clk    => clk_i,
+   init   => rstn_i,
+   msTick => msTick,
+   re     => reMpgX,
+   empty  => xEmpty,
+   mpg    => cfs_mpg_i.xQuad,
+   rData  => xData
+   );
+
+ divProcess : process(clk_i)
+ begin
+  if (rising_edge(clk_i)) then          --if clock active
+   -- msTick <= not msTick;
+   if (divider = 0) then
+    divider <= divRange;
+    millis <= millis + 1;
+    msTick <= '1';
+   else
+    divider <= divider - 1;
+    msTick <= '0';
+   end if;
+  end if;
+ end process;
+ -- >
+
   bus_access: process(rstn_i, clk_i)
   begin
-    if (rstn_i = '0') then
-      cfs_reg_wr(0)  <= (others => '0');
-      cfs_reg_wr(1)  <= (others => '0');
-      cfs_reg_wr(2)  <= (others => '0');
-      cfs_reg_wr(3)  <= (others => '0');
-      --
-      bus_rsp_o.ack  <= '0';
-      bus_rsp_o.err  <= '0';
-      bus_rsp_o.data <= (others => '0');
-    elsif rising_edge(clk_i) then -- synchronous interface for read and write accesses
-      -- transfer/access acknowledge --
-      bus_rsp_o.ack <= bus_req_i.stb;
+   if (rstn_i = '0') then
+    -- cfs_reg_wr(0) <= (others => '0');
+    -- cfs_reg_wr(1) <= (others => '0');
+    -- cfs_reg_wr(2) <= (others => '0');
+    -- cfs_reg_wr(3) <= (others => '0');
+    --
+    bus_rsp_o.ack  <= '0';
+    bus_rsp_o.err  <= '0';
+    bus_rsp_o.data <= (others => '0');
+   elsif rising_edge(clk_i) then -- synchronous interface for read and write accesses
+    -- transfer/access acknowledge --
+    bus_rsp_o.ack <= bus_req_i.stb;
 
-      -- tie to zero if not explicitly used --
-      bus_rsp_o.err <= '0';
+    -- tie to zero if not explicitly used --
+    bus_rsp_o.err <= '0';
 
-      -- defaults --
-      bus_rsp_o.data <= (others => '0'); -- the output HAS TO BE ZERO if there is no actual (read) access
+    -- defaults --
+    -- bus_rsp_o.data <= (others => '0'); -- the output HAS TO BE ZERO if there is no actual (read) acces
 
-      -- bus access --
-      if (bus_req_i.stb = '1') then -- valid access cycle, STB is high for one cycle
+    -- bus access --
+    if (bus_req_i.stb = '1') then -- valid access cycle, STB is high for one cycle
 
-        -- write access --
-        if (bus_req_i.rw = '1') then
-          if (bus_req_i.addr(7 downto 2) = "000000") then -- address size is fixed!
-            cfs_reg_wr(0) <= bus_req_i.data;
-          end if;
-          if (bus_req_i.addr(7 downto 2) = "000001") then
-            cfs_reg_wr(1) <= bus_req_i.data;
-          end if;
-          if (bus_req_i.addr(7 downto 2) = "000010") then
-            cfs_reg_wr(2) <= bus_req_i.data;
-          end if;
-          if (bus_req_i.addr(7 downto 2) = "000011") then
-            cfs_reg_wr(3) <= bus_req_i.data;
-          end if;
+     -- write access --
+     if (bus_req_i.rw = '1') then
+      -- <
+      cfs_we_o <= '1';
+      cfs_reg_o <= bus_req_i.addr(4 downto 2);
 
-        -- read access --
-        else
-          case bus_req_i.addr(7 downto 2) is -- address size is fixed!
-            when "000000" => bus_rsp_o.data <= cfs_reg_rd(0);
-            when "000001" => bus_rsp_o.data <= cfs_reg_rd(1);
-            when "000010" => bus_rsp_o.data <= cfs_reg_rd(2);
-            when "000011" => bus_rsp_o.data <= cfs_reg_rd(3);
-            when others   => bus_rsp_o.data <= (others => '0');
-          end case;
-        end if;
+      case busAddr is
+       when rsvSel    => data <= bus_req_i.data;
+       when ctlSel    => data <= bus_req_i.data;
+       when dataSel   => data <= bus_req_i.data;
+       when opsel     => data <= bus_req_i.data;
+       when millisSel => null;
+       when zMpgSel   => null;
+       when xMpgSel   => null;
+       when pinsSel   => null;
+       when dbgSel    => dbg <= bus_req_i.data(xOutPins-1 downto 0);
+       when others    => null;
+      end case;
+      -- >
+      -- if (bus_req_i.addr(7 downto 2) = "000000") then -- address size is fixed!
+      --   cfs_reg_wr(0) <= bus_req_i.data;
+      -- end if;
+      -- if (bus_req_i.addr(7 downto 2) = "000001") then
+      --   cfs_reg_wr(1) <= bus_req_i.data; -- some physical register, for example: data in/out fifo
+      -- end if;
+      -- if (bus_req_i.addr(7 downto 2) = "000010") then
+      --   cfs_reg_wr(2) <= bus_req_i.data; -- some physical register, for example: command fifo
+      -- end if;
+      -- if (bus_req_i.addr(7 downto 2) = "000011") then
+      --   cfs_reg_wr(3) <= bus_req_i.data; -- some physical register, for example: status register
+      -- end if;
 
-      end if;
+     -- read access --
+     else
+      -- case bus_req_i.addr(7 downto 2) is -- address size is fixed!
+      --   when "000000" => bus_rsp_o.data <= cfs_reg_rd(0);
+      --   when "000001" => bus_rsp_o.data <= cfs_reg_rd(1);
+      --   when "000010" => bus_rsp_o.data <= cfs_reg_rd(2);
+      --   when "000011" => bus_rsp_o.data <= cfs_reg_rd(3);
+      -- <
+      case busAddr is
+       when rsvSel    => bus_rsp_o.data <= data;
+       when ctlSel    => bus_rsp_o.data <= data;
+       when dataSel   => bus_rsp_o.data <= cfs_in_i;
+       when opsel     => bus_rsp_o.data <= data;
+       when millisSel => bus_rsp_o.data <= std_ulogic_vector(millis);
+       when zMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & zEmpty & zData);
+       when xMpgSel   => bus_rsp_o.data <= std_ulogic_vector(dFill & xEmpty & xData);
+       when pinsSel   => bus_rsp_o.data <= pinFill & cfs_pins_i;
+       when dbgSel    => bus_rsp_o.data <= dbgFill & dbg;    
+       -- >                   
+       when others    => bus_rsp_o.data <= (others => '0');
+      end case; 
+     end if;
+    -- <
+    else
+     bus_rsp_o.data <= (others => '0');
+     cfs_we_o <= '0';
+    -- >
     end if;
+   end if;
   end process bus_access;
 
 
@@ -234,10 +377,10 @@ begin
   -- The logic below is just a very simple example that transforms data
   -- from an input register into data in an output register.
 
-  cfs_reg_rd(0) <= bin_to_gray_f(cfs_reg_wr(0)); -- convert binary to gray code
-  cfs_reg_rd(1) <= gray_to_bin_f(cfs_reg_wr(1)); -- convert gray to binary code
-  cfs_reg_rd(2) <= bit_rev_f(cfs_reg_wr(2)); -- bit reversal
-  cfs_reg_rd(3) <= bswap32_f(cfs_reg_wr(3)); -- byte swap (endianness conversion)
+  -- cfs_reg_rd(0) <= bin_to_gray_f(cfs_reg_wr(0)); -- convert binary to gray code
+  -- cfs_reg_rd(1) <= gray_to_bin_f(cfs_reg_wr(1)); -- convert gray to binary code
+  -- cfs_reg_rd(2) <= bit_rev_f(cfs_reg_wr(2)); -- bit reversal
+  -- cfs_reg_rd(3) <= bswap32_f(cfs_reg_wr(3)); -- byte swap (endianness conversion)
 
 
 end neorv32_cfs_rtl;

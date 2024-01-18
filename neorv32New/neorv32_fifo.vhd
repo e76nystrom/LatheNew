@@ -71,17 +71,19 @@ architecture neorv32_fifo_rtl of neorv32_fifo is
 
   -- FIFO storage --
   type fifo_mem_t is array (0 to fifo_depth_c-1) of std_ulogic_vector(FIFO_WIDTH-1 downto 0);
-  signal fifo_mem : fifo_mem_t;
+  -- <
+  signal fifo_mem : fifo_mem_t := (others => (others => '0'));
+  -- >
 
   -- FIFO control --
   signal we,    re    : std_ulogic; -- write-/read-enable
-  signal w_pnt, r_pnt : std_ulogic_vector(index_size_f(fifo_depth_c) downto 0); -- write/read pointer
+  signal w_pnt, r_pnt : std_ulogic_vector(index_size_f(fifo_depth_c) downto 0) := (others => '0'); -- write/read pointer
 
   -- status --
   signal match, empty, full, half, free, avail : std_ulogic;
 
   -- fill level --
-  signal diff : std_ulogic_vector(index_size_f(fifo_depth_c) downto 0);
+  signal diff : std_ulogic_vector(index_size_f(fifo_depth_c) downto 0)  := (others => '0');
 
 begin
 
