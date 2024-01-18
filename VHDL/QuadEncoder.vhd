@@ -43,7 +43,7 @@ architecture Behavioral of QuadEncoder is
 
  signal last_a : std_logic_vector(1 downto 0) := (others => '0');
  signal last_b : std_logic_vector(1 downto 0) := (others => '0');
- signal last_dir : std_logic_vector(1 downto 0) := (others => '0');
+ -- signal last_dir : std_logic_vector(1 downto 0) := (others => '0');
  signal dirInt : std_logic := '0';
 
 begin
@@ -55,7 +55,7 @@ begin
   if (rising_edge(clk)) then
    last_a <= last_a(0) & a;
    last_b <= last_b(0) & b;
-   last_dir <= last_dir(0) & dirInt;
+   -- last_dir <= last_dir(0) & dirInt;
   end if;
  end process;
 

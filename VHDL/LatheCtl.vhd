@@ -53,8 +53,8 @@ entity LatheCtl is
 
   zDro     : in  std_logic_vector(1 downto 0);
   xDro     : in  std_logic_vector(1 downto 0);
-  zMpg     : in  std_logic_vector(1 downto 0);
-  xMpg     : in  std_logic_vector(1 downto 0);
+  -- zMpg     : in  std_logic_vector(1 downto 0);
+  -- xMpg     : in  std_logic_vector(1 downto 0);
 
   pinIn    : in  std_logic_vector(inputPins-1 downto 0);
 
@@ -92,8 +92,8 @@ architecture Behavioral of LatheCtl is
  signal cfgCtlReg : cfgCtlVec;
  signal cfgCtlR   : cfgCtlRec;
 
- signal spCtlReg : spCtlVec;
- signal spCtlR   : spCtlRec;
+ -- signal spCtlReg : spCtlVec;
+ -- signal spCtlR   : spCtlRec;
 
  -- quadrature encoder
 
@@ -240,6 +240,7 @@ begin
 
  direction <= (not cfgCtlR.cfgEncDirInv) when (cfgCtlR.cfgEnaEncDir = '0') else
               (encDir xor cfgCtlR.cfgEncDirInv);
+ statusR.encoderDir <= direction;
 
  inputs : entity work.ShiftOutN
   generic map (opVal   => F_Rd_Inputs,
@@ -296,16 +297,16 @@ begin
 
  cfgCtlR <= cfgCtlToRec(cfgCtlReg);
 
- spi_reg : entity work.CtlReg
-  generic map (opVal => F_Ld_Sp_Ctl,
-               n     => spCtlSize)
-  port map (
-   clk  => clk,
-   inp  => curW,
-   data => spCtlReg
-   );
+ -- spi_reg : entity work.CtlReg
+ --  generic map (opVal => F_Ld_Sp_Ctl,
+ --               n     => spCtlSize)
+ --  port map (
+ --   clk  => clk,
+ --   inp  => curW,
+ --   data => spCtlReg
+ --   );
 
- spCtlR <= spCtlToRec(spCtlReg);
+ -- spCtlR <= spCtlToRec(spCtlReg);
  
  -- quadrature encoder
 
@@ -342,11 +343,9 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    clk     => clk,
    inp     => curW,
    oRec    => curR,
-
    init    => synCtlR.synEncInit,
    ena     => synCtlR.synEncEna,
    ch      => encCh,
-
    dbg     => dbgEncScale,
    dout    => dout.encoder,
    active  => intActive,
@@ -414,16 +413,6 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    pulseOut => xFreqGen
    );
 
- spFreq_Gen : entity work.FreqGen
-  generic map (opVal => F_XAxis_Base + F_Ld_Freq,
-               freqBits => freqBits)
-  port map (
-   clk      => clk,
-   inp      => curW,
-   ena      => spCtlR.spEna,
-   pulseOut => spFreqGen
-   );
-
  dbgFreq_gen : entity work.FreqGenCtr
   generic map (opBase    => F_Dbg_Freq_Base,
                freqBits  => freqBits,
@@ -447,8 +436,9 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
  zDro_Sim : process(clk)
  begin
   if (rising_edge(clk)) then
-   zStepLast <= zAxisStep;
-   if ((zStepLast = '0') and (zAxisStep = '1')) then
+   -- zStepLast <= zAxisStep;
+   -- if ((zStepLast = '0') and (zAxisStep = '1')) then
+   if ((zDelayStep = '0') and (zAxisStep = '1')) then
     if (zAxisDir = '1') then
      case zDroPhase is
       when "00"   => zDroPhase <= "01";
@@ -520,12 +510,12 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    extDone    => intXDoneInt,
 
    ch         => zCh,
-   encDir     => direction,
+   -- encDir     => direction,
    sync       => sync,
 
    droQuad    => zAxisDro,
    axisIn     => zAxisIn,
-   currentDir => zCurrentDir,
+   -- currentDir => zCurrentDir,
    eStop      => eStop,
 
    dbg        => dbg.z,
@@ -558,8 +548,9 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
  xDro_Sim : process(clk)
  begin
   if (rising_edge(clk)) then
-   xStepLast <= xAxisStep;
-   if ((xStepLast = '0') and (xAxisStep = '1')) then
+   -- xStepLast <= xAxisStep;
+   -- if ((xStepLast = '0') and (xAxisStep = '1')) then
+   if ((xDelayStep = '0') and (xAxisStep = '1')) then
     if (xAxisDir = '1') then
      case xDroPhase is
       when "00"   => xDroPhase <= "01";
@@ -634,12 +625,12 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    extDone    => intZDoneInt,
 
    ch         => xCh,
-   encDir     => direction,
+   -- encDir     => direction,
    sync       => sync,
 
    droQuad    => xAxisDro,
    axisIn     => xAxisIn,
-   currentDir => xCurrentDir,
+   -- currentDir => xCurrentDir,
    eStop      => eStop,
 
    dbg        => dbg.x,
@@ -686,6 +677,7 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
                synBits   => synBits,
                posBits   => posBits,
                countBits => countBits,
+               freqBits  => freqBits,
                outBits   => outBits)
   port map (
    clk => clk,
@@ -694,12 +686,13 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    oRec      => curR,
    dout      => dout.spindle,
 
-   ch        => spFreqGen,
-   mpgQuad   => zMpg,
-   jogInvert => cfgCtlR.cfgZMpgInv,
+   -- ch        => spFreqGen,
+   -- mpgQuad   => zMpg,
+   -- jogInvert => cfgCtlR.cfgZMpgInv,
    eStop     => eStop,
    spActive  => statusR.spindleActive,
    stepOut   => spindleStep,
+   spFreqGen => spFreqGen,
    dirOut    => spindleDir
    );
 

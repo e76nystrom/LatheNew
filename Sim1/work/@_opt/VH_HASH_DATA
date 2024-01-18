@@ -1,0 +1,90 @@
+[N
+8
+2
+11 neorv32_cfs
+6
+12 CFS_OUT_SIZE
+1
+43 C:/Development/Altera/LatheNew/Sim1/neorv32
+8
+8 xOutPins
+5
+11 CFS_IN_SIZE
+4
+10 CFS_CONFIG
+3
+15 neorv32_cfs_rtl
+7
+9 inputPins
+]
+[G
+1
+2
+3
+1
+5
+1
+0
+32
+0
+0 0
+0
+0
+]
+[G
+1
+2
+3
+1
+6
+1
+0
+32
+0
+0 0
+0
+0
+]
+[G
+1
+2
+3
+1
+7
+1
+0
+17
+0
+0 0
+0
+0
+]
+[G
+1
+2
+3
+1
+8
+1
+0
+4
+0
+0 0
+0
+0
+]
+[G
+1
+2
+3
+1
+4
+0
+0
+0
+0
+32 1
+2
+0
+0
+]

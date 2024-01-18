@@ -21,12 +21,15 @@ entity LatheTop is
           ledPins           : positive := 2;
           dbgPins           : positive := 8;
           outPins           : positive := 4;
+          extPins           : positive := 3;
+          bufPins           : positive := 4;
           inputPins         : positive := inputsSize);
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_ulogic;         -- global reset, low-active, async
   
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
+  ledX     : out std_ulogic := '0';
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
   xOut     : out std_ulogic_vector(outPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
@@ -54,8 +57,8 @@ entity LatheTop is
   -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(2 downto 0) := (others => '0');
-  bufOut   : out std_logic_vector(3 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(extPins-1 downto 0) := (others => '0');
+  bufOut   : out std_logic_vector(bufPins-1 downto 0) := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0';
@@ -152,17 +155,18 @@ architecture Behavioral of LatheTop is
                                       riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
+ signal sink       : std_logic;
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
- signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+ signal cfs_pins_i : std_ulogic_vector(1 + riscvCtlSize + inputPins-1 downto 0);
 
  signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
  signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
 
- cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+ cfs_pins_i <= std_ulogic_vector(sink & riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
  mpgQuad.zQuad <= zMpg;
  mpgQuad.xQuad <= xMpg;
@@ -171,7 +175,8 @@ begin
   port map (
    clk   => sysClkOut,
    debug => debug,
-   dbg   => dbg
+   dbg   => dbg,
+   sink  => sink
    );
 
  pllClock : entity work.Clock
@@ -192,15 +197,19 @@ begin
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
    CPU_EXTENSION_RISCV_Zicntr   => true,
-   CPU_EXTENSION_RISCV_Zifencei => true,
+   -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
    MEM_INT_IMEM_SIZE            => MEM_INT_IMEM_SIZE,
    -- Internal Data memory --
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
+
+   IO_NEOLED_EN                 => true,
+   IO_NEOLED_TX_FIFO            => 16,
+
    IO_CFS_EN                    => true,
-   inputPins                    => riscvCtlSize + inputsSize,
+   inputPins                    => 1 + riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -230,6 +239,8 @@ begin
    cfs_pins_i  => cfs_pins_i,
 
    cfs_dbg_o   => xOut,
+
+   neoled_o    => ledX,
 
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
@@ -318,9 +329,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zMpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinInLathe,
 

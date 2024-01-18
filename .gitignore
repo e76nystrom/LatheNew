@@ -18,16 +18,18 @@ Proj/incremental_db
 Proj/output_files
 Proj/simulation
 Save/*
-Sim/*.mti
-Sim/*.vstf
-Sim/*.wlf
-Sim/db
-Sim/wlf*
-Sim/work
-Sim/neorv32/*
+Sim*/*.mti
+Sim*/*.vstf
+Sim*/*.wlf
+Sim*/db
+Sim*/wlf*
+Sim*/work
+Sim*/neorv32/*
 VHDL/greybox_tmp
-
-
 *.log
+Sim*/transcript
+# neorv32/core
+# neorv32New/core
+*.mti
+_*
 
-Sim/transcript

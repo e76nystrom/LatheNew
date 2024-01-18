@@ -151,17 +151,18 @@ architecture Behavioral of LatheTop is
                                       riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
+ signal sink       : std_logic;
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
- signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+ signal cfs_pins_i : std_ulogic_vector(1 + riscvCtlSize + inputPins-1 downto 0);
 
  signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
  signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
 
- cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+ cfs_pins_i <= sink & std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
  mpgQuad.zQuad <= zMpg;
  mpgQuad.xQuad <= xMpg;
@@ -170,7 +171,8 @@ begin
   port map (
    clk   => sysClkOut,
    debug => debug,
-   dbg   => dbg
+   dbg   => dbg,
+   sink  => sink
    );
 
  pllClock : entity work.Clock
@@ -183,7 +185,7 @@ begin
  neorv32_top_inst: entity work.neorv32_top
   generic map (
    -- General --
-   CLOCK_FREQUENCY              => 50000000,
+   CLOCK_FREQUENCY              => CLOCK_FREQUENCY,
    INT_BOOTLOADER_EN            => true,
    -- On-Chip Debugger (OCD) --
    ON_CHIP_DEBUGGER_EN          => true,
@@ -200,7 +202,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
-   inputPins                    => riscvCtlSize + inputsSize,
+   inputPins                    => 1 + riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -222,6 +224,7 @@ begin
 
    cfs_in_i    => cfs_in_i,
    cfs_out_o   => cfs_out_o,
+   cfs_dbg_o   => xDbg(4-1 downto 0),
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
@@ -240,7 +243,7 @@ begin
    spi_csn_o => spiCS,      -- chip-select
    spi_clk_o => spiDClk,    -- SPI serial clock
    spi_dat_o => spiDin,     -- controller data out, peripheral data in
-   spi_dat_i => riscvDout,    -- controller data in, peripheral data out
+   spi_dat_i => riscvDout,  -- controller data in, peripheral data out
 
    uart0_txd_o => dbg_txd_o,
    uart0_rxd_i => dbg_rxd_i,
@@ -254,7 +257,7 @@ begin
  -- GPIO output --
   -- aux <= con_gpio_o(7 downto 0);
  xDbg(4) <= riscVCtlReg.riscVData;
- xDbg(3 downto 0) <= con_gpio_o(3 downto 0);
+ -- xDbg(3 downto 0) <= con_gpio_o(3 downto 0);
  -- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
 
  -- riscvCtl.active <= riscVCtlReg.riscvData;
@@ -317,9 +320,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zMpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinInLathe,
 

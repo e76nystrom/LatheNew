@@ -120,12 +120,12 @@ begin
       shiftOut <= shiftOut(dataBits-2 downto 0) & shiftOut(databits-1);
      else
       latheCtl.shift <= '0';
-      latheCtl.load <= '1';
+      -- latheCtl.load <= '1';
       sendState <= sLoad;
      end if;
 
     when sLoad =>                       --load data
-     latheCtl.load <= '0';
+     -- latheCtl.load <= '0';
      send <= '0';
      latheCtl.op <= (others => '0');
      sendState <= sIdle;

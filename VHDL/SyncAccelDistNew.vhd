@@ -28,11 +28,11 @@ entity SyncAccelDist is
   ena        : in std_logic;            --enable operation
   extDone    : in std_logic;            --external done input
   ch         : in std_logic;            --step input clock
-  curDir     : in std_logic;            --current directin
+  -- curDir     : in std_logic;            --current directin
   locDisable : in std_logic;            --disable location update
 
   axisIn     : in  AxisInRec;           --axis input signals
-  axisCtl    : in  AxisCtlRec;          --axis control bits
+  axisCtl    : in  SyncCtlRec;          --axis control bits
   axisStat   : out axisStatusRec;       --axis status output
 
   droQuad    : in std_logic_vector(1 downto 0);

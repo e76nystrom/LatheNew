@@ -1,0 +1,2585 @@
+m255
+K4
+z2
+!s11e vcom 2023.1 2023.01, Jan 23 2023
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 dC:/Development/Altera/LatheNew/Sim1
+Efifo
+Z1 w1700299853
+Z2 DPx4 ieee 9 math_real 0 22 :8NNHF3SFI6^on5?4X[S`1
+Z3 DPx4 ieee 11 numeric_std 0 22 F8@]:i<mFK7<TjIzKcTGi0
+Z4 DPx3 std 6 textio 0 22 LS[?81n5ZHWBI9JkBZTV<2
+Z5 DPx4 ieee 14 std_logic_1164 0 22 6<US`=mgl_dFdCEFF7J=m1
+!i122 1
+R0
+Z6 8C:/Development/Altera/LatheNew/VHDL/Fifo.vhd
+Z7 FC:/Development/Altera/LatheNew/VHDL/Fifo.vhd
+l0
+L8 1
+VLbTjJ6KA2XH7JbzVYHmGb2
+!s100 ZC<]a2d<cQI2Ck`O=UK;23
+Z8 OL;C;2023.1;77
+32
+Z9 !s110 1705517836
+!i10b 1
+Z10 !s108 1705517836.000000
+Z11 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Fifo.vhd|
+Z12 !s107 C:/Development/Altera/LatheNew/VHDL/Fifo.vhd|
+!i113 0
+Z13 o-work neorv32 -2002 -explicit
+Z14 tExplicit 1 CvgOpt 0
+Abehavioral
+R2
+R3
+R4
+R5
+Z15 DEx4 work 4 fifo 0 22 LbTjJ6KA2XH7JbzVYHmGb2
+!i122 1
+l41
+L26 64
+V9_WmgXUhmgU?_TLV_Y@CF3
+!s100 0<onRJ]D6giZ25l6fZRHA3
+R8
+32
+R9
+!i10b 1
+R10
+R11
+R12
+!i113 0
+R13
+R14
+Empg
+Z16 w1705513753
+R2
+R3
+R4
+R5
+!i122 2
+R0
+Z17 8C:/Development/Altera/LatheNew/VHDL/Mpg.vhd
+Z18 FC:/Development/Altera/LatheNew/VHDL/Mpg.vhd
+l0
+L8 1
+VGbWoMRGmSUL8UC2:AVcz?1
+!s100 G[k20jfQ49bMMA]F5^X`h2
+R8
+32
+R9
+!i10b 1
+R10
+Z19 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/Mpg.vhd|
+Z20 !s107 C:/Development/Altera/LatheNew/VHDL/Mpg.vhd|
+!i113 0
+R13
+R14
+Abehavioral
+R15
+R2
+R3
+R4
+R5
+DEx4 work 3 mpg 0 22 GbWoMRGmSUL8UC2:AVcz?1
+!i122 2
+l43
+L25 74
+VMSa_[6nTMbNhNCoK5ZhRV1
+!s100 5dLmKCMWB9WOmeEZ=z;bK3
+R8
+32
+R9
+!i10b 1
+R10
+R19
+R20
+!i113 0
+R13
+R14
+Pmpgrecord
+R4
+R5
+!i122 0
+w1699725291
+R0
+8C:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd
+FC:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd
+l0
+L4 8
+Vl<b48=?hiFEH>DCZM;k;i0
+!s100 ZgFRc9RP0h`_b8H700VL31
+R8
+32
+R9
+!i10b 1
+R10
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd|
+!s107 C:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd|
+!i113 0
+R13
+R14
+Pneorv32_application_image
+R3
+Z21 DPx7 neorv32 15 neorv32_package 0 22 0bYk161z9K?`>73YHWe7<0
+R4
+R5
+!i122 3
+Z22 w1705514044
+R0
+Z23 8C:/Development/neorv32/rtl/core/neorv32_package.vhd
+Z24 FC:/Development/neorv32/rtl/core/neorv32_package.vhd
+l0
+L1219 3
+VOPd4GoFTV@[]6?]Ik?JGj0
+!s100 5cZb8EChk?kUbc9nZbmGz1
+R8
+32
+b1
+Z25 !s110 1705517837
+!i10b 1
+Z26 !s108 1705517837.000000
+Z27 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_package.vhd|
+Z28 !s107 C:/Development/neorv32/rtl/core/neorv32_package.vhd|
+!i113 0
+R13
+R14
+Bbody
+DPx4 work 25 neorv32_application_image 0 22 OPd4GoFTV@[]6?]Ik?JGj0
+R3
+R21
+R4
+R5
+!i122 45
+w1705501040
+8C:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd
+FC:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd
+l0
+L8 777
+V47V2E7`cLc3ZGoIYI6DL10
+!s100 eETDO>IPcIbRCDG1Yd0522
+R8
+32
+!s110 1705517842
+!i10b 1
+!s108 1705517842.000000
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd|
+!s107 C:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd|
+!i113 0
+R13
+R14
+Eneorv32_boot_rom
+R22
+Z29 DPx7 neorv32 24 neorv32_bootloader_image 0 22 @:[?E5QB]a?3c>dm:RmEU2
+R21
+R3
+R4
+R5
+!i122 12
+R0
+Z30 8C:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd
+Z31 FC:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd
+l0
+L43 1
+V@cGe?]IPS<XQe5:OdBI<z3
+!s100 XdnoRkYn1k0T39T_[V24h3
+R8
+32
+Z32 !s110 1705517838
+!i10b 1
+Z33 !s108 1705517838.000000
+Z34 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd|
+Z35 !s107 C:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd|
+!i113 0
+R13
+R14
+Aneorv32_boot_rom_rtl
+R29
+R21
+R3
+R4
+R5
+DEx4 work 16 neorv32_boot_rom 0 22 @cGe?]IPS<XQe5:OdBI<z3
+!i122 12
+l64
+L51 40
+ViUAdJGeU3iFARCm6kg@;d1
+!s100 WmKKg`dz]3Cmddn8PckRc2
+R8
+32
+R32
+!i10b 1
+R33
+R34
+R35
+!i113 0
+R13
+R14
+Pneorv32_bootloader_image
+R3
+R21
+R4
+R5
+!i122 3
+R22
+R0
+R23
+R24
+l0
+L1202 3
+V@:[?E5QB]a?3c>dm:RmEU2
+!s100 Eo5FfGk1W7RHzA6;j1][82
+R8
+32
+b1
+R25
+!i10b 1
+R26
+R27
+R28
+!i113 0
+R13
+R14
+Bbody
+DPx4 work 24 neorv32_bootloader_image 0 22 @:[?E5QB]a?3c>dm:RmEU2
+R3
+R21
+R4
+R5
+!i122 12
+8C:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd
+FC:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd
+l0
+L8 1325
+V@g=_DSoFNgNVdPE0J;B>h2
+!s100 zhD8bj<7N8BH8Jca011l62
+R8
+32
+R32
+!i10b 1
+R33
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd|
+!s107 C:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd|
+!i113 0
+R13
+R14
+Eneorv32_bus_gateway
+R22
+R21
+R3
+R4
+R5
+!i122 7
+R0
+Z36 8C:/Development/neorv32/rtl/core/neorv32_intercon.vhd
+Z37 FC:/Development/neorv32/rtl/core/neorv32_intercon.vhd
+l0
+L261 1
+V]4d98Mb3DB3lUL5eo]OcL2
+!s100 HY;?R_^ZJd`8_52ZJ<6KD0
+R8
+32
+R32
+!i10b 1
+R33
+Z38 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_intercon.vhd|
+Z39 !s107 C:/Development/neorv32/rtl/core/neorv32_intercon.vhd|
+!i113 0
+R13
+R14
+Aneorv32_bus_gateway_rtl
+R21
+R3
+R4
+R5
+DEx4 work 19 neorv32_bus_gateway 0 22 ]4d98Mb3DB3lUL5eo]OcL2
+!i122 7
+l333
+L310 162
+VgRJaPNf5n^ab?X0>ZG:N`0
+!s100 IPAH1EUkG886n3L7gXNO@3
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Eneorv32_bus_io_switch
+R22
+R21
+R3
+R4
+R5
+!i122 7
+R0
+R36
+R37
+l0
+L521 1
+Vboe3HTgh6gD@OX;eU0Ofn1
+!s100 M@R4[W6kXcVnTa0e7GgNo3
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Aneorv32_bus_io_switch_rtl
+R21
+R3
+R4
+R5
+DEx4 work 21 neorv32_bus_io_switch 0 22 boe3HTgh6gD@OX;eU0Ofn1
+!i122 7
+l628
+L576 124
+Vl[TOZLF]@UD7clIIfkOY60
+!s100 lHK]8D`b8V?S7aGA=^e7o0
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Eneorv32_bus_reservation_set
+R22
+R21
+R3
+R4
+R5
+!i122 7
+R0
+R36
+R37
+l0
+L751 1
+V1nCfHV7_7F:fZSW>ce44<2
+!s100 Nd06@zolIORcf=AzMG1En2
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Aneorv32_bus_reservation_set_rtl
+R21
+R3
+R4
+R5
+DEx4 work 27 neorv32_bus_reservation_set 0 22 1nCfHV7_7F:fZSW>ce44<2
+!i122 7
+l789
+L772 122
+VmTFFdJ5eLFVS?jT]GPBz`0
+!s100 bGM:RiN1<L[L:;P32z^6X1
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Eneorv32_bus_switch
+R22
+R21
+R3
+R4
+R5
+!i122 7
+R0
+R36
+R37
+l0
+Z40 L45 1
+VO8XkPi^W>_?gH4DACVL@>0
+!s100 G2:Hi8]<IUX2iTGBgi5AC3
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Aneorv32_bus_switch_rtl
+R21
+R3
+R4
+R5
+DEx4 work 18 neorv32_bus_switch 0 22 O8XkPi^W>_?gH4DACVL@>0
+!i122 7
+l86
+L62 141
+VR0deO@d3FZJ6zo1>k_A=_0
+!s100 `MamYzBN<MHmPNPlGlcmk0
+R8
+32
+R32
+!i10b 1
+R33
+R38
+R39
+!i113 0
+R13
+R14
+Eneorv32_cfs
+Z41 w1705518334
+Z42 DPx7 neorv32 9 mpgrecord 0 22 l<b48=?hiFEH>DCZM;k;i0
+R21
+R3
+R4
+R5
+!i122 45
+R0
+Z43 8C:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd
+Z44 FC:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd
+l0
+Z45 L52 1
+VU2i7Ez5l^AKKc>MGjWSi:1
+!s100 ^nlZ3?dKE8ZZe^U;27K1d3
+R8
+32
+Z46 !s110 1705518378
+!i10b 1
+Z47 !s108 1705518378.000000
+Z48 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd|
+Z49 !s107 C:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cfs_rtl
+R2
+Z50 DEx7 neorv32 3 mpg 0 22 GbWoMRGmSUL8UC2:AVcz?1
+R42
+R21
+R3
+R4
+R5
+Z51 DEx4 work 11 neorv32_cfs 0 22 U2i7Ez5l^AKKc>MGjWSi:1
+!i122 45
+l128
+Z52 L86 290
+V21E>0=27b_SYk7<eCA_DV0
+!s100 JUPcI06gd7UBhj^8jP6GV0
+R8
+32
+R46
+!i10b 1
+R47
+R48
+R49
+!i113 0
+R13
+R14
+Eneorv32_cpu
+R22
+R21
+R3
+R4
+R5
+!i122 25
+R0
+Z53 8C:/Development/neorv32/rtl/core/neorv32_cpu.vhd
+Z54 FC:/Development/neorv32/rtl/core/neorv32_cpu.vhd
+l0
+Z55 L42 1
+V8TOdI`B:h<9?1]BOf5GBN2
+!s100 @lFQgM2MSXBeVmBXlBOFO0
+R8
+32
+Z56 !s110 1705517839
+!i10b 1
+Z57 !s108 1705517839.000000
+Z58 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu.vhd|
+Z59 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_rtl
+DEx7 neorv32 15 neorv32_cpu_pmp 0 22 0;6QED]@DhgI9`f6o6SKJ2
+DEx7 neorv32 15 neorv32_cpu_lsu 0 22 IzjUcU^lIZ`7e8m?3E3?01
+DEx7 neorv32 15 neorv32_cpu_alu 0 22 CbCI2SCRM<FL<mT>42]zk3
+DEx7 neorv32 19 neorv32_cpu_regfile 0 22 <18>VQV<84MRbN0aQjBh:0
+DEx7 neorv32 19 neorv32_cpu_control 0 22 :oeZ3Lhl9>OVOaHQWc9ef1
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_cpu 0 22 8TOdI`B:h<9?1]BOf5GBN2
+!i122 25
+l139
+L98 337
+V>FdG1E8V9<WEDPjJOAo_N1
+!s100 kXc5Ab]a3Lk[9MW3BU7hF1
+R8
+32
+R56
+!i10b 1
+R57
+R58
+R59
+!i113 0
+R13
+R14
+Eneorv32_cpu_alu
+R22
+R21
+R3
+R4
+R5
+!i122 22
+R0
+Z60 8C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd
+Z61 FC:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd
+l0
+Z62 L44 1
+VCbCI2SCRM<FL<mT>42]zk3
+!s100 G@gF[T?67FQXSi8VVUnX:2
+R8
+32
+R56
+!i10b 1
+R57
+Z63 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd|
+Z64 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cpu_rtl
+DEx7 neorv32 18 neorv32_cpu_cp_cfu 0 22 ;lgWD809Ne`H2O7oL]A711
+DEx7 neorv32 18 neorv32_cpu_cp_fpu 0 22 hAcWZ=>5Mh903`U5RAk_;0
+DEx7 neorv32 23 neorv32_cpu_cp_bitmanip 0 22 1zQ]8aJi7STW3nCJc8U101
+DEx7 neorv32 21 neorv32_cpu_cp_muldiv 0 22 5P=Y?2P@_Lb_oT_7dE48c0
+DEx7 neorv32 22 neorv32_cpu_cp_shifter 0 22 =NdS85C@4]:lY32@[3V6E0
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_cpu_alu 0 22 CbCI2SCRM<FL<mT>42]zk3
+!i122 22
+l106
+L82 247
+VA[H<6;c[^Y^gHH2<oFU0I2
+!s100 hmk?U5D?[9BG=JF0IS;RT2
+R8
+32
+R56
+!i10b 1
+R57
+R63
+R64
+!i113 0
+R13
+R14
+Eneorv32_cpu_control
+R22
+R21
+R3
+R4
+R5
+!i122 19
+R0
+Z65 8C:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd
+Z66 FC:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd
+l0
+L53 1
+V:oeZ3Lhl9>OVOaHQWc9ef1
+!s100 KKl9^f;;^4fNj=GYPNZLf1
+R8
+32
+R56
+!i10b 1
+R57
+Z67 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd|
+Z68 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_control_rtl
+DEx7 neorv32 24 neorv32_cpu_decompressor 0 22 ?Y`kTjJUO;liC;X9AA]5<1
+Z69 DEx7 neorv32 12 neorv32_fifo 0 22 HH<8Q02mIgGJi=nbZX6@U2
+R21
+R3
+R4
+R5
+DEx4 work 19 neorv32_cpu_control 0 22 :oeZ3Lhl9>OVOaHQWc9ef1
+!i122 19
+l359
+L129 2286
+VQ43B5_JVU][03SDE_>B2U1
+!s100 M6U^o><Cn:onAkWafiX0Z1
+R8
+32
+R56
+!i10b 1
+R57
+R67
+R68
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_bitmanip
+R22
+R21
+R3
+R4
+R5
+!i122 16
+R0
+Z70 8C:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd
+Z71 FC:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd
+l0
+Z72 L51 1
+V1zQ]8aJi7STW3nCJc8U101
+!s100 UID0;^oIXaCA5Zf1B^P8f1
+R8
+32
+R32
+!i10b 1
+R33
+Z73 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd|
+Z74 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_bitmanip_rtl
+R21
+R3
+R4
+R5
+DEx4 work 23 neorv32_cpu_cp_bitmanip 0 22 1zQ]8aJi7STW3nCJc8U101
+!i122 16
+l169
+L72 498
+VOVM=K3ikQ1ldcaoj=BW7m1
+!s100 @]gIVYIY4Q1>AdI?6HBM>3
+R8
+32
+R32
+!i10b 1
+R33
+R73
+R74
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_cfu
+R22
+R21
+R3
+R4
+R5
+!i122 17
+R0
+Z75 8C:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd
+Z76 FC:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd
+l0
+Z77 L46 1
+V;lgWD809Ne`H2O7oL]A711
+!s100 D_=9CnUKDUB2HhcUULbGU1
+R8
+32
+R56
+!i10b 1
+R57
+Z78 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd|
+Z79 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_cfu_rtl
+R21
+R3
+R4
+R5
+DEx4 work 18 neorv32_cpu_cp_cfu 0 22 ;lgWD809Ne`H2O7oL]A711
+!i122 17
+l121
+L69 375
+VcMcG4?n0zNP9f6?liVjb52
+!s100 S`03oXH<g8;Y2TCi]50<j1
+R8
+32
+R56
+!i10b 1
+R57
+R78
+R79
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_fpu
+R22
+R21
+R3
+R4
+R5
+!i122 18
+R0
+Z80 8C:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd
+Z81 FC:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd
+l0
+L58 1
+VhAcWZ=>5Mh903`U5RAk_;0
+!s100 gi98ib@5SIVAm2]C:g_`93
+R8
+32
+R56
+!i10b 1
+R57
+Z82 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd|
+Z83 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_fpu_rtl
+R21
+R3
+R4
+R5
+DEx4 work 18 neorv32_cpu_cp_fpu 0 22 hAcWZ=>5Mh903`U5RAk_;0
+!i122 18
+l277
+L81 1121
+VLThQHGEMbAnCi0I@=oio01
+!s100 zkjQkLI1@0MG>>^NJ^^4Z1
+R8
+32
+R56
+!i10b 1
+R57
+R82
+R83
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_fpu_f2i
+R22
+R21
+R3
+R4
+R5
+!i122 18
+R0
+R80
+R81
+l0
+L1650 1
+ViR<n0j;Mf0LU6R=_XH]T71
+!s100 cG7_lJlRm`z3FaW2n=DXG1
+R8
+32
+R56
+!i10b 1
+R57
+R82
+R83
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_fpu_f2i_rtl
+R21
+R3
+R4
+R5
+DEx4 work 22 neorv32_cpu_cp_fpu_f2i 0 22 iR<n0j;Mf0LU6R=_XH]T71
+!i122 18
+l1707
+L1671 252
+VD;P_VSl7O<zb@WYXQgA9J2
+!s100 oWG6:7S_oj2eS4dz9chWi3
+R8
+32
+R56
+!i10b 1
+R57
+R82
+R83
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_fpu_normalizer
+R22
+R21
+R3
+R4
+R5
+!i122 18
+R0
+R80
+R81
+l0
+L1249 1
+Vcj_Qh@hfcd<9:EmI==lP^1
+!s100 ]G^a>1VdinAjQ;Z6K93822
+R8
+32
+R56
+!i10b 1
+R57
+R82
+R83
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_fpu_normalizer_rtl
+R21
+R3
+R4
+R5
+DEx4 work 29 neorv32_cpu_cp_fpu_normalizer 0 22 cj_Qh@hfcd<9:EmI==lP^1
+!i122 18
+l1313
+L1272 333
+VWjURL`Y9Wf0jH3FN<DhC[0
+!s100 bW8Pm@Gd@D[KWg6NlS:b31
+R8
+32
+R56
+!i10b 1
+R57
+R82
+R83
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_muldiv
+R22
+R21
+R3
+R4
+R5
+!i122 20
+R0
+Z84 8C:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd
+Z85 FC:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd
+l0
+R77
+V5P=Y?2P@_Lb_oT_7dE48c0
+!s100 b1JOnl<Z5QGonYTSKUV[23
+R8
+32
+R56
+!i10b 1
+R57
+Z86 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd|
+Z87 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_muldiv_rtl
+R21
+R3
+R4
+R5
+DEx4 work 21 neorv32_cpu_cp_muldiv 0 22 5P=Y?2P@_Lb_oT_7dE48c0
+!i122 20
+l114
+L66 268
+VhTm0RacB3MDDHO59G0ZN61
+!s100 H7PMQjI^F[^2G;D^7>]Tf0
+R8
+32
+R56
+!i10b 1
+R57
+R86
+R87
+!i113 0
+R13
+R14
+Eneorv32_cpu_cp_shifter
+R22
+R21
+R3
+R4
+R5
+!i122 21
+R0
+Z88 8C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd
+Z89 FC:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd
+l0
+R40
+V=NdS85C@4]:lY32@[3V6E0
+!s100 M@BDc:BRO;3?@gJ@[5[SA2
+R8
+32
+R56
+!i10b 1
+R57
+Z90 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd|
+Z91 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_cp_shifter_rtl
+R21
+R3
+R4
+R5
+DEx4 work 22 neorv32_cpu_cp_shifter 0 22 =NdS85C@4]:lY32@[3V6E0
+!i122 21
+l82
+L64 107
+VD`la?zZeXg=2SAXbSPK<N1
+!s100 W]V4o4RRLeDO?g5hZ=NLF0
+R8
+32
+R56
+!i10b 1
+R57
+R90
+R91
+!i113 0
+R13
+R14
+Eneorv32_cpu_decompressor
+Z92 w1705497370
+R21
+R3
+R4
+R5
+!i122 14
+R0
+Z93 8C:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd
+Z94 FC:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd
+l0
+R40
+V?Y`kTjJUO;liC;X9AA]5<1
+!s100 ^kK12T5o5hXhSQcH2WSZ;3
+R8
+32
+R32
+!i10b 1
+R33
+Z95 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd|
+Z96 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_decompressor_rtl
+R21
+R3
+R4
+R5
+DEx4 work 24 neorv32_cpu_decompressor 0 22 ?Y`kTjJUO;liC;X9AA]5<1
+!i122 14
+l83
+L55 382
+V2zWk^6FNJB;ckoE:D<CV>1
+!s100 Fz@n?dlI^U4G[WE:kN9S20
+R8
+32
+R32
+!i10b 1
+R33
+R95
+R96
+!i113 0
+R13
+R14
+Eneorv32_cpu_lsu
+R22
+R21
+R3
+R4
+R5
+!i122 23
+R0
+Z97 8C:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd
+Z98 FC:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd
+l0
+R55
+VIzjUcU^lIZ`7e8m?3E3?01
+!s100 BF=@NcFiaNA]U9^fkj5gF2
+R8
+32
+R56
+!i10b 1
+R57
+Z99 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd|
+Z100 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_lsu_rtl
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_cpu_lsu 0 22 IzjUcU^lIZ`7e8m?3E3?01
+!i122 23
+l89
+L75 150
+V994Kh3FN__a:7zNXOSSTm3
+!s100 VG];bJ5NVY;Xj5?jH_:GD2
+R8
+32
+R56
+!i10b 1
+R57
+R99
+R100
+!i113 0
+R13
+R14
+Eneorv32_cpu_pmp
+R22
+R21
+R3
+R4
+R5
+!i122 24
+R0
+Z101 8C:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd
+Z102 FC:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd
+l0
+R55
+V0;6QED]@DhgI9`f6o6SKJ2
+!s100 f_?gBJ6NB2dH6H0D;]o7C1
+R8
+32
+R56
+!i10b 1
+R57
+Z103 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd|
+Z104 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_pmp_rtl
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_cpu_pmp 0 22 0;6QED]@DhgI9`f6o6SKJ2
+!i122 24
+l130
+L67 299
+VZB_eSVT1Wd4UTO5BTZIAZ2
+!s100 4W4d@cmD=kSW0N5[HeANi2
+R8
+32
+R56
+!i10b 1
+R57
+R103
+R104
+!i113 0
+R13
+R14
+Eneorv32_cpu_regfile
+R22
+R21
+R3
+R4
+R5
+!i122 15
+R0
+Z105 8C:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd
+Z106 FC:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd
+l0
+L54 1
+V<18>VQV<84MRbN0aQjBh:0
+!s100 b_GL3I]8F2MCOb[zFF=`]0
+R8
+32
+R32
+!i10b 1
+R33
+Z107 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd|
+Z108 !s107 C:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd|
+!i113 0
+R13
+R14
+Aneorv32_cpu_regfile_rtl
+R21
+R3
+R4
+R5
+DEx4 work 19 neorv32_cpu_regfile 0 22 <18>VQV<84MRbN0aQjBh:0
+!i122 15
+l95
+L77 78
+V<fNP<?`0AP4^VS1?An`A23
+!s100 SGM6ggRGnD=9=_?QFL95Z1
+R8
+32
+R32
+!i10b 1
+R33
+R107
+R108
+!i113 0
+R13
+R14
+Eneorv32_crc
+R22
+R21
+R3
+R4
+R5
+!i122 26
+R0
+Z109 8C:/Development/neorv32/rtl/core/neorv32_crc.vhd
+Z110 FC:/Development/neorv32/rtl/core/neorv32_crc.vhd
+l0
+R77
+VDFiG3Jh]>>DPX_L0inEU>3
+!s100 eTT7XQ6[[Q]:XiMNIaSiI0
+R8
+32
+R56
+!i10b 1
+R57
+Z111 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_crc.vhd|
+Z112 !s107 C:/Development/neorv32/rtl/core/neorv32_crc.vhd|
+!i113 0
+R13
+R14
+Aneorv32_crc_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_crc 0 22 DFiG3Jh]>>DPX_L0inEU>3
+!i122 26
+l78
+L55 108
+VjIX=Z0bL`gl5L1DZ_4m]P0
+!s100 `kCOCoL?^a14jU^K1H25=3
+R8
+32
+R56
+!i10b 1
+R57
+R111
+R112
+!i113 0
+R13
+R14
+Eneorv32_dcache
+R22
+R21
+R3
+R4
+R5
+!i122 27
+R0
+Z113 8C:/Development/neorv32/rtl/core/neorv32_dcache.vhd
+Z114 FC:/Development/neorv32/rtl/core/neorv32_dcache.vhd
+l0
+R40
+VkM73=N9=_N25O`n]bNI^K3
+!s100 709:Fkf_DBHV2;;mc:6Y^1
+R8
+32
+Z115 !s110 1705517840
+!i10b 1
+R57
+Z116 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_dcache.vhd|
+Z117 !s107 C:/Development/neorv32/rtl/core/neorv32_dcache.vhd|
+!i113 0
+R13
+R14
+Aneorv32_dcache_rtl
+R21
+R3
+R4
+R5
+DEx4 work 14 neorv32_dcache 0 22 kM73=N9=_N25O`n]bNI^K3
+!i122 27
+l124
+L62 274
+V03lPXe46mQBifN>H3cOgD1
+!s100 =glcBo>:nUL2nOfK7h@zZ2
+R8
+32
+R115
+!i10b 1
+R57
+R116
+R117
+!i113 0
+R13
+R14
+Eneorv32_dcache_memory
+R22
+R21
+R3
+R4
+R5
+!i122 27
+R0
+R113
+R114
+l0
+L383 1
+V;JzL5>igSh:FBf4Rh]>aa3
+!s100 ^fBQOO9;=SajbLQU_]8m41
+R8
+32
+R115
+!i10b 1
+R57
+R116
+R117
+!i113 0
+R13
+R14
+Aneorv32_dcache_memory_rtl
+R21
+R3
+R4
+R5
+DEx4 work 21 neorv32_dcache_memory 0 22 ;JzL5>igSh:FBf4Rh]>aa3
+!i122 27
+l446
+L407 130
+Vmi;]GB?8:lkD[35DGM>QD1
+!s100 4Z>Nk49WGG@5Uz43dAlL:3
+R8
+32
+R115
+!i10b 1
+R57
+R116
+R117
+!i113 0
+R13
+R14
+Eneorv32_debug_dm
+R22
+R21
+R3
+R4
+R5
+!i122 28
+R0
+Z118 8C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd
+Z119 FC:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd
+l0
+R45
+VSL^FB@:b]D?H^hz?9n@3`3
+!s100 >V<gFNXX=bEkd=AlC;ScH3
+R8
+32
+R115
+!i10b 1
+Z120 !s108 1705517840.000000
+Z121 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd|
+Z122 !s107 C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd|
+!i113 0
+R13
+R14
+Aneorv32_debug_dm_rtl
+R21
+R3
+R4
+R5
+DEx4 work 16 neorv32_debug_dm 0 22 SL^FB@:b]D?H^hz?9n@3`3
+!i122 28
+l224
+L74 662
+Vz5bS>1]M@_DE1VSGJ77G]2
+!s100 SOh0nemmFADQ`D8TEjG1R1
+R8
+32
+R115
+!i10b 1
+R120
+R121
+R122
+!i113 0
+R13
+R14
+Eneorv32_debug_dtm
+R22
+R3
+R21
+R4
+R5
+!i122 29
+R0
+Z123 8C:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd
+Z124 FC:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd
+l0
+R62
+V3I=4bEO=N`T6^4W<TYICb0
+!s100 ?f]h65NzE?8SRfWL[JUl02
+R8
+32
+R115
+!i10b 1
+R120
+Z125 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd|
+Z126 !s107 C:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd|
+!i113 0
+R13
+R14
+Aneorv32_debug_dtm_rtl
+R3
+R21
+R4
+R5
+DEx4 work 17 neorv32_debug_dtm 0 22 3I=4bEO=N`T6^4W<TYICb0
+!i122 29
+l129
+L66 285
+Vn9EQVN9NZ]eTZSg5G6i>83
+!s100 <7=ULcLAVU41R>JG`2IMD1
+R8
+32
+R115
+!i10b 1
+R120
+R125
+R126
+!i113 0
+R13
+R14
+Eneorv32_dma
+R22
+R21
+R3
+R4
+R5
+!i122 30
+R0
+Z127 8C:/Development/neorv32/rtl/core/neorv32_dma.vhd
+Z128 FC:/Development/neorv32/rtl/core/neorv32_dma.vhd
+l0
+R40
+VY@_GDYdO6kMnMYNFkk@U20
+!s100 F85Tg:TGL=lYVUV]Y][4W0
+R8
+32
+R115
+!i10b 1
+R120
+Z129 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_dma.vhd|
+Z130 !s107 C:/Development/neorv32/rtl/core/neorv32_dma.vhd|
+!i113 0
+R13
+R14
+Aneorv32_dma_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_dma 0 22 Y@_GDYdO6kMnMYNFkk@U20
+!i122 30
+l129
+L58 325
+V5Ka3=]UCk5Ih@17XZ^JLd2
+!s100 fo:72>7FWPOh]MgIo2TjV0
+R8
+32
+R115
+!i10b 1
+R120
+R129
+R130
+!i113 0
+R13
+R14
+Eneorv32_dmem
+R22
+R21
+R3
+R4
+R5
+!i122 4
+R0
+8C:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd
+FC:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd
+l0
+R55
+VY`EN49`YKV]WIgOBHLZ`11
+!s100 H3@YIL94a:DBNZTRQ2acj2
+R8
+32
+R25
+!i10b 1
+R26
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd|
+!s107 C:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd|
+!i113 0
+R13
+R14
+Aneorv32_dmem_rtl
+DEx4 work 12 neorv32_dmem 0 22 Y`EN49`YKV]WIgOBHLZ`11
+R21
+R3
+R4
+R5
+!i122 6
+8C:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd
+FC:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd
+l64
+L42 85
+V<T]aZokZZ26NII4mdU43K1
+!s100 YZ<5ENV@N7dUkO3=KaYg<2
+R8
+32
+R25
+!i10b 1
+R26
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd|
+!s107 C:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd|
+!i113 0
+R13
+R14
+Eneorv32_fifo
+R22
+R21
+R3
+R4
+R5
+!i122 10
+R0
+Z131 8C:/Development/neorv32/rtl/core/neorv32_fifo.vhd
+Z132 FC:/Development/neorv32/rtl/core/neorv32_fifo.vhd
+l0
+R55
+VHH<8Q02mIgGJi=nbZX6@U2
+!s100 Ic`PcC1zgLAOjY>ikE9BH2
+R8
+32
+R32
+!i10b 1
+R33
+Z133 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_fifo.vhd|
+Z134 !s107 C:/Development/neorv32/rtl/core/neorv32_fifo.vhd|
+!i113 0
+R13
+R14
+Aneorv32_fifo_rtl
+R21
+R3
+R4
+R5
+DEx4 work 12 neorv32_fifo 0 22 HH<8Q02mIgGJi=nbZX6@U2
+!i122 10
+l91
+L66 171
+V5zc1fSBjYJgl_:JY3@cAi3
+!s100 dS:o;99X3Yi]jVnj6[VQ13
+R8
+32
+R32
+!i10b 1
+R33
+R133
+R134
+!i113 0
+R13
+R14
+Eneorv32_gpio
+R22
+R21
+R3
+R4
+R5
+!i122 6
+R0
+Z135 8C:/Development/neorv32/rtl/core/neorv32_gpio.vhd
+Z136 FC:/Development/neorv32/rtl/core/neorv32_gpio.vhd
+l0
+R55
+VaNUQ>15La7CgoS^B2W_Q23
+!s100 AcC6^EOgl^fCTa>m:[RWV3
+R8
+32
+R25
+!i10b 1
+R26
+Z137 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_gpio.vhd|
+Z138 !s107 C:/Development/neorv32/rtl/core/neorv32_gpio.vhd|
+!i113 0
+R13
+R14
+Aneorv32_gpio_rtl
+R21
+R3
+R4
+R5
+DEx4 work 12 neorv32_gpio 0 22 aNUQ>15La7CgoS^B2W_Q23
+!i122 6
+l61
+L56 75
+VZ7C0Xh]RBF66F[Ee`P1hX0
+!s100 7Ho9]4lInXUmaM^Nd@aOe2
+R8
+32
+R32
+!i10b 1
+R26
+R137
+R138
+!i113 0
+R13
+R14
+Eneorv32_gptmr
+R22
+R21
+R3
+R4
+R5
+!i122 31
+R0
+Z139 8C:/Development/neorv32/rtl/core/neorv32_gptmr.vhd
+Z140 FC:/Development/neorv32/rtl/core/neorv32_gptmr.vhd
+l0
+Z141 L47 1
+VP0Af@0ERgP:>U1?kj4WNT2
+!s100 2;]QzE7:6ec?MMgDb=6n<3
+R8
+32
+R115
+!i10b 1
+R120
+Z142 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_gptmr.vhd|
+Z143 !s107 C:/Development/neorv32/rtl/core/neorv32_gptmr.vhd|
+!i113 0
+R13
+R14
+Aneorv32_gptmr_rtl
+R21
+R3
+R4
+R5
+DEx4 work 13 neorv32_gptmr 0 22 P0Af@0ERgP:>U1?kj4WNT2
+!i122 31
+l80
+L59 125
+V=Uo7YMbZZm=;fEdXR6am00
+!s100 mFUhBgS8SYMGFNbV;Z3=[0
+R8
+32
+R115
+!i10b 1
+R120
+R142
+R143
+!i113 0
+R13
+R14
+Eneorv32_icache
+R22
+R21
+R3
+R4
+R5
+!i122 32
+R0
+Z144 8C:/Development/neorv32/rtl/core/neorv32_icache.vhd
+Z145 FC:/Development/neorv32/rtl/core/neorv32_icache.vhd
+l0
+R40
+VKbMh=dEmLJ3BHALI?c9681
+!s100 ?=oYZAVHTKYL>7Dd8R3in3
+R8
+32
+R115
+!i10b 1
+R120
+Z146 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_icache.vhd|
+Z147 !s107 C:/Development/neorv32/rtl/core/neorv32_icache.vhd|
+!i113 0
+R13
+R14
+Aneorv32_icache_rtl
+R21
+R3
+R4
+R5
+DEx4 work 14 neorv32_icache 0 22 KbMh=dEmLJ3BHALI?c9681
+!i122 32
+l123
+L63 244
+VD9d`MmRM4i<8I=B<91Mg<1
+!s100 d6b6B4H6PEAl861NSoPGX0
+R8
+32
+R115
+!i10b 1
+R120
+R146
+R147
+!i113 0
+R13
+R14
+Eneorv32_icache_memory
+R22
+R21
+R3
+R4
+R5
+!i122 32
+R0
+R144
+R145
+l0
+L357 1
+VhZUOXW33bFh^HEeWcFLL22
+!s100 L>2]5ljcQJPbOk3c27QV40
+R8
+32
+R115
+!i10b 1
+R120
+R146
+R147
+!i113 0
+R13
+R14
+Aneorv32_icache_memory_rtl
+R21
+R3
+R4
+R5
+DEx4 work 21 neorv32_icache_memory 0 22 hZUOXW33bFh^HEeWcFLL22
+!i122 32
+l433
+L382 169
+VlFjbTXYObkz]mjg2F@2i`1
+!s100 zPM72Jj?lV5FmC0F?QnU82
+R8
+32
+R115
+!i10b 1
+R120
+R146
+R147
+!i113 0
+R13
+R14
+Eneorv32_imem
+R22
+R21
+R3
+R4
+R5
+!i122 5
+R0
+8C:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd
+FC:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd
+l0
+R55
+Vn]O1GhHSlOeJ?V2dF5@fc0
+!s100 EoEKm:j@VM[@?2Z>]=K8^1
+R8
+32
+R25
+!i10b 1
+R26
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd|
+!s107 C:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd|
+!i113 0
+R13
+R14
+Aneorv32_imem_rtl
+DEx4 work 12 neorv32_imem 0 22 n]O1GhHSlOeJ?V2dF5@fc0
+DPx7 neorv32 25 neorv32_application_image 0 22 OPd4GoFTV@[]6?]Ik?JGj0
+R21
+R3
+R4
+R5
+!i122 6
+8C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+FC:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+l81
+L46 127
+VgcX7@g8ncznXZX2P7lo@k3
+!s100 c24;GDgVU;Gi49`lk=Kdd3
+R8
+32
+R25
+!i10b 1
+R26
+!s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd|
+!s107 C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd|
+!i113 0
+R13
+R14
+Eneorv32_mtime
+R22
+R21
+R3
+R4
+R5
+!i122 8
+R0
+Z148 8C:/Development/neorv32/rtl/core/neorv32_mtime.vhd
+Z149 FC:/Development/neorv32/rtl/core/neorv32_mtime.vhd
+l0
+R40
+VG=zd7n3cF3=c@KfHOb:gn0
+!s100 hE64_[7EAdV1eEmSaY3;@0
+R8
+32
+R32
+!i10b 1
+R33
+Z150 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_mtime.vhd|
+Z151 !s107 C:/Development/neorv32/rtl/core/neorv32_mtime.vhd|
+!i113 0
+R13
+R14
+Aneorv32_mtime_rtl
+R21
+R3
+R4
+R5
+DEx4 work 13 neorv32_mtime 0 22 G=zd7n3cF3=c@KfHOb:gn0
+!i122 8
+l75
+L55 116
+VQ8Z^Q43hhB6z=X]?BWoA10
+!s100 ?BmH8=I71kN41<5SP`e3M1
+R8
+32
+R32
+!i10b 1
+R33
+R150
+R151
+!i113 0
+R13
+R14
+Eneorv32_neoled
+R22
+R21
+R3
+R4
+R5
+!i122 33
+R0
+Z152 8C:/Development/neorv32/rtl/core/neorv32_neoled.vhd
+Z153 FC:/Development/neorv32/rtl/core/neorv32_neoled.vhd
+l0
+L56 1
+V3:XlS>55cCQ>EA`1O<Fd]3
+!s100 9elNO7Y[[CMKYJGcG10na0
+R8
+32
+R115
+!i10b 1
+R120
+Z154 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_neoled.vhd|
+Z155 !s107 C:/Development/neorv32/rtl/core/neorv32_neoled.vhd|
+!i113 0
+R13
+R14
+Aneorv32_neoled_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 14 neorv32_neoled 0 22 3:XlS>55cCQ>EA`1O<Fd]3
+!i122 33
+l157
+L72 300
+V:lGKSgnkHhZJLBaO9m9BX0
+!s100 1N>G5T@i1T[2UgZoCnPPL3
+R8
+32
+R115
+!i10b 1
+R120
+R154
+R155
+!i113 0
+R13
+R14
+Eneorv32_onewire
+R22
+R21
+R3
+R4
+R5
+!i122 34
+R0
+Z156 8C:/Development/neorv32/rtl/core/neorv32_onewire.vhd
+Z157 FC:/Development/neorv32/rtl/core/neorv32_onewire.vhd
+l0
+R72
+VMRj]EC^TWkMPGXnf5LmHY2
+!s100 ?`Lz><iY@dODK^Qa6GMha3
+R8
+32
+R115
+!i10b 1
+R120
+Z158 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_onewire.vhd|
+Z159 !s107 C:/Development/neorv32/rtl/core/neorv32_onewire.vhd|
+!i113 0
+R13
+R14
+Aneorv32_onewire_rtl
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_onewire 0 22 MRj]EC^TWkMPGXnf5LmHY2
+!i122 34
+l134
+L65 281
+VKfMPb=_6OVX>h0TTb^R2c1
+!s100 iUjC]IIROf6]G4OZ1?1W_3
+R8
+32
+R115
+!i10b 1
+R120
+R158
+R159
+!i113 0
+R13
+R14
+Pneorv32_package
+R3
+R4
+R5
+!i122 3
+R22
+R0
+R23
+R24
+l0
+L39 888
+V0bYk161z9K?`>73YHWe7<0
+!s100 5c>ol=0TDIdN5z>CAOIQn3
+R8
+32
+b1
+R25
+!i10b 1
+R26
+R27
+R28
+!i113 0
+R13
+R14
+Bbody
+DPx4 work 15 neorv32_package 0 22 0bYk161z9K?`>73YHWe7<0
+R3
+R4
+R5
+!i122 3
+l0
+L928 257
+V`YP6nz<od6;N?DL8S`fjT2
+!s100 _`:7>i[]gL_IXcLj@^lXM3
+R8
+32
+R25
+!i10b 1
+R26
+R27
+R28
+!i113 0
+R13
+R14
+Eneorv32_pwm
+R22
+R21
+R3
+R4
+R5
+!i122 35
+R0
+Z160 8C:/Development/neorv32/rtl/core/neorv32_pwm.vhd
+Z161 FC:/Development/neorv32/rtl/core/neorv32_pwm.vhd
+l0
+R40
+VUK9Bl1VKaTM<4BojToh[31
+!s100 D7nL1jVR>zE1Kjba<KbN:2
+R8
+32
+R115
+!i10b 1
+R120
+Z162 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_pwm.vhd|
+Z163 !s107 C:/Development/neorv32/rtl/core/neorv32_pwm.vhd|
+!i113 0
+R13
+R14
+Aneorv32_pwm_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_pwm 0 22 UK9Bl1VKaTM<4BojToh[31
+!i122 35
+l83
+L60 132
+VY1@;3QN_mIOj[b@ge8Agk3
+!s100 >aV[K8=HbiTGSf@EM6Wd41
+R8
+32
+R115
+!i10b 1
+R120
+R162
+R163
+!i113 0
+R13
+R14
+Eneorv32_sdi
+R22
+R21
+R3
+R4
+R5
+!i122 36
+R0
+Z164 8C:/Development/neorv32/rtl/core/neorv32_sdi.vhd
+Z165 FC:/Development/neorv32/rtl/core/neorv32_sdi.vhd
+l0
+R40
+VV=DgnH2l9TXIXCgi4majT1
+!s100 7TOmP2XS4U>_4?LWl05oZ2
+R8
+32
+Z166 !s110 1705517841
+!i10b 1
+R120
+Z167 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_sdi.vhd|
+Z168 !s107 C:/Development/neorv32/rtl/core/neorv32_sdi.vhd|
+!i113 0
+R13
+R14
+Aneorv32_sdi_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_sdi 0 22 V=DgnH2l9TXIXCgi4majT1
+!i122 36
+l131
+L62 302
+VXT9Xa[>UQG`CghVCSPB@L1
+!s100 zhgCT1VhzTAbI=]mfzkh]0
+R8
+32
+R166
+!i10b 1
+R120
+R167
+R168
+!i113 0
+R13
+R14
+Eneorv32_slink
+R22
+R21
+R3
+R4
+R5
+!i122 37
+R0
+Z169 8C:/Development/neorv32/rtl/core/neorv32_slink.vhd
+Z170 FC:/Development/neorv32/rtl/core/neorv32_slink.vhd
+l0
+R40
+VEzUmjOGd44W[j=VWNZcJL0
+!s100 ZJVQzI;?`BcS[DSHC94AD1
+R8
+32
+R166
+!i10b 1
+Z171 !s108 1705517841.000000
+Z172 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_slink.vhd|
+Z173 !s107 C:/Development/neorv32/rtl/core/neorv32_slink.vhd|
+!i113 0
+R13
+R14
+Aneorv32_slink_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 13 neorv32_slink 0 22 EzUmjOGd44W[j=VWNZcJL0
+!i122 37
+l125
+L68 224
+V0AQ1Y41?`8SkXXQA49cWD0
+!s100 TBW9GdS8_jl?:RhjfV;UL2
+R8
+32
+R166
+!i10b 1
+R171
+R172
+R173
+!i113 0
+R13
+R14
+Eneorv32_spi
+R22
+R21
+R3
+R4
+R5
+!i122 38
+R0
+Z174 8C:/Development/neorv32/rtl/core/neorv32_spi.vhd
+Z175 FC:/Development/neorv32/rtl/core/neorv32_spi.vhd
+l0
+R55
+V<P`B4zh<f>IELfYK`A27g1
+!s100 mVljnmhPSknTGB?J6ePdL3
+R8
+32
+R166
+!i10b 1
+R171
+Z176 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_spi.vhd|
+Z177 !s107 C:/Development/neorv32/rtl/core/neorv32_spi.vhd|
+!i113 0
+R13
+R14
+Aneorv32_spi_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_spi 0 22 <P`B4zh<f>IELfYK`A27g1
+!i122 38
+l137
+L61 339
+V?D1UH451AR4eSWlIUMk]53
+!s100 ;HcYVS<Do:^k:8zm1mUU:3
+R8
+32
+R166
+!i10b 1
+R171
+R176
+R177
+!i113 0
+R13
+R14
+Eneorv32_sysinfo
+R22
+R21
+R3
+R4
+R5
+!i122 9
+R0
+Z178 8C:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd
+Z179 FC:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd
+l0
+R40
+VA?31h^zQZ_[@NH?8W3lGd3
+!s100 jn;>nL;eRlmzl[<3V1BC`0
+R8
+32
+R32
+!i10b 1
+R33
+Z180 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd|
+Z181 !s107 C:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd|
+!i113 0
+R13
+R14
+Aneorv32_sysinfo_rtl
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_sysinfo 0 22 A?31h^zQZ_[@NH?8W3lGd3
+!i122 9
+l112
+L102 90
+VALLUGN8cL3j0iXBiM6VCO0
+!s100 1ki6:93Ihof8PY2?I0z^f0
+R8
+32
+R32
+!i10b 1
+R33
+R180
+R181
+!i113 0
+R13
+R14
+Eneorv32_trng
+R22
+R21
+R3
+R4
+R5
+!i122 39
+R0
+Z182 8C:/Development/neorv32/rtl/core/neorv32_trng.vhd
+Z183 FC:/Development/neorv32/rtl/core/neorv32_trng.vhd
+l0
+R77
+V?<[lF@8QDLi>[A`;P@l4`3
+!s100 EM>FjWLO[7FjQZO<8>07G2
+R8
+32
+R166
+!i10b 1
+R171
+Z184 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_trng.vhd|
+Z185 !s107 C:/Development/neorv32/rtl/core/neorv32_trng.vhd|
+!i113 0
+R13
+R14
+Aneorv32_trng_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 12 neorv32_trng 0 22 ?<[lF@8QDLi>[A`;P@l4`3
+!i122 39
+l127
+L59 189
+V0<jKflDW==CJXgO6nVbiY0
+!s100 eO0A[LRdF_m`^Z8W3dGkK3
+R8
+32
+R166
+!i10b 1
+R171
+R184
+R185
+!i113 0
+R13
+R14
+Eneorv32_twi
+R22
+R21
+R3
+R4
+R5
+!i122 40
+R0
+Z186 8C:/Development/neorv32/rtl/core/neorv32_twi.vhd
+Z187 FC:/Development/neorv32/rtl/core/neorv32_twi.vhd
+l0
+R141
+VUc0bheBOYHXU1h4WJ5T9l2
+!s100 ScaQb:RagCmhgg7O9jRB33
+R8
+32
+R166
+!i10b 1
+R171
+Z188 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_twi.vhd|
+Z189 !s107 C:/Development/neorv32/rtl/core/neorv32_twi.vhd|
+!i113 0
+R13
+R14
+Aneorv32_twi_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_twi 0 22 Uc0bheBOYHXU1h4WJ5T9l2
+!i122 40
+l127
+L63 304
+V0D]KLlK9Vl74j5;J0=9c[1
+!s100 6_lXYUI71l[E1be9l26fm3
+R8
+32
+R166
+!i10b 1
+R171
+R188
+R189
+!i113 0
+R13
+R14
+Eneorv32_uart
+R22
+R21
+R3
+R4
+R5
+!i122 11
+R0
+Z190 8C:/Development/neorv32/rtl/core/neorv32_uart.vhd
+Z191 FC:/Development/neorv32/rtl/core/neorv32_uart.vhd
+l0
+L60 1
+VBU7U`<FH0HJXW`j:BU_oL1
+!s100 o4_3@0X5>QTn_TKz4d9M82
+R8
+32
+R32
+!i10b 1
+R33
+Z192 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_uart.vhd|
+Z193 !s107 C:/Development/neorv32/rtl/core/neorv32_uart.vhd|
+!i113 0
+R13
+R14
+Aneorv32_uart_rtl
+R69
+R21
+R3
+R4
+R5
+DEx4 work 12 neorv32_uart 0 22 BU7U`<FH0HJXW`j:BU_oL1
+!i122 11
+l182
+L82 450
+VTUY6d;2T`ZCVgIcCT5RjC1
+!s100 FOL:?hm4[f2EWU:LBVO@n1
+R8
+32
+R32
+!i10b 1
+R33
+R192
+R193
+!i113 0
+R13
+R14
+Eneorv32_wdt
+R22
+R21
+R3
+R4
+R5
+!i122 41
+R0
+Z194 8C:/Development/neorv32/rtl/core/neorv32_wdt.vhd
+Z195 FC:/Development/neorv32/rtl/core/neorv32_wdt.vhd
+l0
+L50 1
+VWK[Zfa[njIM<P_2<4L[g_3
+!s100 Wni:54R`<aYQ2Z@gNf=4A1
+R8
+32
+R166
+!i10b 1
+R171
+Z196 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_wdt.vhd|
+Z197 !s107 C:/Development/neorv32/rtl/core/neorv32_wdt.vhd|
+!i113 0
+R13
+R14
+Aneorv32_wdt_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_wdt 0 22 WK[Zfa[njIM<P_2<4L[g_3
+!i122 41
+l104
+L66 163
+VhBM=OB2fZgD@Kl_z3CAA01
+!s100 RzB`91V_eJL=>]AHiOb2g3
+R8
+32
+R166
+!i10b 1
+R171
+R196
+R197
+!i113 0
+R13
+R14
+Eneorv32_wishbone
+R22
+R21
+R3
+R4
+R5
+!i122 42
+R0
+Z198 8C:/Development/neorv32/rtl/core/neorv32_wishbone.vhd
+Z199 FC:/Development/neorv32/rtl/core/neorv32_wishbone.vhd
+l0
+Z200 L49 1
+VL6ZR[JdYPnIcJSW0CX]TF2
+!s100 o6EkMVjHJ2@7Q3d7=:_2d0
+R8
+32
+R166
+!i10b 1
+R171
+Z201 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_wishbone.vhd|
+Z202 !s107 C:/Development/neorv32/rtl/core/neorv32_wishbone.vhd|
+!i113 0
+R13
+R14
+Aneorv32_wishbone_rtl
+R21
+R3
+R4
+R5
+DEx4 work 16 neorv32_wishbone 0 22 L6ZR[JdYPnIcJSW0CX]TF2
+!i122 42
+l114
+L77 149
+VX[R5b=aK2;nhblTfQ=d=K1
+!s100 NG4MQh`373<e@Rn1IkJ9N0
+R8
+32
+R166
+!i10b 1
+R171
+R201
+R202
+!i113 0
+R13
+R14
+Eneorv32_xip
+R22
+R21
+R3
+R4
+R5
+!i122 43
+R0
+Z203 8C:/Development/neorv32/rtl/core/neorv32_xip.vhd
+Z204 FC:/Development/neorv32/rtl/core/neorv32_xip.vhd
+l0
+L48 1
+V@z:5zQR;DJYkai9P7ozH]1
+!s100 n`]^ZLk;OWHRF2z`e<Al?3
+R8
+32
+R166
+!i10b 1
+R171
+Z205 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_xip.vhd|
+Z206 !s107 C:/Development/neorv32/rtl/core/neorv32_xip.vhd|
+!i113 0
+R13
+R14
+Aneorv32_xip_rtl
+R21
+R3
+R4
+R5
+DEx4 work 11 neorv32_xip 0 22 @z:5zQR;DJYkai9P7ozH]1
+!i122 43
+l150
+L65 324
+VlIVfX5ldlhf8^>FE>Coi00
+!s100 BNDZG5bCjIfg^T`1Oin>U0
+R8
+32
+R166
+!i10b 1
+R171
+R205
+R206
+!i113 0
+R13
+R14
+Eneorv32_xip_phy
+R22
+R21
+R3
+R4
+R5
+!i122 43
+R0
+R203
+R204
+l0
+L436 1
+VR=FEGRKXTR:?==f:0QZCY0
+!s100 86QL<Sfn;2TJYo5i?8PC:0
+R8
+32
+R166
+!i10b 1
+R171
+R205
+R206
+!i113 0
+R13
+R14
+Aneorv32_xip_phy_rtl
+R21
+R3
+R4
+R5
+DEx4 work 15 neorv32_xip_phy 0 22 R=FEGRKXTR:?==f:0QZCY0
+!i122 43
+l474
+L461 116
+V@e=WlMGZJifYn632DlzAN1
+!s100 2biEZcKS?EYflhhgzO>hX0
+R8
+32
+R166
+!i10b 1
+R171
+R205
+R206
+!i113 0
+R13
+R14
+Eneorv32_xirq
+R22
+R21
+R3
+R4
+R5
+!i122 44
+R0
+Z207 8C:/Development/neorv32/rtl/core/neorv32_xirq.vhd
+Z208 FC:/Development/neorv32/rtl/core/neorv32_xirq.vhd
+l0
+R200
+V[gi6CzF10kS4T`:ae4>XG3
+!s100 >klIQEcH<`4jfBP<^h1gQ1
+R8
+32
+R166
+!i10b 1
+R171
+Z209 !s90 -reportprogress|300|-work|neorv32|-2002|-explicit|-vopt|-stats=none|C:/Development/neorv32/rtl/core/neorv32_xirq.vhd|
+Z210 !s107 C:/Development/neorv32/rtl/core/neorv32_xirq.vhd|
+!i113 0
+R13
+R14
+Aneorv32_xirq_rtl
+R21
+R3
+R4
+R5
+DEx4 work 12 neorv32_xirq 0 22 [gi6CzF10kS4T`:ae4>XG3
+!i122 44
+l86
+L65 153
+VTzEKi8R7<UXFiIoQl<2<43
+!s100 S`5C`J:[CVjFL`Mo;@l@73
+R8
+32
+R166
+!i10b 1
+R171
+R209
+R210
+!i113 0
+R13
+R14
+Eneotrng
+R22
+R3
+R4
+R5
+!i122 39
+R0
+R182
+R183
+l0
+L308 1
+VKL]AfK3]TX4ZMGUV6UAD63
+!s100 9>J7ZFVL7GPXE66H3Z:b11
+R8
+32
+R166
+!i10b 1
+R171
+R184
+R185
+!i113 0
+R13
+R14
+Aneotrng_rtl
+R3
+R4
+R5
+DEx4 work 7 neotrng 0 22 KL]AfK3]TX4ZMGUV6UAD63
+!i122 39
+l389
+L326 254
+VOVN_98=>82Rbe<j?jl3[V3
+!s100 9@Dja;2NRMZ4>2=>j_TI00
+R8
+32
+R166
+!i10b 1
+R171
+R184
+R185
+!i113 0
+R13
+R14
+Eneotrng_cell
+R22
+R3
+R4
+R5
+!i122 39
+R0
+R182
+R183
+l0
+L637 1
+VMSZ7V?CN9lHbP2VDP<Q:@1
+!s100 0DG=Y10;dCB`9nfmA3^i03
+R8
+32
+R166
+!i10b 1
+R171
+R184
+R185
+!i113 0
+R13
+R14
+Aneotrng_cell_rtl
+R3
+R4
+R5
+DEx4 work 12 neotrng_cell 0 22 MSZ7V?CN9lHbP2VDP<Q:@1
+!i122 39
+l663
+L653 105
+VS?1SZ3ME5e4C`Pkhbj=g>1
+!s100 LA?EaeM6nUhhb7zY4P1CT3
+R8
+32
+R166
+!i10b 1
+R171
+R184
+R185
+!i113 0
+R13
+R14

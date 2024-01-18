@@ -14,20 +14,22 @@ entity Spindle is
           synBits   : positive;
           posBits   : positive;
           countBits : positive;
+          freqBits  : positive;
           outBits   : positive);
  port (
-  clk       : in std_logic;
+  clk       : in  std_logic;
 
   inp       : in  DataInp;
   oRec      : in  DataOut;
 
-  ch        : in  std_logic;
-  mpgQuad   : in  std_logic_vector(1 downto 0);
-  jogInvert : in  std_logic;
+  -- ch        : in  std_logic;
+  -- mpgQuad   : in  std_logic_vector(1 downto 0);
+  -- jogInvert : in  std_logic;
   eStop     : in  std_logic;
   spActive  : out std_logic := '0';
   stepOut   : out std_logic := '0';
   dirOut    : out std_logic := '0';
+  spFreqGen : out std_logic := '0';
   dout      : out SpindleData
   -- dout      : out std_logic := '0'
   );
@@ -42,10 +44,12 @@ architecture Behavioral of Spindle is
  signal syncEna : std_logic := '0';
 
  signal synStep : std_logic;
- signal jogStep : std_logic;
+ -- signal jogStep : std_logic;
 
- signal jogDir : std_logic;
- signal jogEnable : std_logic;
+ -- signal jogDir : std_logic;
+ -- signal jogEnable : std_logic;
+
+ signal ch  : std_logic;
 
  signal decelDone : boolean;
 
@@ -63,7 +67,7 @@ begin
  
  spindleCtlReg : entity work.CtlReg
   generic map(opVal => opBase + F_Ld_Sp_Ctl,
-              n => spCtlSize)
+              n     => spCtlSize)
   port map (
    clk  => clk,
    inp  => inp,
@@ -71,6 +75,18 @@ begin
    );
 
    spCtlR <= spCtlToRec(spCtlReg);
+
+ spFreq_Gen : entity work.FreqGen
+  generic map (opVal    => opBase + F_Ld_Sp_Freq,
+               freqBits => freqBits)
+  port map (
+   clk      => clk,
+   inp      => inp,
+   ena      => spCtlR.spEna,
+   pulseOut => ch
+   );
+
+ spFreqGen <= ch;
 
  SpindleSyncAccel : entity work.SyncAccelNew
   generic map (opBase    => opBase + F_Sp_Sync_Base,
@@ -88,7 +104,7 @@ begin
    decel        => decel,
    decelDisable => false,
    ch           => ch,
-   dir          => '0',
+   -- dir          => '0',
    -- dout         => doutSync,
    dout         => dout,
    accelActive  => open,
@@ -96,29 +112,32 @@ begin
    synStep      => synStep
    );
 
- SpindleJog : entity work.Jog
-  generic map (opBase  => opBase + F_Sp_Jog_Base,
-               outBits => outBits)
-  port map (
-   clk        => clk,
+ -- SpindleJog : entity work.Jog
+ --  generic map (opBase  => opBase + F_Sp_Jog_Base,
+ --               outBits => outBits)
+ --  port map (
+ --   clk        => clk,
 
-   inp        => inp,
-   oRec       => oRec,
+ --   inp        => inp,
+ --   oRec       => oRec,
 
-   quad       => mpgQuad,
-   enable     => jogEnable,
-   jogInvert  => jogInvert,
-   currentDir => jogDir,
-   jogStep    => jogStep,
-   jogDir     => jogDir,
-   jogUpdLoc  => open
-   -- dout       => doutJog
-   );
+ --   quad       => mpgQuad,
+ --   enable     => jogEnable,
+ --   jogInvert  => jogInvert,
+ --   currentDir => jogDir,
+ --   jogStep    => jogStep,
+ --   jogDir     => jogDir,
+ --   jogUpdLoc  => open
+ --   -- dout       => doutJog
+ --   );
 
- jogEnable <= '1' when (eStop = '0') and (spCtlR.spJogEnable = '1') else '0';
+ -- jogEnable <= '1' when (eStop = '0') and (spCtlR.spJogEnable = '1') else '0';
  spActive  <= '1' when state /= idle else '0';
- stepOut   <= jogStep when spCtlR.spJogEnable = '1' else synstep;
- dirOut    <= jogDir  when spCtlR.spJogEnable = '1' else spCtlR.spDir;
+ -- stepOut   <= jogStep when spCtlR.spJogEnable = '1' else synstep;
+ -- dirOut    <= jogDir  when spCtlR.spJogEnable = '1' else spCtlR.spDir;
+
+ stepOut <= synstep;
+ dirOut <= spCtlR.spDir;
 
  spindleRun: process(clk)
  begin

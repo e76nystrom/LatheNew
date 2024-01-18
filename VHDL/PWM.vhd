@@ -11,9 +11,6 @@ entity PWM is
  port (
   clk    : in  std_logic;
   inp    : in  DataInp;  
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- op : in unsigned(opBits-1 downto 0);
   ena    : in  std_logic;
   pwmOut : out std_logic := '0'
   );
@@ -37,9 +34,6 @@ begin
   port map(
    clk  => clk,
    inp  => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
    data => pwmMax
    );
 
@@ -49,9 +43,6 @@ begin
   port map(
    clk  => clk,
    inp  => inp,
-   -- din => din,
-   -- op => op,
-   -- shift => dshift,
    sel => trigSel,
    data => pwmTrigIn
    );

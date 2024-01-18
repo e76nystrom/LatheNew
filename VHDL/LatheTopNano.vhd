@@ -160,9 +160,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zmpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinIn,
 

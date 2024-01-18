@@ -6,7 +6,7 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 use work.RegDef.opb;
-use work.IORecord.DataInp;
+use work.IORecord.all;
 
 entity ShiftOpLoad is
  generic(opVal  : unsigned (opb-1 downto 0);
@@ -19,36 +19,27 @@ entity ShiftOpLoad is
   );
 end ShiftOpLoad;
 
-  -- regX : entity work.ShiftOpLoad
-  -- generic map (opVal => ,
-  --              n     => )
-  -- port map (
-  --  clk  => ,
-  --  inp  => ,
-  --  load => ,
-  --  data =>
-  --  );
-
 architecture Behavioral of ShiftOpLoad is
 
- signal lastSel : boolean := false;
+ signal lastSel : std_logic := '0';
+ 
 begin
 
  shift_reg: process (clk)
  begin
   if (rising_edge(clk)) then
    if (inp.op = opVal) then             --if selected
-    lastSel <= true;                    --update last value
     if (inp.shift = '1') then           --if time to shift
+     lastSel <= '1';                    --update last value
      data <= data(n-2 downto 0) & inp.din; --shift
     end if;
    else                                 --if not selected
-    if (lastSel) then                   --if was selected
+    if (lastSel = '1') then             --if was selected
      load <= '1';                       --set load flag
     else                                --if last not selected
      load <= '0';                       --clear load flag
     end if;
-    lastSel <= false;                   --clear last selected
+    lastSel <= '0';                     --clear last selected
    end if;
   end if;
  end process shift_reg;

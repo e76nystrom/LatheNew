@@ -1,0 +1,1590 @@
+C:/Development/Altera/LatheNew/VHDL/Conversion.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Conversion.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package std_logic_arith
+-- Compiling package conversion
+-- Compiling package body Conversion
+-- Loading package conversion
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/IndexClocks.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity IndexClocks
+-- Compiling architecture behavioral of IndexClocks
+-- Loading entity ShiftOutN
+-- Loading entity ShiftOp
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ExtSignal.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling package ExtSignal
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd {2 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package FpgaLatheBitsRec
+-- Compiling package FpgaLatheBitsFunc
+-- Compiling package body FpgaLatheBitsFunc
+-- Loading package FpgaLatheBitsFunc
+** Warning: C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd(693): (vcom-1272) Length of expected is 7; length of actual is 8.
+** Warning: C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd(728): (vcom-1272) Length of expected is 5; length of actual is 8.
+** Warning: C:/Development/Altera/LatheNew/VHDL/FpgaLatheFunc.vhd(768): (vcom-1272) Length of expected is 3; length of actual is 4.
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_wishbone.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_wishbone.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_wishbone
+-- Compiling architecture neorv32_wishbone_rtl of neorv32_wishbone
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ShiftOpSel.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity ShiftOpSel
+-- Compiling architecture Behavioral of ShiftOpSel
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/LatheCtl.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package conversion
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity LatheCtl
+-- Compiling architecture Behavioral of LatheCtl
+-- Loading entity ShiftOutN
+-- Loading entity CtlReg
+-- Loading entity QuadEncoder
+-- Loading entity Encoder
+-- Loading entity PhaseCounter
+-- Loading entity IndexClocks
+-- Loading entity FreqGen
+-- Loading entity FreqGenCtr
+-- Loading entity Axis
+-- Loading entity PulseGen
+-- Loading entity RunOutSync
+-- Loading entity Spindle
+-- Loading entity PWM
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu
+-- Compiling architecture neorv32_cpu_rtl of neorv32_cpu
+-- Loading entity neorv32_cpu_control
+-- Loading entity neorv32_cpu_regfile
+-- Loading entity neorv32_cpu_alu
+-- Loading entity neorv32_cpu_lsu
+-- Loading entity neorv32_cpu_pmp
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(109): Nonresolved signal 'xcsr_rdata_pmp' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(427):Conditional signal assignment line__427
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(400):Statement neorv32_cpu_pmp_inst
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(135): Nonresolved signal 'pmp_i_fault' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(428):Conditional signal assignment line__428
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(400):Statement neorv32_cpu_pmp_inst
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(136): Nonresolved signal 'pmp_r_fault' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(429):Conditional signal assignment line__429
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(400):Statement neorv32_cpu_pmp_inst
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(137): Nonresolved signal 'pmp_w_fault' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(430):Conditional signal assignment line__430
+    C:/Development/neorv32/rtl/core/neorv32_cpu.vhd(400):Statement neorv32_cpu_pmp_inst
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_crc.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_crc.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_crc
+-- Compiling architecture neorv32_crc_rtl of neorv32_crc
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/RunOutSync.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity RunOutSync
+-- Compiling architecture Behavioral of RunOutSync
+-- Loading entity CtlReg
+-- Loading entity ShiftOpLoad
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_xip.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_xip.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_xip
+-- Compiling architecture neorv32_xip_rtl of neorv32_xip
+-- Compiling entity neorv32_xip_phy
+-- Compiling architecture neorv32_xip_phy_rtl of neorv32_xip_phy
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd {2 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Compiling package RiscvDataRec
+-- Compiling package body RiscvDataRec
+-- Loading package RiscvDataRec
+** Warning: C:/Development/Altera/LatheNew/VHDL/RiscvDataRec.vhd(45): (vcom-1272) Length of expected is 13; length of actual is 12.
+
+} {} {}} C:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/DisplayCtlTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package SimProc
+-- Loading package RegDef
+-- Compiling entity DisplayCtlTest
+-- Compiling architecture behavior of DisplayCtlTest
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/SyncAccelDistNew.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package MATH_REAL
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package FpgaLatheBitsRec
+-- Compiling entity SyncAccelDist
+-- Compiling architecture Behavioral of SyncAccelDist
+-- Loading entity ShiftOp
+-- Loading entity ShiftOpLoad
+-- Loading entity ShiftOutN
+-- Loading entity ShiftOutNS
+
+} {} {}} C:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/PhaseCtrTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package SimProc
+-- Compiling entity PhaseCtrTest
+-- Compiling architecture behavior of PhaseCtrTest
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_xirq.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_xirq.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_xirq
+-- Compiling architecture neorv32_xirq_rtl of neorv32_xirq
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_spi.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_spi.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_spi
+-- Compiling architecture neorv32_spi_rtl of neorv32_spi
+-- Loading entity neorv32_fifo
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/RegDef.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/RegDef.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package RegDef
+-- Compiling package body RegDef
+-- Loading package RegDef
+
+} {} {}} C:/Development/Altera/Encoder/VHDL/Display.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/Encoder/VHDL/Display.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity Display
+-- Compiling architecture Behavioral of Display
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_cp_shifter
+-- Compiling architecture neorv32_cpu_cp_shifter_rtl of neorv32_cpu_cp_shifter
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(59): Nonresolved signal 'res_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(162):Conditional signal assignment line__162
+    C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(122):Conditional signal assignment line__122
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(60): Nonresolved signal 'valid_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(165):Conditional signal assignment line__165
+    C:/Development/neorv32/rtl/core/neorv32_cpu_cp_shifter.vhd(121):Conditional signal assignment line__121
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ShiftOutNS.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity ShiftOutNS
+-- Compiling architecture Behavioral of ShiftOutNS
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_wdt.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_wdt.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_wdt
+-- Compiling architecture neorv32_wdt_rtl of neorv32_wdt
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_neoled.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_neoled.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_neoled
+-- Compiling architecture neorv32_neoled_rtl of neorv32_neoled
+-- Loading entity neorv32_fifo
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/LatheTopSimRiscV.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package RiscvDataRec
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity LatheTopSimRiscV
+-- Compiling architecture Behavorial of LatheTopSimRiscV
+-- Loading entity DbgMap
+-- Loading entity Clock
+-- Loading entity neorv32_top
+-- Loading entity DoutDelay
+-- Loading package std_logic_arith
+-- Loading entity CFSInterface
+-- Loading package conversion
+-- Loading entity LatheInterface
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_control.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_control
+-- Compiling architecture neorv32_cpu_control_rtl of neorv32_cpu_control
+-- Loading entity neorv32_fifo
+-- Loading entity neorv32_cpu_decompressor
+
+} {} {}} C:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/LatheTopTestRiscV.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package MATH_REAL
+-- Loading package SimProc
+-- Loading package RegDef
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity A_LatheTopTestRiscV
+-- Compiling architecture behavior of A_LatheTopTestRiscV
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package RiscvDataRec
+-- Loading entity LatheTopSimRiscV
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_debug_dtm.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_debug_dtm
+-- Compiling architecture neorv32_debug_dtm_rtl of neorv32_debug_dtm
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/DbgRecord.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling package DbgRecord
+
+} {} {}} C:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/Encoder/VHDL/CmpTmrNewMem.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity CmpTmrNewMem
+-- Compiling architecture Behavioral of CmpTmrNewMem
+-- Loading entity ShiftOp
+-- Loading entity ShiftOutN
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_mtime.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_mtime.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_mtime
+-- Compiling architecture neorv32_mtime_rtl of neorv32_mtime
+
+} {} {}} C:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/mem/neorv32_dmem.default.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling architecture neorv32_dmem_rtl of neorv32_dmem
+-- Loading entity neorv32_dmem
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_package.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_package.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package neorv32_package
+-- Compiling package body neorv32_package
+-- Loading package neorv32_package
+-- Loading package neorv32_package
+-- Compiling package neorv32_bootloader_image
+-- Compiling package neorv32_application_image
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_bootloader_image.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Compiling package body neorv32_bootloader_image
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package neorv32_bootloader_image
+
+} {} {}} C:/Development/Altera/LatheNew/Test/AxisTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/AxisTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package SimProc
+-- Loading package RegDef
+-- Compiling entity A_AxisTest
+-- Compiling architecture behavior of A_AxisTest
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_debug_dm
+-- Compiling architecture neorv32_debug_dm_rtl of neorv32_debug_dm
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(544): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(567): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(583): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(592): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(602): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(606): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(612): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(616): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(620): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(622): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(626): (vcom-1937) Choice in CASE statement alternative must be locally static.
+** Warning: C:/Development/neorv32/rtl/core/neorv32_debug_dm.vhd(630): (vcom-1937) Choice in CASE statement alternative must be locally static.
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Selector.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Selector.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity DMux8
+-- Compiling architecture Behavorial of DMux8
+-- Compiling entity DMux16
+-- Compiling architecture Behavorial of DMux16
+-- Compiling entity OpSel
+-- Compiling architecture Behavorial of OpSel
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_intercon.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_intercon.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_bus_switch
+-- Compiling architecture neorv32_bus_switch_rtl of neorv32_bus_switch
+-- Compiling entity neorv32_bus_gateway
+-- Compiling architecture neorv32_bus_gateway_rtl of neorv32_bus_gateway
+-- Compiling entity neorv32_bus_io_switch
+-- Compiling architecture neorv32_bus_io_switch_rtl of neorv32_bus_io_switch
+-- Compiling entity neorv32_bus_reservation_set
+-- Compiling architecture neorv32_bus_reservation_set_rtl of neorv32_bus_reservation_set
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/MpgRecord.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling package MpgRecord
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_sysinfo.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_sysinfo
+-- Compiling architecture neorv32_sysinfo_rtl of neorv32_sysinfo
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_twi.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_twi.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_twi
+-- Compiling architecture neorv32_twi_rtl of neorv32_twi
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_pwm.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_pwm.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_pwm
+-- Compiling architecture neorv32_pwm_rtl of neorv32_pwm
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_cp_fpu.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_cp_fpu
+-- Compiling architecture neorv32_cpu_cp_fpu_rtl of neorv32_cpu_cp_fpu
+-- Compiling entity neorv32_cpu_cp_fpu_normalizer
+-- Compiling architecture neorv32_cpu_cp_fpu_normalizer_rtl of neorv32_cpu_cp_fpu_normalizer
+-- Compiling entity neorv32_cpu_cp_fpu_f2i
+-- Compiling architecture neorv32_cpu_cp_fpu_f2i_rtl of neorv32_cpu_cp_fpu_f2i
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_fifo.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_fifo.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_fifo
+-- Compiling architecture neorv32_fifo_rtl of neorv32_fifo
+** Warning: C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(54): Nonresolved signal 'half_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(163):Process sync_status_flags
+       Driven at:
+          C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(168)
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(158):Conditional signal assignment line__158
+** Warning: C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(58): Nonresolved signal 'free_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(163):Process sync_status_flags
+       Driven at:
+          C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(166)
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(156):Conditional signal assignment line__156
+** Warning: C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(61): Nonresolved signal 'rdata_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(223):Process async_read
+       Driven at:
+          C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(227)
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(211):Process async_read
+       Driven at:
+          C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(214)
+** Warning: C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(62): Nonresolved signal 'avail_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(163):Process sync_status_flags
+       Driven at:
+          C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(167)
+    C:/Development/neorv32/rtl/core/neorv32_fifo.vhd(157):Conditional signal assignment line__157
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ShiftOpLoad.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity ShiftOpLoad
+-- Compiling architecture Behavioral of ShiftOpLoad
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/FpgaLatheRec.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package FpgaLatheBitsRec
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/FpgaLatheBits.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package FpgaLatheBits
+-- Compiling package body FpgaLatheBits
+-- Loading package FpgaLatheBits
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Spindle.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Spindle.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity Spindle
+-- Compiling architecture Behavioral of Spindle
+-- Loading entity CtlReg
+-- Loading entity FreqGen
+-- Loading entity SyncAccelNew
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Encoder.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Encoder.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Compiling entity Encoder
+-- Compiling architecture Behavioral of Encoder
+-- Loading entity ShiftOp
+-- Loading entity CmpTmrNewMem
+-- Loading entity IntTmrNew
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_sdi.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_sdi.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_sdi
+-- Compiling architecture neorv32_sdi_rtl of neorv32_sdi
+-- Loading entity neorv32_fifo
+
+} {} {}} C:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/DevNeorv32/sw/example/simTest/neorv32_application_image.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Compiling package body neorv32_application_image
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package neorv32_application_image
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_boot_rom.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package neorv32_bootloader_image
+-- Compiling entity neorv32_boot_rom
+-- Compiling architecture neorv32_boot_rom_rtl of neorv32_boot_rom
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/QuadEncoder.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity QuadEncoder
+-- Compiling architecture Behavioral of QuadEncoder
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/PulseGen.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/PulseGen.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity PulseGen
+-- Compiling architecture Behavioral of PulseGen
+-- Loading entity ClockEnableN
+
+} {} {}} C:/Development/Altera/LatheNew/Test/LatheTopTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/LatheTopTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package MATH_REAL
+-- Loading package SimProc
+-- Loading package RegDef
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity A_LatheTopTest
+-- Compiling architecture behavior of A_LatheTopTest
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package RiscvDataRec
+-- Loading entity LatheTopSimRiscV
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ShiftOp.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity ShiftOp
+-- Compiling architecture Behavioral of ShiftOp
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_pmp.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_pmp
+-- Compiling architecture neorv32_cpu_pmp_rtl of neorv32_cpu_pmp
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ClockEnaN.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity ClockEnableN
+-- Compiling architecture Behavioral of ClockEnableN
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_cp_bitmanip.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_cp_bitmanip
+-- Compiling architecture neorv32_cpu_cp_bitmanip_rtl of neorv32_cpu_cp_bitmanip
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_icache.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_icache.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_icache
+-- Compiling architecture neorv32_icache_rtl of neorv32_icache
+-- Compiling entity neorv32_icache_memory
+-- Compiling architecture neorv32_icache_memory_rtl of neorv32_icache_memory
+
+} {} {}} C:/Development/Altera/LatheNew/Test/SimProc.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/SimProc.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Compiling package SimProc
+-- Compiling package body SimProc
+-- Loading package SimProc
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_gpio.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_gpio.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_gpio
+-- Compiling architecture neorv32_gpio_rtl of neorv32_gpio
+
+} {} {}} C:/Development/Altera/LatheNew/Test/LatheNewTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/LatheNewTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package MATH_REAL
+-- Loading package SimProc
+-- Loading package RegDef
+-- Compiling entity A_LatheNewTest
+-- Compiling architecture behavior of A_LatheNewTest
+
+} {} {}} C:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/neorv32/neorv32_cfs.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Compiling entity neorv32_cfs
+-- Compiling architecture neorv32_cfs_rtl of neorv32_cfs
+-- Loading package MATH_REAL
+-- Loading entity Mpg
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/DbgMap.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/DbgMap.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package DbgRecord
+-- Compiling entity DbgMap
+-- Compiling architecture Behavorial of DbgMap
+-- Loading package NUMERIC_STD
+-- Loading entity PulseGen
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_dma.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_dma.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_dma
+-- Compiling architecture neorv32_dma_rtl of neorv32_dma
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/SPI.vhd {2 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/SPI.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Compiling entity SPI
+-- Compiling architecture Behavioral of SPI
+-- Loading entity ClockEnableN
+** Warning: C:/Development/Altera/LatheNew/VHDL/SPI.vhd(68): (vcom-1514) Range choice direction (downto) does not determine aggregate index range direction (to).
+** Warning: C:/Development/Altera/LatheNew/VHDL/SPI.vhd(69): (vcom-1514) Range choice direction (downto) does not determine aggregate index range direction (to).
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ShiftOutN.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity ShiftOutN
+-- Compiling architecture Behavioral of ShiftOutN
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_imem.entity.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_imem
+
+} {} {}} C:/Development/Altera/LatheNew/Spinal/Spix.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Spinal/Spix.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling package pkg_enum
+-- Compiling package body pkg_enum
+-- Loading package pkg_enum
+-- Loading package MATH_REAL
+-- Compiling package pkg_scala2hdl
+-- Compiling package body pkg_scala2hdl
+-- Loading package pkg_scala2hdl
+-- Loading package pkg_scala2hdl
+-- Loading package pkg_enum
+-- Compiling entity Spix
+-- Compiling architecture arch of Spix
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/SyncAccelNew.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity SyncAccelNew
+-- Compiling architecture Behavioral of SyncAccelNew
+-- Loading entity ShiftOp
+-- Loading entity ShiftOutN
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_cp_cfu.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_cp_cfu
+-- Compiling architecture neorv32_cpu_cp_cfu_rtl of neorv32_cpu_cp_cfu
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/PhaseCounter.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity PhaseCounter
+-- Compiling architecture Behavioral of PhaseCounter
+-- Loading entity ShiftOp
+-- Loading entity ShiftOutN
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Interface.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Interface.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package RiscvDataRec
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity CFSInterface
+-- Compiling architecture Behavorial of CFSInterface
+
+} {} {}} C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package neorv32_application_image
+-- Compiling architecture neorv32_imem_rtl of neorv32_imem
+-- Loading entity neorv32_imem
+** Warning: C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd(49): Nonresolved signal 'rdata' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd(147):Conditional signal assignment line__147
+    C:/Development/neorv32/rtl/core/mem/neorv32_imem.default.vhd(117):Conditional signal assignment line__117
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_onewire.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_onewire.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_onewire
+-- Compiling architecture neorv32_onewire_rtl of neorv32_onewire
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/DoutDelay.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity DoutDelay
+-- Compiling architecture Behavorial of DoutDelay
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_cp_muldiv.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_cp_muldiv
+-- Compiling architecture neorv32_cpu_cp_muldiv_rtl of neorv32_cpu_cp_muldiv
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_gptmr.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_gptmr.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_gptmr
+-- Compiling architecture neorv32_gptmr_rtl of neorv32_gptmr
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Fifo.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Fifo.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package MATH_REAL
+-- Compiling entity Fifo
+-- Compiling architecture Behavioral of Fifo
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_trng.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_trng.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_trng
+-- Compiling architecture neorv32_trng_rtl of neorv32_trng
+-- Loading entity neorv32_fifo
+-- Compiling entity neoTRNG
+-- Compiling architecture neoTRNG_rtl of neoTRNG
+** Warning: C:/Development/neorv32/rtl/core/neorv32_trng.vhd(386): Nonresolved signal 'data' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(570):Conditional signal assignment line__570
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(564):Conditional signal assignment line__564
+** Warning: C:/Development/neorv32/rtl/core/neorv32_trng.vhd(387): Nonresolved signal 'valid' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(571):Conditional signal assignment line__571
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(565):Conditional signal assignment line__565
+-- Compiling entity neoTRNG_cell
+-- Compiling architecture neoTRNG_cell_rtl of neoTRNG_cell
+** Warning: C:/Development/neorv32/rtl/core/neorv32_trng.vhd(649): Nonresolved signal 'data_o' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(733):Conditional signal assignment line__733
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(709):Conditional signal assignment line__709
+** Warning: C:/Development/neorv32/rtl/core/neorv32_trng.vhd(657): Nonresolved signal 'feedback' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(732):Conditional signal assignment line__732
+    C:/Development/neorv32/rtl/core/neorv32_trng.vhd(708):Conditional signal assignment line__708
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Axis.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Axis.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity Axis
+-- Compiling architecture Behavioral of Axis
+-- Loading entity ShiftOutN
+-- Loading entity CtlReg
+-- Loading package MATH_REAL
+-- Loading entity SyncAccelDist
+-- Loading entity PulseGen
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/ClockA.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/ClockA.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity Clock
+-- Compiling architecture Behavioral of Clock
+
+} {} {}} C:/Development/Altera/LatheNew/Test/ClockTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/ClockTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity systemClk
+-- Compiling architecture Behavioral of systemClk
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_decompressor.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_decompressor
+-- Compiling architecture neorv32_cpu_decompressor_rtl of neorv32_cpu_decompressor
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_regfile.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_regfile
+-- Compiling architecture neorv32_cpu_regfile_rtl of neorv32_cpu_regfile
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/IORecord.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/IORecord.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Compiling package IORecord
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/LatheInterface.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package RiscvDataRec
+-- Loading package conversion
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Compiling entity LatheInterface
+-- Compiling architecture Behavioral of LatheInterface
+-- Loading entity SPI
+-- Loading entity ShiftOutN
+-- Loading entity CtlReg
+-- Loading entity Display
+-- Loading entity LatheCtl
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_dmem.entity.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_dmem
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/FreqGen.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/FreqGen.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity FreqGen
+-- Compiling architecture Behavioral of FreqGen
+-- Loading entity ShiftOp
+
+} {} {}} C:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/Encoder/VHDL/IntTmrNew1.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity IntTmrNew
+-- Compiling architecture Behavioral of IntTmrNew
+-- Loading entity ShiftOp
+-- Loading entity ShiftOutN
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_dcache.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_dcache.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_dcache
+-- Compiling architecture neorv32_dcache_rtl of neorv32_dcache
+-- Compiling entity neorv32_dcache_memory
+-- Compiling architecture neorv32_dcache_memory_rtl of neorv32_dcache_memory
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/PWM.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/PWM.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity PWM
+-- Compiling architecture behavioral of PWM
+-- Loading entity ShiftOp
+-- Loading entity ShiftOpSel
+
+} {} {}} C:/Development/Altera/LatheNew/Proj/Multiplier.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Proj/Multiplier.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Compiling entity Multiplier
+-- Compiling architecture SYN of multiplier
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_lsu.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_lsu
+-- Compiling architecture neorv32_cpu_lsu_rtl of neorv32_cpu_lsu
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd {2 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Loading package RegDef
+-- Loading package IORecord
+-- Loading package DbgRecord
+-- Loading package RiscvDataRec
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+** Warning: C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd(17): (vcom-1615) Existing entity 'LatheTop' at C:/Development/Altera/LatheNew/VHDL/LatheTopNano.vhd(10) will be overwritten.
+-- Compiling entity LatheTop
+** Warning: C:/Development/Altera/LatheNew/VHDL/LatheTopNanoRiscV.vhd(83): (vcom-1615) Existing architecture 'LatheTop(Behavioral)' at C:/Development/Altera/LatheNew/VHDL/LatheTopNano.vhd(52) will be overwritten.
+-- Compiling architecture Behavioral of LatheTop
+-- Loading entity DbgMap
+-- Loading entity Clock
+-- Loading entity neorv32_top
+-- Loading entity DoutDelay
+-- Loading package std_logic_arith
+-- Loading entity CFSInterface
+-- Loading package conversion
+-- Loading entity LatheInterface
+
+} {} {}} C:/Development/Altera/LatheNew/Sim/ReaderMem.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Sim/ReaderMem.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Compiling entity RdMem
+-- Compiling architecture behavioral of RdMem
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_uart.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_uart.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_uart
+-- Compiling architecture neorv32_uart_rtl of neorv32_uart
+-- Loading entity neorv32_fifo
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/LatheTopNano.vhd {1 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/LatheTopNano.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package RiscvDataRec
+-- Loading package DbgRecord
+-- Loading package IORecord
+-- Compiling entity LatheTop
+-- Compiling architecture Behavioral of LatheTop
+-- Loading entity DbgMap
+-- Loading entity Clock
+-- Loading entity DoutDelay
+-- Loading package std_logic_arith
+-- Loading package conversion
+-- Loading package FpgaLatheBitsRec
+-- Loading package FpgaLatheBitsFunc
+-- Loading entity LatheInterface
+
+} {} {}} C:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/ShiftOutNTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package SimProc
+-- Loading package RegDef
+-- Compiling entity ShiftOutNTest
+-- Compiling architecture behavior of ShiftOutNTest
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/FreqGenCtr.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity FreqGenCtr
+-- Compiling architecture Behavioral of FreqGenCtr
+-- Loading entity ShiftOp
+-- Loading entity ShiftOpLoad
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/CtlReg.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/CtlReg.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package RegDef
+-- Loading package IORecord
+-- Compiling entity CtlReg
+-- Compiling architecture Behavioral of CtlReg
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd {2 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_cpu_alu
+-- Compiling architecture neorv32_cpu_cpu_rtl of neorv32_cpu_alu
+-- Loading entity neorv32_cpu_cp_shifter
+-- Loading entity neorv32_cpu_cp_muldiv
+-- Loading entity neorv32_cpu_cp_bitmanip
+-- Loading entity neorv32_cpu_cp_fpu
+-- Loading entity neorv32_cpu_cp_cfu
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(104): Nonresolved signal 'csr_rdata_fpu' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(287):Conditional signal assignment line__287
+    C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(262):Statement neorv32_cpu_cp_fpu_inst
+** Warning: C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(104): Nonresolved signal 'csr_rdata_cfu' may have multiple sources.
+  Drivers:
+    C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(322):Conditional signal assignment line__322
+    C:/Development/neorv32/rtl/core/neorv32_cpu_alu.vhd(297):Statement neorv32_cpu_cp_cfu_inst
+
+} {} {}} C:/Development/neorv32/rtl/core/neorv32_slink.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/neorv32/rtl/core/neorv32_slink.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Compiling entity neorv32_slink
+-- Compiling architecture neorv32_slink_rtl of neorv32_slink
+-- Loading entity neorv32_fifo
+
+} {} {}} C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd {2 {vcom -work work -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package neorv32_package
+-- Loading package MpgRecord
+-- Compiling entity neorv32_top
+-- Compiling architecture neorv32_top_rtl of neorv32_top
+-- Loading entity neorv32_cpu
+-- Loading entity neorv32_icache
+-- Loading entity neorv32_dcache
+-- Loading entity neorv32_bus_switch
+-- Loading entity neorv32_dma
+-- Loading entity neorv32_bus_reservation_set
+-- Loading entity neorv32_bus_gateway
+-- Loading entity neorv32_imem
+-- Loading entity neorv32_dmem
+-- Loading package neorv32_bootloader_image
+-- Loading entity neorv32_boot_rom
+-- Loading entity neorv32_xip
+-- Loading entity neorv32_wishbone
+-- Loading entity neorv32_bus_io_switch
+-- Loading entity neorv32_cfs
+-- Loading entity neorv32_sdi
+-- Loading entity neorv32_gpio
+-- Loading entity neorv32_wdt
+-- Loading entity neorv32_mtime
+-- Loading entity neorv32_uart
+-- Loading entity neorv32_spi
+-- Loading entity neorv32_twi
+-- Loading entity neorv32_pwm
+-- Loading entity neorv32_trng
+-- Loading entity neorv32_neoled
+-- Loading entity neorv32_xirq
+-- Loading entity neorv32_gptmr
+-- Loading entity neorv32_onewire
+-- Loading entity neorv32_slink
+-- Loading entity neorv32_crc
+-- Loading entity neorv32_sysinfo
+-- Loading entity neorv32_debug_dtm
+-- Loading entity neorv32_debug_dm
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(170): Nonresolved signal 'jtag_tdo_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1592):Conditional signal assignment line__1592
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1543):Statement neorv32_debug_dtm_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(174): Nonresolved signal 'wb_tag_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(905):Conditional signal assignment line__905
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(175): Nonresolved signal 'wb_adr_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(899):Conditional signal assignment line__899
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(177): Nonresolved signal 'wb_dat_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(900):Conditional signal assignment line__900
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(178): Nonresolved signal 'wb_we_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(901):Conditional signal assignment line__901
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(179): Nonresolved signal 'wb_sel_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(902):Conditional signal assignment line__902
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(180): Nonresolved signal 'wb_stb_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(903):Conditional signal assignment line__903
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(181): Nonresolved signal 'wb_cyc_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(904):Conditional signal assignment line__904
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(188): Nonresolved signal 'slink_rx_rdy_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1449):Conditional signal assignment line__1449
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1422):Statement neorv32_slink_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(189): Nonresolved signal 'slink_tx_dat_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1450):Conditional signal assignment line__1450
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1422):Statement neorv32_slink_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(190): Nonresolved signal 'slink_tx_val_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1451):Conditional signal assignment line__1451
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1422):Statement neorv32_slink_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(198): Nonresolved signal 'xip_csn_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(859):Conditional signal assignment line__859
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(836):Statement neorv32_xip_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(199): Nonresolved signal 'xip_clk_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(860):Conditional signal assignment line__860
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(836):Statement neorv32_xip_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(201): Nonresolved signal 'xip_dat_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(861):Conditional signal assignment line__861
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(836):Statement neorv32_xip_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(204): Nonresolved signal 'gpio_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1067):Conditional signal assignment line__1067
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1050):Statement neorv32_gpio_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(208): Nonresolved signal 'uart0_txd_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1150):Conditional signal assignment line__1150
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1125):Statement neorv32_uart0_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(210): Nonresolved signal 'uart0_rts_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1151):Conditional signal assignment line__1151
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1125):Statement neorv32_uart0_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(214): Nonresolved signal 'uart1_txd_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1187):Conditional signal assignment line__1187
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1162):Statement neorv32_uart1_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(216): Nonresolved signal 'uart1_rts_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1188):Conditional signal assignment line__1188
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1162):Statement neorv32_uart1_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(220): Nonresolved signal 'spi_clk_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1221):Conditional signal assignment line__1221
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1199):Statement neorv32_spi_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(221): Nonresolved signal 'spi_dat_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1222):Conditional signal assignment line__1222
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1199):Statement neorv32_spi_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(223): Nonresolved signal 'spi_csn_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1223):Conditional signal assignment line__1223
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1199):Statement neorv32_spi_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(227): Nonresolved signal 'sdi_dat_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1041):Conditional signal assignment line__1041
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1021):Statement neorv32_SDI_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(233): Nonresolved signal 'twi_sda_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1252):Conditional signal assignment line__1252
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1233):Statement neorv32_twi_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(235): Nonresolved signal 'twi_scl_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1253):Conditional signal assignment line__1253
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1233):Statement neorv32_twi_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(239): Nonresolved signal 'onewire_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1412):Conditional signal assignment line__1412
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1395):Statement neorv32_onewire_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(242): Nonresolved signal 'pwm_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1282):Conditional signal assignment line__1282
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1263):Statement neorv32_pwm_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(246): Nonresolved signal 'cfs_out_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1013):Conditional signal assignment line__1013
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(978):Statement neorv32_cfs_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(256): Nonresolved signal 'neoled_o' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1335):Conditional signal assignment line__1335
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1314):Statement neorv32_neoled_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(288): Nonresolved signal 'rstn_wdt' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1095):Conditional signal assignment line__1095
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1075):Statement neorv32_wdt_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(311): Nonresolved signal 'dci_ndmrstn' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1593):Conditional signal assignment line__1593
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1566):Statement neorv32_debug_dm_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(311): Nonresolved signal 'dci_halt_req' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1594):Conditional signal assignment line__1594
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1566):Statement neorv32_debug_dm_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(315): Nonresolved signal 'cpu_i_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(581):Conditional signal assignment line__581
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(560):Statement neorv32_icache_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(315): Nonresolved signal 'cpu_d_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(609):Conditional signal assignment line__609
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(589):Statement neorv32_dcache_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(316): Nonresolved signal 'icache_req' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(580):Conditional signal assignment line__580
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(560):Statement neorv32_icache_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(316): Nonresolved signal 'dcache_req' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(608):Conditional signal assignment line__608
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(589):Statement neorv32_dcache_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(319): Nonresolved signal 'core_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(679):Conditional signal assignment line__679
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(657):Statement neorv32_dma_bus_switch_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(322): Nonresolved signal 'main_req' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(678):Conditional signal assignment line__678
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(657):Statement neorv32_dma_bus_switch_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(322): Nonresolved signal 'main2_req' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(708):Conditional signal assignment line__708
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(689):Statement neorv32_bus_reservation_set_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(323): Nonresolved signal 'main_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(709):Conditional signal assignment line__709
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(689):Statement neorv32_bus_reservation_set_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(327): Nonresolved signal 'imem_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(789):Conditional signal assignment line__789
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(775):Statement neorv32_int_imem_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(327): Nonresolved signal 'dmem_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(810):Conditional signal assignment line__810
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(797):Statement neorv32_int_dmem_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(327): Nonresolved signal 'xip_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(857):Conditional signal assignment line__857
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(836):Statement neorv32_xip_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(327): Nonresolved signal 'boot_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(828):Conditional signal assignment line__828
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(818):Statement neorv32_boot_rom_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(327): Nonresolved signal 'xbus_rsp' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(898):Conditional signal assignment line__898
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(869):Statement neorv32_wishbone_inst
+** Warning: C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(346): Nonresolved signal 'mtime_irq' may have multiple sources.
+  Drivers:
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1117):Conditional signal assignment line__1117
+    C:/Development/Altera/LatheNew/neorv32/neorv32_top_sim.vhd(1104):Statement neorv32_mtime_inst
+
+} {} {}} C:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd {1 {vcom -work work -2008 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/Test/FreqGenCtrTest.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package std_logic_arith
+-- Loading package RegDef
+-- Loading package SimProc
+-- Compiling entity FreqGenCtrTest
+-- Compiling architecture behavior of FreqGenCtrTest
+
+} {} {}} C:/Development/Altera/LatheNew/VHDL/Mpg.vhd {1 {vcom -work neorv32 -2002 -explicit -vopt -stats=none C:/Development/Altera/LatheNew/VHDL/Mpg.vhd
+Questa Intel Starter FPGA Edition-64 vcom 2023.1 Compiler 2023.01 Jan 23 2023
+-- Loading package STANDARD
+-- Loading package TEXTIO
+-- Loading package std_logic_1164
+-- Loading package NUMERIC_STD
+-- Loading package MATH_REAL
+-- Compiling entity Mpg
+-- Compiling architecture Behavioral of Mpg
+-- Loading entity Fifo
+
+} {} {}}

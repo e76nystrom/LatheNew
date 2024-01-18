@@ -6,7 +6,7 @@ use ieee.std_logic_1164.ALL;
 use ieee.numeric_std.ALL;
 
 use work.RegDef.opb;
-use work.IORecord.DataInp;
+use work.IORecord.all;
 
 entity ShiftOp is
  generic(opVal : unsigned (opb-1 downto 0);

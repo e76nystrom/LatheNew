@@ -22,7 +22,7 @@ return riscvCtlRec;
 function riscvCtlToRecS(val : std_logic_vector(riscvCtlSize-1 downto 0))
 return riscvCtlRec;
 
-constant statusSize : integer := 9;
+constant statusSize : integer := 10;
 subType statusVec is std_logic_vector(statusSize-1 downto 0);
 constant statusZero : statusVec := (others => '0');
 
@@ -61,7 +61,7 @@ return axisInRec;
 function axisInToRecS(val : std_logic_vector(axisInSize-1 downto 0))
 return axisInRec;
 
-constant outputsSize : integer := 3;
+constant outputsSize : integer := 2;
 subType outputsVec is std_logic_vector(outputsSize-1 downto 0);
 constant outputsZero : outputsVec := (others => '0');
 
@@ -178,7 +178,7 @@ return synCtlRec;
 function synCtlToRecS(val : std_logic_vector(synCtlSize-1 downto 0))
 return synCtlRec;
 
-constant spCtlSize : integer := 4;
+constant spCtlSize : integer := 3;
 subType spCtlVec is std_logic_vector(spCtlSize-1 downto 0);
 constant spCtlZero : spCtlVec := (others => '0');
 
@@ -229,15 +229,17 @@ end function;
 function statusToVec(val : statusRec) return statusVec is
  variable rtnVec : statusVec;
 begin
- rtnVec := val.syncActive    & val.spindleActive & val.stEStop       &
-           val.xAxisCurDir   & val.xAxisDone     & val.xAxisEna      &
-           val.zAxisCurDir   & val.zAxisDone     & val.zAxisEna;
+ rtnVec := val.encoderDir    & val.syncActive    & val.spindleActive &
+           val.stEStop       & val.xAxisCurDir   & val.xAxisDone     &
+           val.xAxisEna      & val.zAxisCurDir   & val.zAxisDone     &
+           val.zAxisEna;
  return rtnVec;
 end function;
 
 function statusToRec(val : statusVec) return statusRec is
  variable rtnRec : statusRec;
 begin
+ rtnRec.encoderDir    := val(9);
  rtnRec.syncActive    := val(8);
  rtnRec.spindleActive := val(7);
  rtnRec.stEStop       := val(6);
@@ -255,6 +257,7 @@ function statusToRecS(val : std_logic_vector(statusSize-1 downto 0))
  return statusRec is
  variable rtnRec : statusRec;
 begin
+ rtnRec.encoderDir    := val(9);
  rtnRec.syncActive    := val(8);
  rtnRec.spindleActive := val(7);
  rtnRec.stEStop       := val(6);
@@ -361,14 +364,13 @@ end function;
 function outputsToVec(val : outputsRec) return outputsVec is
  variable rtnVec : outputsVec;
 begin
- rtnVec := val.outPin17 & val.outPin14 & val.outPin1;
+ rtnVec := val.outPin14 & val.outPin1;
  return rtnVec;
 end function;
 
 function outputsToRec(val : outputsVec) return outputsRec is
  variable rtnRec : outputsRec;
 begin
- rtnRec.outPin17 := val(2);
  rtnRec.outPin14 := val(1);
  rtnRec.outPin1  := val(0);
 
@@ -379,7 +381,6 @@ function outputsToRecS(val : std_logic_vector(outputsSize-1 downto 0))
  return outputsRec is
  variable rtnRec : outputsRec;
 begin
- rtnRec.outPin17 := val(2);
  rtnRec.outPin14 := val(1);
  rtnRec.outPin1  := val(0);
 
@@ -763,15 +764,14 @@ end function;
 function spCtlToVec(val : spCtlRec) return spCtlVec is
  variable rtnVec : spCtlVec;
 begin
- rtnVec := val.spJogEnable & val.spDir       & val.spEna       &
-           val.spInit      & val.encClkShift;
+ rtnVec := val.spDir       & val.spEna       & val.spInit      &
+           val.encClkShift;
  return rtnVec;
 end function;
 
 function spCtlToRec(val : spCtlVec) return spCtlRec is
  variable rtnRec : spCtlRec;
 begin
- rtnRec.spJogEnable := val(3);
  rtnRec.spDir       := val(2);
  rtnRec.spEna       := val(1);
  rtnRec.spInit      := val(0);
@@ -784,7 +784,6 @@ function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
  return spCtlRec is
  variable rtnRec : spCtlRec;
 begin
- rtnRec.spJogEnable := val(3);
  rtnRec.spDir       := val(2);
  rtnRec.spEna       := val(1);
  rtnRec.spInit      := val(0);

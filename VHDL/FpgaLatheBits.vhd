@@ -23,7 +23,7 @@ package FpgaLatheBits is
 
 -- status register
 
- constant statusSize : integer := 9;
+ constant statusSize : integer := 10;
  signal statusReg : unsigned(statusSize-1 downto 0);
  --variable statusReg : unsigned(statusSize-1 downto 0);
 
@@ -36,6 +36,7 @@ package FpgaLatheBits is
  alias    stEStop            : std_logic is statusReg( 6); -- x0040 'ES' emergency stop
  alias    spindleActive      : std_logic is statusReg( 7); -- x0080 'S+' spindle active
  alias    syncActive         : std_logic is statusReg( 8); -- x0100 'SA' sync active
+ alias    encoderDir         : std_logic is statusReg( 9); -- x0200 'ED' encoder direction
 
  constant c_zAxisEna         : integer :=  0; -- x0001 'ZE' z axis enable flag
  constant c_zAxisDone        : integer :=  1; -- x0002 'ZD' z axis done
@@ -46,6 +47,7 @@ package FpgaLatheBits is
  constant c_stEStop          : integer :=  6; -- x0040 'ES' emergency stop
  constant c_spindleActive    : integer :=  7; -- x0080 'S+' spindle active
  constant c_syncActive       : integer :=  8; -- x0100 'SA' sync active
+ constant c_encoderDir       : integer :=  9; -- x0200 'ED' encoder direction
 
 -- input register
 
@@ -99,17 +101,15 @@ package FpgaLatheBits is
 
 -- output register
 
- constant outputsSize : integer := 3;
+ constant outputsSize : integer := 2;
  signal outputsReg : unsigned(outputsSize-1 downto 0);
  --variable outputsReg : unsigned(outputsSize-1 downto 0);
 
  alias    outPin1            : std_logic is outputsReg( 0); -- x0001 pin 1
  alias    outPin14           : std_logic is outputsReg( 1); -- x0002 pin 14
- alias    outPin17           : std_logic is outputsReg( 2); -- x0004 pin 17
 
  constant c_outPin1          : integer :=  0; -- x0001 pin 1
  constant c_outPin14         : integer :=  1; -- x0002 pin 14
- constant c_outPin17         : integer :=  2; -- x0004 pin 17
 
 -- pin out signals
 
@@ -377,19 +377,17 @@ package FpgaLatheBits is
 
 -- spindle control register
 
- constant spCtlSize : integer := 4;
+ constant spCtlSize : integer := 3;
  signal spCtlReg : unsigned(spCtlSize-1 downto 0);
  --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
 
  alias    spInit             : std_logic is spCtlReg( 0); -- x0001 spindle init
  alias    spEna              : std_logic is spCtlReg( 1); -- x0002 spindle enable
  alias    spDir              : std_logic is spCtlReg( 2); -- x0004 spindle direction
- alias    spJogEnable        : std_logic is spCtlReg( 3); -- x0008 spindle jog enable
 
  constant c_spInit           : integer :=  0; -- x0001 spindle init
  constant c_spEna            : integer :=  1; -- x0002 spindle enable
  constant c_spDir            : integer :=  2; -- x0004 spindle direction
- constant c_spJogEnable      : integer :=  3; -- x0008 spindle jog enable
 
 end FpgaLatheBits;
 

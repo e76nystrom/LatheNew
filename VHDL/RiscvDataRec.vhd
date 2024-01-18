@@ -12,16 +12,16 @@ package RiscvDataRec is
   active : std_logic;
   shift  : std_logic;                   --shift data
   copy   : std_logic;                   --copy input data
-  load   : std_logic;                   --load output data
+  -- load   : std_logic;                   --load output data
   dSnd   : std_logic;                   --output data
  end record RiscvDataCtl;
 
  constant riscvDataCtlInit : RiscvDataCtl := (op     => (others => '0'),
-                                          active => '0',
-                                          shift  => '0',
-                                          copy   => '0',
-                                          load   => '0',
-                                          dSnd   => '0');
+                                              active => '0',
+                                              shift  => '0',
+                                              copy   => '0',
+                                              -- load   => '0',
+                                              dSnd   => '0');
 
  constant riscvDataCtlLen : positive := 13;
 
@@ -41,7 +41,7 @@ package body RiscvDataRec is
  function riscvDataToVec(val : riscvDataCtl) return std_logic_vector is
   variable rtnVec : std_logic_vector(riscvDataCtlLen-1 downto 0);
  begin
-  rtnVec := val.active & val.shift & val.copy & val.load & val.dSnd &
+  rtnVec := val.active & val.shift & val.copy & val.dSnd &
             std_logic_vector(val.op);
   return rtnVec;
  end function;

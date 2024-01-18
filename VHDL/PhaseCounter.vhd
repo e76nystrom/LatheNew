@@ -9,24 +9,13 @@ use work.IORecord.all;
 
 entity PhaseCounter is
  generic (opBase : unsigned;
-
           phaseBits : positive := 16;
           totalBits : positive := 32;
           outBits : positive);
  port (
-  clk    : in std_logic;
-
-  inp    : DataInp;
-  -- din : in std_logic;
-  -- dshift : in boolean;
-  -- op : in unsigned (opBits-1 downto 0);
-  -- load : in boolean;
-
-  oRec   : DataOut;
-  -- dshiftR : in boolean;
-  -- opR : in unsigned (opBits-1 downto 0);
-  -- copyR : in boolean;
-
+  clk     : in  std_logic;
+  inp     : in  DataInp;
+  oRec    : in  DataOut;
   init    : in  std_logic;
   genSync : in  std_logic;
   ch      : in  std_logic;
@@ -69,8 +58,8 @@ begin
               n       => phaseBits,
               outBits => outBits)
   port map (
-   clk => clk,
-   oRec    => oRec,
+   clk  => clk,
+   oRec => oRec,
    data => phaseSyn,
    dout => doutPhaseSyn
    );

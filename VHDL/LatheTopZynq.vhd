@@ -16,10 +16,11 @@ use work.FpgaLatheBitsFunc.all;
 
 entity LatheTop is
  generic (CLOCK_FREQUENCY   : natural := 50000000;  -- clock frequency of clk_i in Hz
-          MEM_INT_IMEM_SIZE : natural := 16*1024;   -- size of processor-internal instruction memory in bytes
+          MEM_INT_IMEM_SIZE : natural := 32*1024;   -- size of processor-internal instruction memory in bytes
           MEM_INT_DMEM_SIZE : natural := 8*1024;    -- size of processor-internal data memory in bytes
           ledPins   : positive := 2;
           dbgPins   : positive := 8;
+          outPins   : positive := 4;
           inputPins : positive := 13);
  port (
   sysClk   : in std_logic;
@@ -27,8 +28,9 @@ entity LatheTop is
   
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
-  anode    : out std_logic_vector(3 downto 0) := (others => '1');
-  seg      : out std_logic_vector(6 downto 0) := (others => '1');
+  xOut     : out std_ulogic_vector(outPins-1 downto 0) := (others => '0');
+  -- anode    : out std_logic_vector(3 downto 0) := (others => '1');
+  -- seg      : out std_logic_vector(6 downto 0) := (others => '1');
 
   dsel     : in std_logic;
   dclk     : in std_logic;
@@ -46,9 +48,9 @@ entity LatheTop is
   zMpg     : in std_logic_vector(1 downto 0);
   xMpg     : in std_logic_vector(1 downto 0);
 
-  pinIn    : in std_logic_vector(inputPins-1 downto 0);
+  -- pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
-  aux      : out std_logic_vector(7 downto 0);
+  -- aux      : out std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0);
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
@@ -84,8 +86,8 @@ architecture Behavioral of LatheTop is
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
  attribute syn_keep of dbg   : signal is true;
- attribute syn_keep of anode : signal is true;
- attribute syn_keep of seg   : signal is true;
+ -- attribute syn_keep of anode : signal is true;
+ -- attribute syn_keep of seg   : signal is true;
 
  attribute syn_keep of dclk : signal is true;
  attribute syn_keep of dout : signal is true;
@@ -101,7 +103,7 @@ architecture Behavioral of LatheTop is
  attribute syn_keep of zMpg : signal is true;
  attribute syn_keep of xMpg : signal is true;
 
- attribute syn_keep of pinIn  : signal is true;
+ -- attribute syn_keep of pinIn  : signal is true;
  -- attribute syn_keep of aux    : signal is true;
  attribute syn_keep of pinOut : signal is true;
  attribute syn_keep of extOut : signal is true;
@@ -127,6 +129,7 @@ architecture Behavioral of LatheTop is
  signal con_gpio_o : std_ulogic_vector(63 downto 0) := (others => '0');
 
  signal cfs_in_i   : std_ulogic_vector(32-1 downto 0) := (others => '0');
+ -- signal cfs_tmp_i  : std_ulogic_vector(32-1 downto 0) := (others => '0');
  signal cfs_out_o  : std_ulogic_vector(32-1 downto 0) := (others => '0');
 
  signal cfs_we_o   : std_ulogic := '0';
@@ -150,17 +153,22 @@ architecture Behavioral of LatheTop is
                                       riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
+ signal sink       : std_logic;
  signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
- signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+ signal cfs_pins_i : std_ulogic_vector(1 + riscvCtlSize + inputPins-1 downto 0);
 
- signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
- signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
+ signal pinInTest  : std_logic_vector(inputPins-1 downto 0) := (others => '0');
+ signal pinInLathe : std_logic_vector(inputPins-1 downto 0) := (others => '0');
+ signal pinIn      : std_logic_vector(inputPins-1 downto 0) := (others => '0');
+
+ signal anode      : std_logic_vector(3 downto 0) := (others => '1');
+ signal seg        : std_logic_vector(6 downto 0) := (others => '1');
 
 begin
 
- cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+ cfs_pins_i <= std_ulogic_vector(sink & riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
  mpgQuad.zQuad <= zMpg;
  mpgQuad.xQuad <= xMpg;
@@ -169,7 +177,8 @@ begin
   port map (
    clk   => sysClkOut,
    debug => debug,
-   dbg   => dbg
+   dbg   => dbg,
+   sink  => sink
    );
 
  pllClock : entity work.Clock
@@ -177,7 +186,6 @@ begin
    clockIn  => sysClk,
    clockOut => sysClkOut
    ); 
-
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -191,7 +199,7 @@ begin
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
    CPU_EXTENSION_RISCV_Zicntr   => true,
-   CPU_EXTENSION_RISCV_Zifencei => true,
+   -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
    MEM_INT_IMEM_SIZE            => MEM_INT_IMEM_SIZE,
@@ -199,7 +207,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
-   inputPins                    => riscvCtlSize + inputsSize,
+   inputPins                    => 1 + riscvCtlSize + inputsSize,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
    IO_MTIME_EN                  => true,
@@ -228,6 +236,8 @@ begin
    cfs_mpg_i   => mpgQuad,
    cfs_pins_i  => cfs_pins_i,
 
+   cfs_dbg_o   => xOut,
+
    jtag_trst_i => jtag_trst_i,
    jtag_tck_i  => jtag_tck_i,
    jtag_tdi_i  => jtag_tdi_i,
@@ -250,11 +260,14 @@ begin
    gpio_o      => con_gpio_o
    );
 
+ -- cfs_in_i(31) <= sink or cfs_tmp_i(31);
+ -- cfs_in_i(30 downto 0) <= cfs_tmp_i(30 downto 0);
+
  -- GPIO output --
  -- aux <= con_gpio_o(7 downto 0);
- aux(7) <= riscVCtlReg.riscVData;
- aux(6) <= con_gpio_o(0);
- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
+ -- aux(7) <= riscVCtlReg.riscVData;
+ -- aux(6) <= con_gpio_o(0);
+ -- aux(5 downto 0) <= std_logic_vector(riscvCtl.op(5 downto 0));
 
  -- latheCtl.active <= riscVCtlReg.riscvData;
 
@@ -317,9 +330,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zMpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinInLathe,
 

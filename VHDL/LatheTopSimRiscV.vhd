@@ -146,17 +146,19 @@ architecture Behavorial of LatheTopSimRiscV is
                                       riscvInTest => '0');
 
  signal debug      : InterfaceDbg;
+ signal sink       : std_logic;
  signal extDout    : std_logic;
+ signal riscvDout  : std_logic;
 
  signal mpgQuad    : MpgQuadRec;
- signal cfs_pins_i : std_ulogic_vector(riscvCtlSize + inputPins-1 downto 0);
+ signal cfs_pins_i : std_ulogic_vector(1 + riscvCtlSize + inputPins-1 downto 0);
 
  signal pinInTest  : std_logic_vector(inputPins-1 downto 0);
  signal pinInLathe : std_logic_vector(inputPins-1 downto 0);
 
 begin
 
- cfs_pins_i <= std_ulogic_vector(riscvCtlToVec(riscvCtlReg) & pinInLathe);
+ cfs_pins_i <= std_ulogic_vector(sink & riscvCtlToVec(riscvCtlReg) & pinInLathe);
 
 -- mpgQuad.zQuad <= zMpg;
  mpgQuad.zQuad(0) <= con_gpio_o(0);
@@ -168,7 +170,8 @@ begin
   port map (
    clk   => sysClkOut,
    debug => debug,
-   dbg   => dbg
+   dbg   => dbg,
+   sink  => sink
    );
 
  pllClock : entity work.Clock
@@ -196,7 +199,7 @@ begin
    MEM_INT_DMEM_EN              => true,
    MEM_INT_DMEM_SIZE            => MEM_INT_DMEM_SIZE,
    IO_CFS_EN                    => true,
-   inputPins                    => riscvCtlSize + inputsSize,
+   inputPins                    => 1 + riscvCtlSize + inputsSize,
    xOutPIns                     => xOutPins,
    -- Processor peripherals --
    IO_GPIO_NUM                  => 8,
@@ -307,9 +310,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zMpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinInLathe,
 

@@ -57,8 +57,8 @@ entity LatheInterface is
 
   zDro     : in std_logic_vector(1 downto 0);
   xDro     : in std_logic_vector(1 downto 0);
-  zMpg     : in std_logic_vector(1 downto 0);
-  xMpg     : in std_logic_vector(1 downto 0);
+  -- zMpg     : in std_logic_vector(1 downto 0);
+  -- xMpg     : in std_logic_vector(1 downto 0);
 
   pinIn    : in std_logic_vector(inputPins-1 downto 0);
 
@@ -89,52 +89,25 @@ architecture Behavioral of LatheInterface is
  signal spiShift  : std_logic := '0';
  signal spiOp     : unsigned (opb-1 downto 0) := (others => '0');
  signal spiCopy   : std_logic := '0';
- signal spiLoad   : std_logic := '0';
- signal spiActive : std_logic := '0';
+ -- signal spiLoad   : std_logic := '0';
+ -- signal spiActive : std_logic := '0';
 
  signal dinW : std_logic := '0';
 
- -- controller
-
- -- signal ctlDin   : std_logic;
- -- signal ctlShift : std_logic;
- -- signal ctlOp    : unsigned (opb-1 downto 0); --operation code
- -- signal ctlLoad  : std_logic;
-
  signal spiW   : DataInp := dataInpInit;
- -- signal ctlW   : DataInp := dataInpInit;
  signal extW   : DataInp := dataInpInit;
-
  signal curW   : DataInp := dataInpInit;
 
  signal spiR   : DataOut := dataOutInit;
- -- signal readR  : DataOut := dataOutInit;
  signal extR   : DataOut := dataOutInit;
- -- signal dspR   : DataOut := dataOutInit;
-
  signal curR   : DataOut := dataOutInit;
 
- -- reader
-
- -- signal rdActive : std_logic;
- -- signal rdCopy   : std_logic;
- -- signal rdOp     : unsigned (opb-1 downto 0); --operation code
- 
- -- display
-
  constant displayBits : positive := 16;
- -- signal dspCopy  : std_logic;
- -- signal dspShift : std_logic;
- -- signal dspOp    : unsigned (opb-1 downto 0) := (others => '0');
  signal dspData  : std_logic_vector (displayBits-1 downto 0) := (others => '0');
 
  signal statusR   : statusRec := statusToRec(statusZero);
  signal statusRL  : statusRec := statusToRec(statusZero);
  signal statusReg : unsigned(statusSize-1 downto 0);
-
- -- signal runReg   : runVec;
- -- signal runR     : runRec;
- -- signal runRdReg : unsigned(runSize-1 downto 0);
 
  signal zDone : std_logic;
  signal xDone : std_logic;
@@ -176,43 +149,17 @@ begin
  -- dspData(7 downto 4) <= xDbg;
  -- dspData(7  downto 0) <= spiW.op;
 
- spiW <= (din => din,    shift => spiShift, op => spiOp, load => spiLoad);
- -- ctlW <= (din => ctlDin, shift => ctlShift, op => ctlOp, load => ctlLoad);
+ spiW <= (din => din,    shift => spiShift, op => spiOp);
 
- -- extData1T : if extData /= 0 generate
-  extW <= (din => riscvCtl.dSnd, shift => riscvCtl.shift, op => riscvCtl.op,
-           load => riscvCtl.load);
-  curW <= spiW when (riscvCtl.active = '0') else extW;
+ extW <= (din => riscvCtl.dSnd, shift => riscvCtl.shift, op => riscvCtl.op);
 
- --  curW <= ctlW when (runR.runEna     = '1') else
- --          extW when (riscvCtl.active = '1') else
- --          spiW;
- -- end generate extData1T;
-
- -- extData1F : if extData = 0 generate
- --  curW <= ctlW when (runR.runEna = '1') else
- --          spiW;
- -- end generate extData1F;
+ curW <= spiW when (riscvCtl.active = '0') else extW;
 
  spiR  <= (shift => spiShift, op => spiOp, copy => spiCopy);
- -- readR <= (shift => spiShift, op => rdOp,  copy => rdCopy);
- -- dspR  <= (shift => dspShift, op => dspOp, copy => dspCopy);
 
- -- extData2T : if extData /= 0 generate
  extR <= (shift => riscvCtl.shift, op => riscvCtl.op, copy => riscvCtl.copy);
- curR <= spiR   when (riscvCtl.active = '0') else extR;
 
- --  curR <= readR  when (rdActive        = '1') else
- --          extR   when (riscvCtl.active = '1') else
- --          spiR   when (spiActive       = '1') else
- --          dspR;
- -- end generate extData2T;
- 
- -- extData2F : if extData = 0 generate
- --  curR <= readR  when (rdActive  = '1') else
- --          spiR   when (spiActive = '1') else
- --          dspR;
- -- end generate extData2F;
+ curR <= spiR   when (riscvCtl.active = '0') else extR;
 
  spi_int : entity work.SPI
   port map (
@@ -223,10 +170,10 @@ begin
    din       => din,
    shift     => spiShift,
    op        => spiOp,
-   load      => spiLoad,
+   -- load      => spiLoad,
 
-   copy      => spiCopy,
-   spiActive => spiActive
+   copy      => spiCopy
+   -- spiActive => spiActive
    );
 
  status : entity work.ShiftOutN
@@ -377,9 +324,8 @@ begin
 
    zDro     => zDro,
    xDro     => xDro,
-   zMpg     => zMpg,
-
-   xMpg     => xMpg,
+   -- zMpg     => zMpg,
+   -- xMpg     => xMpg,
 
    pinIn    => pinIn,
 
