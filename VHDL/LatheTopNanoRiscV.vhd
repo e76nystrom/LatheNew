@@ -194,7 +194,7 @@ begin
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
    CPU_EXTENSION_RISCV_Zicntr   => true,
-   CPU_EXTENSION_RISCV_Zifencei => true,
+   -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
    MEM_INT_IMEM_SIZE            => MEM_INT_IMEM_SIZE,

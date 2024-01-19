@@ -30,13 +30,12 @@ entity LatheTop is
 
   zDro     : in std_logic_vector(1 downto 0);
   xDro     : in std_logic_vector(1 downto 0);
-  zMpg     : in std_logic_vector(1 downto 0);
+  -- zMpg     : in std_logic_vector(1 downto 0);
+  -- xMpg     : in std_logic_vector(1 downto 0);
 
-  xMpg     : in std_logic_vector(1 downto 0);
+  pinIn    : in std_logic_vector(4 downto 0);
 
-  pinIn    : in std_logic_vector(inputPins-1 downto 0);
-
-  -- aux      : out std_logic_vector(7 downto 0);
+  aux      : in std_logic_vector(7 downto 0);
   -- aux      : out std_ulogic_vector(7 downto 0) := (others => '0');
 
   pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
@@ -68,8 +67,8 @@ architecture Behavioral of LatheTop is
 
  attribute syn_keep of zDro : signal is true;
  attribute syn_keep of xDro : signal is true;
- attribute syn_keep of zMpg : signal is true;
- attribute syn_keep of xMpg : signal is true;
+ -- attribute syn_keep of zMpg : signal is true;
+ -- attribute syn_keep of xMpg : signal is true;
 
  attribute syn_keep of pinIn  : signal is true;
  -- attribute syn_keep of aux    : signal is true;
@@ -163,7 +162,7 @@ begin
    -- zmpg     => zMpg,
    -- xMpg     => xMpg,
 
-   pinIn    => pinIn,
+   pinIn    => aux & pinIn,
 
    dbg      => debug,
    -- aux      => aux,
