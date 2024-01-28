@@ -1,4 +1,3 @@
-
 library ieee;
 
 use ieee.std_logic_1164.all;
@@ -15,78 +14,63 @@ entity Spindle is
           posBits   : positive;
           countBits : positive;
           freqBits  : positive;
+          scaleBits : positive := 4;
           outBits   : positive);
  port (
   clk       : in  std_logic;
-
   inp       : in  DataInp;
   oRec      : in  DataOut;
-
-  -- ch        : in  std_logic;
-  -- mpgQuad   : in  std_logic_vector(1 downto 0);
-  -- jogInvert : in  std_logic;
   eStop     : in  std_logic;
   spActive  : out std_logic := '0';
+  preStep   : out std_logic := '0';
   stepOut   : out std_logic := '0';
   dirOut    : out std_logic := '0';
-  spFreqGen : out std_logic := '0';
   dout      : out SpindleData
-  -- dout      : out std_logic := '0'
   );
 end Spindle;
 
 architecture Behavioral of Spindle is
 
- type fsm is (idle, run, done);
+ type fsm is (idle, run, doneWait);
  signal state : fsm;
 
- signal syncInit : std_logic := '0';
- signal syncEna : std_logic := '0';
+ signal syncInit   : std_logic := '0';
+ signal syncEna    : std_logic := '0';
 
- signal synStep : std_logic;
- -- signal jogStep : std_logic;
+ signal spStep     : std_logic;
+ -- signal lastSpStep : std_logic := '0';
 
- -- signal jogDir : std_logic;
- -- signal jogEnable : std_logic;
+ signal ch         : std_logic;
 
- signal ch  : std_logic;
+ signal decelDone  : std_logic;
 
- signal decelDone : boolean;
+ signal decel      : std_logic := '0';
 
- signal decel : std_logic;
-
- -- signal doutSync : std_logic;
- -- signal doutJog : std_logic;
-
- signal spCtlReg : spCtlVec;
- signal spCtlR   : spCtlRec;
+ signal spCtlReg   : spCtlVec;
+ signal spCtlR     : spCtlRec;
 
 begin
  
- -- dOut <= doutSync or doutJog;
- 
  spindleCtlReg : entity work.CtlReg
-  generic map(opVal => opBase + F_Ld_Sp_Ctl,
-              n     => spCtlSize)
+  generic map (opVal => opBase + F_Ld_Sp_Ctl,
+               n     => spCtlSize)
   port map (
    clk  => clk,
    inp  => inp,
    data => spCtlReg
    );
 
-   spCtlR <= spCtlToRec(spCtlReg);
+ spCtlR <= spCtlToRec(spCtlReg);
 
- spFreq_Gen : entity work.FreqGen
+ spFreqProc : entity work.FreqGen
   generic map (opVal    => opBase + F_Ld_Sp_Freq,
                freqBits => freqBits)
   port map (
    clk      => clk,
    inp      => inp,
-   ena      => spCtlR.spEna,
+   ena      => syncEna,
    pulseOut => ch
    );
-
- spFreqGen <= ch;
 
  SpindleSyncAccel : entity work.SyncAccelNew
   generic map (opBase    => opBase + F_Sp_Sync_Base,
@@ -95,61 +79,44 @@ begin
                countBits => countBits)
   port map (
    clk          => clk,
-
    inp          => inp,
    oRec         => oRec,
-
    init         => syncInit,
    ena          => syncEna,
    decel        => decel,
-   decelDisable => false,
    ch           => ch,
-   -- dir          => '0',
-   -- dout         => doutSync,
    dout         => dout,
-   accelActive  => open,
    decelDone    => decelDone,
-   synStep      => synStep
+   synStep      => spStep
    );
 
- -- SpindleJog : entity work.Jog
- --  generic map (opBase  => opBase + F_Sp_Jog_Base,
- --               outBits => outBits)
- --  port map (
- --   clk        => clk,
-
- --   inp        => inp,
- --   oRec       => oRec,
-
- --   quad       => mpgQuad,
- --   enable     => jogEnable,
- --   jogInvert  => jogInvert,
- --   currentDir => jogDir,
- --   jogStep    => jogStep,
- --   jogDir     => jogDir,
- --   jogUpdLoc  => open
- --   -- dout       => doutJog
- --   );
-
- -- jogEnable <= '1' when (eStop = '0') and (spCtlR.spJogEnable = '1') else '0';
  spActive  <= '1' when state /= idle else '0';
- -- stepOut   <= jogStep when spCtlR.spJogEnable = '1' else synstep;
- -- dirOut    <= jogDir  when spCtlR.spJogEnable = '1' else spCtlR.spDir;
+ dirOut    <= spCtlR.spDir;
+ preStep <= spStep;
 
- stepOut <= synstep;
- dirOut <= spCtlR.spDir;
+ SpindleScale : entity work.Scaler
+  generic map (opVal     => opBase + F_Ld_Sp_Scale,
+               scaleBits => 4)
+  port map (
+   clk      => clk,
+   inp      => inp,
+   init     => spCtlR.spInit,
+   inPulse  => spStep,
+   outPulse => stepOut
+   );
 
- spindleRun: process(clk)
+ SpRun: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
 
    if (eStop = '1') then
     syncInit <= '0';
-    syncEna <= '0';
-    state <= idle;
+    syncEna  <= '0';
+    decel    <= '0';
+    state    <= idle;
    elsif (spCtlR.spInit = '1') then
     syncInit <= '1';
-    state <= idle;
+    state    <= idle;
    else
 
     case state is
@@ -157,26 +124,28 @@ begin
       syncInit <= '0';
       if (spCtlR.spEna = '1') then
        syncInit <= '1';
-       state <= run;
+       state    <= run;
       end if;
 
      when run =>
       syncInit <= '0';
-      syncEna <= '1';
+      syncEna  <= '1';
       if (spCtlR.spEna = '0') then
        decel <= '1';
-       state <= done;
+       state <= doneWait;
       end if;
 
-      when done =>
-      if (decelDone) then
+     when doneWait =>
+      if (decelDone = '1') then
+       decel   <= '0';
        syncEna <= '0';
-       state <= idle;
+       state   <= idle;
       end if;
       
      when others =>
       state <= idle;
     end case;
+    
    end if;
 
   end if;

@@ -59,7 +59,7 @@ package IORecord is
   yPos       : std_logic;
   sum        : std_logic;
   accelSum   : std_logic;
-  accelCtr   : std_logic;
+  accelMax   : std_logic;
  end record SpindleData;
 
  type EncoderData is record

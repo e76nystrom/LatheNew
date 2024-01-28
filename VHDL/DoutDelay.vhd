@@ -59,7 +59,7 @@ architecture Behavorial of DoutDelay is
  alias a33 : std_logic is data.latheCtl.spindle.yPos;
  alias a34 : std_logic is data.latheCtl.spindle.sum;
  alias a35 : std_logic is data.latheCtl.spindle.accelSum;
- alias a36 : std_logic is data.latheCtl.spindle.accelCtr;
+ alias a36 : std_logic is data.latheCtl.spindle.accelMax;
 
  signal a : std_logic_vector(9 downto 0);
  signal b : std_logic_vector(2 downto 0);

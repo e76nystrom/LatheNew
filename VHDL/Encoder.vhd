@@ -9,13 +9,13 @@ use work.IORecord.all;
 use work.DbgRecord.all;
 
 entity Encoder is
- generic(opBase        : unsigned := x"00";
-         preScalerBits : positive := 16;
-         cycleLenBits  : positive := 16;
-         encClkBits    : positive := 24;
-         cycleClkbits  : positive := 32;
-         outBits       : positive := 32);
- port(
+ generic (opBase        : unsigned := x"00";
+          preScalerBits : positive := 16;
+          cycleLenBits  : positive := 16;
+          encClkBits    : positive := 24;
+          cycleClkbits  : positive := 32;
+          outBits       : positive := 32);
+ port (
   clk    : in std_logic;                --system clock
   inp    : in DataInp;
   oRec   : in DataOut;
@@ -53,8 +53,8 @@ architecture Behavioral of Encoder is
 begin
 
  preScaler : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Enc_Prescale,
-              n      => preScalerBits)
+  generic map (opVal  => opBase + F_Ld_Enc_Prescale,
+               n      => preScalerBits)
   port map (
    clk   => clk,
    inp   => inp,
@@ -121,7 +121,7 @@ begin
      if (lastCh = '0' and ch = '1') then
       if (preScalerCtr = 0) then
        preScalerCtr <= preScalerVal;
-       scaleCh <= '1';
+       scaleCh      <= '1';
       else
        preScalerCtr <= preScalerCtr - 1;
       end if;
@@ -132,6 +132,7 @@ begin
     end if;                             --enabled
 
     lastCh <= ch;
+    
    end if;                              --init
    
   end if;                               --end rising_edge

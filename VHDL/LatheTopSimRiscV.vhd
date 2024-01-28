@@ -191,7 +191,7 @@ begin
    CPU_EXTENSION_RISCV_C        => true,
    CPU_EXTENSION_RISCV_M        => true,
    CPU_EXTENSION_RISCV_Zicntr   => true,
-   CPU_EXTENSION_RISCV_Zifencei => true,
+   -- CPU_EXTENSION_RISCV_Zifencei => true,
    -- Internal Instruction memory --
    MEM_INT_IMEM_EN              => true,
    MEM_INT_IMEM_SIZE            => MEM_INT_IMEM_SIZE,
@@ -264,29 +264,58 @@ begin
  riscvData.data <= extDout;
 
  interfaceProc : entity work.CFSInterface
- generic map (lenBits  => 8,
-              dataBits => 32)
- port map (
-  clk        => sysClkOut,
-  we         => cfs_we_o,
-  reg        => cfs_reg_o,
+  generic map (
+   lenBits  => 8,
+   dataBits => 32
+   )
+  port map (
+   clk        => sysClkOut,
+   we         => cfs_we_o,
+   reg        => cfs_reg_o,
 
-  CFSDataIn  => cfs_out_o,
-  CFSDataOut => cfs_in_i,
+   CFSDataIn  => cfs_out_o,
+   CFSDataOut => cfs_in_i,
 
-  riscVCtl   => riscVCtlReg,
+   riscVCtl   => riscVCtlReg,
 
-  latheData  => riscvData,
-  latheCtl   => riscvCtl,
-  pinIn      => pinInTest
-  );
+   latheData  => riscvData,
+   latheCtl   => riscvCtl,
+   pinIn      => pinInTest
+   );
 
  pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
-  generic map (extData => 1,
-               ledPins => ledPins,
-               dbgPins => dbgPins)
+  generic map (
+   ledPins        => ledPins,
+   dbgPins        => dbgPins,
+   -- lenBits        => 8,
+   -- dataBits       => 32,
+   synBits        => 32,
+   posBits        => 24,
+   countBits      => 18,
+   distBits       => 18,
+   locBits        => 18,
+   dbgBits        => 4,
+   synDbgBits     => 4,
+   rdAddrBits     => 5,
+   outBits        => 32,
+   opBits         => 8,
+   addrBits       => 8,
+   seqBits        => 8,
+   phaseBits      => 16,
+   totalBits      => 32,
+   indexClockBits => 28,
+   encScaleBits   => 4, --12,
+   encCountBits   => 6, --16,
+   freqBits       => 16,
+   freqCountBits  => 32,
+   cycleLenBits   => 11,
+   encClkBits     => 24,
+   cycleClkBits   => 32,
+   pwmBits        => 16,
+   stepWidth      => 4 --50
+   )
   port map (
    sysClk   => sysClkOut,
 

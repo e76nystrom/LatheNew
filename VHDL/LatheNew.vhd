@@ -452,7 +452,7 @@ begin
  --  dbg(11 downto 8)  <= zSynDbg;
  --  dbg(15 downto 12) <= xSynDbg;
  -- else generate
-  aux <= xSynDbg & zSynDbg;
+ aux <= xSynDbg & zSynDbg;
  -- end generate dbgConfig;
 
  -- dbg(4) = dbgOUt(0) <= runEna;
@@ -472,14 +472,14 @@ begin
  -- system clock
 
  -- sys_Clk : Clock
- --  port map(
+ --  port map (
  --   clockIn => sysClk,
  --   clockOut => clk
  --   );
 
 
  -- sys_Clk : SystemClk
- --  port map(
+ --  port map (
  --   areset => '0',
  --   inclk0 => sysClk,
  --   c0     => clk, 
@@ -607,10 +607,10 @@ begin
  -- ctlBusy <= '1' when controllerBusy = '1' else '0';
 
  dataReader : entity work.Reader
-  generic map(opBase     => F_Read_Base,
-              rdAddrBits => rdAddrBits,
-              outBits    => outBits
-              )
+  generic map (opBase     => F_Read_Base,
+               rdAddrBits => rdAddrBits,
+               outBits    => outBits
+               )
   port map (
    clk     => clk,
    init    => readerInit,
@@ -618,7 +618,7 @@ begin
 --   din     => din,
 --   dshift  => spiShift,
 --   op      => spiOp,
-  copy    => spiCopy,
+   copy    => spiCopy,
 --   load    => load,
    copyOut => rdCopy,
    opOut   => rdOp,
@@ -657,9 +657,9 @@ begin
    );
 
  status : entity work.ShiftOutN
-  generic map(opVal   => F_Rd_Status,
-              n       => statusSize,
-              outBits => outBits)
+  generic map (opVal   => F_Rd_Status,
+               n       => statusSize,
+               outBits => outBits)
   port map (
    clk  => clk,
    oRec => spiR,
@@ -671,9 +671,9 @@ begin
    );
 
  inputs : entity work.ShiftOutN
-  generic map(opVal   => F_Rd_Inputs,
-              n       => inputsSize,
-              outBits => outBits)
+  generic map (opVal   => F_Rd_Inputs,
+               n       => inputsSize,
+               outBits => outBits)
   port map (
    clk => clk,
    oRec => spiR,
@@ -685,8 +685,8 @@ begin
    );
 
  run_reg : entity work.CtlReg
-  generic map(opVal => F_Ld_Run_Ctl,
-              n =>     runSize)
+  generic map (opVal => F_Ld_Run_Ctl,
+               n =>     runSize)
   port map (
    clk => clk,
    inp => spiW,
@@ -697,8 +697,8 @@ begin
    data => runReg);
 
  sync_reg : entity work.CtlReg
-  generic map(opVal => F_Ld_Sync_Ctl,
-              n     => synCtlSize)
+  generic map (opVal => F_Ld_Sync_Ctl,
+               n     => synCtlSize)
   port map (
    clk => clk,
    inp => curW,
@@ -709,8 +709,8 @@ begin
    data => synCtlReg);
 
  clk_reg : entity work.CtlReg
-  generic map(opVal => F_Ld_Clk_Ctl,
-              n     => clkCtlSize)
+  generic map (opVal => F_Ld_Clk_Ctl,
+               n     => clkCtlSize)
   port map (
    clk  => clk,
    inp => curW,
@@ -721,8 +721,8 @@ begin
    data => clkCtlReg);
 
  cfg_reg : entity work.CtlReg
-  generic map(opVal => F_Ld_Cfg_Ctl,
-              n     => cfgCtlSize)
+  generic map (opVal => F_Ld_Cfg_Ctl,
+               n     => cfgCtlSize)
   port map (
    clk  => clk,
    inp => spiW,
@@ -744,11 +744,11 @@ begin
    );
 
  encoderProc : entity work.Encoder
-  generic map(opBase       => F_Enc_Base,
-              cycleLenBits => cycleLenBits,
-              encClkBits   => encClkBits,
-              cycleClkbits => cycleClkBits,
-              outBits      => outBits)
+  generic map (opBase       => F_Enc_Base,
+               cycleLenBits => cycleLenBits,
+               encClkBits   => encClkBits,
+               cycleClkbits => cycleClkBits,
+               outBits      => outBits)
   port map (
    clk     => clk,
 
@@ -818,8 +818,8 @@ begin
  zFreqGenEna <= '1' when ((zFreqSel = clkFreq) and (zExtEna = '1')) else '0';
 
  zFreq_Gen : entity work.FreqGen
-  generic map(opVal    => F_ZAxis_Base + F_Ld_Freq,
-              freqBits => freqBits)
+  generic map (opVal    => F_ZAxis_Base + F_Ld_Freq,
+               freqBits => freqBits)
   port map (
    clk      => clk,
 
@@ -836,8 +836,8 @@ begin
  xFreqGenEna <= '1' when ((xFreqSel = clkFreq) and (xExtEna = '1')) else '0';
 
  xFreq_Gen : entity work.FreqGen
-  generic map(opVal    => F_XAxis_Base + F_Ld_Freq,
-              freqBits => freqBits)
+  generic map (opVal    => F_XAxis_Base + F_Ld_Freq,
+               freqBits => freqBits)
   port map (
    clk      => clk,
 
@@ -852,8 +852,8 @@ begin
    );
 
  spFreq_Gen : entity work.FreqGen
-  generic map(opVal => F_XAxis_Base + F_Ld_Freq,
-              freqBits => freqBits)
+  generic map (opVal => F_XAxis_Base + F_Ld_Freq,
+               freqBits => freqBits)
   port map (
    clk => clk,
 
@@ -868,9 +868,9 @@ begin
    );
 
  dbgFreq_gen : entity work.FreqGenCtr
-  generic map(opBase    => F_Dbg_Freq_Base,
-              freqBits  => freqBits,
-              countBits => freqCountBits)
+  generic map (opBase    => F_Dbg_Freq_Base,
+               freqBits  => freqBits,
+               countBits => freqCountBits)
   port map (
    clk      => clk,
 
@@ -963,7 +963,7 @@ begin
    );
 
  zStep_Pulse : entity work.PulseGen
-  generic map(pulseWidth => stepWidth)
+  generic map (pulseWidth => stepWidth)
   port map (
    clk => clk,
    pulseIn => zDelayStep,
@@ -1040,7 +1040,7 @@ begin
    );
 
  xStep_Pulse : entity work.PulseGen
-  generic map(pulseWidth => stepWidth)
+  generic map (pulseWidth => stepWidth)
   port map (
    clk      => clk,
    pulseIn  => xDelayStep,
@@ -1085,17 +1085,8 @@ begin
    clk => clk,
 
    inp       => spiW,
-   -- din    => din,
-   -- dshift => dshift,
-   -- op     => op,
-   -- load   => load,
-
    oRec      => curR,
    dout      => spindleDout,
-   -- dshiftR => dshiftR,
-   -- opR     => opR,
-   -- copyR   => copyR,
-
    ch        => spFreqGen,
    mpgQuad   => zMpg,
    jogInvert => cfgZJogInv,
@@ -1108,7 +1099,7 @@ begin
  spindleActive <= spEna;
 
  spStep_Pulse : entity work.PulseGen
-  generic map(pulseWidth => stepWidth)
+  generic map (pulseWidth => stepWidth)
   port map (
    clk      => clk,
    pulseIn  => spindleStep,
@@ -1124,12 +1115,7 @@ begin
                n      => pwmBits)
   port map (
    clk    => clk,
-
    inp    => spiW,
-   -- din    => din,
-   -- dshift => dshift,
-   -- op     => op,
-
    ena    => pwmEna,
    pwmOut => pwmOut
    );

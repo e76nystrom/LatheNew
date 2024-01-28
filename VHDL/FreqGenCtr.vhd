@@ -9,10 +9,10 @@ use work.RegDef.all;
 use work.IORecord.all;
 
 entity FreqGenCtr is
- generic(opBase    : unsigned;
-         freqBits  : positive;
-         countBits : positive;
-         syncBits  : positive := 13);
+ generic (opBase    : unsigned;
+          freqBits  : positive;
+          countBits : positive;
+          syncBits  : positive := 13);
  port (
   clk      : in  std_logic;
   inp      : in  DataInp;
@@ -42,16 +42,16 @@ architecture Behavioral of FreqGenCtr is
 begin
 
  freqReg : entity work.ShiftOp
-  generic map(opVal => opBase + F_Ld_Dbg_Freq,
-              n     => freqBits)
+  generic map (opVal => opBase + F_Ld_Dbg_Freq,
+               n     => freqBits)
   port map (
    clk  => clk,
    inp  => inp,
    data => freqVal);
 
  countReg : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_Dbg_Count,
-              n      => countBits)
+  generic map (opVal  => opBase + F_Ld_Dbg_Count,
+               n      => countBits)
   port map (
    clk  => clk,
    inp  => inp,
@@ -59,8 +59,8 @@ begin
    data => countVal);
 
  synctReg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Sync_Count,
-              n      => syncBits)
+  generic map (opVal  => opBase + F_Ld_Sync_Count,
+               n      => syncBits)
   port map (
    clk  => clk,
    inp  => inp,

@@ -152,18 +152,18 @@ return cfgCtlRec;
 function cfgCtlToRecS(val : std_logic_vector(cfgCtlSize-1 downto 0))
 return cfgCtlRec;
 
-constant clkCtlSize : integer := 7;
-subType clkCtlVec is std_logic_vector(clkCtlSize-1 downto 0);
-constant clkCtlZero : clkCtlVec := (others => '0');
+constant spCtlSize : integer := 3;
+subType spCtlVec is std_logic_vector(spCtlSize-1 downto 0);
+constant spCtlZero : spCtlVec := (others => '0');
 
-function clkCtlToVec(val : clkCtlRec)
- return clkCtlVec;
+function spCtlToVec(val : spCtlRec)
+ return spCtlVec;
 
-function clkCtlToRec(val : clkCtlVec)
-return clkCtlRec;
+function spCtlToRec(val : spCtlVec)
+return spCtlRec;
 
-function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
-return clkCtlRec;
+function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
+return spCtlRec;
 
 constant synCtlSize : integer := 5;
 subType synCtlVec is std_logic_vector(synCtlSize-1 downto 0);
@@ -178,18 +178,18 @@ return synCtlRec;
 function synCtlToRecS(val : std_logic_vector(synCtlSize-1 downto 0))
 return synCtlRec;
 
-constant spCtlSize : integer := 3;
-subType spCtlVec is std_logic_vector(spCtlSize-1 downto 0);
-constant spCtlZero : spCtlVec := (others => '0');
+constant clkCtlSize : integer := 9;
+subType clkCtlVec is std_logic_vector(clkCtlSize-1 downto 0);
+constant clkCtlZero : clkCtlVec := (others => '0');
 
-function spCtlToVec(val : spCtlRec)
- return spCtlVec;
+function clkCtlToVec(val : clkCtlRec)
+ return clkCtlVec;
 
-function spCtlToRec(val : spCtlVec)
-return spCtlRec;
+function clkCtlToRec(val : clkCtlVec)
+return clkCtlRec;
 
-function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
-return spCtlRec;
+function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
+return clkCtlRec;
 
 end FpgaLatheBitsFunc;
 
@@ -686,33 +686,30 @@ end function;
 
 -- end
 
-function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
- variable rtnVec : clkCtlVec;
+function spCtlToVec(val : spCtlRec) return spCtlVec is
+ variable rtnVec : spCtlVec;
 begin
- rtnVec := val.clkDbgSyncEna & val.clkDbgFreqEna & val.xFreqSel      &
-           val.zFreqSel;
+ rtnVec := val.spDir  & val.spEna  & val.spInit;
  return rtnVec;
 end function;
 
-function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
- variable rtnRec : clkCtlRec;
+function spCtlToRec(val : spCtlVec) return spCtlRec is
+ variable rtnRec : spCtlRec;
 begin
- rtnRec.clkDbgSyncEna := val(6);
- rtnRec.clkDbgFreqEna := val(6);
- rtnRec.xFreqSel      := val(5 downto 3);
- rtnRec.zFreqSel      := val(2 downto 0);
+ rtnRec.spDir  := val(2);
+ rtnRec.spEna  := val(1);
+ rtnRec.spInit := val(0);
 
  return rtnRec;
 end function;
 
-function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
- return clkCtlRec is
- variable rtnRec : clkCtlRec;
+function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
+ return spCtlRec is
+ variable rtnRec : spCtlRec;
 begin
- rtnRec.clkDbgSyncEna := val(6);
- rtnRec.clkDbgFreqEna := val(6);
- rtnRec.xFreqSel      := val(5 downto 3);
- rtnRec.zFreqSel      := val(2 downto 0);
+ rtnRec.spDir  := val(2);
+ rtnRec.spEna  := val(1);
+ rtnRec.spInit := val(0);
 
  return rtnRec;
 end function;
@@ -724,8 +721,7 @@ function synCtlToVec(val : synCtlRec) return synCtlVec is
  variable rtnVec : synCtlVec;
 begin
  rtnVec := val.synEncClkSel & val.synEncEna    & val.synEncInit   &
-           val.synPhaseInit & val.clkMask      & val.xFreqShift   &
-           val.zFreqShift;
+           val.synPhaseInit;
  return rtnVec;
 end function;
 
@@ -736,9 +732,6 @@ begin
  rtnRec.synEncEna    := val(2);
  rtnRec.synEncInit   := val(1);
  rtnRec.synPhaseInit := val(0);
- rtnRec.clkMask      := val(0);
- rtnRec.xFreqShift   := val(0);
- rtnRec.zFreqShift   := val(0);
 
  return rtnRec;
 end function;
@@ -751,9 +744,6 @@ begin
  rtnRec.synEncEna    := val(2);
  rtnRec.synEncInit   := val(1);
  rtnRec.synPhaseInit := val(0);
- rtnRec.clkMask      := val(0);
- rtnRec.xFreqShift   := val(0);
- rtnRec.zFreqShift   := val(0);
 
  return rtnRec;
 end function;
@@ -761,33 +751,35 @@ end function;
 
 -- end
 
-function spCtlToVec(val : spCtlRec) return spCtlVec is
- variable rtnVec : spCtlVec;
+function clkCtlToVec(val : clkCtlRec) return clkCtlVec is
+ variable rtnVec : clkCtlVec;
 begin
- rtnVec := val.spDir       & val.spEna       & val.spInit      &
-           val.encClkShift;
+ rtnVec := val.clkDbgAxisEna & val.clkDbgSyncEna & val.clkDbgFreqEna &
+           val.xFreqSel      & val.zFreqSel;
  return rtnVec;
 end function;
 
-function spCtlToRec(val : spCtlVec) return spCtlRec is
- variable rtnRec : spCtlRec;
+function clkCtlToRec(val : clkCtlVec) return clkCtlRec is
+ variable rtnRec : clkCtlRec;
 begin
- rtnRec.spDir       := val(2);
- rtnRec.spEna       := val(1);
- rtnRec.spInit      := val(0);
- rtnRec.encClkShift := val(0);
+ rtnRec.clkDbgAxisEna := val(8);
+ rtnRec.clkDbgSyncEna := val(7);
+ rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.xFreqSel      := val(5 downto 3);
+ rtnRec.zFreqSel      := val(2 downto 0);
 
  return rtnRec;
 end function;
 
-function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
- return spCtlRec is
- variable rtnRec : spCtlRec;
+function clkCtlToRecS(val : std_logic_vector(clkCtlSize-1 downto 0))
+ return clkCtlRec is
+ variable rtnRec : clkCtlRec;
 begin
- rtnRec.spDir       := val(2);
- rtnRec.spEna       := val(1);
- rtnRec.spInit      := val(0);
- rtnRec.encClkShift := val(0);
+ rtnRec.clkDbgAxisEna := val(8);
+ rtnRec.clkDbgSyncEna := val(7);
+ rtnRec.clkDbgFreqEna := val(6);
+ rtnRec.xFreqSel      := val(5 downto 3);
+ rtnRec.zFreqSel      := val(2 downto 0);
 
  return rtnRec;
 end function;

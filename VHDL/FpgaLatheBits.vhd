@@ -289,19 +289,50 @@ package FpgaLatheBits is
  constant c_cfgPwmEna        : integer := 19; -- x80000 pwm enable
  constant c_cfgDroStep       : integer := 20; -- x100000 step pulse to dro
 
+-- spindle control register
+
+ constant spCtlSize : integer := 3;
+ signal spCtlReg : unsigned(spCtlSize-1 downto 0);
+ --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
+
+ alias    spInit             : std_logic is spCtlReg( 0); -- x0001 spindle init
+ alias    spEna              : std_logic is spCtlReg( 1); -- x0002 spindle enable
+ alias    spDir              : std_logic is spCtlReg( 2); -- x0004 spindle direction
+
+ constant c_spInit           : integer :=  0; -- x0001 spindle init
+ constant c_spEna            : integer :=  1; -- x0002 spindle enable
+ constant c_spDir            : integer :=  2; -- x0004 spindle direction
+
+-- sync control register
+
+ constant synCtlSize : integer := 5;
+ signal synCtlReg : unsigned(synCtlSize-1 downto 0);
+ --variable synCtlReg : unsigned(synCtlSize-1 downto 0);
+
+ alias    synPhaseInit       : std_logic is synCtlReg( 0); -- x0001 init phase counter
+ alias    synEncInit         : std_logic is synCtlReg( 1); -- x0002 init encoder
+ alias    synEncEna          : std_logic is synCtlReg( 2); -- x0004 enable encoder
+ alias    synEncClkSel       : unsigned is synCtlreg(4 downto 3); -- x0008 encoder clk sel
+
+ constant c_synPhaseInit     : integer :=  0; -- x0001 init phase counter
+ constant c_synEncInit       : integer :=  1; -- x0002 init encoder
+ constant c_synEncEna        : integer :=  2; -- x0004 enable encoder
+
 -- clock control register
 
- constant clkCtlSize : integer := 7;
+ constant clkCtlSize : integer := 9;
  signal clkCtlReg : unsigned(clkCtlSize-1 downto 0);
  --variable clkCtlReg : unsigned(clkCtlSize-1 downto 0);
 
  alias    zFreqSel           : unsigned is clkCtlreg(2 downto 0); -- x0001 z clock select
  alias    xFreqSel           : unsigned is clkCtlreg(5 downto 3); -- x0008 x clock select
  alias    clkDbgFreqEna      : std_logic is clkCtlReg( 6); -- x0040 enable debug frequency
- alias    clkDbgSyncEna      : std_logic is clkCtlReg( 6); -- x0040 enable debug sync
+ alias    clkDbgSyncEna      : std_logic is clkCtlReg( 7); -- x0080 enable debug sync
+ alias    clkDbgAxisEna      : std_logic is clkCtlReg( 8); -- x0100 set index axisEna
 
  constant c_clkDbgFreqEna    : integer :=  6; -- x0040 enable debug frequency
- constant c_clkDbgSyncEna    : integer :=  6; -- x0040 enable debug sync
+ constant c_clkDbgSyncEna    : integer :=  7; -- x0080 enable debug sync
+ constant c_clkDbgAxisEna    : integer :=  8; -- x0100 set index axisEna
 
 -- clock shift values
 
@@ -342,21 +373,6 @@ package FpgaLatheBits is
  constant xClkSpindle        : unsigned (2 downto 0) := "110"; -- 
  constant xClkDbgFreq        : unsigned (2 downto 0) := "111"; -- 
 
--- sync control register
-
- constant synCtlSize : integer := 5;
- signal synCtlReg : unsigned(synCtlSize-1 downto 0);
- --variable synCtlReg : unsigned(synCtlSize-1 downto 0);
-
- alias    synPhaseInit       : std_logic is synCtlReg( 0); -- x0001 init phase counter
- alias    synEncInit         : std_logic is synCtlReg( 1); -- x0002 init encoder
- alias    synEncEna          : std_logic is synCtlReg( 2); -- x0004 enable encoder
- alias    synEncClkSel       : unsigned is synCtlreg(4 downto 3); -- x0008 encoder clk sel
-
- constant c_synPhaseInit     : integer :=  0; -- x0001 init phase counter
- constant c_synEncInit       : integer :=  1; -- x0002 init encoder
- constant c_synEncEna        : integer :=  2; -- x0004 enable encoder
-
 -- encoder clock shift
 
  constant c_encClkShift      : integer :=  0; -- x0001 enc clock shift
@@ -374,20 +390,6 @@ package FpgaLatheBits is
  constant synEncClkCh        : unsigned (1 downto 0) := "01"; -- 
  constant synEncClkSp        : unsigned (1 downto 0) := "10"; -- 
  constant synEncClkDbg       : unsigned (1 downto 0) := "11"; -- 
-
--- spindle control register
-
- constant spCtlSize : integer := 3;
- signal spCtlReg : unsigned(spCtlSize-1 downto 0);
- --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
-
- alias    spInit             : std_logic is spCtlReg( 0); -- x0001 spindle init
- alias    spEna              : std_logic is spCtlReg( 1); -- x0002 spindle enable
- alias    spDir              : std_logic is spCtlReg( 2); -- x0004 spindle direction
-
- constant c_spInit           : integer :=  0; -- x0001 spindle init
- constant c_spEna            : integer :=  1; -- x0002 spindle enable
- constant c_spDir            : integer :=  2; -- x0004 spindle direction
 
 end FpgaLatheBits;
 

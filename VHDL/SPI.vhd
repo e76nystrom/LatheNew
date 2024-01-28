@@ -59,7 +59,7 @@ begin
  --info <= convert(state);
 
  clk_ena : entity work.ClockEnableN
-  generic map(n => 4)
+  generic map (n => 4)
   port map (
    clk => clk,
    ena => dclk,

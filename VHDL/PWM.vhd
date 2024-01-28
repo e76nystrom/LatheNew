@@ -29,18 +29,18 @@ architecture behavioral of  PWM is
 begin
 
  pwmMaxShift : entity work.ShiftOp
-  generic map(opVal => opBase + F_Ld_PWM_Max,
-              n => n)
-  port map(
+  generic map (opVal => opBase + F_Ld_PWM_Max,
+               n => n)
+  port map (
    clk  => clk,
    inp  => inp,
    data => pwmMax
    );
 
  pwmTrigShift : entity work.ShiftOpSel
-  generic map(opVal => opBase + F_Ld_PWM_Trig,
-              n     => n)
-  port map(
+  generic map (opVal => opBase + F_Ld_PWM_Trig,
+               n     => n)
+  port map (
    clk  => clk,
    inp  => inp,
    sel => trigSel,

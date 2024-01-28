@@ -9,8 +9,8 @@ use work.regDef.all;
 use work.IORecord.DataInp;
 
 entity CtlReg is
- generic(opVal : unsigned;
-         n :     positive);
+ generic (opVal : unsigned;
+          n     : positive);
  port (
   clk  : in  std_logic;                 --clock
   inp  : in  DataInp;

@@ -90,7 +90,7 @@ architecture Behavioral of LatheTop is
  signal cfs_we_o   : std_ulogic := '0';
  signal cfs_reg_o  : std_ulogic_vector(1 downto 0) := (others => '0');
 
- signal data    : LatheInterfaceData;
+ signal data       : LatheInterfaceData;
 
  signal latheData  : RiscvDataRcv := riscvDataRcvInit;
  signal latheCtl   : RiscvDataCtl := riscvDataCtlInit;
@@ -98,6 +98,8 @@ architecture Behavioral of LatheTop is
  signal debug      : InterfaceDbg;
  signal extDout    : std_logic;
   
+ signal auxPinIn   : std_logic_vector(13-1 downto 0);
+
 begin
 
  dbgsetup : entity work.DbgMap
@@ -121,26 +123,38 @@ begin
    );
 
  dOut <= extDout;
+
+ auxPinIn <= aux & pinIn;
  
--- interfaceProc : entity work.CFSInterface
- -- generic map (lenBits  => 8,
- --              dataBits => 32)
- -- port map (
- --  clk        => sysClkOut,
- --  re         => cfs_re_o,
- --  we         => cfs_we_o,
- --  reg        => cfs_reg_o,
-  
- --  CFSDataIn  => cfs_out_o,
- --  CFSDataOut => cfs_in_i,
-
- --  latheData  => latheData,
- --  latheCtl   => latheCtl
- --  );
-
  latheInt: entity work.LatheInterface
-  generic map (ledPins => ledPins,
-               dbgPins => dbgPins)
+  generic map (
+   ledPins        => ledPins,
+   dbgPins        => dbgPins,
+   synBits        => 32,
+   posBits        => 24,
+   countBits      => 18,
+   distBits       => 18,
+   locBits        => 18,
+   dbgBits        => 4,
+   synDbgBits     => 4,
+   rdAddrBits     => 5,
+   outBits        => 32,
+   opBits         => 8,
+   addrBits       => 8,
+   seqBits        => 8,
+   phaseBits      => 16,
+   totalBits      => 32,
+   indexClockBits => 28,
+   encScaleBits   => 12,
+   encCountBits   => 16,
+   freqBits       => 16,
+   freqCountBits  => 32,
+   cycleLenBits   => 11,
+   encClkBits     => 24,
+   cycleClkBits   => 32,
+   pwmBits        => 16,
+   stepWidth      => 50
+   )
   port map (
    sysClk   => sysClkOut,
 
@@ -161,8 +175,8 @@ begin
    xDro     => xDro,
    -- zmpg     => zMpg,
    -- xMpg     => xMpg,
-
-   pinIn    => aux & pinIn,
+   
+   pinIn    => auxPinIn,
 
    dbg      => debug,
    -- aux      => aux,

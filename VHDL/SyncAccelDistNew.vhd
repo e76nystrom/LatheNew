@@ -115,7 +115,7 @@ architecture Behavioral of SyncAccelDist is
  signal synStepTmp  : std_logic := '0';
  signal synStepLast : std_logic := '0';
 
-  -- ********** location definitions **********
+ -- ********** location definitions **********
 
  signal locVal : unsigned(locBits-1 downto 0); --location input
  signal loc    : unsigned(locBits-1 downto 0) := (others => '0'); --cur loc
@@ -153,102 +153,106 @@ architecture Behavioral of SyncAccelDist is
 begin
 
  dreg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_D,
-              n      => synBits)
+  generic map (opVal  => opBase + F_Ld_D,
+               n      => synBits)
   port map (
    clk   => clk,
    inp   => inp,
    data  => d);
 
  incr1reg : entity work.ShiftOp
-  generic map(opVal =>  opBase + F_Ld_Incr1,
-              n =>      synBits)
+  generic map (opVal =>  opBase + F_Ld_Incr1,
+               n =>      synBits)
   port map (
    clk   => clk,
    inp   => inp,
    data  => incr1);
 
  incr2reg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Incr2,
-              n      => synBits)
+  generic map (opVal  => opBase + F_Ld_Incr2,
+               n      => synBits)
   port map (
    clk   => clk,
    inp   => inp,
    data  => incr2);
 
  accelreg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Accel_Val,
-              n      => synBits)
+  generic map (opVal  => opBase + F_Ld_Accel_Val,
+               n      => synBits)
   port map (
    clk   => clk,
    inp   => inp,
    data  => accel);
 
  accelCountReg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Accel_Count,
-              n      => countBits)
+  generic map (opVal  => opBase + F_Ld_Accel_Count,
+               n      => countBits)
   port map (
    clk   => clk,
    inp   => inp,
    data  => accelCount);
 
-  distShiftOp : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_Dist,
-              n      => distBits)
-  port map(
+ distShiftOp : entity work.ShiftOpLoad
+  generic map (opVal  => opBase + F_Ld_Dist,
+               n      => distBits)
+  port map (
    clk   => clk,
    inp   => inp,
    load  => loadDist,
    data  => distVal
    );
 
-  maxDistShiftOp : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Max_Dist,
-              n      => distBits)
-  port map(
+ maxDistShiftOp : entity work.ShiftOp
+  generic map (opVal  => opBase + F_Ld_Max_Dist,
+               n      => distBits)
+  port map (
    clk   => clk,
    inp   => inp,
    data  => maxDist
    );
 
  droPosReg : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_Dro,
-              n      => droBits)
+  generic map (opVal  => opBase + F_Ld_Dro,
+               n      => droBits)
   port map (
    clk   => clk,
    inp   => inp,
    load  => droLoad,
-   data  => droInput);
+   data  => droInput
+   );
 
  droEndReg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Dro_End,
-              n      => droBits)
+  generic map (opVal  => opBase + F_Ld_Dro_End,
+               n      => droBits)
   port map (
    clk   => clk,
    inp   => inp,
-   data  => droEnd);
+   data  => droEnd
+   );
 
  droLimitReg : entity work.ShiftOp
-  generic map(opVal  => opBase + F_Ld_Dro_Limit,
-              n      => droBits)
+  generic map (opVal  => opBase + F_Ld_Dro_Limit,
+               n      => droBits)
   port map (
    clk   => clk,
    inp   => inp,
-   data  => decelLimit);
+   data  => decelLimit
+   );
 
  locvalreg : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_Loc,
-              n      => locBits)
+  generic map (opVal  => opBase + F_Ld_Loc,
+               n      => locBits)
   port map (
    clk   => clk,
    inp   => inp,
    load  => locLoad,
-   data  => locVal);
+   data  => locVal
+   );
 
  sum_out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Sum,
-              n       => synBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Sum,
+               n       => synBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -257,9 +261,9 @@ begin
    );
 
  accelSum_Out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Accel_Sum,
-              n       => synBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Accel_Sum,
+               n       => synBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -268,9 +272,9 @@ begin
    );
 
  accelCtr_out : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Accel_Ctr,
-              n       => countBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Accel_Ctr,
+               n       => countBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -279,9 +283,9 @@ begin
    );
 
  xPos_Shift : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_XPos,
-              n       => posBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_XPos,
+               n       => posBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -290,9 +294,9 @@ begin
    );
 
  yPos_Shift : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_YPos,
-              n       => posBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_YPos,
+               n       => posBits,
+               outBits => outBits)
   port map (
    clk => clk,
    oRec   => oRec,
@@ -301,9 +305,9 @@ begin
    );
 
  DistShiftOut : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Dist,
-              n       => distBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Dist,
+               n       => distBits,
+               outBits => outBits)
   port map (
    clk => clk,
    oRec   => oRec,
@@ -312,9 +316,9 @@ begin
    );
  
  LocShiftOut : entity work.ShiftOutNS
-  generic map(opVal   => opBase + F_Rd_Loc,
-              n       => locBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Loc,
+               n       => locBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -323,9 +327,9 @@ begin
    );
 
  droShiftOut : entity work.ShiftOutNS
-  generic map(opVal   => opBase + F_Rd_Dro,
-              n       => droBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Dro,
+               n       => droBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,
@@ -336,9 +340,9 @@ begin
  dirOut <= cmdDir;
  
  AccelShiftOut : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Accel_Steps,
-              n       => distBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Accel_Steps,
+               n       => distBits,
+               outBits => outBits)
   port map (
    clk    => clk,
    oRec   => oRec,

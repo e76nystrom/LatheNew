@@ -13,34 +13,38 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity LatheInterface is
- generic (extData       : natural  := 0;
-          ledPins       : positive := 8;
-          dbgPins       : positive := 8;
-          inputPins     : positive := 13;
-          posBits       : positive := 24;
-          countBits     : positive := 18;
-          distBits      : positive := 18;
-          locBits       : positive := 18;
-          dbgBits       : positive := 4;
-          synDbgBits    : positive := 4;
-          rdAddrBits    : positive := 5;
-          outBits       : positive := 32;
-          opBits        : positive := 8;
-          addrBits      : positive := 8;
-          seqBits       : positive := 8;
-          phaseBits     : positive := 16;
-          totalBits     : positive := 32;
-          idxClkBits    : positive := 28;
-          freqBits      : positive := 16;
-          freqCountBits : positive := 32;
-          cycleLenBits  : positive := 11;
-          encClkBits    : positive := 24;
-          cycleClkBits  : positive := 32;
-          pwmBits       : positive := 16;
-          stepWidth     : positive := 50);
+ generic (
+  dbgPins        : positive := 8;
+  inputPins      : positive := 13;
+  ledPins        : positive := 2;
+  synBits        : positive;
+  posBits        : positive;
+  countBits      : positive;
+  distBits       : positive;
+  locBits        : positive;
+  dbgBits        : positive;
+  synDbgBits     : positive;
+  rdAddrBits     : positive;
+  outBits        : positive;
+  opBits         : positive;
+  addrBits       : positive;
+  seqBits        : positive;
+  phaseBits      : positive;
+  totalBits      : positive;
+  indexClockBits : positive;
+  encScaleBits   : positive;
+  encCountBits   : positive;
+  freqBits       : positive;
+  freqCountBits  : positive;
+  cycleLenBits   : positive;
+  encClkBits     : positive;
+  cycleClkBits   : positive;
+  pwmBits        : positive;
+  stepWidth      : positive
+  );
  port (
   sysClk : in std_logic;
-  
+
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   anode    : out std_logic_vector(3 downto 0) := (others => '1');
   seg      : out std_logic_vector(6 downto 0) := (others => '1');
@@ -201,9 +205,9 @@ begin
  -- runR <= runToRec(runReg);
 
  --  runCtlRd : entity work.ShiftOutN
- --  generic map(opVal   => F_Rd_Run_Ctl,
- --              n       => runSize,              
- --              outBits => outBits)
+ --  generic map (opVal   => F_Rd_Run_Ctl,
+ --               n       => runSize,
+ --               outBits => outBits)
  --  port map (
  --   clk  => clk,
  --   oRec => curR,
@@ -304,7 +308,34 @@ begin
  xDoneInt <= xDone;
 
  latheCtlProc: entity work.LatheCtl
-  generic map (dbgPins => dbgPins)
+  generic map (
+   dbgPins        => dbgPins,
+   inputPins      => inputPins,
+   synBits        => synBits,
+   posBits        => posBits,
+   countBits      => countBits,
+   distBits       => distBits,
+   locBits        => locBits,
+   dbgBits        => dbgBits,
+   synDbgBits     => synDbgBits,
+   rdAddrBits     => rdAddrBits,
+   outBits        => outBits,
+   opBits         => opBits,
+   addrBits       => addrBits,
+   seqBits        => seqBits,
+   phaseBits      => phaseBits,
+   totalBits      => totalBits,
+   indexClockBits => indexClockBits,
+   encScaleBits   => encScaleBits,
+   encCountBits   => encCountBits,
+   freqBits       => freqBits,
+   freqCountBits  => freqCountBits,
+   cycleLenBits   => cycleLenBits,
+   encClkBits     => encClkBits,
+   cycleClkBits   => cycleClkBits,
+   pwmBits        => pwmBits,
+   stepWidth      => stepWidth
+   )
   port map (
    clk      => clk,
 

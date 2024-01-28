@@ -9,9 +9,9 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity RunOutSync is
- generic(opBase        : unsigned (opb-1 downto 0);
-         runOutCtrBits : positive := 18);
- port(
+ generic (opBase        : unsigned (opb-1 downto 0);
+          runOutCtrBits : positive := 18);
+ port (
   clk     : in std_logic;
   inp     : in DataInp;
   enable  : in std_logic;
@@ -37,8 +37,8 @@ architecture Behavioral of RunOutSync is
 begin
 
  runOutReg : entity work.CtlReg
-  generic map(opVal => opBase + F_Ld_RunOut_Ctl,
-              n     => RunOutCtlSize)
+  generic map (opVal => opBase + F_Ld_RunOut_Ctl,
+               n     => RunOutCtlSize)
   port map (
    clk  => clk,
    inp  => inp,
@@ -47,9 +47,9 @@ begin
   runOutCtlR <= runOutCtlToRec(runOutCtlReg);
 
   runLimit : entity work.ShiftOpLoad
-  generic map(opVal  => opBase + F_Ld_Run_Limit,
-              n      => runOutCtrBits)
-  port map(
+  generic map (opVal  => opBase + F_Ld_Run_Limit,
+               n      => runOutCtrBits)
+  port map (
    clk   => clk,
    inp   => inp,
    load  => loadLimit,
@@ -67,7 +67,7 @@ begin
    end if;
 
    if (runOutCtlR.runOutInit = '1') then
-    counter <= (others => '0');
+    counter   <= (others => '0');
     runOutEna <= '0';
    else
 

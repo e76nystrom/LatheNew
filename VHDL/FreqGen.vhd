@@ -9,8 +9,8 @@ use work.RegDef.opb;
 use work.IORecord.all;
 
 entity FreqGen is
- generic(opVal    : unsigned;
-         freqBits : positive);
+ generic (opVal    : unsigned;
+          freqBits : positive);
  port (
   clk      : in  std_logic;
   inp      : in  DataInp;
@@ -27,8 +27,8 @@ architecture Behavioral of FreqGen is
 begin
 
  freqreg : entity work.ShiftOp
-  generic map(opVal => opVal,
-              n     => freqBits)
+  generic map (opVal => opVal,
+               n     => freqBits)
   port map (
    clk  => clk,
    inp  => inp,

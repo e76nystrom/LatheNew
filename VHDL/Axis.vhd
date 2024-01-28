@@ -109,9 +109,9 @@ architecture Behavioral of Axis is
 begin
 
  AxStatReg : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Axis_Status,
-              n       => axisStatusSize,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Axis_Status,
+               n       => axisStatusSize,
+               outBits => outBits)
   port map (
    clk  => clk,
    oRec => oRec,
@@ -119,11 +119,11 @@ begin
    dout => dout.status                  --doutStatus
    );
 
-  axisStatusReg <= unsigned(axisStatusToVec(axisStatusR));
+ axisStatusReg <= unsigned(axisStatusToVec(axisStatusR));
 
  AxCtlReg : entity work.CtlReg
-  generic map(opVal => opBase + F_Ld_Axis_Ctl,
-              n     => axisCtlSize)
+  generic map (opVal => opBase + F_Ld_Axis_Ctl,
+               n     => axisCtlSize)
   port map (
    clk  => clk,
    inp  => inp,
@@ -141,9 +141,9 @@ begin
  syncCtlR.ctlUseLimits <= axisCtlR.ctlUseLimits;
 
  AxCtlRegRd : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Axis_Ctl,
-              n       => axisCtlSize,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Axis_Ctl,
+               n       => axisCtlSize,
+               outBits => outBits)
   port map (
    clk  => clk,
    oRec => oRec,

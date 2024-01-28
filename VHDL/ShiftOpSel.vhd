@@ -9,9 +9,9 @@ use work.RegDef.opb;
 use work.IORecord.all;
 
 entity ShiftOpSel is
- generic(opVal : unsigned (opb-1 downto 0);
-         n :    positive);
- port(
+ generic (opVal : unsigned (opb-1 downto 0);
+          n :    positive);
+ port (
   clk  : in   std_logic;
   inp  : in   DataInp;
   sel  : out  std_logic := '0';

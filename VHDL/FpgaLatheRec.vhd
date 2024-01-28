@@ -159,10 +159,28 @@ type cfgCtlRec is record
  cfgZDirInv   : std_logic;      --  0 0x000001 z dir inverted
 end record cfgCtlRec;
 
+-- spindle control register
+
+type spCtlRec is record
+ spDir  : std_logic;            --  2 0x4 spindle direction
+ spEna  : std_logic;            --  1 0x2 spindle enable
+ spInit : std_logic;            --  0 0x1 spindle init
+end record spCtlRec;
+
+-- sync control register
+
+type synCtlRec is record
+ synEncClkSel : std_logic_vector(1 downto 0);-- 4-3 encoder clk sel
+ synEncEna    : std_logic;      --  2 0x4 enable encoder
+ synEncInit   : std_logic;      --  1 0x2 init encoder
+ synPhaseInit : std_logic;      --  0 0x1 init phase counter
+end record synCtlRec;
+
 -- clock control register
 
 type clkCtlRec is record
- clkDbgSyncEna : std_logic;     --  6 0x40 enable debug sync
+ clkDbgAxisEna : std_logic;     --  8 0x100 set index axisEna
+ clkDbgSyncEna : std_logic;     --  7 0x80 enable debug sync
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
  xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x clock select
  zFreqSel      : std_logic_vector(2 downto 0);-- 2-0 z clock select
@@ -207,18 +225,6 @@ end record clkCtlRec;
  constant xClkSpindle    : std_logic_vector (2 downto 0) := "110"; -- 
  constant xClkDbgFreq    : std_logic_vector (2 downto 0) := "111"; -- 
 
--- sync control register
-
-type synCtlRec is record
- synEncClkSel : std_logic_vector(1 downto 0);-- 4-3 encoder clk sel
- synEncEna    : std_logic;      --  2 0x04 enable encoder
- synEncInit   : std_logic;      --  1 0x02 init encoder
- synPhaseInit : std_logic;      --  0 0x01 init phase counter
- clkMask      : std_logic;      --  0 0x01 clock mask
- xFreqShift   : std_logic;      --  0 0x01 x clock shift
- zFreqShift   : std_logic;      --  0 0x01 z clock shift
-end record synCtlRec;
-
 -- encoder clock shift
 
  constant encClkShift    : integer :=  0; -- x0001 enc clock shift
@@ -236,14 +242,5 @@ end record synCtlRec;
  constant synEncClkCh    : std_logic_vector (1 downto 0) := "01"; -- 
  constant synEncClkSp    : std_logic_vector (1 downto 0) := "10"; -- 
  constant synEncClkDbg   : std_logic_vector (1 downto 0) := "11"; -- 
-
--- spindle control register
-
-type spCtlRec is record
- spDir       : std_logic;       --  2 0x4 spindle direction
- spEna       : std_logic;       --  1 0x2 spindle enable
- spInit      : std_logic;       --  0 0x1 spindle init
- encClkShift : std_logic;       --  0 0x1 enc clock shift
-end record spCtlRec;
 
 end package FpgaLatheBitsRec;

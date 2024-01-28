@@ -45,8 +45,8 @@ begin
  mpgData <= mpgDir & std_logic_vector(msCounter);
 
  mpgFifo : entity work.Fifo
-  generic map(fifoDepth => mpgDepth,
-              fifoWidth => mpgWidth)
+  generic map (fifoDepth => mpgDepth,
+               fifoWidth => mpgWidth)
  port map (
   clk   => clk,
   init  => init,

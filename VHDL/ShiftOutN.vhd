@@ -9,9 +9,9 @@ use work.RegDef.opb;
 use work.IORecord.DataOut;
 
 entity ShiftOutN is
- generic(opVal   : unsigned (opb-1 downto 0);
-         n       : positive;
-         outBits : positive);
+ generic (opVal   : unsigned (opb-1 downto 0);
+          n       : positive;
+          outBits : positive);
  port (
   clk  : in std_logic;
   oRec : in DataOut;

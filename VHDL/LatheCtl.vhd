@@ -12,40 +12,39 @@ use work.FpgaLatheBitsRec.all;
 use work.FpgaLatheBitsFunc.all;
 
 entity LatheCtl is
- generic (dbgPins       : positive := 8;
-          inputPins     : positive := 13;
-          synBits       : positive := 32;
-          posBits       : positive := 24;
-          countBits     : positive := 18;
-          distBits      : positive := 18;
-          locBits       : positive := 18;
-          dbgBits       : positive := 4;
-          synDbgBits    : positive := 4;
-          rdAddrBits    : positive := 5;
-          outBits       : positive := 32;
-          opBits        : positive := 8;
-          addrBits      : positive := 8;
-          seqBits       : positive := 8;
-          phaseBits     : positive := 16;
-          totalBits     : positive := 32;
-          idxClkBits    : positive := 28;
-          freqBits      : positive := 16;
-          freqCountBits : positive := 32;
-          cycleLenBits  : positive := 11;
-          encClkBits    : positive := 24;
-          cycleClkBits  : positive := 32;
-          pwmBits       : positive := 16;
-          stepWidth     : positive := 50);
+ generic (
+  dbgPins        : positive;
+  inputPins      : positive;
+  synBits        : positive;
+  posBits        : positive;
+  countBits      : positive;
+  distBits       : positive;
+  locBits        : positive;
+  dbgBits        : positive;
+  synDbgBits     : positive;
+  rdAddrBits     : positive;
+  outBits        : positive;
+  opBits         : positive;
+  addrBits       : positive;
+  seqBits        : positive;
+  phaseBits      : positive;
+  totalBits      : positive;
+  indexClockBits : positive;
+  encScaleBits   : positive;
+  encCountBits   : positive;
+  freqBits       : positive;
+  freqCountBits  : positive;
+  cycleLenBits   : positive;
+  encClkBits     : positive;
+  cycleClkBits   : positive;
+  pwmBits        : positive;
+  stepWidth      : positive
+  );
  port (
   clk      : in  std_logic;
-  
-  -- spiW     : in  DataInp;
   curW     : in  DataInp;
-
-  dout     : out latheCtlData;
-
-  -- spiR     : in  DataOut;
   curR     : in  DataOut;
+  dout     : out latheCtlData;
 
   aIn      : in  std_logic;
   bIn      : in  std_logic;
@@ -78,7 +77,7 @@ architecture Behavioral of LatheCtl is
 
  signal inputsR   : inputsRec;
 
- signal pinOutR : pinOutRec;
+ signal pinOutR   : pinOutRec;
 
  signal outPinReg : outputsVec;
  signal outPinR   : outputsRec;
@@ -107,14 +106,16 @@ architecture Behavioral of LatheCtl is
  signal zFreqGen   : std_logic;
  signal xFreqGen   : std_logic;
  signal dbgFreqGen : std_logic;
- signal spFreqGen  : std_logic;
 
  -- sync signals
 
- signal dbgSync     : std_logic;
- signal phaseSyncIn : std_logic;
- signal sync        : std_logic;
-
+ signal dbgSync      : std_logic;
+ signal phaseEncIn   : std_logic;
+ signal phaseSyncIn  : std_logic;
+ signal sync         : std_logic;
+ signal syncPulseOut : std_logic;
+ signal indexAxisEna : std_logic;
+ 
  signal intActive : std_logic;
  signal intClk    : std_logic;
  signal encCh     : std_logic;
@@ -158,10 +159,12 @@ architecture Behavioral of LatheCtl is
  signal xCurrentDir : std_logic := '0';
 
  signal spEna          : std_logic;
+ signal spPreStep      : std_logic;
  signal spindleStep    : std_logic;
  signal spindleDir     : std_logic;
  signal spindleStepOut : std_logic;
  signal spindleDirOut  : std_logic;
+ signal spActive       : std_logic;
 
  -- signal zSwitches : std_logic_vector(3 downto 0);
  -- signal xSwitches : std_logic_vector(3 downto 0);
@@ -198,10 +201,10 @@ begin
  pinOutR.pinOut3  <= zStep;
  pinOutR.pinOut4  <= xDir; 
  pinOutR.pinOut5  <= xStep;
- pinOutR.pinOut6  <= '0';
+ pinOutR.pinOut6  <= syncPulseOut;
  pinOutR.pinOut7  <= '0';
- pinOutR.pinOut8  <= '0';
- pinOutR.pinOut9  <= '0';
+ pinOutR.pinOut8  <= spindleDirOut;
+ pinOutR.pinOut9  <= spindleStepOut;
  pinOutR.pinOut1  <= outPinR.outPin1;
  pinOutR.pinOut14 <= outPinR.outPin14;
 
@@ -215,15 +218,14 @@ begin
  extOut(0) <= spindleDirOut;
  extOut(1) <= spindleStepOut;
 
- extOut(2) <= inputsR.inZHome;
+ extOut(2) <= syncPulseOut;
 
- statusR.zAxisEna <= zExtEna;
- statusR.xAxisEna <= xExtEna;
-
- statusR.zAxisDone <= intZDoneInt;
- statusR.xAxisDone <= intXDoneInt;
-
- statusR.syncActive <= intActive;
+ statusR.zAxisEna      <= zExtEna;
+ statusR.xAxisEna      <= xExtEna;
+ statusR.zAxisDone     <= intZDoneInt;
+ statusR.xAxisDone     <= intXDoneInt;
+ statusR.syncActive    <= intActive;
+ statusR.spindleActive <= spActive;
 
  zDoneInt <= intZDoneInt;
  xDoneInt <= intXDoneInt;
@@ -297,20 +299,7 @@ begin
 
  cfgCtlR <= cfgCtlToRec(cfgCtlReg);
 
- -- spi_reg : entity work.CtlReg
- --  generic map (opVal => F_Ld_Sp_Ctl,
- --               n     => spCtlSize)
- --  port map (
- --   clk  => clk,
- --   inp  => curW,
- --   data => spCtlReg
- --   );
-
- -- spCtlR <= spCtlToRec(spCtlReg);
- 
  -- quadrature encoder
-
-ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
 
  quad_encoder : entity work.QuadEncoder
   port map (
@@ -321,12 +310,43 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    dir => encDir
    );
 
+ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
+
+ -- phaseSyncIn <= syncIn       when (clkCtlR.clkDbgSyncEna = '0') else dbgSync;
+ -- phaseEncIn  <= (dbgFreqGen  when (clkCtlR.clkDbgFreqEna = '1') else
+ --                 spindleStep when (spActive = '1') else ch);
+
+ phaseIn : process(clk)
+ begin
+  if (rising_edge(clk)) then
+
+   if (clkCtlR.clkDbgSyncEna = '1') then
+    phaseSyncIn <= dbgSync;
+   else
+    phaseSyncIn <= syncIn;
+   end if;
+
+   if (clkCtlR.clkDbgFreqEna = '1') then
+    phaseEncIn  <= dbgFreqGen;
+   else
+
+    if (spActive = '1') then
+     phaseEncIn <= spindleStep;
+    else
+     phaseEncIn <= ch;
+    end if;
+
+   end if;
+
+  end if;
+ end process phaseIn;
+
  enc_clk : process(clk)
  begin
   if (rising_edge(clk)) then
    case synCtlR.synEncClkSel is
     when encClkCh  => encCh <= ch;
-    when encClkSp  => encCh <= spFreqGen;
+    when encClkSp  => encCh <= spPreStep;
     when encClkDbg => encCh <= dbgFreqGen;
     when others    => encCh <= '0';
    end case;
@@ -352,8 +372,6 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    intclk  => intClk
    );
 
- phaseSyncIn <= syncIn when (clkCtlR.clkDbgSyncEna = '0') else dbgSync;
-
  phase_counter : entity work.PhaseCounter
   generic map (opBase    => F_Phase_Base,
                phaseBits => phaseBits,
@@ -368,22 +386,35 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
 
    init    => synCtlR.synPhaseInit,
    genSync => cfgCtlR.cfgGenSync,
-   ch      => ch,
+   enc     => phaseEncIn,
    sync    => phaseSyncIn,
    dir     => direction,
-   syncOut => sync);
+   syncOut => sync
+   );
+
+ SyncPulse : entity work.PulseGen
+  generic map (pulseWidth => stepWidth)
+  port map (
+   clk      => clk,
+   pulseIn  => sync,
+   pulseOut => syncPulseOut
+   );
+
+ indexAxisEna <= zExtEna or clkCtlR.clkDbgAxisEna;
 
  index_clocks : entity work.IndexClocks
-  generic map (opBase  => F_Index_Base,
-               n       => idxClkBits,
-               outBits => outBits)
+  generic map (opBase         => F_Index_Base,
+               indexClockBits => indexClockBits,
+               encScaleBits   => encScaleBits,
+               encCountBits   => encCountBits,
+               outBits        => outBits)
   port map (
    clk     => clk,
    inp     => curW,
    oRec    => curR,
    dout    => dout.index,
-   axisEna => zExtEna,
-   ch      => ch,
+   axisEna => indexAxisEna,
+   enc     => phaseEncIn,
    index   => sync
    );
 
@@ -479,7 +510,7 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
     when clkIntClk  => zCh <= intClk;
     when clkSlvFreq => zCh <= xFreqGen;
     when clkSlvCh   => zCh <= xCh;
-    when clkSpindle => zCh <= spFreqGen;
+    when clkSpindle => zCh <= spPreStep;
     when clkDbgFreq => zCh <= dbgFreqGen;
     when others     => zCh <= '0';
    end case;
@@ -594,7 +625,7 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
     when clkIntClk  => xCh <= intClk;
     when clkSlvFreq => xCh <= zFreqGen;
     when clkSlvCh   => xCh <= zCh;
-    when clkSpindle => xCh <= spFreqGen;
+    when clkSpindle => xCh <= spPreStep;
     when clkDbgFreq => xCh <= dbgFreqGen;
     when others     => xCh <= '0';
    end case;
@@ -685,14 +716,10 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    inp       => curW,
    oRec      => curR,
    dout      => dout.spindle,
-
-   -- ch        => spFreqGen,
-   -- mpgQuad   => zMpg,
-   -- jogInvert => cfgCtlR.cfgZMpgInv,
    eStop     => eStop,
-   spActive  => statusR.spindleActive,
+   spActive  => spActive,
+   preStep   => spPreStep,
    stepOut   => spindleStep,
-   spFreqGen => spFreqGen,
    dirOut    => spindleDir
    );
 
@@ -715,7 +742,7 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    clk    => clk,
    inp    => curW,
    ena    => pwmEna,
-   pwmOut =>  pinOutR.pinOut16
+   pwmOut => pinOutR.pinOut16
    );
 
 end Behavioral;

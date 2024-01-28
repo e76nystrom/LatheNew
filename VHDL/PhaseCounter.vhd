@@ -18,7 +18,7 @@ entity PhaseCounter is
   oRec    : in  DataOut;
   init    : in  std_logic;
   genSync : in  std_logic;
-  ch      : in  std_logic;
+  enc     : in  std_logic;
   sync    : in  std_logic;
   dir     : in  std_logic;
   dout    : out std_logic := '0';
@@ -30,7 +30,7 @@ architecture Behavioral of PhaseCounter is
  type fsm is (idle, updPhase);
  signal state : fsm := idle;
 
- --signal totalInc : std_logic;
+ signal lastEnc : std_logic := '0';
  signal lastSyn : std_logic_vector(1 downto 0);
 
  signal phaseSyn : unsigned(phaseBits-1 downto 0) :=
@@ -46,17 +46,17 @@ begin
  dout <= dOutPhaseSyn;
 
  phaseReg : entity work.ShiftOp
-  generic map(opVal => opBase + F_Ld_Phase_len,
-              n     => phaseBits)
+  generic map (opVal => opBase + F_Ld_Phase_len,
+               n     => phaseBits)
   port map (
    clk  => clk,
    inp  => inp,
    data => phaseVal);
 
  phaseSynOut : entity work.ShiftOutN
-  generic map(opVal   => opBase + F_Rd_Phase_Syn,
-              n       => phaseBits,
-              outBits => outBits)
+  generic map (opVal   => opBase + F_Rd_Phase_Syn,
+               n       => phaseBits,
+               outBits => outBits)
   port map (
    clk  => clk,
    oRec => oRec,
@@ -70,16 +70,16 @@ begin
  begin
   if (rising_edge(clk)) then
    if (init = '1') then                 --if load
-    state <= idle;                      --set sart state
-    syncOut <= '0';
+    state    <= idle;                   --set sart state
+    syncOut  <= '0';
     phaseCtr <= (phaseBits-1 downto 0 => '0');
    else                                 --if not initializing
     
     if ((lastSyn(0) = '1') and (lastSyn(1) = '0')) then --if rising edge
      phaseSyn <= phaseCtr;               --save phase counter
 
-     if (genSync = '0') then             --if generating sync
-      syncOut <= '1';                    --output sync pulse
+     if (genSync = '0') then            --if generating sync
+      syncOut <= '1';                   --output sync pulse
      end if;
     else                                --if not rising edge
      if (genSync = '0') then            --if generating sync
@@ -88,6 +88,7 @@ begin
     end if;
 
     lastSyn <= lastSyn(0) & sync;
+    lastEnc <= enc;
 
     case state is
      when idle =>                       --idle
@@ -95,7 +96,7 @@ begin
        syncOut <= '0';                  --clear sync
       end if;
 
-      if (ch = '1') then                --if clock
+      if (enc = '1' and lastEnc = '0') then --if clock
        state <= updPhase;               --update phase
       end if;
 
@@ -103,7 +104,7 @@ begin
       
       if (dir = '1') then               --if forward
        if (phaseCtr = phaseVal) then    --if at maximum
-        phaseCtr <= (phaseBits-1 downto 0 => '0'); --reset to zero
+        phaseCtr <= (others => '0');    --reset to zero
 
         if (genSync = '1') then         --if generating sync
          syncOut <= '1';                --set sync pulse

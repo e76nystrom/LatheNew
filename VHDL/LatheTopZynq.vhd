@@ -308,9 +308,34 @@ begin
  pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
-  generic map (extData => 1,
-               ledPins => ledPins,
-               dbgPins => dbgPins)
+  generic map (
+   ledPins        => ledPins,
+   dbgPins        => dbgPins,
+   synBits        => 32,
+   posBits        => 24,
+   countBits      => 18,
+   distBits       => 18,
+   locBits        => 18,
+   dbgBits        => 4,
+   synDbgBits     => 4,
+   rdAddrBits     => 5,
+   outBits        => 32,
+   opBits         => 8,
+   addrBits       => 8,
+   seqBits        => 8,
+   phaseBits      => 16,
+   totalBits      => 32,
+   indexClockBits => 28,
+   encScaleBits   => 12,
+   encCountBits   => 16,
+   freqBits       => 16,
+   freqCountBits  => 32,
+   cycleLenBits   => 11,
+   encClkBits     => 24,
+   cycleClkBits   => 32,
+   pwmBits        => 16,
+   stepWidth      => 50
+   )
   port map (
    sysClk   => sysClkOut,
 
