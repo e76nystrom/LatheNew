@@ -11,15 +11,18 @@ use work.DbgRecord.all;
 use work.FpgaLatheBitsRec.all;
 
 entity SyncAccelDist is
- generic (opBase     : unsigned := x"00";
-          synBits    : positive := 32;
-          posBits    : positive := 18;
-          countBits  : positive := 18;
-          distBits   : positive := 18;
-          droBits    : positive := 18;
-          locBits    : positive := 18;
-          outBits    : positive := 32;
-          synDbgBits : positive := 4);
+ generic (
+  opBase     : unsigned := x"00";
+  synBits    : positive := 32;
+  posBits    : positive := 18;
+  countBits  : positive := 18;
+  distBits   : positive := 18;
+  droBits    : positive := 18;
+  locBits    : positive := 18;
+  outBits    : positive := 32;
+  synDbgBits : positive := 4;
+  ilaDbg     : natural  := 0
+  );
  port (
   clk        : in std_logic;
   inp        : DataInp;
@@ -149,6 +152,19 @@ architecture Behavioral of SyncAccelDist is
  signal inMinus      : std_logic;
  signal inPlus       : std_logic;
  signal inProbe      : std_logic;
+
+ component ila_1
+  port (
+   clk    : in std_logic;
+   probe0 : in std_logic_vector(0 downto 0); 
+   probe1 : in std_logic_vector(0 downto 0); 
+   probe2 : in std_logic_vector(0 downto 0); 
+   probe3 : in std_logic_vector(6 downto 0);
+   probe4 : in std_logic_vector(7 downto 0)
+   );
+ end component;
+
+ signal dOutLoc : std_logic;
 
 begin
 
@@ -310,11 +326,27 @@ begin
                outBits => outBits)
   port map (
    clk => clk,
-   oRec   => oRec,
+   oRec => oRec,
    data => distCtr,
-   dout => dout.dist
+   dout => dOutLoc
    );
- 
+
+ dout.dist <= dOutLoc;
+
+ ila_dbg : if ilaDbg = 1 generate
+  
+  u_ila : ila_1
+   port map (
+    clk => clk,
+    probe0(0) => oRec.shift,
+    probe1(0) => oRec.copy,
+    probe2(0) => dOutLoc,
+    probe3    => std_logic_vector(oRec.op(6 downto 0)),
+    probe4    => std_logic_vector(distCtr(7 downto 0))
+    );
+
+  end generate ila_dbg;
+
  LocShiftOut : entity work.ShiftOutNS
   generic map (opVal   => opBase + F_Rd_Loc,
                n       => locBits,

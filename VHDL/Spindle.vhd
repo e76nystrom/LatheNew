@@ -31,11 +31,11 @@ end Spindle;
 
 architecture Behavioral of Spindle is
 
- type fsm is (idle, run, doneWait);
- signal state : fsm;
+ -- type fsm is (idle, run, doneWait);
+ -- signal state : fsm;
 
- signal syncInit   : std_logic := '0';
- signal syncEna    : std_logic := '0';
+ signal spInit     : std_logic := '0';
+ signal spEna      : std_logic := '0';
 
  signal spStep     : std_logic;
  -- signal lastSpStep : std_logic := '0';
@@ -43,8 +43,6 @@ architecture Behavioral of Spindle is
  signal ch         : std_logic;
 
  signal decelDone  : std_logic;
-
- signal decel      : std_logic := '0';
 
  signal spCtlReg   : spCtlVec;
  signal spCtlR     : spCtlRec;
@@ -68,9 +66,12 @@ begin
   port map (
    clk      => clk,
    inp      => inp,
-   ena      => syncEna,
+   ena      => spCtlR.spEna,
    pulseOut => ch
    );
+
+ spInit <= spCtlR.spInit or eStop;
+ spEna  <= spCtlR.spEna  and not estop;
 
  SpindleSyncAccel : entity work.SyncAccelNew
   generic map (opBase    => opBase + F_Sp_Sync_Base,
@@ -81,16 +82,15 @@ begin
    clk          => clk,
    inp          => inp,
    oRec         => oRec,
-   init         => syncInit,
-   ena          => syncEna,
-   decel        => decel,
+   init         => spInit,
+   ena          => spEna,
+   distMode     => spCtlR.spDistMode,
    ch           => ch,
-   dout         => dout,
-   decelDone    => decelDone,
-   synStep      => spStep
+   spActive     => spActive,
+   synStep      => spStep,
+   dout         => dout
    );
 
- spActive  <= '1' when state /= idle else '0';
  dirOut    <= spCtlR.spDir;
  preStep <= spStep;
 
@@ -100,7 +100,7 @@ begin
   port map (
    clk      => clk,
    inp      => inp,
-   init     => spCtlR.spInit,
+   init     => spInit,
    inPulse  => spStep,
    outPulse => stepOut
    );
@@ -109,44 +109,41 @@ begin
  begin
   if (rising_edge(clk)) then            --if clock active
 
-   if (eStop = '1') then
-    syncInit <= '0';
-    syncEna  <= '0';
-    decel    <= '0';
-    state    <= idle;
-   elsif (spCtlR.spInit = '1') then
-    syncInit <= '1';
-    state    <= idle;
-   else
+   -- if (eStop = '1') then
+   --  syncInit <= '0';
+   --  syncEna  <= '0';
+   --  decel    <= '0';
+   --  state    <= idle;
+   -- elsif (spCtlR.spInit = '1') then
+   --  syncInit <= '1';
+   --  state    <= idle;
+   -- else
 
-    case state is
-     when idle =>
-      syncInit <= '0';
-      if (spCtlR.spEna = '1') then
-       syncInit <= '1';
-       state    <= run;
-      end if;
+   --  case state is
+   --   when idle =>
+   --    syncInit <= '0';
+   --    if (spCtlR.spEna = '1') then
+   --     state    <= run;
+   --    end if;
 
-     when run =>
-      syncInit <= '0';
-      syncEna  <= '1';
-      if (spCtlR.spEna = '0') then
-       decel <= '1';
-       state <= doneWait;
-      end if;
+   --   when run =>
+   --    if (spCtlR.spEna = '0') then
+   --     decel <= '1';
+   --     state <= doneWait;
+   --    end if;
 
-     when doneWait =>
-      if (decelDone = '1') then
-       decel   <= '0';
-       syncEna <= '0';
-       state   <= idle;
-      end if;
+   --   when doneWait =>
+   --    if (decelDone = '1') then
+   --     decel   <= '0';
+   --     syncEna <= '0';
+   --     state   <= idle;
+   --    end if;
       
-     when others =>
-      state <= idle;
-    end case;
+   --   when others =>
+   --    state <= idle;
+   --  end case;
     
-   end if;
+   -- end if;
 
   end if;
  end process;

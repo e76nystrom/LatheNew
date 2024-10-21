@@ -8,6 +8,8 @@ use ieee.numeric_std.ALL;
 use work.RegDef.opb;
 
 entity SPI is
+ generic (ilaDbg : natural := 0
+          );
  port (
   clk   : in std_logic;                 --system clock
   dclk  : in std_logic;                 --spi clk
@@ -15,7 +17,7 @@ entity SPI is
   din   : in std_logic;                 --spi data in
   op    : out unsigned(opb-1 downto 0) := (others => '0'); --op code
   copy  : out std_logic := '0';         --copy data to be shifted out
-  shift : out std_logic := '0'          --shift data
+  shift : inout std_logic := '0'          --shift data
   -- load  : out std_logic := '0'          --load data shifted in
   -- spiActive : out std_logic := '0'
   --info : out std_logic_vector(2 downto 0) --state info
@@ -53,6 +55,19 @@ architecture Behavioral of SPI is
  -- end case;
  -- return("000");
  --end;
+ 
+ -- component ila_0
+ --  port (
+ --   clk : in std_logic;
+ --   probe0 : in std_logic_vector(0 downto 0); 
+ --   probe1 : in std_logic_vector(0 downto 0); 
+ --   probe2 : in std_logic_vector(0 downto 0);
+ --   probe3 : in std_logic_vector(0 downto 0);
+ --   probe4 : in std_logic_vector(6 DOWNTO 0)   
+ --   );
+ -- end component;
+
+ -- signal opDbg : std_logic_vector(6 DOWNTO 0);
 
 begin
 
@@ -67,6 +82,16 @@ begin
 
  dselEna <= True when dseldly = (n-1 downto 0 => '0') else False;
  dselDis <= True when dseldly = (n-1 downto 0 => '1') else False;
+ 
+ -- u_ila : ila_0
+ --  port map (
+ --   clk => clk,
+ --   probe0(0) => dsel,
+ --   probe1(0) => din,
+ --   probe2(0) => dclk,
+ --   probe3(0) => shift,
+ --   probe4    => opDbg
+ --   );
 
  din_proc: process(clk)
  begin
@@ -110,6 +135,7 @@ begin
     when chk_count =>
      if (count = 0) then
       op <= opReg;
+      -- opDbg <= std_logic_vector(opReg(7-1 downto 0));
       state <= copy_data;
      else
       state <= read_hdr;

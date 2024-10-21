@@ -21,8 +21,8 @@ entity LatheTopZYNQ is
   MEM_INT_DMEM_SIZE : natural := 8*1024;    -- internal data memory in bytes
   outputPins        : positive := 12;
   inputPins         : positive := 5;
-  ledPins   : positive := 2;
-  dbgPins   : positive := 8;
+  ledPins           : positive := 2;
+  dbgPins           : positive := 8;
   bufPins           : positive := 4;
   xOutPins          : positive := 4;
   extPins           : positive := 4
@@ -30,7 +30,7 @@ entity LatheTopZYNQ is
  port (
   sysClk   : in std_logic;
   rstn_i   : in std_logic;         -- global reset, low-active, async
-  
+
   led      : out std_logic_vector(ledPins-1 downto 0) := (others => '0');
   dbg      : out std_logic_vector(dbgPins-1 downto 0) := (others => '0');
   xOut     : out std_logic_vector(xOutPins-1 downto 0) := (others => '0');
@@ -54,7 +54,7 @@ entity LatheTopZYNQ is
   xMpg     : in std_logic_vector(1 downto 0);
 
   pinOut   : out std_logic_vector(outputPins-1 downto 0) := (others => '0');
-  pinIn    : in std_logic_vector(inputPins-1 downto 0);
+  pinIn    : in  std_logic_vector(inputPins-1 downto 0);
 
   -- aux      : out std_logic_vector(7 downto 0);
 
@@ -73,95 +73,95 @@ entity LatheTopZYNQ is
 
   -- GPIO --
   -- gpio_o      : out std_ulogic_vector(7 downto 0); -- parallel output
-  
+
   -- UART0 --
   dbg_txd_o : out std_logic; -- UART0 send data
   dbg_rxd_i : in  std_logic; -- UART0 receive data
 
   -- UART1 --
   rem_txd_o : out std_logic; -- UART1 send data
-  rem_rxd_i : in  std_logic; -- UART1 receive data
+  rem_rxd_i : in  std_logic -- UART1 receive data
 
-  DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
-  DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
-  DDR_cas_n   : inout STD_LOGIC;
-  DDR_ck_n    : inout STD_LOGIC;
-  DDR_ck_p    : inout STD_LOGIC;
-  DDR_cke     : inout STD_LOGIC;
-  DDR_cs_n    : inout STD_LOGIC;
-  DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-  DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
-  DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-  DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-  DDR_odt     : inout STD_LOGIC;
-  DDR_ras_n   : inout STD_LOGIC;
-  DDR_reset_n : inout STD_LOGIC;
-  DDR_we_n    : inout STD_LOGIC;
-  
-  FIXED_IO_ddr_vrn   : inout STD_LOGIC;
-  FIXED_IO_ddr_vrp   : inout STD_LOGIC;
-  FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-  FIXED_IO_ps_clk    : inout STD_LOGIC;
-  FIXED_IO_ps_porb   : inout STD_LOGIC;
-  FIXED_IO_ps_srstb  : inout STD_LOGIC;
-  
-  MDIO_PHY_0_mdc     : out   STD_LOGIC;
-  MDIO_PHY_0_mdio_io : inout STD_LOGIC;
-  
-  RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
-  RGMII_0_rx_ctl : in  STD_LOGIC;
-  RGMII_0_rxc    : in  STD_LOGIC;
-  RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
-  RGMII_0_tx_ctl : out STD_LOGIC;
-  RGMII_0_txc    : out STD_LOGIC;
-  
-  UART_0_0_rxd : in  STD_LOGIC;
-  UART_0_0_txd : out STD_LOGIC  
+  -- DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+  -- DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+  -- DDR_cas_n   : inout STD_LOGIC;
+  -- DDR_ck_n    : inout STD_LOGIC;
+  -- DDR_ck_p    : inout STD_LOGIC;
+  -- DDR_cke     : inout STD_LOGIC;
+  -- DDR_cs_n    : inout STD_LOGIC;
+  -- DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+  -- DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+  -- DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+  -- DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+  -- DDR_odt     : inout STD_LOGIC;
+  -- DDR_ras_n   : inout STD_LOGIC;
+  -- DDR_reset_n : inout STD_LOGIC;
+  -- DDR_we_n    : inout STD_LOGIC;
+
+  -- FIXED_IO_ddr_vrn   : inout STD_LOGIC;
+  -- FIXED_IO_ddr_vrp   : inout STD_LOGIC;
+  -- FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+  -- FIXED_IO_ps_clk    : inout STD_LOGIC;
+  -- FIXED_IO_ps_porb   : inout STD_LOGIC;
+  -- FIXED_IO_ps_srstb  : inout STD_LOGIC;
+
+  -- MDIO_PHY_0_mdc     : out   STD_LOGIC;
+  -- MDIO_PHY_0_mdio_io : inout STD_LOGIC;
+
+  -- RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
+  -- RGMII_0_rx_ctl : in  STD_LOGIC;
+  -- RGMII_0_rxc    : in  STD_LOGIC;
+  -- RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
+  -- RGMII_0_tx_ctl : out STD_LOGIC;
+  -- RGMII_0_txc    : out STD_LOGIC;
+
+  -- UART_0_0_rxd : in  STD_LOGIC;
+  -- UART_0_0_txd : out STD_LOGIC
 
   );
 end LatheTopZYNQ;
 
 architecture Behavioral of LatheTopZYNQ is
 
- component ZYNQ_Core_wrapper is
-  port (
-   DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
-   DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
-   DDR_cas_n   : inout STD_LOGIC;
-   DDR_ck_n    : inout STD_LOGIC;
-   DDR_ck_p    : inout STD_LOGIC;
-   DDR_cke     : inout STD_LOGIC;
-   DDR_cs_n    : inout STD_LOGIC;
-   DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
-   DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_odt     : inout STD_LOGIC;
-   DDR_ras_n   : inout STD_LOGIC;
-   DDR_reset_n : inout STD_LOGIC;
-   DDR_we_n    : inout STD_LOGIC;
-   
-   FIXED_IO_ddr_vrn   : inout STD_LOGIC;
-   FIXED_IO_ddr_vrp   : inout STD_LOGIC;
-   FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-   FIXED_IO_ps_clk    : inout STD_LOGIC;
-   FIXED_IO_ps_porb   : inout STD_LOGIC;
-   FIXED_IO_ps_srstb  : inout STD_LOGIC;
-   
-   MDIO_PHY_0_mdc     : out   STD_LOGIC;
-   MDIO_PHY_0_mdio_io : inout STD_LOGIC;
-   
-   RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
-   RGMII_0_rx_ctl : in  STD_LOGIC;
-   RGMII_0_rxc    : in  STD_LOGIC;
-   RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
-   RGMII_0_tx_ctl : out STD_LOGIC;
-   RGMII_0_txc    : out STD_LOGIC;
-   
-   UART_0_0_rxd : in  STD_LOGIC;
-   UART_0_0_txd : out STD_LOGIC
-   );
- end component;
+ -- component ZYNQ_Core_wrapper is
+ --  port (
+ --   DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+ --   DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+ --   DDR_cas_n   : inout STD_LOGIC;
+ --   DDR_ck_n    : inout STD_LOGIC;
+ --   DDR_ck_p    : inout STD_LOGIC;
+ --   DDR_cke     : inout STD_LOGIC;
+ --   DDR_cs_n    : inout STD_LOGIC;
+ --   DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --   DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+ --   DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --   DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --   DDR_odt     : inout STD_LOGIC;
+ --   DDR_ras_n   : inout STD_LOGIC;
+ --   DDR_reset_n : inout STD_LOGIC;
+ --   DDR_we_n    : inout STD_LOGIC;
+
+ --   FIXED_IO_ddr_vrn   : inout STD_LOGIC;
+ --   FIXED_IO_ddr_vrp   : inout STD_LOGIC;
+ --   FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+ --   FIXED_IO_ps_clk    : inout STD_LOGIC;
+ --   FIXED_IO_ps_porb   : inout STD_LOGIC;
+ --   FIXED_IO_ps_srstb  : inout STD_LOGIC;
+
+ --   MDIO_PHY_0_mdc     : out   STD_LOGIC;
+ --   MDIO_PHY_0_mdio_io : inout STD_LOGIC;
+
+ --   RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
+ --   RGMII_0_rx_ctl : in  STD_LOGIC;
+ --   RGMII_0_rxc    : in  STD_LOGIC;
+ --   RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
+ --   RGMII_0_tx_ctl : out STD_LOGIC;
+ --   RGMII_0_txc    : out STD_LOGIC;
+
+ --   UART_0_0_rxd : in  STD_LOGIC;
+ --   UART_0_0_txd : out STD_LOGIC
+ --   );
+ -- end component;
 
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
@@ -247,13 +247,62 @@ architecture Behavioral of LatheTopZYNQ is
 
  signal anode      : std_logic_vector(3 downto 0) := (others => '1');
  signal seg        : std_logic_vector(6 downto 0) := (others => '1');
- 
+
  signal xOutTemp   : std_ulogic_vector(xOutPins-1 downto 0);
+
+ -- component ila_0
+ --  port (
+ --   clk : in std_logic;
+ --   probe0 : in std_logic_vector(0 downto 0);
+ --   probe1 : in std_logic_vector(0 downto 0);
+ --   probe2 : in std_logic_vector(0 downto 0);
+ --   probe3 : in std_logic_vector(0 downto 0)
+ --   );
+ -- end component;
+
+ component ila_0
+  port (
+   clk : in std_logic;
+   probe0 : in std_logic_vector(3-1 downto 0);
+   probe1 : in std_logic_vector(5-1 downto 0);
+   probe2 : in std_logic_vector(5-1 downto 0);
+   probe3 : in std_logic_vector(5-1 downto 0);
+   probe4 : in std_logic_vector(4-1 downto 0)
+   );
+ end component;
+
+ signal probe0 : std_logic_vector(2 downto 0);
 
 begin
 
+ pllClock : entity work.Clock
+  port map (
+   clockIn  => sysClk,
+   clockOut => sysClkOut
+   );
+--  sysClkOut <= sysClk;
+
+ -- t_ila : ila_0
+ --  port map (
+ --   clk => sysClk,
+ --   probe0(0) => dsel,
+ --   probe1(0) => din,
+ --   probe2(0) => dclk,
+ --   probe3(0) => riscvDout
+ --   );
+
+ t_ila : ila_0
+  port map (
+   clk => sysClkOut,
+   probe0 => std_logic_vector(riscvCtlToVec(riscvCtlReg)),
+   probe1 => pinIn,
+   probe2 => std_logic_vector(pinInTest),
+   probe3 => pinInLathe,
+   probe4 => std_logic_vector(xOutTemp)
+   );
+
  cfs_pins_i(maxInputPins + riscvCtlSize) <= sink;
- 
+
  cfs_pins_i(riscvCtlSize + maxInputPins - 1 downto maxInputPins) <=
   std_ulogic_vector(riscvCtlToVec(riscvCtlReg));
 
@@ -262,19 +311,19 @@ begin
    cfs_pins_i(inputPins downto 0) <= std_ulogic_vector(pinInLathe);
 
  end generate genInput0;
- 
+
  genInput1: if MaxInputPins > inputPins generate
- 
+
  cfs_pins_i(maxInputPins-1 downto inputPins) <= (others => '0');
  cfs_pins_i(inputPins-1 downto 0) <= std_ulogic_vector(pinInLathe);
- 
+
  end generate genInput1;
 
  mpgQuad.zQuad <= zMpg;
  mpgQuad.xQuad <= xMpg;
 
  xOut <= std_logic_vector(xOutTemp);
- 
+
  dbgsetup : entity work.DbgMap
   port map (
    clk   => sysClkOut,
@@ -282,7 +331,6 @@ begin
    dbg   => dbg,
    sink  => sink
    );
-
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -330,7 +378,7 @@ begin
 
    cfs_we_o    => cfs_we_o,
    cfs_reg_o   => cfs_reg_o,
-   
+
    cfs_mpg_i   => mpgQuad,
    cfs_pins_i  => cfs_pins_i,
    cfs_test_pins_o => pinInTest,
@@ -349,7 +397,7 @@ begin
    spi_clk_o => spiDClk,    -- SPI serial clock
    spi_dat_o => spiDin,     -- controller data out, peripheral data in
    spi_dat_i => riscvDout,  -- controller data in, peripheral data out
- 
+
    uart0_txd_o => dbg_txd_o,
    uart0_rxd_i => dbg_rxd_i,
 
@@ -387,16 +435,15 @@ begin
 
 
  interfaceProc : entity work.CFSInterface
-  generic map (
-   lenBits  => 8,
-   dataBits => 32,
-   inputPins => inputPins
-  )
+ generic map (
+  lenBits  => 8,
+  dataBits => 32,
+  inputPins => inputPins)
  port map (
   clk        => sysClkOut,
   we         => cfs_we_o,
   reg        => cfs_reg_o,
-  
+
   CFSDataIn  => cfs_out_o,
   CFSDataOut => cfs_in_i,
 
@@ -477,43 +524,43 @@ begin
    xDoneInt => xDoneInt
    );
 
-  ZYNQ: ZYNQ_Core_wrapper
-  port map (
-   DDR_addr    => DDR_addr,
-   DDR_ba      => DDR_ba,
-   DDR_cas_n   => DDR_cas_n,
-   DDR_ck_n    => DDR_ck_n,
-   DDR_ck_p    => DDR_ck_p,
-   DDR_cke     => DDR_cke,
-   DDR_cs_n    => DDR_cs_n,
-   DDR_dm      => DDR_dm,
-   DDR_dq      => DDR_dq,
-   DDR_dqs_n   => DDR_dqs_n,
-   DDR_dqs_p   => DDR_dqs_p,
-   DDR_odt     => DDR_odt,
-   DDR_ras_n   => DDR_ras_n,
-   DDR_reset_n => DDR_reset_n,
-   DDR_we_n    => DDR_we_n,
-   
-   FIXED_IO_ddr_vrn   => FIXED_IO_ddr_vrn,
-   FIXED_IO_ddr_vrp   => FIXED_IO_ddr_vrp,
-   FIXED_IO_mio       => FIXED_IO_mio,
-   FIXED_IO_ps_clk    => FIXED_IO_ps_clk,
-   FIXED_IO_ps_porb   => FIXED_IO_ps_porb,
-   FIXED_IO_ps_srstb  => FIXED_IO_ps_srstb,
-   
-   MDIO_PHY_0_mdc     => MDIO_PHY_0_mdc,
-   MDIO_PHY_0_mdio_io => MDIO_PHY_0_mdio_io,
-   
-   RGMII_0_rd     => RGMII_0_rd,
-   RGMII_0_rx_ctl => RGMII_0_rx_ctl,
-   RGMII_0_rxc    => RGMII_0_rxc,
-   RGMII_0_td     => RGMII_0_td,
-   RGMII_0_tx_ctl => RGMII_0_tx_ctl,
-   RGMII_0_txc    => RGMII_0_txc,
-   
-   UART_0_0_rxd => UART_0_0_rxd,
-   UART_0_0_txd => UART_0_0_txd
-   );
+  -- ZYNQ: entity ZYNQ_Core_wrapper
+  -- port map (
+  --  DDR_addr    => DDR_addr,
+  --  DDR_ba      => DDR_ba,
+  --  DDR_cas_n   => DDR_cas_n,
+  --  DDR_ck_n    => DDR_ck_n,
+  --  DDR_ck_p    => DDR_ck_p,
+  --  DDR_cke     => DDR_cke,
+  --  DDR_cs_n    => DDR_cs_n,
+  --  DDR_dm      => DDR_dm,
+  --  DDR_dq      => DDR_dq,
+  --  DDR_dqs_n   => DDR_dqs_n,
+  --  DDR_dqs_p   => DDR_dqs_p,
+  --  DDR_odt     => DDR_odt,
+  --  DDR_ras_n   => DDR_ras_n,
+  --  DDR_reset_n => DDR_reset_n,
+  --  DDR_we_n    => DDR_we_n,
+
+  --  FIXED_IO_ddr_vrn   => FIXED_IO_ddr_vrn,
+  --  FIXED_IO_ddr_vrp   => FIXED_IO_ddr_vrp,
+  --  FIXED_IO_mio       => FIXED_IO_mio,
+  --  FIXED_IO_ps_clk    => FIXED_IO_ps_clk,
+  --  FIXED_IO_ps_porb   => FIXED_IO_ps_porb,
+  --  FIXED_IO_ps_srstb  => FIXED_IO_ps_srstb,
+
+  --  MDIO_PHY_0_mdc     => MDIO_PHY_0_mdc,
+  --  MDIO_PHY_0_mdio_io => MDIO_PHY_0_mdio_io,
+
+  --  RGMII_0_rd     => RGMII_0_rd,
+  --  RGMII_0_rx_ctl => RGMII_0_rx_ctl,
+  --  RGMII_0_rxc    => RGMII_0_rxc,
+  --  RGMII_0_td     => RGMII_0_td,
+  --  RGMII_0_tx_ctl => RGMII_0_tx_ctl,
+  --  RGMII_0_txc    => RGMII_0_txc,
+
+  --  UART_0_0_rxd => UART_0_0_rxd,
+  --  UART_0_0_txd => UART_0_0_txd
+  --  );
 
 end Behavioral;

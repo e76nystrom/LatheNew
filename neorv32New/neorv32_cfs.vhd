@@ -56,6 +56,7 @@ entity neorv32_cfs is
   -- <
   CFS_OUT_SIZE : natural;        -- size of CFS output conduit in bits
   inputPins    : positive;
+  TestPins     : positive;
   xOutPins     : positive
   -- >
   );
@@ -75,7 +76,8 @@ entity neorv32_cfs is
    cfs_dbg_o   : out std_ulogic_vector(xOutPins-1 downto 0):=
    (others => '0'); -- debug output
    cfs_mpg_i   : in  MpgQuadRec;
-   cfs_pins_i  : in  std_ulogic_vector(inputPins-1 downto 0)
+   cfs_pins_i  : in  std_ulogic_vector(inputPins-1 downto 0);
+   cfs_test_pins_o : out std_ulogic_vector(testPins-1 downto 0)
    -- >
    );
 end neorv32_cfs;
@@ -320,7 +322,7 @@ begin
        when millisSel => null;
        when zMpgSel   => null;
        when xMpgSel   => null;
-       when pinsSel   => null;
+       when pinsSel   => cfs_test_pins_o <= bus_req_i.data(TestPins-1 downto 0);
        when dbgSel    => dbg <= bus_req_i.data(xOutPins-1 downto 0);
        when others    => null;
       end case;

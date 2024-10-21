@@ -142,8 +142,9 @@ entity neorv32_top is
     IO_CFS_EN                  : boolean                        := false;       -- implement custom functions subsystem (CFS)?
     IO_CFS_CONFIG              : std_ulogic_vector(31 downto 0) := x"00000000"; -- custom CFS configuration generic
     -- <
-    inputPins                    : positive := 13;
-    xOutPins                     : positive := 4;
+    inputPins                  : positive := 32;
+    testPins                   : positive := 5;
+    xOutPins                   : positive := 4;
     -- >
     IO_CFS_IN_SIZE             : natural                        := 32;          -- size of CFS input conduit in bits
     IO_CFS_OUT_SIZE            : natural                        := 32;          -- size of CFS output conduit in bits
@@ -246,11 +247,12 @@ entity neorv32_top is
     cfs_out_o      : out std_ulogic_vector(IO_CFS_OUT_SIZE-1 downto 0); -- custom CFS outputs conduit
 
     -- <
-    cfs_we_o       : out std_ulogic := '0';
-    cfs_reg_o      : out std_ulogic_vector(2 downto 0) := (others => '0');
-    cfs_mpg_i      : in  MpgQuadRec;
-    cfs_pins_i     : in  std_ulogic_vector(inputPins-1 downto 0);
-    cfs_dbg_o      : out std_ulogic_vector(xOutPins-1 downto 0);
+    cfs_we_o         : out std_ulogic := '0';
+    cfs_reg_o        : out std_ulogic_vector(2 downto 0) := (others => '0');
+    cfs_mpg_i        : in  MpgQuadRec;
+    cfs_pins_i       : in  std_ulogic_vector(inputPins-1 downto 0);
+    cfs_dbg_o        : out std_ulogic_vector(xOutPins-1 downto 0);
+    cfs_test_pins_o  : out std_ulogic_vector(testPins-1 downto 0);
     -- >
     -- NeoPixel-compatible smart LED interface (available if IO_NEOLED_EN = true) --
     neoled_o       : out std_ulogic; -- async serial data line
@@ -355,6 +357,17 @@ architecture neorv32_top_rtl of neorv32_top is
 
   -- misc --
   signal mtime_time : std_ulogic_vector(63 downto 0);
+
+--  component ila_2
+--   port (
+--    clk : in std_logic;
+--    probe0 : in std_logic_vector(15 downto 0);
+--    probe1 : in std_logic_vector(31 downto 0)
+--    );
+--  end component;
+
+  signal addr : std_logic_vector(16-1 downto 0);
+  signal data : std_logic_vector(32-1 downto 0);
 
 begin
 
@@ -582,7 +595,16 @@ begin
     cpu_firq(14) <= firq.slink;
     cpu_firq(15) <= firq.trng; -- lowest priority
 
+  addr <= std_logic_vector(cpu_i_req.addr(15 downto 0));
+  data <= std_logic_vector(cpu_i_rsp.data);
 
+--  cpu_ila : ila_2
+--   port map (
+--    clk    => clk_i,
+--    probe0 => addr,
+--    probe1 => data
+--    );
+  
     -- CPU Instruction Cache ------------------------------------------------------------------
     -- -------------------------------------------------------------------------------------------
     neorv32_icache_inst_true:
@@ -1015,6 +1037,7 @@ begin
          -- <
         CFS_OUT_SIZE => IO_CFS_OUT_SIZE,
         inputPins    => inputPins,
+        testPins     => testPins,
         xOutPins     => xOutPins
        -- >
       )
@@ -1033,7 +1056,8 @@ begin
         cfs_reg_o   => cfs_reg_o,
         cfs_dbg_o   => cfs_dbg_o,
         cfs_mpg_i   => cfs_mpg_i,
-        cfs_pins_i  => cfs_pins_i
+        cfs_pins_i  => cfs_pins_i,
+        cfs_test_pins_o => cfs_test_pins_o
         -- >
       );
     end generate;

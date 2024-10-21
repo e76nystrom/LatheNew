@@ -298,7 +298,7 @@ begin
  pinInLathe <= pinIn when (riscVCtlReg.riscvInTest = '0') else pinInTest;
 
  latheInt: entity work.LatheInterface
-  generic map (extData => 1,
+  generic map (--extData => 1,
                ledPins => ledPins,
                dbgPins => dbgPins)
   port map (

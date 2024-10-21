@@ -55,6 +55,7 @@ package IORecord is
  end record AxisData;
 
  type SpindleData is record
+  dist       : std_logic;
   xPos       : std_logic;
   yPos       : std_logic;
   sum        : std_logic;

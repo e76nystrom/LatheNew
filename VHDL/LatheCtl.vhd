@@ -14,7 +14,10 @@ use work.FpgaLatheBitsFunc.all;
 entity LatheCtl is
  generic (
   dbgPins        : positive;
+  outputPins     : positive;
   inputPins      : positive;
+  extPins        : positive;
+  bufPins        : positive;
   synBits        : positive;
   posBits        : positive;
   countBits      : positive;
@@ -61,9 +64,9 @@ entity LatheCtl is
 
   dbg      : out controlDbg;
   -- aux      : out std_logic_vector(7 downto 0) := (others => '0');
-  pinOut   : out std_logic_vector(11 downto 0) := (others => '0');
-  extOut   : out std_logic_vector(2 downto 0)  := (others => '0');
-  bufOut   : out std_logic_vector(3 downto 0)  := (others => '0');
+  pinOut   : out std_logic_vector(outputPins-1 downto 0) := (others => '0');
+  extOut   : out std_logic_vector(extPins-1 downto 0)  := (others => '0');
+  bufOut   : out std_logic_vector(bufPins-1 downto 0)  := (others => '0');
 
   zDoneInt : out std_logic := '0';
   xDoneInt : out std_logic := '0'
@@ -188,7 +191,17 @@ architecture Behavioral of LatheCtl is
 
  signal dbgEncScale : EncScaleDbg;
 
+ signal zChExt       : std_logic;
+
 begin
+
+ zChPulse : entity work.PulseGen
+  generic map (pulseWidth => stepWidth)
+  port map (
+   clk      => clk,
+   pulseIn  => zCh,
+   pulseOut => zChExt
+   );
 
  inputsR <= inputsToRec(pinIn);
 
@@ -201,10 +214,13 @@ begin
  pinOutR.pinOut3  <= zStep;
  pinOutR.pinOut4  <= xDir; 
  pinOutR.pinOut5  <= xStep;
+
  pinOutR.pinOut6  <= syncPulseOut;
- pinOutR.pinOut7  <= '0';
+ pinOutR.pinOut7  <= zChExt;
+
  pinOutR.pinOut8  <= spindleDirOut;
  pinOutR.pinOut9  <= spindleStepOut;
+
  pinOutR.pinOut1  <= outPinR.outPin1;
  pinOutR.pinOut14 <= outPinR.outPin14;
 
@@ -246,7 +262,7 @@ begin
 
  inputs : entity work.ShiftOutN
   generic map (opVal   => F_Rd_Inputs,
-               n       => inputsSize,
+               n       => inputPins,
                outBits => outBits)
   port map (
    clk  => clk,
@@ -527,7 +543,8 @@ ch <= quadCh when (clkCtlR.clkDbgSyncEna = '0') else dbgFreqGen;
    locBits    => locBits,
    outBits    => outBits,
    dbgBits    => dbgBits,
-   synDbgBits => synDbgBits
+   synDbgBits => synDbgBits,
+   ilaDbg     => 0
    )
   port map (
    clk        => clk,

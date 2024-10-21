@@ -12,6 +12,7 @@ entity SyncAccelNew is
           synBits   : positive := 32;
           posBits   : positive := 18;
           countBits : positive := 18;
+          distBits  : positive := 18;
           outBits   : positive := 32);
  port (
   clk : in std_logic;
@@ -19,17 +20,17 @@ entity SyncAccelNew is
   oRec         : in DataOut;
   init         : in std_logic;          --reset
   ena          : in std_logic;          --enable operation
-  decel        : in std_logic;
+  distMode     : in std_logic;
   ch           : in std_logic;
-  dout         : out SpindleData;
-  decelDone    : out std_logic := '0';
-  synStep      : out std_logic := '0'
+  spActive     : out std_logic := '0';
+  synStep      : out std_logic := '0';
+  dout         : out SpindleData
   );
 end SyncAccelNew;
 
 architecture Behavioral of SyncAccelNew is
 
- type SyncFsm is (idle, enabled, updAccel, encWait);
+ type SyncFsm is (idle, enabled, distCheck, updAccel, encWait, distWait);
  signal syncState : SyncFsm := idle;
 
  type AccelFsm is (accelInactive, accelActive, atSpeed, decelSlow, decelActive);
@@ -54,7 +55,15 @@ architecture Behavioral of SyncAccelNew is
  signal accelMaxTmp : std_logic_vector(synBits-1 downto 0);
  signal accelSum    : unsigned(synBits-1 downto 0) := (others => '0');
 
- signal synStepTmp : std_logic := '0';
+ signal accelSteps  : unsigned(distBits-1 downto 0) := (others => '0');
+ signal distVal     : unsigned(distBits-1 downto 0) := (others => '0');
+
+ signal distCtr     : unsigned(distBits-1 downto 0) := (others => '0');
+ signal distLoad    : std_logic := '0';
+ signal distReLoad  : std_logic := '0';
+
+ signal active      : std_logic := '0';
+ signal synStepTmp  : std_logic := '0';
 
 begin
 
@@ -98,13 +107,34 @@ begin
 
  accelMax <= unsigned(accelMaxTmp);
 
- accelMaxReg : entity work.ctlReg
+ accelMaxReg : entity work.CtlReg
   generic map (opVal => opBase + opAccelMax,
                n     => synBits)
   port map (
    clk  => clk,
    inp  => inp,
    data => accelMaxTmp
+   );
+
+ distReg : entity work.ShiftOpLoad
+  generic map (opVal => opBase + F_Ld_Sp_Dist,
+               n     => distBits)
+  port map (
+   clk  => clk,
+   inp  => inp,
+   load => distLoad,
+   data => distVal
+   );
+
+ distOut : entity work.ShiftOutN
+  generic map (opVal   => opBase + F_Rd_Sp_Dist,
+               n       => distBits,
+               outBits => outBits)
+  port map (
+   clk  => clk,
+   oRec => oRec,
+   data => distCtr,
+   dout => dout.dist
    );
 
  sumOut : entity work.ShiftOutN
@@ -162,9 +192,17 @@ begin
    dout => dout.yPos
    );
 
+ spActive <= active;
+
  syn_process: process(clk)
  begin
   if (rising_edge(clk)) then            --if clock active
+
+   if ((distMode = '1') and
+       (distLoad = '1')) then           --dist upd mode and update
+    distReLoad <= '1';                  --set distance reload flag
+   end if;
+   
    if (init = '1') then                 --initialize variables
 
     sum          <= d;
@@ -172,7 +210,8 @@ begin
     xPos         <= (others => '0');
     yPos         <= (others => '0');
 
-    decelDone    <= '0';
+    active       <= '0';
+    distReload   <= '0';
 
     synStep      <= '0';                --clear output step
     synStepTmp   <= '0';
@@ -182,39 +221,84 @@ begin
    else                                 --if initialize not set
 
     case syncState is                   --select state
-     when idle =>                       --idle
-      if (ena = '1') then
+     -- idle
+     when idle => --************************************
+      if (ena = '1') then               --if enabled
+
+       active     <= '1';               --set active
        syncState  <= enabled;
        accelState <= accelActive;       --start acceleration
-      end if;
+       
+       if (distMode = '1') then         --if in distance mode
+        distCtr   <= distVal;           --load distance counter
+       end if;
 
-     when enabled =>                    --enabled
+      else                              --if not enabled
+       active <= '0';                   --clear active
+      end if;                           --end enabled
+
+     -- enabled
+     when enabled => --*********************************
       synStep <= '0';
 
       if (ena = '0') then               --if enable cleared
-       decelDone <= '0';                --clear deceldone
-       syncState <= idle;               --return to idle state
-      else
-       if (decel = '1') then           --if decel
-        accelState <= decelActive;     --start deceleration
-       end if;
-
-       if (ch = '1') then               --if encoder
-        xPos <= xPos + 1;
-
-        if (sumNeg = '1') then          --if negative (sign bit set)
-         sum <= sum + incr1;
-        else
-         sum <= sum + incr2;
-         yPos <= yPos + 1;
-         synStepTmp <= '1';             --enable step pulse
-        end if;
-
-        syncState <= updAccel;
-       end if;
+       accelState <= decelActive;
       end if;
 
-     when updAccel =>                   --update acceleration
+      if (ch = '1') then                --if encoder
+       xPos <= xPos + 1;
+
+       if (sumNeg = '1') then           --if negative (sign bit set)
+        sum <= sum + incr1;
+       else                             --sum pos
+        sum <= sum + incr2;
+        yPos <= yPos + 1;
+        synStepTmp <= '1';              --enable step pulse
+
+        if (distMode = '1') then        --if in distance mode
+
+         distctr <= distCtr - 1;        --count off distance
+
+         if (accelState = accelActive) then --if accel active
+          accelSteps <= accelSteps + 1;     --add an accel stesp
+         elsif (accelState = decelActive) then --if decel active
+          accelSteps <= accelSteps - 1; --subtract an accel step
+         end if;
+
+        end if;                        --end dist mode
+
+       end if;                         --end sum neg
+
+       if (distMode = '1') then
+        syncState <= distCheck;
+       else
+        syncState <= updAccel;
+       end if;
+
+      end if;                          --end if clock
+
+     -- distance chedk
+     when distCheck => --*******************************
+      if (synStepTmp = '1') then        --if step
+
+       if ((accelState /= decelActive) and
+           (accelSteps >= distCtr)) then --if accel steps gt dist
+        accelState <= decelActive;      --decelerate
+       end if;
+
+      else                              --if not step
+
+       if (distReload = '1') then       --if reload distance
+        distReload <= '0';              --clear reload flag
+        distCtr    <= distVal;          --reload register
+       end if;
+
+      end if;
+
+      syncState <= updAccel;
+
+     -- update acceleration
+     when updAccel => --********************************
       sum <= sum + accelSum;
 
       case accelState is                --select accelState
@@ -257,8 +341,7 @@ begin
        when decelActive => 		--##############
         if (accelSum > accel) then      --if okay to continue
          accelSum <= accelSum - accel;  --subtract accel
-        else                            --if doene
-         decelDone  <= '1';             --set done flag
+        else                            --if done
          accelSum   <= (others => '0'); --clear accel sum
          accelState <= accelInactive;   --set state inactive
         end if;
@@ -270,14 +353,51 @@ begin
 
       syncState <= encWait;
 
-     when encWait =>                    --wait for encoder inactive
+     -- wait for encoder inactive
+     when encWait => --*********************************
       synStep <= synStepTmp;            --output step
       synStepTmp <= '0';                --clear tmp value
+
       if (ch = '0') then                --if encoder pulse clear
-       syncState <= enabled;            --return to enabled state
+
+       if (distMode = '0') then         --if not distance mode
+
+        if (ena = '0') then             --if not enabled
+         syncState <= idle;             --return to idle state
+        else
+         syncState <= enabled;          --return to enabled state
+        end if;
+
+       else                             --if distance mode
+
+        if (distCtr = 0) then           --if moved full distance
+         syncState <= distWait;         --wait for distance update
+        else                            --if not done
+         syncState <= enabled;          --return to enabled state
+        end if;
+
+       end if;                          --end distance moce
+
+      end if;                           --end ch
+
+     -- wait for distance update
+     when distWait => --********************************
+      synStep <= synStepTmp;            --output step
+      synStepTmp <= '0';                --clear tmp value
+
+      if (distReload = '1') then        --if reload distance
+       distReload <= '0';               --clear reload flag
+       distCtr    <= distVal;           --reload register
+       accelState <= accelActive;       --start acceleration
+       syncState  <= enabled;           --return to enabled state
+      end if;
+      
+      if (ena = '0') then               --if enable cleared
+       syncState <= idle;               --return to idle state
       end if;
 
-     when others =>
+     -- others
+     when others => --**********************************
       syncState <= idle;
     end case;                           --end syncState
 

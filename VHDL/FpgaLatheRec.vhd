@@ -33,19 +33,24 @@ end record statusRec;
 -- input register
 
 type inputsRec is record
- inSpare  : std_logic;          -- 12 0x1000 'SP' spare input
- inProbe  : std_logic;          -- 11 0x0800 'PR' probe input
- inXPlus  : std_logic;          -- 10 0x0400 'X+' x Limit Plus
- inXMinus : std_logic;          --  9 0x0200 'X-' x limit minus
- inXHome  : std_logic;          --  8 0x0100 'XH' x home switch
- inZPlus  : std_logic;          --  7 0x0080 'Z+' z Limit Plus
- inZMinus : std_logic;          --  6 0x0040 'Z-' z limit minus
- inZHome  : std_logic;          --  5 0x0020 'ZH' z home switch
- inPin15  : std_logic;          --  4 0x0010 '15' pin 15
- inPin13  : std_logic;          --  3 0x0008 '13' pin 13
- inPin12  : std_logic;          --  2 0x0004 '12' pin 12
- inPin11  : std_logic;          --  1 0x0002 '11' pin 11
- inPin10  : std_logic;          --  0 0x0001 '10' pin 10
+ inPinA15 : std_logic;          -- 17 0x20000 'A5' pin A15
+ inPinA13 : std_logic;          -- 16 0x10000 'A3' pin A13
+ inPinA12 : std_logic;          -- 15 0x08000 'A2' pin A12
+ inPinA11 : std_logic;          -- 14 0x04000 'A1' pin A11
+ inPinA10 : std_logic;          -- 13 0x02000 'A0' pin A10
+ inPinA9  : std_logic;          -- 12 0x01000 'A9' pin A9
+ inProbe  : std_logic;          -- 11 0x00800 'PR' pin A8 probe input
+ inXPlus  : std_logic;          -- 10 0x00400 'X+' pin A7 x Limit Plus
+ inXMinus : std_logic;          --  9 0x00200 'X-' pin A6 x limit minus
+ inXHome  : std_logic;          --  8 0x00100 'XH' pin A5 x home switch
+ inZPlus  : std_logic;          --  7 0x00080 'Z+' pin A4 z Limit Plus
+ inZMinus : std_logic;          --  6 0x00040 'Z-' pin A4 z limit minus
+ inZHome  : std_logic;          --  5 0x00020 'ZH' pin A2 z home switch
+ inPin15  : std_logic;          --  4 0x00010 '15' pin 15
+ inPin13  : std_logic;          --  3 0x00008 '13' pin 13
+ inPin12  : std_logic;          --  2 0x00004 '12' pin 12
+ inPin11  : std_logic;          --  1 0x00002 '11' pin 11
+ inPin10  : std_logic;          --  0 0x00001 '10' pin 10
 end record inputsRec;
 
 -- axis inputs
@@ -162,9 +167,10 @@ end record cfgCtlRec;
 -- spindle control register
 
 type spCtlRec is record
- spDir  : std_logic;            --  2 0x4 spindle direction
- spEna  : std_logic;            --  1 0x2 spindle enable
- spInit : std_logic;            --  0 0x1 spindle init
+ spDistMode : std_logic;        --  3 0x8 spindle distance mode
+ spDir      : std_logic;        --  2 0x4 spindle direction
+ spEna      : std_logic;        --  1 0x2 spindle enable
+ spInit     : std_logic;        --  0 0x1 spindle init
 end record spCtlRec;
 
 -- sync control register
@@ -179,7 +185,7 @@ end record synCtlRec;
 -- clock control register
 
 type clkCtlRec is record
- clkDbgAxisEna : std_logic;     --  8 0x100 set index axisEna
+ clkDbgAxisEna : std_logic;     --  8 0x100 set axis enable for testing
  clkDbgSyncEna : std_logic;     --  7 0x80 enable debug sync
  clkDbgFreqEna : std_logic;     --  6 0x40 enable debug frequency
  xFreqSel      : std_logic_vector(2 downto 0);-- 5-3 x clock select

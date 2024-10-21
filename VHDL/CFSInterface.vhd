@@ -26,7 +26,7 @@ entity CFSInterface is
 
   latheData  : in  RiscvDataRcv;          --incoming read data
   latheCtl   : out RiscvDataCtl := riscvDataCtlInit; --outgoing control and data
-  pinIn      : out std_logic_vector(inputPins-1 downto 0) := (others => '0')
+  pinInTest  : out std_logic_vector(inputPins-1 downto 0) := (others => '0')
   );
 end CFSInterface;
 
@@ -75,7 +75,6 @@ begin
  -- CFSDataOut <= std_ulogic_vector(dataIn) when reg(2) = '0' else
  --               std_ulogic_vector(millis);
 
-
  riscVCtl <= riscVCtlR;
  latheCtl.active <= riscVCtlR.riscvData;
 
@@ -100,7 +99,7 @@ begin
       end if;
 
      when "111" =>
-      pinIn <= std_logic_vector(CFSDataIn(inputPins-1 downto 0));
+      pinInTest <= std_logic_vector(CFSDataIn(inputPins-1 downto 0));
 
      when others => null;
     end case;

@@ -7,7 +7,7 @@ package RegDef is
 constant opb : positive := 8;
 
 
--- spindle speed
+-- index counter
 
 constant F_Rd_Index_Clks     : unsigned(opb-1 downto 0) := x"00"; -- 'RIC' clocks per index
 constant F_Ld_Enc_Count      : unsigned(opb-1 downto 0) := x"01"; -- 'LEC' enc intervel len
@@ -68,17 +68,19 @@ constant F_Sync_Max          : unsigned(opb-1 downto 0) := x"14"; -- number of s
 
 -- spindle accel
 
-constant F_Ld_Sp_D           : unsigned(opb-1 downto 0) := x"00"; -- 'LIS' axis initial sum
-constant F_Ld_Sp_Incr1       : unsigned(opb-1 downto 0) := x"01"; -- 'LI1' axis incr1
-constant F_Ld_Sp_Incr2       : unsigned(opb-1 downto 0) := x"02"; -- 'LI2' axis incr2
-constant F_Ld_Sp_Accel_Val   : unsigned(opb-1 downto 0) := x"03"; -- 'LAV' axis accel value
-constant F_Ld_Sp_Accel_Max   : unsigned(opb-1 downto 0) := x"04"; -- 'LAM' axis accel max
-constant F_Rd_Sp_Sum         : unsigned(opb-1 downto 0) := x"05"; -- 'RSU' axis sum
-constant F_Rd_Sp_Accel_Sum   : unsigned(opb-1 downto 0) := x"06"; -- 'RAS' axis accel sum
-constant F_Rd_Sp_Accel_Max   : unsigned(opb-1 downto 0) := x"07"; -- 'RAC' axis accel max
-constant F_Rd_Sp_XPos        : unsigned(opb-1 downto 0) := x"08"; -- 'RX'  axis x pos
-constant F_Rd_Sp_YPos        : unsigned(opb-1 downto 0) := x"09"; -- 'RY'  axis y pos
-constant F_Sp_Max            : unsigned(opb-1 downto 0) := x"0a"; -- number of spindle sync registers
+constant F_Ld_Sp_D           : unsigned(opb-1 downto 0) := x"00"; -- 'LIS' spindle initial sum
+constant F_Ld_Sp_Incr1       : unsigned(opb-1 downto 0) := x"01"; -- 'LI1' spindle incr1
+constant F_Ld_Sp_Incr2       : unsigned(opb-1 downto 0) := x"02"; -- 'LI2' spindle incr2
+constant F_Ld_Sp_Accel_Val   : unsigned(opb-1 downto 0) := x"03"; -- 'LAV' spindle accel value
+constant F_Ld_Sp_Accel_Max   : unsigned(opb-1 downto 0) := x"04"; -- 'LAM' spindle accel max
+constant F_Ld_Sp_Dist        : unsigned(opb-1 downto 0) := x"05"; -- 'LDS' spindle disttance
+constant F_Rd_Sp_Dist        : unsigned(opb-1 downto 0) := x"06"; -- 'RDS' spindle distance
+constant F_Rd_Sp_Sum         : unsigned(opb-1 downto 0) := x"07"; -- 'RSU' spindle sum
+constant F_Rd_Sp_Accel_Sum   : unsigned(opb-1 downto 0) := x"08"; -- 'RAS' spindle accel sum
+constant F_Rd_Sp_Accel_Max   : unsigned(opb-1 downto 0) := x"09"; -- 'RAC' spindle accel max
+constant F_Rd_Sp_XPos        : unsigned(opb-1 downto 0) := x"0a"; -- 'RX'  spindle x pos
+constant F_Rd_Sp_YPos        : unsigned(opb-1 downto 0) := x"0b"; -- 'RY'  spindle y pos
+constant F_Sp_Max            : unsigned(opb-1 downto 0) := x"0c"; -- number of spindle sync registers
 
 -- axis
 
@@ -135,7 +137,7 @@ constant F_RunOut_Base       : unsigned(opb-1 downto 0) := x"18"; -- 'R' runout 
 constant F_ZAxis_Base        : unsigned(opb-1 downto 0) := x"1a"; -- 'Z' z axis registers
 constant F_XAxis_Base        : unsigned(opb-1 downto 0) := x"32"; -- 'X' x axis registers
 constant F_Spindle_Base      : unsigned(opb-1 downto 0) := x"4a"; -- 'S' spindle registers
-constant F_Cmd_Max           : unsigned(opb-1 downto 0) := x"57"; -- number of commands
+constant F_Cmd_Max           : unsigned(opb-1 downto 0) := x"59"; -- number of commands
 
 end RegDef;
 

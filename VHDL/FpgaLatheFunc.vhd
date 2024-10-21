@@ -35,7 +35,7 @@ return statusRec;
 function statusToRecS(val : std_logic_vector(statusSize-1 downto 0))
 return statusRec;
 
-constant inputsSize : integer := 13;
+constant inputsSize : integer := 18;
 subType inputsVec is std_logic_vector(inputsSize-1 downto 0);
 constant inputsZero : inputsVec := (others => '0');
 
@@ -152,7 +152,7 @@ return cfgCtlRec;
 function cfgCtlToRecS(val : std_logic_vector(cfgCtlSize-1 downto 0))
 return cfgCtlRec;
 
-constant spCtlSize : integer := 3;
+constant spCtlSize : integer := 4;
 subType spCtlVec is std_logic_vector(spCtlSize-1 downto 0);
 constant spCtlZero : spCtlVec := (others => '0');
 
@@ -277,17 +277,23 @@ end function;
 function inputsToVec(val : inputsRec) return inputsVec is
  variable rtnVec : inputsVec;
 begin
- rtnVec := val.inSpare  & val.inProbe  & val.inXPlus  & val.inXMinus &
-           val.inXHome  & val.inZPlus  & val.inZMinus & val.inZHome  &
-           val.inPin15  & val.inPin13  & val.inPin12  & val.inPin11  &
-           val.inPin10;
+ rtnVec := val.inPinA15 & val.inPinA13 & val.inPinA12 & val.inPinA11 &
+           val.inPinA10 & val.inPinA9  & val.inProbe  & val.inXPlus  &
+           val.inXMinus & val.inXHome  & val.inZPlus  & val.inZMinus &
+           val.inZHome  & val.inPin15  & val.inPin13  & val.inPin12  &
+           val.inPin11  & val.inPin10;
  return rtnVec;
 end function;
 
 function inputsToRec(val : inputsVec) return inputsRec is
  variable rtnRec : inputsRec;
 begin
- rtnRec.inSpare  := val(12);
+ rtnRec.inPinA15 := val(17);
+ rtnRec.inPinA13 := val(16);
+ rtnRec.inPinA12 := val(15);
+ rtnRec.inPinA11 := val(14);
+ rtnRec.inPinA10 := val(13);
+ rtnRec.inPinA9  := val(12);
  rtnRec.inProbe  := val(11);
  rtnRec.inXPlus  := val(10);
  rtnRec.inXMinus := val(9);
@@ -308,7 +314,12 @@ function inputsToRecS(val : std_logic_vector(inputsSize-1 downto 0))
  return inputsRec is
  variable rtnRec : inputsRec;
 begin
- rtnRec.inSpare  := val(12);
+ rtnRec.inPinA15 := val(17);
+ rtnRec.inPinA13 := val(16);
+ rtnRec.inPinA12 := val(15);
+ rtnRec.inPinA11 := val(14);
+ rtnRec.inPinA10 := val(13);
+ rtnRec.inPinA9  := val(12);
  rtnRec.inProbe  := val(11);
  rtnRec.inXPlus  := val(10);
  rtnRec.inXMinus := val(9);
@@ -689,16 +700,18 @@ end function;
 function spCtlToVec(val : spCtlRec) return spCtlVec is
  variable rtnVec : spCtlVec;
 begin
- rtnVec := val.spDir  & val.spEna  & val.spInit;
+ rtnVec := val.spDistMode & val.spDir      & val.spEna      &
+           val.spInit;
  return rtnVec;
 end function;
 
 function spCtlToRec(val : spCtlVec) return spCtlRec is
  variable rtnRec : spCtlRec;
 begin
- rtnRec.spDir  := val(2);
- rtnRec.spEna  := val(1);
- rtnRec.spInit := val(0);
+ rtnRec.spDistMode := val(3);
+ rtnRec.spDir      := val(2);
+ rtnRec.spEna      := val(1);
+ rtnRec.spInit     := val(0);
 
  return rtnRec;
 end function;
@@ -707,9 +720,10 @@ function spCtlToRecS(val : std_logic_vector(spCtlSize-1 downto 0))
  return spCtlRec is
  variable rtnRec : spCtlRec;
 begin
- rtnRec.spDir  := val(2);
- rtnRec.spEna  := val(1);
- rtnRec.spInit := val(0);
+ rtnRec.spDistMode := val(3);
+ rtnRec.spDir      := val(2);
+ rtnRec.spEna      := val(1);
+ rtnRec.spInit     := val(0);
 
  return rtnRec;
 end function;

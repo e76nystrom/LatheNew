@@ -51,7 +51,7 @@ package FpgaLatheBits is
 
 -- input register
 
- constant inputsSize : integer := 13;
+ constant inputsSize : integer := 18;
  signal inputsReg : unsigned(inputsSize-1 downto 0);
  --variable inputsReg : unsigned(inputsSize-1 downto 0);
 
@@ -60,28 +60,38 @@ package FpgaLatheBits is
  alias    inPin12            : std_logic is inputsReg( 2); -- x0004 '12' pin 12
  alias    inPin13            : std_logic is inputsReg( 3); -- x0008 '13' pin 13
  alias    inPin15            : std_logic is inputsReg( 4); -- x0010 '15' pin 15
- alias    inZHome            : std_logic is inputsReg( 5); -- x0020 'ZH' z home switch
- alias    inZMinus           : std_logic is inputsReg( 6); -- x0040 'Z-' z limit minus
- alias    inZPlus            : std_logic is inputsReg( 7); -- x0080 'Z+' z Limit Plus
- alias    inXHome            : std_logic is inputsReg( 8); -- x0100 'XH' x home switch
- alias    inXMinus           : std_logic is inputsReg( 9); -- x0200 'X-' x limit minus
- alias    inXPlus            : std_logic is inputsReg(10); -- x0400 'X+' x Limit Plus
- alias    inProbe            : std_logic is inputsReg(11); -- x0800 'PR' probe input
- alias    inSpare            : std_logic is inputsReg(12); -- x1000 'SP' spare input
+ alias    inZHome            : std_logic is inputsReg( 5); -- x0020 'ZH' pin A2 z home switch
+ alias    inZMinus           : std_logic is inputsReg( 6); -- x0040 'Z-' pin A4 z limit minus
+ alias    inZPlus            : std_logic is inputsReg( 7); -- x0080 'Z+' pin A4 z Limit Plus
+ alias    inXHome            : std_logic is inputsReg( 8); -- x0100 'XH' pin A5 x home switch
+ alias    inXMinus           : std_logic is inputsReg( 9); -- x0200 'X-' pin A6 x limit minus
+ alias    inXPlus            : std_logic is inputsReg(10); -- x0400 'X+' pin A7 x Limit Plus
+ alias    inProbe            : std_logic is inputsReg(11); -- x0800 'PR' pin A8 probe input
+ alias    inPinA9            : std_logic is inputsReg(12); -- x1000 'A9' pin A9
+ alias    inPinA10           : std_logic is inputsReg(13); -- x2000 'A0' pin A10
+ alias    inPinA11           : std_logic is inputsReg(14); -- x4000 'A1' pin A11
+ alias    inPinA12           : std_logic is inputsReg(15); -- x8000 'A2' pin A12
+ alias    inPinA13           : std_logic is inputsReg(16); -- x10000 'A3' pin A13
+ alias    inPinA15           : std_logic is inputsReg(17); -- x20000 'A5' pin A15
 
  constant c_inPin10          : integer :=  0; -- x0001 '10' pin 10
  constant c_inPin11          : integer :=  1; -- x0002 '11' pin 11
  constant c_inPin12          : integer :=  2; -- x0004 '12' pin 12
  constant c_inPin13          : integer :=  3; -- x0008 '13' pin 13
  constant c_inPin15          : integer :=  4; -- x0010 '15' pin 15
- constant c_inZHome          : integer :=  5; -- x0020 'ZH' z home switch
- constant c_inZMinus         : integer :=  6; -- x0040 'Z-' z limit minus
- constant c_inZPlus          : integer :=  7; -- x0080 'Z+' z Limit Plus
- constant c_inXHome          : integer :=  8; -- x0100 'XH' x home switch
- constant c_inXMinus         : integer :=  9; -- x0200 'X-' x limit minus
- constant c_inXPlus          : integer := 10; -- x0400 'X+' x Limit Plus
- constant c_inProbe          : integer := 11; -- x0800 'PR' probe input
- constant c_inSpare          : integer := 12; -- x1000 'SP' spare input
+ constant c_inZHome          : integer :=  5; -- x0020 'ZH' pin A2 z home switch
+ constant c_inZMinus         : integer :=  6; -- x0040 'Z-' pin A4 z limit minus
+ constant c_inZPlus          : integer :=  7; -- x0080 'Z+' pin A4 z Limit Plus
+ constant c_inXHome          : integer :=  8; -- x0100 'XH' pin A5 x home switch
+ constant c_inXMinus         : integer :=  9; -- x0200 'X-' pin A6 x limit minus
+ constant c_inXPlus          : integer := 10; -- x0400 'X+' pin A7 x Limit Plus
+ constant c_inProbe          : integer := 11; -- x0800 'PR' pin A8 probe input
+ constant c_inPinA9          : integer := 12; -- x1000 'A9' pin A9
+ constant c_inPinA10         : integer := 13; -- x2000 'A0' pin A10
+ constant c_inPinA11         : integer := 14; -- x4000 'A1' pin A11
+ constant c_inPinA12         : integer := 15; -- x8000 'A2' pin A12
+ constant c_inPinA13         : integer := 16; -- x10000 'A3' pin A13
+ constant c_inPinA15         : integer := 17; -- x20000 'A5' pin A15
 
 -- axis inputs
 
@@ -291,17 +301,19 @@ package FpgaLatheBits is
 
 -- spindle control register
 
- constant spCtlSize : integer := 3;
+ constant spCtlSize : integer := 4;
  signal spCtlReg : unsigned(spCtlSize-1 downto 0);
  --variable spCtlReg : unsigned(spCtlSize-1 downto 0);
 
  alias    spInit             : std_logic is spCtlReg( 0); -- x0001 spindle init
  alias    spEna              : std_logic is spCtlReg( 1); -- x0002 spindle enable
  alias    spDir              : std_logic is spCtlReg( 2); -- x0004 spindle direction
+ alias    spDistMode         : std_logic is spCtlReg( 3); -- x0008 spindle distance mode
 
  constant c_spInit           : integer :=  0; -- x0001 spindle init
  constant c_spEna            : integer :=  1; -- x0002 spindle enable
  constant c_spDir            : integer :=  2; -- x0004 spindle direction
+ constant c_spDistMode       : integer :=  3; -- x0008 spindle distance mode
 
 -- sync control register
 
@@ -328,11 +340,11 @@ package FpgaLatheBits is
  alias    xFreqSel           : unsigned is clkCtlreg(5 downto 3); -- x0008 x clock select
  alias    clkDbgFreqEna      : std_logic is clkCtlReg( 6); -- x0040 enable debug frequency
  alias    clkDbgSyncEna      : std_logic is clkCtlReg( 7); -- x0080 enable debug sync
- alias    clkDbgAxisEna      : std_logic is clkCtlReg( 8); -- x0100 set index axisEna
+ alias    clkDbgAxisEna      : std_logic is clkCtlReg( 8); -- x0100 set axis enable for testing
 
  constant c_clkDbgFreqEna    : integer :=  6; -- x0040 enable debug frequency
  constant c_clkDbgSyncEna    : integer :=  7; -- x0080 enable debug sync
- constant c_clkDbgAxisEna    : integer :=  8; -- x0100 set index axisEna
+ constant c_clkDbgAxisEna    : integer :=  8; -- x0100 set axis enable for testing
 
 -- clock shift values
 

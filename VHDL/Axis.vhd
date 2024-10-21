@@ -1,4 +1,4 @@
---******************************************************************************
+ --******************************************************************************
 
 LIBRARY ieee;
 
@@ -22,7 +22,8 @@ entity Axis is
   locBits    : positive := 18;
   outBits    : positive := 32;
   dbgBits    : positive := 4;
-  synDbgBits : positive := 4
+  synDbgBits : positive := 4;
+  ilaDbg     : natural  := 0
   );
  port (
   clk        : in std_logic;
@@ -165,7 +166,8 @@ begin
                droBits    => distBits,
                locBits    => locBits,
                outBits    => outBits,
-               synDbgBits => synDbgBits)
+               synDbgBits => synDbgBits,
+               ilaDbg     => ilaDbg)
   port map (
    clk        => clk,
 
