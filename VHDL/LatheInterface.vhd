@@ -122,18 +122,18 @@ architecture Behavioral of LatheInterface is
  constant delay : positive := 3;
  signal delayDout  : std_logic_vector(delay-1 downto 0) := (others => '0');
 
- component ila_0
-  port (
-   clk : in std_logic;
-   probe0 : in std_logic_vector(0 downto 0);
-   probe1 : in std_logic_vector(0 downto 0);
-   probe2 : in std_logic_vector(0 downto 0);
-   probe3 : in std_logic_vector(0 downto 0);
-   probe4 : in std_logic_vector(0 downto 0);
-   probe5 : in std_logic_vector(0 downto 0);
-   probe6 : in std_logic_vector(6 downto 0)
-   );
- end component;
+ --component ila_0
+ -- port (
+ --  clk : in std_logic;
+ --  probe0 : in std_logic_vector(0 downto 0);
+ --  probe1 : in std_logic_vector(0 downto 0);
+ --  probe2 : in std_logic_vector(0 downto 0);
+ --  probe3 : in std_logic_vector(0 downto 0);
+ --  probe4 : in std_logic_vector(0 downto 0);
+ --  probe5 : in std_logic_vector(0 downto 0);
+ --  probe6 : in std_logic_vector(6 downto 0)
+ --  );
+ --end component;
 
  signal opDbg : std_logic_vector(6 DOWNTO 0);
  signal dOutTemp : std_logic;
@@ -149,23 +149,23 @@ begin
    dout => dOutTemp
    );
 
- ila_dbg : if ilaDbg = 1 generate
+ --ila_dbg : if ilaDbg = 1 generate
 
-  opDbg <= std_logic_vector(spiOp(7-1 downto 0));
+ -- opDbg <= std_logic_vector(spiOp(7-1 downto 0));
 
-  u_ila : ila_0
-   port map (
-    clk => clk,
-    probe0(0) => dsel,
-    probe1(0) => dclk,
-    probe2(0) => din,
-    probe3(0) => spiShift,
-    probe4(0) => spiCopy,
-    probe5(0) => dOutTemp,
-    probe6    => opDbg
-    );
+ -- u_ila : ila_0
+ --  port map (
+ --   clk => clk,
+ --   probe0(0) => dsel,
+ --   probe1(0) => dclk,
+ --   probe2(0) => din,
+ --   probe3(0) => spiShift,
+ --   probe4(0) => spiCopy,
+ --   probe5(0) => dOutTemp,
+ --   probe6    => opDbg
+ --   );
 
- end generate ila_dbg;
+ --end generate ila_dbg;
 
  dout <= dOutRecord;
  dOutRecord.ctl  <= '0';

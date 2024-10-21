@@ -153,16 +153,16 @@ architecture Behavioral of SyncAccelDist is
  signal inPlus       : std_logic;
  signal inProbe      : std_logic;
 
- component ila_1
-  port (
-   clk    : in std_logic;
-   probe0 : in std_logic_vector(0 downto 0); 
-   probe1 : in std_logic_vector(0 downto 0); 
-   probe2 : in std_logic_vector(0 downto 0); 
-   probe3 : in std_logic_vector(6 downto 0);
-   probe4 : in std_logic_vector(7 downto 0)
-   );
- end component;
+ --component ila_1
+ -- port (
+ --  clk    : in std_logic;
+ --  probe0 : in std_logic_vector(0 downto 0); 
+ --  probe1 : in std_logic_vector(0 downto 0); 
+ --  probe2 : in std_logic_vector(0 downto 0); 
+ --  probe3 : in std_logic_vector(6 downto 0);
+ --  probe4 : in std_logic_vector(7 downto 0)
+ --  );
+ --end component;
 
  signal dOutLoc : std_logic;
 
@@ -333,19 +333,19 @@ begin
 
  dout.dist <= dOutLoc;
 
- ila_dbg : if ilaDbg = 1 generate
+ --ila_dbg : if ilaDbg = 1 generate
   
-  u_ila : ila_1
-   port map (
-    clk => clk,
-    probe0(0) => oRec.shift,
-    probe1(0) => oRec.copy,
-    probe2(0) => dOutLoc,
-    probe3    => std_logic_vector(oRec.op(6 downto 0)),
-    probe4    => std_logic_vector(distCtr(7 downto 0))
-    );
+ -- u_ila : ila_1
+ --  port map (
+ --   clk => clk,
+ --   probe0(0) => oRec.shift,
+ --   probe1(0) => oRec.copy,
+ --   probe2(0) => dOutLoc,
+ --   probe3    => std_logic_vector(oRec.op(6 downto 0)),
+ --   probe4    => std_logic_vector(distCtr(7 downto 0))
+ --   );
 
-  end generate ila_dbg;
+ -- end generate ila_dbg;
 
  LocShiftOut : entity work.ShiftOutNS
   generic map (opVal   => opBase + F_Rd_Loc,

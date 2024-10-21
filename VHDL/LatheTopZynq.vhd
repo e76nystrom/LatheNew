@@ -123,45 +123,45 @@ end LatheTopZYNQ;
 
 architecture Behavioral of LatheTopZYNQ is
 
- component ZYNQ_Core_wrapper is
-  port (
-   DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
-   DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
-   DDR_cas_n   : inout STD_LOGIC;
-   DDR_ck_n    : inout STD_LOGIC;
-   DDR_ck_p    : inout STD_LOGIC;
-   DDR_cke     : inout STD_LOGIC;
-   DDR_cs_n    : inout STD_LOGIC;
-   DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
-   DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
-   DDR_odt     : inout STD_LOGIC;
-   DDR_ras_n   : inout STD_LOGIC;
-   DDR_reset_n : inout STD_LOGIC;
-   DDR_we_n    : inout STD_LOGIC;
+ --component ZYNQ_Core_wrapper is
+ -- port (
+ --  DDR_addr    : inout STD_LOGIC_VECTOR ( 14 downto 0 );
+ --  DDR_ba      : inout STD_LOGIC_VECTOR ( 2 downto 0 );
+ --  DDR_cas_n   : inout STD_LOGIC;
+ --  DDR_ck_n    : inout STD_LOGIC;
+ --  DDR_ck_p    : inout STD_LOGIC;
+ --  DDR_cke     : inout STD_LOGIC;
+ --  DDR_cs_n    : inout STD_LOGIC;
+ --  DDR_dm      : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --  DDR_dq      : inout STD_LOGIC_VECTOR ( 31 downto 0 );
+ --  DDR_dqs_n   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --  DDR_dqs_p   : inout STD_LOGIC_VECTOR ( 3 downto 0 );
+ --  DDR_odt     : inout STD_LOGIC;
+ --  DDR_ras_n   : inout STD_LOGIC;
+ --  DDR_reset_n : inout STD_LOGIC;
+ --  DDR_we_n    : inout STD_LOGIC;
    
-   FIXED_IO_ddr_vrn   : inout STD_LOGIC;
-   FIXED_IO_ddr_vrp   : inout STD_LOGIC;
-   FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
-   FIXED_IO_ps_clk    : inout STD_LOGIC;
-   FIXED_IO_ps_porb   : inout STD_LOGIC;
-   FIXED_IO_ps_srstb  : inout STD_LOGIC;
+ --  FIXED_IO_ddr_vrn   : inout STD_LOGIC;
+ --  FIXED_IO_ddr_vrp   : inout STD_LOGIC;
+ --  FIXED_IO_mio       : inout STD_LOGIC_VECTOR ( 53 downto 0 );
+ --  FIXED_IO_ps_clk    : inout STD_LOGIC;
+ --  FIXED_IO_ps_porb   : inout STD_LOGIC;
+ --  FIXED_IO_ps_srstb  : inout STD_LOGIC;
    
-   MDIO_PHY_0_mdc     : out   STD_LOGIC;
-   MDIO_PHY_0_mdio_io : inout STD_LOGIC;
+ --  MDIO_PHY_0_mdc     : out   STD_LOGIC;
+ --  MDIO_PHY_0_mdio_io : inout STD_LOGIC;
    
-   RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
-   RGMII_0_rx_ctl : in  STD_LOGIC;
-   RGMII_0_rxc    : in  STD_LOGIC;
-   RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
-   RGMII_0_tx_ctl : out STD_LOGIC;
-   RGMII_0_txc    : out STD_LOGIC;
+ --  RGMII_0_rd     : in  STD_LOGIC_VECTOR ( 3 downto 0 );
+ --  RGMII_0_rx_ctl : in  STD_LOGIC;
+ --  RGMII_0_rxc    : in  STD_LOGIC;
+ --  RGMII_0_td     : out STD_LOGIC_VECTOR ( 3 downto 0 );
+ --  RGMII_0_tx_ctl : out STD_LOGIC;
+ --  RGMII_0_txc    : out STD_LOGIC;
    
-   UART_0_0_rxd : in  STD_LOGIC;
-   UART_0_0_txd : out STD_LOGIC
-   );
- end component;
+ --  UART_0_0_rxd : in  STD_LOGIC;
+ --  UART_0_0_txd : out STD_LOGIC
+ --  );
+ --end component;
 
  attribute syn_keep : boolean;
  attribute syn_keep of led   : signal is true;
@@ -250,7 +250,31 @@ architecture Behavioral of LatheTopZYNQ is
  
  signal xOutTemp   : std_ulogic_vector(xOutPins-1 downto 0);
 
+ signal spiEnable  : std_Logic;
+ signal spiDelay   : std_Logic;
+
+ signal spi0Sel    : std_logic;
+ signal spi0Clk    : std_logic;
+ signal spi0Mosi   : std_logic;
+ signal spi0Miso   : std_logic;
+
+ signal gpioOut    : std_logic_vector(1 downto 0);
+ signal gpioIn     : std_logic_vector(1 downto 0);
+
+ component systemClk
+  port (
+   clockIn  : in     std_logic;
+   clockOut : out    std_logic
+   );
+ end component;
+
 begin
+
+ sysClkP : SystemClk
+  port map (
+   clockIn  => sysClk,
+   clockOut => sysClkOut
+   );
 
  cfs_pins_i(maxInputPins + riscvCtlSize) <= sink;
  
@@ -282,7 +306,6 @@ begin
    dbg   => dbg,
    sink  => sink
    );
-
 
  neorv32_top_inst: entity work.neorv32_top
   generic map (
@@ -370,9 +393,13 @@ begin
 
  -- latheCtl.active <= riscVCtlReg.riscvData;
 
- latheDSel <=  spiCS(0) when riscVCtlReg.riscVSPI = '1' else dsel;
- latheDClk <=  spiDClk  when riscVCtlReg.riscVSPI = '1' else dclk;
- latheDin  <=  spiDin   when riscVCtlReg.riscVSPI = '1' else din;
+ --spi0Sel   when spiEnable = '1' else
+ --spi0Clk   when spiEnable = '1' else
+ --spi0Mosi  when spiEnable = '1' else
+
+ latheDSel <= spi0Sel   when spiEnable = '1' else spiCS(0)  when riscVCtlReg.riscVSPI = '1' else dsel;
+ latheDClk <= spi0Clk   when spiEnable = '1' else spiDClk   when riscVCtlReg.riscVSPI = '1' else dclk;
+ latheDin  <= spi0Mosi  when spiEnable = '1' else spiDin    when riscVCtlReg.riscVSPI = '1' else din;
 
  dOutProc : entity work.DoutDelay
   port map (
@@ -383,6 +410,9 @@ begin
 
  dOut <= riscvDout when ((riscVCtlReg.riscVSPI = '0') and
                          (riscVCtlReg.riscVData = '0')) else '0';
+
+ spi0Miso <= riscvDout;
+
  riscvData.data <= riscvDout when riscVCtlReg.riscVData = '1' else '0';
 
 
@@ -477,7 +507,19 @@ begin
    xDoneInt => xDoneInt
    );
 
-  ZYNQ: ZYNQ_Core_wrapper
+ gpioIn(0) <= gpioOut(0);
+ gpioIn(1) <= gpioOut(1);
+
+ gpioProc : process(sysClkOut)
+ begin
+   if (rising_edge(sysClkOut)) then
+     spiDelay  <= gpioOut(0);
+     spiEnable <= spiDelay;
+   end if;
+ end process;
+
+
+ ZYNQ: entity work.ZYNQ_Core_wrapper
   port map (
    DDR_addr    => DDR_addr,
    DDR_ba      => DDR_ba,
@@ -512,6 +554,14 @@ begin
    RGMII_0_tx_ctl => RGMII_0_tx_ctl,
    RGMII_0_txc    => RGMII_0_txc,
    
+   SPI0_CLK       => spi0Clk,
+   SPI0_MISO      => spi0Miso,
+   SPI0_MOSI      => spi0Mosi,
+   SPI0_SEL       => spi0Sel,
+
+   gpio_rtl_0_tri_o => gpioOut,
+   gpio_rtl_1_tri_i => gpioIn,
+
    UART_0_0_rxd => UART_0_0_rxd,
    UART_0_0_txd => UART_0_0_txd
    );

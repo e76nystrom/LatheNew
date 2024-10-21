@@ -260,26 +260,39 @@ architecture Behavioral of LatheTopZYNQ is
  --   );
  -- end component;
 
- component ila_0
-  port (
-   clk : in std_logic;
-   probe0 : in std_logic_vector(3-1 downto 0);
-   probe1 : in std_logic_vector(5-1 downto 0);
-   probe2 : in std_logic_vector(5-1 downto 0);
-   probe3 : in std_logic_vector(5-1 downto 0);
-   probe4 : in std_logic_vector(4-1 downto 0)
-   );
- end component;
+ --component ila_0
+ -- port (
+ --  clk : in std_logic;
+ --  probe0 : in std_logic_vector(3-1 downto 0);
+ --  probe1 : in std_logic_vector(5-1 downto 0);
+ --  probe2 : in std_logic_vector(5-1 downto 0);
+ --  probe3 : in std_logic_vector(5-1 downto 0);
+ --  probe4 : in std_logic_vector(4-1 downto 0)
+ --  );
+ --end component;
 
  signal probe0 : std_logic_vector(2 downto 0);
 
+ component systemClk
+  port (
+   clockIn  : in     std_logic;
+   clockOut : out    std_logic
+   );
+ end component;
+
 begin
 
- pllClock : entity work.Clock
+ sysClkP : SystemClk
   port map (
    clockIn  => sysClk,
    clockOut => sysClkOut
    );
+
+ --pllClock : entity work.Clock
+ -- port map (
+ --  clockIn  => sysClk,
+ --  clockOut => sysClkOut
+ --  );
 --  sysClkOut <= sysClk;
 
  -- t_ila : ila_0
@@ -291,15 +304,15 @@ begin
  --   probe3(0) => riscvDout
  --   );
 
- t_ila : ila_0
-  port map (
-   clk => sysClkOut,
-   probe0 => std_logic_vector(riscvCtlToVec(riscvCtlReg)),
-   probe1 => pinIn,
-   probe2 => std_logic_vector(pinInTest),
-   probe3 => pinInLathe,
-   probe4 => std_logic_vector(xOutTemp)
-   );
+-- t_ila : ila_0
+--  port map (
+--   clk => sysClkOut,
+--   probe0 => std_logic_vector(riscvCtlToVec(riscvCtlReg)),
+--   probe1 => pinIn,
+--   probe2 => std_logic_vector(pinInTest),
+--   probe3 => pinInLathe,
+--   probe4 => std_logic_vector(xOutTemp)
+--   );
 
  cfs_pins_i(maxInputPins + riscvCtlSize) <= sink;
 
